@@ -56,10 +56,12 @@ $.ajax(settings).done(function(response) {
   var expiryDate = new Date(response.payload.expiryDate);
   if (expiryDate < today) {
     var expiryDate = expiryDate.toLocaleDateString("en-BE");
-    var expiryDateTxt = "Voucher outdated " + expiryDate;//translation.voucherVoucherOutdated
+    //var expiryDateTxt = "Voucher outdated " + expiryDate;//translation.voucherVoucherOutdated
+    var expiryDateTxt = translation.voucherVoucherOutdated.replaceAll("{{expiryDate}}", expiryDate);
   } else {
     var expiryDate = expiryDate.toLocaleDateString("en-BE");
-    var expiryDateTxt = "Max date to redeem " + expiryDate;//voucherVoucherMaxDateToRedeem
+    var expiryDateTxt = translation.voucherVoucherMaxDateToRedeem.replaceAll("{{expiryDate}}", expiryDate);
+    //var expiryDateTxt = "Max date to redeem " + expiryDate;//voucherVoucherMaxDateToRedeem
   }
   $("#expiryDate").text(expiryDateTxt);
   var textPurchasedItem = "Voucher used at " + response.payload.store + " for a " + response.payload.purchasedItem + ". ";
