@@ -16,18 +16,10 @@ function getTranslation(){
     if (xhrLocales.status >= 200 && xhrLocales.status < 300 || xhrLocales.status == 304) {
       translation = JSON.parse(xhrLocales.responseText);
       console.log(translation);
-      /*
-      $( "[data-translation]" ).each(function( index ) {
-        //console.log( index + ": " + $( this ).data("translation") );
+      $("body > div.voucher-section.hidewhenloading.wf-section > h1").text(translation.voucherVoucherYourQoverVoucher);
+      $("#link-redeem").text(translation.voucherVoucherAskYourBikeRetailer);
+      $(".legal-mention-voucher-text").text(translation.voucherVoucherLegalMention);
 
-        $( this ).html(content[$( this ).data( "translation" )]);
-        var text = $( this ).html();
-        $( this ).html(text.replaceAll("{{apiKey}}", getParameterByName('key')));
-        var text2 = $( this ).html();
-        //console.log("brand before replace is .....line 46 => ",brand);
-        $( this ).html(text2.replaceAll("{{brand}}", brand));
-      });
-      */
     }
   }
   };
@@ -64,7 +56,6 @@ $.ajax(settings).done(function(response) {
     var expiryDateTxt = translation.voucherVoucherMaxDateToRedeem.replaceAll("{{expiryDate}}", expiryDate);
   }
   $("#expiryDate").text(expiryDateTxt);
-  //voucherVoucherUsedAt - Voucher used at {{shopName}} for a {{usedFor}}.
   var textvoucherVoucherUsedAt = translation.voucherVoucherUsedAt.replaceAll("{{shopName}}", response.payload.store);
   textvoucherVoucherUsedAt = textvoucherVoucherUsedAt.replaceAll("{{usedFor}}", response.payload.purchasedItem);
   var textPurchasedItem = textvoucherVoucherUsedAt;
@@ -73,7 +64,9 @@ $.ajax(settings).done(function(response) {
     textPurchasedItem = textPurchasedItem + translation.voucherLeftValueGoBackToTPA
   }
   $(".purchased-item-text").text(textPurchasedItem);
-  var textnominative = "This voucher is nominative and can be used only by " + response.payload.customer + ". " + response.payload.voucherValidFor;
+  var textnominative = translation.voucherVoucherVoucherNominative;
+  textnominative = textnominative.replaceAll("{{customer}}", response.payload.customer);
+  textnominative = textnominative + response.payload.voucherValidFor;
 
   $(".nominative-text").text(textnominative);
   if (response.payload.status == "Not used") {
