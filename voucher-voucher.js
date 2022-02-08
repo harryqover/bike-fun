@@ -31,7 +31,7 @@ function getTranslation(){
   };
   xhrLocales.send();
 }
-
+getTranslation();
 
 var voucher = getParameterByName("code");
 var settings = {
