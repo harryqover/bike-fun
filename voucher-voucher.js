@@ -58,18 +58,19 @@ $.ajax(settings).done(function(response) {
   var expiryDate = new Date(response.payload.expiryDate);
   if (expiryDate < today) {
     var expiryDate = expiryDate.toLocaleDateString("en-BE");
-    //var expiryDateTxt = "Voucher outdated " + expiryDate;//translation.voucherVoucherOutdated
     var expiryDateTxt = translation.voucherVoucherOutdated.replaceAll("{{expiryDate}}", expiryDate);
   } else {
     var expiryDate = expiryDate.toLocaleDateString("en-BE");
     var expiryDateTxt = translation.voucherVoucherMaxDateToRedeem.replaceAll("{{expiryDate}}", expiryDate);
-    //var expiryDateTxt = "Max date to redeem " + expiryDate;//voucherVoucherMaxDateToRedeem
   }
   $("#expiryDate").text(expiryDateTxt);
-  var textPurchasedItem = "Voucher used at " + response.payload.store + " for a " + response.payload.purchasedItem + ". ";
-  console.log("value: ", response.payload.leftValue);
+  //voucherVoucherUsedAt - Voucher used at {{shopName}} for a {{usedFor}}.
+  var textvoucherVoucherUsedAt = translation.voucherVoucherUsedAt.replaceAll("{{shopName}}", response.payload.store);
+  textvoucherVoucherUsedAt = textvoucherVoucherUsedAt.replaceAll("{{usedFor}}", response.payload.purchasedItem);
+  var textPurchasedItem = textvoucherVoucherUsedAt;
   if (response.payload.leftValue > 0) {
-    textPurchasedItem = textPurchasedItem + "Go back to your claim handler to claim the value left."
+    //
+    textPurchasedItem = textPurchasedItem + translation.voucherLeftValueGoBackToTPA
   }
   $(".purchased-item-text").text(textPurchasedItem);
   var textnominative = "This voucher is nominative and can be used only by " + response.payload.customer + ". " + response.payload.voucherValidFor;
