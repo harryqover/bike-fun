@@ -1,6 +1,8 @@
 var translation = "";
 var lang = getParameterByName('lang');
-lang = "en";
+if (lang == ""){
+  lang = "en";
+}
 
 function getTranslation(){
   var rand = Math.random();
