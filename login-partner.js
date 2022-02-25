@@ -30,12 +30,11 @@ $(".loading").hide();
         setCookie("authvoucher", authorization, "7");
         setCookie("partnerName", partnerName, "7");
         setCookie("shopName", shopName, "7");
-        location.reload();
         window.location.href = 'https://bike-a5adfd.webflow.io/redeem?voucher='+voucherparam;
       } else {
         alert("error login");
+        $(".hide-when-loading").show();
+        $(".loading").hide();
       }
-      $(".loading").hide();
-      $(".hide-when-loading").show();
     });
   }
