@@ -1,6 +1,6 @@
   var voucherparam = getParameterByName("voucher");
   var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxqUEiWrq_FvaW14kUD5xpRGXPYyb1D9P0yYVf62J8A5cmC9Qb0BAsG1Vge05RwT-ww/exec";
-
+$(".loading").hide();
   function loginvoucherpartner(){
     $(".loading").show(250);
     $(".hide-when-loading").hide(250);
