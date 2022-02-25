@@ -46,6 +46,13 @@ $.ajax(settings).done(function(response) {
   var value = response.payload.currency + " " + response.payload.leftValue
   $("#value-left").text(value);
   $("#voucher-code").text(response.payload.voucherCode);
+  var cigarId = response.payload.cigarId;
+  var country = cigarId.substring(0, 2);
+  if(country == "BE"){
+    $(".voucher-france").hide();
+  } else if(country == "FR"){
+    $(".voucher-belgium").hide();
+  }
   var today = new Date()
   var expiryDate = new Date(response.payload.expiryDate);
   if (expiryDate < today) {
