@@ -1,3 +1,4 @@
+console.log("js file update 20220225 0732");
 var translation = "";
 var lang = getParameterByName('lang');
 if (lang == ""){
