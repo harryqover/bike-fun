@@ -1,0 +1,41 @@
+  var voucherparam = getParameterByName("voucher");
+  var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxqUEiWrq_FvaW14kUD5xpRGXPYyb1D9P0yYVf62J8A5cmC9Qb0BAsG1Vge05RwT-ww/exec";
+
+  function loginvoucherpartner(){
+    $(".loading").show(250);
+    $(".hide-when-loading").hide(250);
+    var username = $("#username").val();
+    var password = $("#password").val();
+    var settings = {
+      "url": googleSheetUrl,
+      "method": "POST",
+      "timeout": 0,
+      "headers": {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      "data": JSON.stringify({
+        "username": username,
+        "password": password,
+        "action": "login"
+      }),
+    };
+
+    $.ajax(settings).done(function (response) {
+      console.log(response);
+      var authorization = response.payload.authorization;
+      var partnerName = response.payload.shop;
+      var shopName = response.payload.shopName;
+      if(response.payload.statuslogin == "connected"){
+        setCookie("username", username, "7");
+        setCookie("authvoucher", authorization, "7");
+        setCookie("partnerName", partnerName, "7");
+        setCookie("shopName", shopName, "7");
+        location.reload();
+        window.location.href = 'https://bike-a5adfd.webflow.io/redeem?voucher='+voucherparam;
+      } else {
+        alert("error login");
+      }
+      $(".loading").hide();
+      $(".hide-when-loading").show();
+    });
+  }
