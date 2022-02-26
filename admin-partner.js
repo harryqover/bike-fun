@@ -177,7 +177,7 @@ $(".loading").hide();
           allHTML = allHTML+htmllinevoucher;
         }
         allHTML = allHTML+"</table>";
-        $("#allvouchers").html(allHTML);
+        $("#block-in-content-platform").html(allHTML);
         //$("#allvouchers").html(JSON.stringify(response));
         $(".loading").hide();
         $(".hide-when-loading").show();
