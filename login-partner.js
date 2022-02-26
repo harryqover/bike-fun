@@ -35,6 +35,7 @@ $(".loading").hide();
         alert("error login");
         $(".hide-when-loading").show();
         $(".loading").hide();
+        window.location.href = 'https://bike-a5adfd.webflow.io/login-partner?voucher='+voucherparam;
       }
     });
   }
