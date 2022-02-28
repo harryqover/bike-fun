@@ -176,6 +176,7 @@ showGeneralInfo();
           allHTML = allHTML+htmllinevoucher;
         }
         allHTML = allHTML+"</table>";
+        $(".title-platform, .breadcrumb-here").text("Vouchers");
         $(".block-in-content-platform").html(allHTML);
         $(".loading").hide();
         $(".hide-when-loading").show();
@@ -213,7 +214,7 @@ function showGeneralInfo(){
   $(".loading").show();
   $(".hide-when-loading").hide();
   $(".form-check-validity-voucher").hide();
-  $(".title-platform").text("General information");
+  $(".title-platform, .breadcrumb-here").text("General information");
   var allHTML = '<h3>Welcome to our general info page</h3><p>this is your promocode</p>';
   $(".block-in-content-platform").html(allHTML);
   $(".hide-when-loading").show();
