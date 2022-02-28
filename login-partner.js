@@ -25,7 +25,7 @@ $(".loading").hide();
       var authorization = response.payload.authorization;
       var partnerName = response.payload.shop;
       var shopName = response.payload.shopName;
-      var shopLogo = response.payload.shopLogo;
+      var shopLogo = response.payload.shopData.shopLogo;
       if(response.payload.statuslogin == "connected"){
         setCookie("username", username, "7");
         setCookie("authvoucher", authorization, "7");
