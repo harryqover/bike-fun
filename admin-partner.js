@@ -187,7 +187,7 @@ $(".loading").hide();
     });
 
   }
-  
+
   function  showUseVoucher(){
     $(".form-check-validity-voucher").show();
     $("#allvouchers").hide();
@@ -199,3 +199,12 @@ $(".loading").hide();
     delete_cookie("authvoucher");
     location.reload();
   }
+function showVoucherForm(){
+  $(".loading").show();
+  $(".hide-when-loading").hide();
+  var allHTML = '<div class="form-check-validity-voucher w-embed"><input type="text" id="voucher-code" name="voucher-code" style="height:42px; padding:2px; border:1px solid #ccc; border-right:none; border-radius:5px 0px 0 5px; width:100%" class=""><button onclick="checkCode()" style="background:#fd5353; color:#fff; text-decoration: none; border-radius:0 5px 5px 0; padding:0; font-weight: bold; font-size:12px; width:200px;">Check validity</button></div>';
+  $(".block-in-content-platform").html(allHTML);
+  $(".hide-when-loading").show();
+  $(".form-check-validity-voucher").hide();
+
+}
