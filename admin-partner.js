@@ -187,6 +187,7 @@ $(".loading").hide();
     });
 
   }
+  
   function  showUseVoucher(){
     $(".form-check-validity-voucher").show();
     $("#allvouchers").hide();
