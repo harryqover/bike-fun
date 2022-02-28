@@ -6,7 +6,8 @@ showGeneralInfo();
     $(".form-check-validity-voucher,#nav").show();
     $(".user").text(getCookie("username"));
     //$(".shopname").text(getCookie("shopName"));
-    $(".logo-partner-platform").html('<img src="https://assets.website-files.com/618b6dcba9fbcb6f5103bc1c/6218b7d5a4c534effb259e69_logo-header-top-small.png" loading="lazy" width="100" data-w-id="1e6e2f0f-7ae5-d89a-6e52-e23d4f4999cd" alt="" class="image-114">');
+    var shopLogo = getCookie("shopLogo");
+    $(".logo-partner-platform").html('<img src="'+shopLogo+'" loading="lazy" width="100" data-w-id="1e6e2f0f-7ae5-d89a-6e52-e23d4f4999cd" alt="" class="image-114">');
   } else {
     $(".login-container").show();
     $(".form-check-validity-voucher,#nav").hide();

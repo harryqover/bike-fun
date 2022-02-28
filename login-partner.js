@@ -25,11 +25,13 @@ $(".loading").hide();
       var authorization = response.payload.authorization;
       var partnerName = response.payload.shop;
       var shopName = response.payload.shopName;
+      var shopLogo = response.payload.shopLogo;
       if(response.payload.statuslogin == "connected"){
         setCookie("username", username, "7");
         setCookie("authvoucher", authorization, "7");
         setCookie("partnerName", partnerName, "7");
         setCookie("shopName", shopName, "7");
+        setCookie("shopLogo", shopLogo, "7");
         window.location.href = 'https://bike-a5adfd.webflow.io/redeem?voucher='+voucherparam;
       } else {
         alert("error login");
