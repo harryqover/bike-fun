@@ -1,4 +1,5 @@
 $(".loading").hide();
+showGeneralInfo();
   if(getCookie("authvoucher")!=""){
     //partner should be logged in
     $(".login-container").hide();
