@@ -7,7 +7,7 @@ showGeneralInfo();
     $(".user").text(getCookie("username"));
     //$(".shopname").text(getCookie("shopName"));
     var shopLogo = getCookie("shopLogo");
-    $(".logo-partner-platform").html('<img src="'+shopLogo+'" loading="lazy" width="100" data-w-id="1e6e2f0f-7ae5-d89a-6e52-e23d4f4999cd" alt="" class="image-114">');
+    $(".logo-partner-platform").attr('src',shopLogo);
   } else {
     $(".login-container").show();
     $(".form-check-validity-voucher,#nav").hide();
