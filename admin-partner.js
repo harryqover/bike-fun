@@ -197,6 +197,10 @@ showGeneralInfo();
     }
   function logout(){
     delete_cookie("authvoucher");
+    delete_cookie("shopLogo");
+    delete_cookie("shopName");
+    delete_cookie("username");
+    delete_cookie("partnerName");
     location.reload();
   }
   /*
