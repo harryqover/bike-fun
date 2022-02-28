@@ -177,8 +177,7 @@ $(".loading").hide();
           allHTML = allHTML+htmllinevoucher;
         }
         allHTML = allHTML+"</table>";
-        $("#block-in-content-platform").html(allHTML);
-        //$("#allvouchers").html(JSON.stringify(response));
+        $(".block-in-content-platform").html(allHTML);
         $(".loading").hide();
         $(".hide-when-loading").show();
         $(".form-check-validity-voucher").hide();
