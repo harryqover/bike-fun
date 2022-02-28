@@ -90,11 +90,9 @@ $(".loading").hide();
       if(response.payload.status == "Not used"){
       	htmlToShow = htmlToShow+redeemtext;
       }
-      $("#textcodecheck").html(htmlToShow);
+      $(".block-in-content-platform").html(htmlToShow);
       $(".loading").hide();
       $(".hide-when-loading").show();
-      $("#allvouchers").hide();
-
     });
 
   }
@@ -197,6 +195,7 @@ $(".loading").hide();
     delete_cookie("authvoucher");
     location.reload();
   }
+  /*
 function showVoucherForm(){
   $(".loading").show();
   $(".hide-when-loading").hide();
@@ -206,4 +205,4 @@ function showVoucherForm(){
   $(".hide-when-loading").show();
   $(".loading").hide();
 
-}
+}*/
