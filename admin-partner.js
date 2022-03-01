@@ -226,7 +226,7 @@ function showUseVoucher(){
   $(".block-in-content-platform").html(allHTML);
   document.getElementById("voucher-code").value = voucherparam;
 
-  (".hide-when-loading").show();
+  $(".hide-when-loading").show();
   $(".loading").hide();
 }
 
