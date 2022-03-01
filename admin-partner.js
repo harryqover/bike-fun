@@ -86,6 +86,8 @@ showGeneralInfo();
       var expiryDate = expiryDate.toLocaleDateString("en-BE");
       var customer = response.payload.customer;
       var voucherValidFor = response.payload.voucherValidFor;
+      /*WIP*/
+      var newHtml = '<div class="platform-voucher-status-check-2"><div class="platform-voucher-status-check-col-2"><div class="platform-voucher-status-check-label">Value</div><div>'+value+'</div></div><div class="platform-voucher-status-check-col-2"><div class="platform-voucher-status-check-label">Expiry date</div><div class="platform-voucher-status-check-value">'+expiryDate+'</div></div><div class="platform-voucher-status-check-col-2"><div class="platform-voucher-status-check-label">Customer initiales</div><div class="platform-voucher-status-check-value">'+customer+'</div></div><div class="platform-voucher-status-check-col-2"><div class="platform-voucher-status-check-label">Reason</div><div class="platform-voucher-status-check-value">'+voucherValidFor+'e</div></div><div class="platform-voucher-status-check-col-2"><div class="platform-voucher-status-check-label">Voucher status</div><div class="platform-voucher-status-check-tag">'+response.payload.status+'</div></div></div><div class="form-use-voucher-2 w-form"><div id="" name="" data-name="" method="" class="form-9" aria-label=""><div class="div-block-40"><label for="name" class="field-label-3">Value of the voucher used for the bike</label><input type="text" class="text-field-3 w-input" maxlength="256" name="name" data-name="Name" placeholder="1000 €" id="name"></div><div class="div-block-40"><label for="email" class="field-label-3">Description of the purchase</label><input type="email" class="w-input" maxlength="256" name="email" data-name="Email" placeholder="Small description of the item purchased with the voucher" id="email" required=""></div><div class="div-block-40"><label for="email-2" class="field-label-3">Invoice number of the bike</label><input type="email" class="w-input" maxlength="256" name="email-2" data-name="Email 2" placeholder="Example: EA23B456" id="email-2" required=""></div><input type="submit" value="Submit" class="submit-button-6 w-button"></div></div>';
       var text ="<div>Value: "+value+"<br>Expiry date: "+expiryDate+"<br>Voucher status:"+response.payload.status+"<br> Customer initiales: "+customer+"<br>Reason: "+voucherValidFor+"</div>";
       var redeemtext = '<div style="margin-top:20px;" id="redeemform"><input type="number" id="valueToUse" name="valueToUse" placeholder="Value of the voucher used for the bike"><br><input type="text" id="productPurchased" name="productPurchased" placeholder="Description of the purchase"><br><input type="text" id="invoice" name="invoice" placeholder="Invoice number of the bike"><br><input type="text" id="shop" name="shop" placeholder="Shop name" style="display:none" value="'+getCookie("username")+'"><br><input type="text" id="login" name="login" placeholder="Password" style="display:none" value="'+getCookie("authvoucher")+'"><br><button onclick="useCode()">Redeem</button></div>';
       var htmlToShow = text;
@@ -141,6 +143,7 @@ showGeneralInfo();
   function findAllVouchers(){
     $(".loading").show();
     $(".hide-when-loading").hide();
+    $(".title-platform, .breadcrumb-here").text("All vouchers");
 
     var username = getCookie("username");
     var authorization = getCookie("authvoucher");
@@ -214,6 +217,18 @@ function showVoucherForm(){
   $(".loading").hide();
 
 }*/
+
+function showUseVoucher(){
+  $(".loading").show();
+  $(".hide-when-loading").hide();
+
+  $(".title-platform, .breadcrumb-here").text("Use a voucher");
+  var allHTML = '<div class="form-check-validity-voucher w-embed" style=""><input type="text" id="voucher-code" name="voucher-code" placeholder="Voucher code" style="height:42px; padding:2px; border:1px solid #ccc; border-right:none; border-radius:5px 0px 0 5px; width:100%" class="text-field-11 w-input"><button style="background:#fd5353; color:#fff; text-decoration: none; border-radius:0 5px 5px 0; padding:0; font-weight: bold; font-size:12px; width:200px;" onclick="checkCode()">Submit</button></div>';
+  $(".block-in-content-platform").html(allHTML);
+
+  (".hide-when-loading").show();
+  $(".loading").hide();
+}
 
 function showGeneralInfo(){
   $(".loading").show();
