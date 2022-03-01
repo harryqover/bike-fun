@@ -16,7 +16,6 @@ showGeneralInfo();
 
 
   var voucherparam = getParameterByName("voucher");
-  document.getElementById("voucher-code").value = voucherparam;
 
   var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxqUEiWrq_FvaW14kUD5xpRGXPYyb1D9P0yYVf62J8A5cmC9Qb0BAsG1Vge05RwT-ww/exec";
 
@@ -225,6 +224,7 @@ function showUseVoucher(){
   $(".title-platform, .breadcrumb-here").text("Use a voucher");
   var allHTML = '<div class="form-check-validity-voucher w-embed" style=""><input type="text" id="voucher-code" name="voucher-code" placeholder="Voucher code" style="height:42px; padding:2px; border:1px solid #ccc; border-right:none; border-radius:5px 0px 0 5px; width:100%" class="text-field-11 w-input"><button style="background:#fd5353; color:#fff; text-decoration: none; border-radius:0 5px 5px 0; padding:0; font-weight: bold; font-size:12px; width:200px;" onclick="checkCode()">Submit</button></div>';
   $(".block-in-content-platform").html(allHTML);
+  document.getElementById("voucher-code").value = voucherparam;
 
   (".hide-when-loading").show();
   $(".loading").hide();
