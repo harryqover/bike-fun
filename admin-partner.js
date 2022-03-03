@@ -99,7 +99,7 @@
       } else {
         $("div.platform-voucher-status-check-tag").css("background-color","#fd5353");
       }
-      $(".block-in-content-platform").html(htmlToShow);
+      $(".block-in-content-platform").html(htmlVoucherSearchInput+htmlToShow);
       $(".loading").hide();
       $(".hide-when-loading").show();
     });
