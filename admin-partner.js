@@ -1,4 +1,4 @@
-console.warn("2022-03-03 0638");
+console.warn("2022-03-03 0640");
 $(".loading").hide();
 $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 showGeneralInfo();
@@ -18,7 +18,7 @@ showGeneralInfo();
 
 
   var voucherparam = getParameterByName("voucher");
-  var htmlVoucherSearchInput = '<div class="form-7" style="min-width: 80%;"><input type="text" id="voucher-code" name="voucher-code" placeholder="Voucher code" style="" class="text-field-11 w-input"><button class="second-action-platform-2-2 w-button" onclick="checkCode()">Submit</button></div>';
+  var htmlVoucherSearchInput = '<div class="form-7" style="min-width: 80%;"><input type="text" id="voucher-code" name="voucher-code" value="'+voucherparam+'" placeholder="Voucher code" style="" class="text-field-11 w-input"><button class="second-action-platform-2-2 w-button" onclick="checkCode()">Submit</button></div>';
   var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxqUEiWrq_FvaW14kUD5xpRGXPYyb1D9P0yYVf62J8A5cmC9Qb0BAsG1Vge05RwT-ww/exec";
 
   function loginvoucherpartner(){
@@ -228,7 +228,7 @@ function showGeneralInfo(){
   $(".hide-when-loading").hide();
   //$(".form-check-validity-voucher").hide();
   $(".title-platform, .breadcrumb-here").text("General information");
-  var allHTML = '<div class="generalInfoContent"><h3>Welcome to our general info page</h3><p>In this admin you can redeem a voucher and see all vouchers used.</p></div></div>';
+  var allHTML = '<div class="generalInfoContent"><h3>Welcome to our general info page</h3><p>In this admin you can redeem a voucher and see all vouchers used.</p>'+htmlVoucherSearchInput+'</div>';
   $(".block-in-content-platform").html(allHTML);
   $(".hide-when-loading").show();
   $(".loading").hide();
