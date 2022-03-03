@@ -1,7 +1,7 @@
-console.warn("2022-03-03 0640");
-$(".loading").hide();
-$("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
-showGeneralInfo();
+  console.warn("2022-03-03 0644");
+  $(".loading").hide();
+  $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
+
   if(getCookie("authvoucher")!=""){
     //partner should be logged in
     $(".login-container").hide();
@@ -20,6 +20,7 @@ showGeneralInfo();
   var voucherparam = getParameterByName("voucher");
   var htmlVoucherSearchInput = '<div class="form-7" style="min-width: 80%;"><input type="text" id="voucher-code" name="voucher-code" value="'+voucherparam+'" placeholder="Voucher code" style="" class="text-field-11 w-input"><button class="second-action-platform-2-2 w-button" onclick="checkCode()">Submit</button></div>';
   var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxqUEiWrq_FvaW14kUD5xpRGXPYyb1D9P0yYVf62J8A5cmC9Qb0BAsG1Vge05RwT-ww/exec";
+  showGeneralInfo();
 
   function loginvoucherpartner(){
     $(".loading").show();
