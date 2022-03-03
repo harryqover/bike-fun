@@ -1,4 +1,4 @@
-  console.warn("2022-03-03 0644");
+  console.warn("2022-03-03 0648");
   $(".loading").hide();
   $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -138,7 +138,7 @@
     };
 
     $.ajax(settings).done(function (response) {
-      $("#textcodecheck").html(JSON.stringify(response.payload));
+      $(".block-in-content-platform").html(JSON.stringify(response.payload));
       $(".loading").hide();
       $(".hide-when-loading").show();
     });
