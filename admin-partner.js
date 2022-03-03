@@ -110,6 +110,7 @@
   function useCode(){
     $(".loading").show();
     $(".hide-when-loading").hide();
+    $(".title-platform, .breadcrumb-here").text("Use a voucher");
     var voucher = $("#voucher-code-input").val();
     var shop = $("#shop").val();
     var login = $("#login").val();
