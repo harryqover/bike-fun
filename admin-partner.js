@@ -1,3 +1,4 @@
+console.warn("2022-03-03 0638");
 $(".loading").hide();
 $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 showGeneralInfo();
