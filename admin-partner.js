@@ -94,6 +94,8 @@ showGeneralInfo();
       var htmlToShow = newHtmlText;
       if(response.payload.status == "Not used"){
       	htmlToShow = '<div class="voucher-redeem-container" style="display: flex;flex-direction: column;">'+htmlToShow+newHtmlForm+'</div>';
+      } else {
+        $("div.platform-voucher-status-check-tag").css("background-color","#fd5353");
       }
       $(".block-in-content-platform").html(htmlToShow);
       $(".loading").hide();
