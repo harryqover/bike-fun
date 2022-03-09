@@ -1,5 +1,4 @@
-/* PARAMETERS USED FOR TEST IN SANDBOX */
-console.warn("updated 20220309 0654");
+/*V202203090705*/
 
 var payload = "";
 
@@ -192,7 +191,7 @@ function getDraft(payload, reason) {
                     "it":"Zipcode required to continue",
                     "pt":"Zipcode required to continue"
                 },
-                "discountcodes": {
+                "discountCodes": {
                     "fr":"Le code promo n'est pas valide",
                     "en":"Promocode is not valid",
                     "nl":"Promocode is not valid",
