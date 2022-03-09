@@ -174,7 +174,7 @@ function getDraft(payload, reason) {
             var response = JSON.parse(xhr.response);
             var responseStr = JSON.stringify(response);
             console.error("response 400 - error : ", response);
-            console.error("response 400 - responseStr : ", responseStr);
+            //console.error("response 400 - responseStr : ", responseStr);
             dataLayer.push({
                 'event': 'allTagsWithEvents',
                 'eventCategory': 'error',
