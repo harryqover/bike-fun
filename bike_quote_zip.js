@@ -180,7 +180,14 @@ function getDraft(payload, reason) {
                 'eventAction': 'getDraft',
                 'eventLabel': responseStr
               });
+
+            var errorsDB = {
+                "policyholder.address.zip" : {"fr":"code postal nécessaire","en":"need zipcode"}
+            }
+            var errorToShow = errorsDB[response.details[0].fields[0]];
+
             $(".error").text(response.details[0].message);
+            $(".error").text(errorToShow["fr"]);
             $(".error").show(250);
             //showErrorMessage(response.details);
         }
