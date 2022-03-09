@@ -183,12 +183,47 @@ function getDraft(payload, reason) {
               });
 
             var errorsDB = {
-                "policyholder.address.zip" : {"fr":"code postal nécessaire","en":"need zipcode"}
+                "policyholder.address.zip" : {
+                    "fr":"Code postal nécessaire pour continuer",
+                    "en":"Zipcode required to continue",
+                    "nl":"Postcode vereist om verder te gaan",
+                    "de":"Zipcode required to continue",
+                    "es":"Zipcode required to continue",
+                    "it":"Zipcode required to continue",
+                    "pt":"Zipcode required to continue"
+                },
+                "discountcodes": {
+                    "fr":"Le code promo n'est pas valide",
+                    "en":"Promocode is not valid",
+                    "nl":"Promocode is not valid",
+                    "de":"Promocode is not valid",
+                    "es":"Promocode is not valid",
+                    "it":"Promocode is not valid",
+                    "pt":"Promocode is not valid"
+                },
+                "policyholder.phone": {
+                    "fr":"Clear your cookies and start again",
+                    "en":"Clear your cookies and start again",
+                    "nl":"Clear your cookies and start again",
+                    "de":"Clear your cookies and start again",
+                    "es":"Clear your cookies and start again",
+                    "it":"Clear your cookies and start again",
+                    "pt":"Clear your cookies and start again"
+                },
+                "refs.country": {
+                    "fr":"Clear your cookies and start again",
+                    "en":"Clear your cookies and start again",
+                    "nl":"Clear your cookies and start again",
+                    "de":"Clear your cookies and start again",
+                    "es":"Clear your cookies and start again",
+                    "it":"Clear your cookies and start again",
+                    "pt":"Clear your cookies and start again"
+                }
             }
             var errorToShow = errorsDB[response.details[0].fields[0]];
 
             $(".error").text(response.details[0].message);
-            $(".error").text(errorToShow["fr"]);
+            $(".error").text(errorToShow[lang]);
             $(".error").show(250);
             //showErrorMessage(response.details);
         }
