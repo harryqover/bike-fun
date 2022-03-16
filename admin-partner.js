@@ -240,7 +240,7 @@ function showPOSRequest(){
   $(".loading").show();
   $(".hide-when-loading").hide();
   $(".title-platform, .breadcrumb-here").text("Request marketing material");
-  var allHTML = '<div data-paperform-id="qover-me-pos-material-request"></div><script>(function() {var script = document.createElement('script'); script.src = "https://paperform.co/__embed.min.js"; document.body.appendChild(script); })()</script>';
+  var allHTML = '<div data-paperform-id="qover-me-pos-material-request"></div><script>(function() {var script = document.createElement("script"); script.src = "https://paperform.co/__embed.min.js"; document.body.appendChild(script); })()</script>';
   $(".block-in-content-platform").html(allHTML);
   $(".hide-when-loading").show();
   $(".loading").hide();
