@@ -26,13 +26,19 @@ $(".loading").hide();
       var partnerName = response.payload.shop;
       var shopName = response.payload.shopName;
       var shopLogo = response.payload.shopData.shopLogo;
+      var role = response.payload.role;
       if(response.payload.statuslogin == "connected"){
         setCookie("username", username, "7");
         setCookie("authvoucher", authorization, "7");
         setCookie("partnerName", partnerName, "7");
         setCookie("shopName", shopName, "7");
         setCookie("shopLogo", shopLogo, "7");
-        window.location.href = 'https://bike-a5adfd.webflow.io/redeem?voucher='+voucherparam;
+        if (role > 1) {
+          window.location.href = 'https://bike-a5adfd.webflow.io/redeem?voucher='+voucherparam;
+        } else {
+          window.location.href = 'https://bike-a5adfd.webflow.io/portal/main';
+        }
+
       } else {
         alert("error login");
         $(".hide-when-loading").show();
