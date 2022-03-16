@@ -1,4 +1,4 @@
-  console.warn("2022-03-03 0648");
+  console.warn("2022-03-16 0947");
   $(".loading").hide();
   $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -231,6 +231,26 @@ function showGeneralInfo(){
   //$(".form-check-validity-voucher").hide();
   $(".title-platform, .breadcrumb-here").text("General information");
   var allHTML = '<div class="generalInfoContent"><h3>Welcome to our general info page</h3><p>In this admin you can redeem a voucher and see all vouchers used.</p>'+htmlVoucherSearchInput+'</div>';
+  $(".block-in-content-platform").html(allHTML);
+  $(".hide-when-loading").show();
+  $(".loading").hide();
+}
+
+function showPOSRequest(){
+  $(".loading").show();
+  $(".hide-when-loading").hide();
+  $(".title-platform, .breadcrumb-here").text("Request marketing material");
+  var allHTML = '<div data-paperform-id="qover-me-pos-material-request"></div><script>(function() {var script = document.createElement('script'); script.src = "https://paperform.co/__embed.min.js"; document.body.appendChild(script); })()</script>';
+  $(".block-in-content-platform").html(allHTML);
+  $(".hide-when-loading").show();
+  $(".loading").hide();
+}
+
+function showTraining() {
+  $(".loading").show();
+  $(".hide-when-loading").hide();
+  $(".title-platform, .breadcrumb-here").text("Training");
+  var allHTML = '<div id="tolstoy-container" style="line-height:0;overflow:hidden;height:100%;width:100%;text-align:center"><iframe id="tolstoy" src="https://player.gotolstoy.com/v1whtiq46jo33?host"style="width:100%;height:220px;max-width:270px"scrolling="no" frameborder="0" allow="autoplay *; clipboard-write *;camera *; microphone *; encrypted-media *; fullscreen *; display-capture *;"></iframe><iframe id="tolstoy" src="https://player.gotolstoy.com/tmnqd9cbr8jkd?host"style="width:100%;height:220px;max-width:270px"scrolling="no" frameborder="0" allow="autoplay *; clipboard-write *;camera *; microphone *; encrypted-media *; fullscreen *; display-capture *;"></iframe><script src="https://widget.gotolstoy.com/script.js" defer></script></div>';
   $(".block-in-content-platform").html(allHTML);
   $(".hide-when-loading").show();
   $(".loading").hide();
