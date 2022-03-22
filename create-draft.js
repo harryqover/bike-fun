@@ -1,11 +1,9 @@
 console.log("hello world 20220322 1525");
 /*
 CODE FOR THE EMAIL TEMPLATE
-btoa("key=pk_98DABF9A747BE244BC22&lng=fr&cty=BE&vrt=THEFT_ASSISTANCE&ogvle=259000&zip=1030&city=Schaerbeek&strt=16 rue théo coopman&dmgdeduc=ENGLISH_10PC&thftdeduc=STANDARD_10PC&brd=Veloci&mod=xxx&meta=BE108765576575&type=REGULAR_EBIKE")
+btoa("key=pk_98DABF9A747BE244BC22&lng=fr&cty=BE&vrt=THEFT_ASSISTANCE&ogvle=259000&zip=1030&city=Schaerbeek&strt=16 rue théo coopman&dmgdeduc=ENGLISH_10PC&thftdeduc=STANDARD_10PC&brd=Veloci&mod=xxx&meta=BE108765576575&type=REGULAR_EBIKE&fn=Harry&ln=Evrard&e=harry@qover.com&t=0032486910819&pdte=2022-03-20&sn=65489754&birth=1988-03-31")
 
-btoa("key=pk_98DABF9A747BE244BC22&lng=<%- data.contract.refs.lang %>&cty=BE&vrt=THEFT_ASSISTANCE&ogvle=259000&zip=1030&city=Schaerbeek&strt=16 rue théo coopman&dmgdeduc=ENGLISH_10PC&thftdeduc=STANDARD_10PC&brd=Veloci&mod=xxx&meta=BE108765576575&type=REGULAR_EBIKE")
-
-//URL => https://bike-a5adfd.webflow.io/create-draft?coded=a2V5PXBrXzk4REFCRjlBNzQ3QkUyNDRCQzIyJmxuZz1mciZjdHk9QkUmdnJ0PVRIRUZUX0FTU0lTVEFOQ0Umb2d2bGU9MjU5MDAwJnppcD0xMDMwJmNpdHk9U2NoYWVyYmVlayZzdHJ0PTE2IHJ1ZSB0aOlvIGNvb3BtYW4mZG1nZGVkdWM9RU5HTElTSF8xMFBDJnRoZnRkZWR1Yz1TVEFOREFSRF8xMFBDJmJyZD1WZWxvY2kmbW9kPXh4eCZtZXRhPUJFMTA4NzY1NTc2NTc1JnR5cGU9UkVHVUxBUl9FQklLRQ==
+//URL => https://bike-a5adfd.webflow.io/create-draft?coded=a2V5PXBrXzk4REFCRjlBNzQ3QkUyNDRCQzIyJmxuZz1mciZjdHk9QkUmdnJ0PVRIRUZUX0FTU0lTVEFOQ0Umb2d2bGU9MjU5MDAwJnppcD0xMDMwJmNpdHk9U2NoYWVyYmVlayZzdHJ0PTE2IHJ1ZSB0aOlvIGNvb3BtYW4mZG1nZGVkdWM9RU5HTElTSF8xMFBDJnRoZnRkZWR1Yz1TVEFOREFSRF8xMFBDJmJyZD1WZWxvY2kmbW9kPXh4eCZtZXRhPUJFMTA4NzY1NTc2NTc1JnR5cGU9UkVHVUxBUl9FQklLRSZmbj1IYXJyeSZsbj1FdnJhcmQmZT1oYXJyeUBxb3Zlci5jb20mdD0wMDMyNDg2OTEwODE5JnBkdGU9MjAyMi0wMy0yMCZzbj02NTQ4OTc1NCZiaXJ0aD0xOTg4LTAzLTMx
 */
 
 var code64 = getParameterByName("coded");
@@ -90,8 +88,8 @@ function createPayload(variant, reason) {
       window.payload.publicMetadata.push({"key": "utm_medium","value": utmMediumFromCookie});
     }
     //window.payload.discountCodes.push({"name": window.promocode});
-    window.payload.terms.variant = variant;
-    window.payload.risk.originalValue = decodedObject.ogvle * 100;
+    window.payload.terms.variant = "VARIANT_"variant;
+    window.payload.risk.originalValue = decodedObject.ogvle;
     //window.payload.risk.antiTheftMeasure = $("#bike-gpstracker").val();
     window.payload.risk.type = "TYPE_"+decodedObject.type;
     window.payload.risk.make = decodedObject.brd;
@@ -101,6 +99,11 @@ function createPayload(variant, reason) {
     window.payload.policyholder.address.street = decodedObject.strt;
     window.payload.policyholder.address.city = decodedObject.city;
     window.payload.policyholder.address.country = decodedObject.cty;
+    window.payload.policyholder.firstName = decodedObject.fn;
+    window.payload.policyholder.lastName = decodedObject.ln;
+    window.payload.policyholder.email = decodedObject.e;
+    window.payload.policyholder.phone = decodedObject.t;
+    window.payload.policyholder.birthdate = decodedObject.birth;
     console.log(payload);
 
     var bikeValueCluser = "";
