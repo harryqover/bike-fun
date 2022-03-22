@@ -57,7 +57,7 @@ function createPayload(variant, reason) {
             "address": {"zip": "","country": ""}
         },
         "policyholder": {"address": {"zip": "","country": ""},entityType: "ENTITY_TYPE_PERSON"},
-        "publicMetadata": [{"key": "version_bike_quote_JS","value": "20211215-0620"}],
+        "publicMetadata": [{"key": "version_bike_quote_JS","value": "redirect create draft 20220322"}],
         "metadata": []
     };
     window.payload.terms.damageDeductible = "DAMAGE_DEDUCTIBLE_"+decodedObject.dmgdeduc;
@@ -71,6 +71,7 @@ function createPayload(variant, reason) {
     if(all_channel_closer != ""){
       window.payload.publicMetadata.push({"key": "all_channel_closer","value": all_channel_closer});
     }
+    window.payload.publicMetadata.push({"key": "standalone_assistance_ref","value": decodedObject.meta});
     var referralId = getParameterByName("referralid");
     if(referralId != ""){
       window.payload.metadata.push({"key": "referralId","value": referralId});
