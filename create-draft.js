@@ -90,7 +90,7 @@ function createPayload(variant, reason) {
     }
     //window.payload.discountCodes.push({"name": window.promocode});
     window.payload.terms.variant = variant;
-    window.payload.risk.originalValue = decodedObject.ogvle;
+    window.payload.risk.originalValue = decodedObject.ogvle*1;
     //window.payload.risk.antiTheftMeasure = $("#bike-gpstracker").val();
     window.payload.risk.type = "TYPE_"+decodedObject.type;
     window.payload.risk.make = decodedObject.brd;
