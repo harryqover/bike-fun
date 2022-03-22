@@ -3,7 +3,8 @@ console.log("hello world 20220322 1552");
 CODE FOR THE EMAIL TEMPLATE
 btoa("key=pk_98DABF9A747BE244BC22&lng=fr&cty=BE&vrt=THEFT_ASSISTANCE&ogvle=259000&zip=1030&city=Schaerbeek&strt=16 rue théo coopman&dmgdeduc=ENGLISH_10PC&thftdeduc=STANDARD_10PC&brd=Veloci&mod=xxx&meta=BE108765576575&type=REGULAR_EBIKE&fn=Harry&ln=Evrard&e=harry@qover.com&t=0032486910819&pdte=2022-03-20&sn=65489754&birth=1988-03-31")
 
-//URL => https://bike-a5adfd.webflow.io/create-draft?coded=a2V5PXBrXzk4REFCRjlBNzQ3QkUyNDRCQzIyJmxuZz1mciZjdHk9QkUmdnJ0PVRIRUZUX0FTU0lTVEFOQ0Umb2d2bGU9MjU5MDAwJnppcD0xMDMwJmNpdHk9U2NoYWVyYmVlayZzdHJ0PTE2IHJ1ZSB0aOlvIGNvb3BtYW4mZG1nZGVkdWM9RU5HTElTSF8xMFBDJnRoZnRkZWR1Yz1TVEFOREFSRF8xMFBDJmJyZD1WZWxvY2kmbW9kPXh4eCZtZXRhPUJFMTA4NzY1NTc2NTc1JnR5cGU9UkVHVUxBUl9FQklLRSZmbj1IYXJyeSZsbj1FdnJhcmQmZT1oYXJyeUBxb3Zlci5jb20mdD0wMDMyNDg2OTEwODE5JnBkdGU9MjAyMi0wMy0yMCZzbj02NTQ4OTc1NCZiaXJ0aD0xOTg4LTAzLTMx
+URL =>
+https://bike-a5adfd.webflow.io/create-draft?coded=a2V5PXBrXzk4REFCRjlBNzQ3QkUyNDRCQzIyJmxuZz1mciZjdHk9QkUmdnJ0PVRIRUZUX0FTU0lTVEFOQ0Umb2d2bGU9MjU5MDAwJnppcD0xMDMwJmNpdHk9U2NoYWVyYmVlayZzdHJ0PTE2IHJ1ZSB0aOlvIGNvb3BtYW4mZG1nZGVkdWM9RU5HTElTSF8xMFBDJnRoZnRkZWR1Yz1TVEFOREFSRF8xMFBDJmJyZD1WZWxvY2kmbW9kPXh4eCZtZXRhPUJFMTA4NzY1NTc2NTc1JnR5cGU9UkVHVUxBUl9FQklLRSZmbj1IYXJyeSZsbj1FdnJhcmQmZT1oYXJyeUBxb3Zlci5jb20mdD0wMDMyNDg2OTEwODE5JnBkdGU9MjAyMi0wMy0yMCZzbj02NTQ4OTc1NCZiaXJ0aD0xOTg4LTAzLTMx
 */
 
 var code64 = getParameterByName("coded");
@@ -97,6 +98,7 @@ function createPayload(variant, reason) {
     window.payload.risk.make = decodedObject.brd;
     window.payload.risk.model = decodedObject.mod;
     window.payload.risk.address.zip = decodedObject.zip;
+    window.payload.risk.serialNumber = decodedObject.sn;
     window.payload.policyholder.address.zip = decodedObject.zip;
     window.payload.policyholder.address.street = decodedObject.strt;
     window.payload.policyholder.address.city = decodedObject.city;
