@@ -1,4 +1,4 @@
-console.log("hello world 20220322 1549");
+console.log("hello world 20220322 1552");
 /*
 CODE FOR THE EMAIL TEMPLATE
 btoa("key=pk_98DABF9A747BE244BC22&lng=fr&cty=BE&vrt=THEFT_ASSISTANCE&ogvle=259000&zip=1030&city=Schaerbeek&strt=16 rue théo coopman&dmgdeduc=ENGLISH_10PC&thftdeduc=STANDARD_10PC&brd=Veloci&mod=xxx&meta=BE108765576575&type=REGULAR_EBIKE&fn=Harry&ln=Evrard&e=harry@qover.com&t=0032486910819&pdte=2022-03-20&sn=65489754&birth=1988-03-31")
@@ -194,7 +194,8 @@ function getDraft(payload, reason) {
                 });
                 document.cookie = "draftId=" + window.draftid + "; expires=" +now.toGMTString() + "; path=/; domain=.webflow.io";
                 document.cookie = "draftId=" + window.draftid + "; expires=" +now.toGMTString() + "; path=/; domain=.qoverme.com";
-                var urlPolicyholder = 'https://app.qoverme.com/bike/policyholder?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
+                //var urlPolicyholder = 'https://app.qoverme.com/bike/policyholder?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
+                var urlPolicyholder = 'https://app.qoverme.com/bike/summary?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
                 if (environement == "sbx"){
                     urlPolicyholder = 'https://appqoverme-ui.sbx.qover.io/bike/policyholder?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
                 }
