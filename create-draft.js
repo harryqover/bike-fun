@@ -28,6 +28,7 @@ $("body > div.lottie-animation-12").hide(2500);
 var variant = "VARIANT_"+decodedObject.vrt;
 var lang = decodedObject.lng;
 var country = decodedObject.cty;
+var locale = lang+"-"+country;
 var __QOVER_API_KEY__ = decodedObject.key;
 
 createPayload(variant, "redirect");
