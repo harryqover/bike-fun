@@ -1,4 +1,4 @@
-console.log("hello world");
+console.log("hello world 20220322 1525");
 /*
 CODE FOR THE EMAIL TEMPLATE
 btoa("key=pk_98DABF9A747BE244BC22&lng=fr&cty=BE&vrt=THEFT_ASSISTANCE&ogvle=259000&zip=1030&city=Schaerbeek&strt=16 rue théo coopman&dmgdeduc=ENGLISH_10PC&thftdeduc=STANDARD_10PC&brd=Veloci&mod=xxx&meta=BE108765576575&type=REGULAR_EBIKE")
