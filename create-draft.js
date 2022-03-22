@@ -94,6 +94,8 @@ function createPayload(variant, reason) {
     window.payload.risk.originalValue = decodedObject.ogvle * 100;
     //window.payload.risk.antiTheftMeasure = $("#bike-gpstracker").val();
     window.payload.risk.type = "TYPE_"+decodedObject.type;
+    window.payload.risk.make = decodedObject.brd;
+    window.payload.risk.model = decodedObject.mod;
     window.payload.risk.address.zip = decodedObject.zip;
     window.payload.policyholder.address.zip = decodedObject.zip;
     window.payload.policyholder.address.street = decodedObject.strt;
@@ -145,9 +147,11 @@ function getDraft(payload, reason) {
 
     var postUrl = "https://app.qoverme.com/api/bike/v1/drafts?apikey=" + __QOVER_API_KEY__;
 
+    /*
     if(environement == "sbx") {
         postUrl = "https://appqoverme-ui.sbx.qover.io/api/bike/v1/drafts?apikey=" + __QOVER_API_KEY__;
     }
+    */
 
     var postBody = payload;
     var xhr = new XMLHttpRequest();
