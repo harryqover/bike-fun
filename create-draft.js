@@ -1,5 +1,13 @@
 console.log("hello world");
+/*
+CODE FOR THE EMAIL TEMPLATE
+btoa("key=pk_98DABF9A747BE244BC22&lng=fr&cty=BE&vrt=THEFT_ASSISTANCE&ogvle=259000&zip=1030&city=Schaerbeek&strt=16 rue théo coopman&dmgdeduc=ENGLISH_10PC&thftdeduc=STANDARD_10PC&brd=Veloci&mod=xxx&meta=BE108765576575&type=REGULAR_EBIKE")
+
+btoa("key=pk_98DABF9A747BE244BC22&lng=<%- data.contract.refs.lang %>&cty=BE&vrt=THEFT_ASSISTANCE&ogvle=259000&zip=1030&city=Schaerbeek&strt=16 rue théo coopman&dmgdeduc=ENGLISH_10PC&thftdeduc=STANDARD_10PC&brd=Veloci&mod=xxx&meta=BE108765576575&type=REGULAR_EBIKE")
+
 //URL => https://bike-a5adfd.webflow.io/create-draft?coded=a2V5PXBrXzk4REFCRjlBNzQ3QkUyNDRCQzIyJmxuZz1mciZjdHk9QkUmdnJ0PVRIRUZUX0FTU0lTVEFOQ0Umb2d2bGU9MjU5MDAwJnppcD0xMDMwJmNpdHk9U2NoYWVyYmVlayZzdHJ0PTE2IHJ1ZSB0aOlvIGNvb3BtYW4mZG1nZGVkdWM9RU5HTElTSF8xMFBDJnRoZnRkZWR1Yz1TVEFOREFSRF8xMFBDJmJyZD1WZWxvY2kmbW9kPXh4eCZtZXRhPUJFMTA4NzY1NTc2NTc1JnR5cGU9UkVHVUxBUl9FQklLRQ==
+*/
+
 var code64 = getParameterByName("coded");
 var decoded = atob(code64);
 console.log(decoded)
