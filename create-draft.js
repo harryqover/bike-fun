@@ -62,8 +62,8 @@ function createPayload(variant, reason) {
         "publicMetadata": [{"key": "version_bike_quote_JS","value": "20211215-0620"}],
         "metadata": []
     };
-    window.payload.terms.damageDeductible = "DAMAGE_DEDUCTIBLE_"+window.decodedObject.dmgdeduc;
-    window.payload.terms.theftDeductible = "THEFT_DEDUCTIBLE_"+window.decodedObject.thftdeduc;
+    window.payload.terms.damageDeductible = "DAMAGE_DEDUCTIBLE_"+decodedObject.dmgdeduc;
+    window.payload.terms.theftDeductible = "THEFT_DEDUCTIBLE_"+decodedObject.thftdeduc;
     window.payload.settings.language = lang;
     window.payload.refs.country = country;
     window.payload.policyholder.address.country = country;
@@ -91,14 +91,14 @@ function createPayload(variant, reason) {
     }
     //window.payload.discountCodes.push({"name": window.promocode});
     window.payload.terms.variant = variant;
-    window.payload.risk.originalValue = window.decodedObject.ogvle * 100;
+    window.payload.risk.originalValue = decodedObject.ogvle * 100;
     //window.payload.risk.antiTheftMeasure = $("#bike-gpstracker").val();
-    window.payload.risk.type = "TYPE_"+window.decodedObject.type;
-    window.payload.risk.address.zip = window.decodedObject.zip;
-    window.payload.policyholder.address.zip = window.decodedObject.zip;
-    window.payload.policyholder.address.street = window.decodedObject.strt;
-    window.payload.policyholder.address.city = window.decodedObject.city;
-    window.payload.policyholder.address.country = window.decodedObject.cty;
+    window.payload.risk.type = "TYPE_"+decodedObject.type;
+    window.payload.risk.address.zip = decodedObject.zip;
+    window.payload.policyholder.address.zip = decodedObject.zip;
+    window.payload.policyholder.address.street = decodedObject.strt;
+    window.payload.policyholder.address.city = decodedObject.city;
+    window.payload.policyholder.address.country = decodedObject.cty;
     console.log(payload);
 
     var bikeValueCluser = "";
