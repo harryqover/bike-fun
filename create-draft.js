@@ -146,6 +146,7 @@ function getDraft(payload, reason) {
     $(".successapiresponse").hide();
 
     var postUrl = "https://app.qoverme.com/api/bike/v1/drafts?apikey=" + __QOVER_API_KEY__;
+    var environement = "prd";
 
     /*
     if(environement == "sbx") {
