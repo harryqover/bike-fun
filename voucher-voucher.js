@@ -88,7 +88,7 @@ $.ajax(settings).done(function(response) {
     text: urlRedeem,
     width: 128,
     height: 128,
-    colorDark: "#eb4f87",
+    colorDark: "#171c34",
   });
   $("#link-redeem").attr("href", urlRedeem);
   $(".hidewhenloading").show();
