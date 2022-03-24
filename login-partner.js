@@ -35,16 +35,16 @@ $(".loading").hide();
         setCookie("shopName", shopName, "7");
         setCookie("shopLogo", shopLogo, "7");
         if (role > 1) {
-          window.location.href = 'https://bike-a5adfd.webflow.io/redeem?voucher='+voucherparam;
+          window.location.href = 'https://bike.qoverme.com/portal/main-redeem?voucher='+voucherparam;
         } else {
-          window.location.href = 'https://bike-a5adfd.webflow.io/portal/main';
+          window.location.href = 'https://bike.qoverme.com/portal/main';
         }
 
       } else {
         alert("error login");
         $(".hide-when-loading").show();
         $(".loading").hide();
-        window.location.href = 'https://bike-a5adfd.webflow.io/login-partner?voucher='+voucherparam;
+        window.location.href = 'https://bike.qoverme.com/login-partner?voucher='+voucherparam;
       }
     });
   }
