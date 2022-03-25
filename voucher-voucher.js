@@ -20,6 +20,7 @@ function getTranslation(){
       $("body > div.voucher-section.hidewhenloading.wf-section > h1").text(translation.voucherVoucherYourQoverVoucher);
       $("#link-redeem").text(translation.voucherVoucherAskYourBikeRetailer);
       $(".legal-mention-voucher-text").text(translation.voucherVoucherLegalMention);
+      $("#wheretousevoucher").text(translation.voucherWhereToUseVoucher)
 
     }
   }
