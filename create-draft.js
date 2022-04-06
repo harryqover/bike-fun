@@ -100,7 +100,11 @@ function createPayload(variant, reason) {
     window.payload.risk.address.zip = decodedObject.zip;
     window.payload.risk.serialNumber = decodedObject.sn;
     window.payload.policyholder.address.zip = decodedObject.zip;
-    window.payload.policyholder.address.number = decodedObject.number;
+    if(decodedObject.number){
+        window.payload.policyholder.address.number = decodedObject.number;
+    } else {
+        window.payload.policyholder.address.number = " ";
+    }
     window.payload.policyholder.address.street = decodedObject.strt;
     window.payload.policyholder.address.city = decodedObject.city;
     window.payload.policyholder.address.country = decodedObject.cty;
