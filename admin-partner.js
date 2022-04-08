@@ -255,3 +255,85 @@ function showTraining() {
   $(".hide-when-loading").show();
   $(".loading").hide();
 }
+
+function getstatistics(start,end){
+    $(".loading").show();
+    $(".hide-when-loading").hide();
+    $(".title-platform, .breadcrumb-here").text("Sales dashboard");
+    var allHTML = '<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script><div id="chart_div"></div>';
+    $(".block-in-content-platform").html(allHTML);
+
+    var username = getCookie("username");
+    var authorization = getCookie("authvoucher");
+
+    var settings = {
+      "url": googleSheetUrl,
+      "method": "POST",
+      "timeout": 0,
+      "headers": {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      "data": JSON.stringify({
+        "action":"getStatistics",
+        "checker": authorization,
+        "username": username,
+        "start": start,
+        "end": end
+      }),
+    };
+
+    $.ajax(settings).done(function (response) {
+      var data = response.payload;
+      console.warn("data: ", data);
+      if (data == "not authorized"){
+        logout();
+      } else {
+        
+
+        /*START GOOGLE*/
+          google.charts.load('current', {packages: ['corechart', 'line']});
+          google.charts.setOnLoadCallback(drawLogScales);
+
+          function drawLogScales() {
+                var data = new google.visualization.DataTable();
+                data.addColumn('number', 'Date');
+                data.addColumn('number', 'Contracts');
+                data.addRows([
+                  [0, 0],
+                  [1, 10],
+                  [3, 15],
+                  [7, 16],
+                  [9, 18],
+                  [10, 19],
+                  [24, 25],
+                  [25, 28],
+                  [28, 29],
+                  [30, 50]
+                ]);
+
+                var options = {
+                  hAxis: {
+                    title: 'Date',
+                    logScale: true
+                  },
+                  vAxis: {
+                    title: 'Contracts',
+                    logScale: false
+                  },
+                  colors: ['#a52714', '#097138']
+                };
+
+                var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+                chart.draw(data, options);
+              }
+      /*STOP GOOGLE*/
+      $(".loading").hide();
+      $(".hide-when-loading").show();
+      $(".form-check-validity-voucher").show();
+      //$("#allvouchers").show();
+    }
+  });
+
+}
+
+          //getstatistics("2022-01-01","2022-03-31");
