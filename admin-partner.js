@@ -1,4 +1,4 @@
-  console.warn("2022-04-11 1635");
+  console.warn("2022-04-11 1648");
   $(".loading").hide();
   $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -300,11 +300,11 @@ function getstatistics(start,end){
       if (data == "not authorized"){
         logout();
       } else {
-        var css = '<style>.allKpis {border-radius: 5px;background-color: #f5f8fd;padding: 30px 25px;display: flex;}.reportingKpi>p {font-size: 50px;margin-top: 20px;}.reportingKpi {margin: 20px;width: 30%;}</style>';
+        var css = '<style>.allKpis {border-radius: 5px;background-color: #f5f8fd;padding: 30px 25px;display: flex;}.reportingKpi>p {font-size: 50px;margin-top: 20px;}.reportingKpi {margin: 20px;width: 30%;}ntPink {position: relative;z-index: 1;height: 60px;margin-top: 40px; padding: 20px 50px;    border-radius: 60px;    background-color: #eb4f87;    -webkit-transform: translate(0,0);    -ms-transform: translate(0,0);    transform: translate(0,0);    -webkit-transition: .2s;    transition: .2s;    font-family: Circularstd,sans-serif;    font-size: 18px;    font-weight: 700;}input#end, input#start {display: block;    width: 170px;    height: 38px;    padding: 8px 6px 8px 15px;    margin-bottom: 10px;    font-size: 14px;    color: #171C34;    vertical-align: middle;    background-color: #fff;    border: 1px solid #f8f8f8;}</style>';
         $('head').append(css);
         var allHTML = '<div class="allKpis"><div class="reportingKpi"><h5>New contracts</h5><p>'+data.kpi.kpis.EUR.nbr_create+'</p></div><div class="reportingKpi"><h5>Canceled contracts</h5><p>'+data.kpi.kpis.EUR.nbr_cancel+'</p></div><div class="reportingKpi"><h5>Total commission</h5><p>'+data.kpi.kpis.EUR.tot_commission+'</p></div></div><div id="chart_div"></div>';
         $(".block-in-content-platform").html(allHTML);
-        var dateInput = '<label for="start">Start date:</label><input type="date" id="start" value="2022-01-01" min="2020-01-01" max="2030-12-31"><label for="end">End date:</label><input type="date" id="end" value="2022-03-31" min="2020-01-01" max="2030-12-31"><br><br><button onclick="getStatFromInput();">Search</button>';
+        var dateInput = '<label for="start">Start date:</label><input type="date" id="start" value="2022-01-01" min="2020-01-01" max="2030-12-31"><label for="end">End date:</label><input type="date" id="end" value="2022-03-31" min="2020-01-01" max="2030-12-31"><br><br><button onclick="getStatFromInput();" class="btnPink">Search</button>';
         $(".block-in-content-platform").prepend(dateInput);
 
 
