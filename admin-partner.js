@@ -1,4 +1,4 @@
-  console.warn("2022-04-11 1626");
+  console.warn("2022-04-11 1635");
   $(".loading").hide();
   $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -256,6 +256,12 @@ function showTraining() {
   $(".loading").hide();
 }
 
+function getStatFromInput(){
+  var start = $("#start").val();
+  var end  = $("#end").val();
+  getstatistics(start,end);
+}
+
 function getstatistics(start,end){
     $(".loading").show();
     $(".hide-when-loading").hide();
@@ -298,8 +304,8 @@ function getstatistics(start,end){
         $('head').append(css);
         var allHTML = '<div class="allKpis"><div class="reportingKpi"><h5>New contracts</h5><p>'+data.kpi.kpis.EUR.nbr_create+'</p></div><div class="reportingKpi"><h5>Canceled contracts</h5><p>'+data.kpi.kpis.EUR.nbr_cancel+'</p></div><div class="reportingKpi"><h5>Total commission</h5><p>'+data.kpi.kpis.EUR.tot_commission+'</p></div></div><div id="chart_div"></div>';
         $(".block-in-content-platform").html(allHTML);
-        var dateInput = '<label for="start">Start date:</label><input type="date" id="start" value="2022-01-01" min="2020-01-01" max="2030-12-31">';
-        $(".block-in-content-platform").append(dateInput);
+        var dateInput = '<label for="start">Start date:</label><input type="date" id="start" value="2022-01-01" min="2020-01-01" max="2030-12-31"><label for="end">End date:</label><input type="date" id="end" value="2022-03-31" min="2020-01-01" max="2030-12-31"><br><br><button onclick="doFunction();">Search</button>';
+        $(".block-in-content-platform").prepend(dateInput);
 
 
         /*START GOOGLE*/
