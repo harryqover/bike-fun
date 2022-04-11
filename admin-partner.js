@@ -260,7 +260,7 @@ function getstatistics(start,end){
     $(".loading").show();
     $(".hide-when-loading").hide();
     $(".title-platform, .breadcrumb-here").text("Sales dashboard");
-    var allHTML = '<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script><div id="chart_div"></div>';
+    var allHTML = '<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>';
     $(".block-in-content-platform").html(allHTML);
 
     var username = getCookie("username");
@@ -284,56 +284,52 @@ function getstatistics(start,end){
 
     $.ajax(settings).done(function (response) {
       var data = response.payload;
-      console.warn("data: ", data);
+        //var datajson = JSON.parse(data);
+        console.warn(data);
+        console.log(data.kpi.kpis);
+        console.log(data.kpi.kpis.EUR);
+        console.log(data.graph.data.EUR);
+        var graph = JSON.parse(data.graph.data.EUR);
+        console.log(graph);
       if (data == "not authorized"){
         logout();
       } else {
-        
+        var allHTML = '<div>'+data.kpi.kpis.EUR.nbr_create+' contracts created</div><div id="chart_div"></div>';
+        $(".block-in-content-platform").html(allHTML);
 
         /*START GOOGLE*/
           google.charts.load('current', {packages: ['corechart', 'line']});
-          google.charts.setOnLoadCallback(drawLogScales);
+google.charts.setOnLoadCallback(drawLogScales);
 
-          function drawLogScales() {
-                var data = new google.visualization.DataTable();
-                data.addColumn('number', 'Date');
-                data.addColumn('number', 'Contracts');
-                data.addRows([
-                  [0, 0],
-                  [1, 10],
-                  [3, 15],
-                  [7, 16],
-                  [9, 18],
-                  [10, 19],
-                  [24, 25],
-                  [25, 28],
-                  [28, 29],
-                  [30, 50]
-                ]);
+function drawLogScales() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('number', 'Date');
+      data.addColumn('number', 'Contracts');
+      data.addRows(graph);
 
-                var options = {
-                  hAxis: {
-                    title: 'Date',
-                    logScale: true
-                  },
-                  vAxis: {
-                    title: 'Contracts',
-                    logScale: false
-                  },
-                  colors: ['#a52714', '#097138']
-                };
+      var options = {
+        hAxis: {
+          title: 'Date',
+          logScale: true
+        },
+        vAxis: {
+          title: 'Contracts',
+          logScale: false
+        },
+        colors: ['#a52714', '#097138']
+      };
 
-                var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-                chart.draw(data, options);
-              }
-      /*STOP GOOGLE*/
-      $(".loading").hide();
-      $(".hide-when-loading").show();
-      $(".form-check-validity-voucher").show();
-      //$("#allvouchers").show();
+      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+      chart.draw(data, options);
     }
-  });
+        /*STOP GOOGLE*/
+        $(".loading").hide();
+        $(".hide-when-loading").show();
+        $(".form-check-validity-voucher").show();
+        //$("#allvouchers").show();
+      }
+    });
 
-}
+  }
 
-          //getstatistics("2022-01-01","2022-03-31");
+//getstatistics("2022-01-01","2022-03-31");
