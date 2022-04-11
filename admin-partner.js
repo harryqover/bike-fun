@@ -294,7 +294,7 @@ function getstatistics(start,end){
       if (data == "not authorized"){
         logout();
       } else {
-        var allHTML = '<div>'+data.kpi.kpis.EUR.nbr_create+' contracts created</div><div id="chart_div"></div>';
+        var allHTML = '<div class="allKpis"><div class="reportingKpi"><h3>New contracts</h3><p>'+data.kpi.kpis.EUR.nbr_create+'</p></div></div><div id="chart_div"></div>';
         $(".block-in-content-platform").html(allHTML);
 
         /*START GOOGLE*/
@@ -316,7 +316,7 @@ function drawLogScales() {
           title: 'Contracts',
           logScale: false
         },
-        colors: ['#a52714', '#097138']
+        colors: ['#3c84dc']
       };
 
       var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
