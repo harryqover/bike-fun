@@ -294,7 +294,9 @@ function getstatistics(start,end){
       if (data == "not authorized"){
         logout();
       } else {
-        var allHTML = '<div class="allKpis"><div class="reportingKpi"><h3>New contracts</h3><p>'+data.kpi.kpis.EUR.nbr_create+'</p></div><div class="reportingKpi"><h3>Canceled contracts</h3><p>'+data.kpi.kpis.EUR.nbr_cancel+'</p></div><div class="reportingKpi"><h3>Total commission</h3><p>'+data.kpi.kpis.EUR.tot_commission+'</p></div></div><div id="chart_div"></div>';
+        var css = '<style>.allKpis {border-radius: 5px;background-color: #f5f8fd;padding: 30px 25px;display: flex;}.reportingKpi>p {font-size: 50px;margin-top: 20px;}.reportingKpi {margin: 20px;width: 30%;}</style>';
+        $('head').append(css);
+        var allHTML = '<div class="allKpis"><div class="reportingKpi"><h5>New contracts</h5><p>'+data.kpi.kpis.EUR.nbr_create+'</p></div><div class="reportingKpi"><h5>Canceled contracts</h5><p>'+data.kpi.kpis.EUR.nbr_cancel+'</p></div><div class="reportingKpi"><h5>Total commission</h5><p>'+data.kpi.kpis.EUR.tot_commission+'</p></div></div><div id="chart_div"></div>';
         $(".block-in-content-platform").html(allHTML);
 
         /*START GOOGLE*/
