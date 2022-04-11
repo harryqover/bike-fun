@@ -1,4 +1,4 @@
-  console.warn("2022-03-16 0947");
+  console.warn("2022-04-11 1626");
   $(".loading").hide();
   $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
