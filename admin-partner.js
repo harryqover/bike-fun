@@ -13,7 +13,7 @@
   } else {
     $(".login-container").show();
     $(".form-check-validity-voucher,#nav").hide();
-    window.location.href = 'https://bike-a5adfd.webflow.io/login-partner';
+    window.location.href = 'https://bike.qoverme.com/login-partner';
   }
 
 
