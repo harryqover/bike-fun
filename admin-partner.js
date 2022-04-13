@@ -1,4 +1,4 @@
-  console.warn("2022-04-13 0835");
+  console.warn("2022-04-13 0845");
   $(".loading").hide();
   $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -266,6 +266,8 @@ function testStat(){
   getstatistics("2022-03-01","2022-03-31");
 }
 $('body').append('<button onclick="testStat();" class="btnPink">stat</button>');
+$('body').append('<button onclick="showTraining();" class="btnPink">Training</button>');
+
 
 function getstatistics(start,end){
     $(".loading").show();
@@ -372,7 +374,3 @@ function downloadCsv() {
 
   link.click(); // This will download the data file named "my_data.csv".
 }
-/*
-
-
-*/
