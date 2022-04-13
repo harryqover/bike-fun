@@ -1,4 +1,4 @@
-  console.warn("2022-04-13 0826");
+  console.warn("2022-04-13 0832");
   $(".loading").hide();
   $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -307,6 +307,7 @@ function getstatistics(start,end){
         var dateInput = '<div class="formDateInput"><label for="start">Start date:</label><input type="date" id="start" value="2022-01-01" min="2020-01-01" max="2030-12-31"><label for="end">End date:</label><input type="date" id="end" value="2022-03-31" min="2020-01-01" max="2030-12-31"><br><br><button onclick="getStatFromInput();" class="btnPink">Search</button></div>';
         $(".block-in-content-platform").prepend(dateInput);
         window.bdxRows = JSON.parse(data.bdx.data.EUR);
+        bdxRows = [["Reference","Variant","Type","Start","End","Promocode","Commission %","Net premium","Commission"]].concat(bdxRows)
         var csvDownloadHtml = '<button onclick="downloadCsv();" class="btnPink">Download CSV</button>';
         $(".block-in-content-platform").append(csvDownloadHtml);
 
