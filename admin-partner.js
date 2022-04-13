@@ -312,7 +312,7 @@ function getstatistics(start,end){
         var ttlcommission = data.kpi.kpis.EUR.tot_commission;
         var allHTML = '<div class="allKpis"><div class="reportingKpi"><h5>New contracts</h5><p>'+data.kpi.kpis.EUR.nbr_create+'</p></div><div class="reportingKpi"><h5>Canceled contracts</h5><p>'+data.kpi.kpis.EUR.nbr_cancel+'</p></div><div class="reportingKpi"><h5>Total commission</h5><p>'+ttlcommission.toFixed(2)+'</p></div></div><div id="chart_div"></div>';
         $(".block-in-content-platform").html(allHTML);
-        var dateInput = '<div class="formDateInput"><label for="start">Start date:</label><input type="date" id="start" value="2022-01-01" min="2020-01-01" max="2030-12-31"><label for="end">End date:</label><input type="date" id="end" value="2022-03-31" min="2020-01-01" max="2030-12-31"><br><br><button onclick="getStatFromInput();" class="btnPink">Search</button></div>';
+        var dateInput = '<div class="formDateInput"><input type="date" id="start" value="2022-01-01" min="2020-01-01" max="2030-12-31"><input type="date" id="end" value="2022-03-31" min="2020-01-01" max="2030-12-31"><br><br><button onclick="getStatFromInput();" class="btnPink">Search</button></div>';
         $(".block-in-content-platform").prepend(dateInput);
         window.bdxRows = JSON.parse(data.bdx.data.EUR);
         bdxRows = [["Reference","Variant","Type","Start","End","Promocode","Commission %","Net premium","Commission"]].concat(bdxRows)
@@ -353,8 +353,6 @@ function drawLogScales() {
     });
 
   }
-
-//getstatistics("2022-01-01","2022-03-31");
 
 function downloadCsv() {
   //const rows = JSON.parse(payload.payload.bdx.data.EUR);
