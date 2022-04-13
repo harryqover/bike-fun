@@ -308,7 +308,7 @@ function getstatistics(start,end){
         $(".block-in-content-platform").prepend(dateInput);
         window.bdxRows = JSON.parse(data.bdx.data.EUR);
         var csvDownloadHtml = '<button onclick="downloadCsv();" class="btnPink">Download CSV</button>';
-        $(".block-in-content-platform").apend(csvDownloadHtml);
+        $(".block-in-content-platform").append(csvDownloadHtml);
 
         /*START GOOGLE*/
           google.charts.load('current', {packages: ['corechart', 'line']});
