@@ -262,6 +262,11 @@ function getStatFromInput(){
   getstatistics(start,end);
 }
 
+function testStat(){
+  getstatistics("2022-03-01","2022-03-31");
+}
+$('body').append('<button onclick="testStat();" class="btnPink">stat</button>');
+
 function getstatistics(start,end){
     $(".loading").show();
     $(".hide-when-loading").hide();
