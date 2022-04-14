@@ -332,6 +332,8 @@ function getstatistics(start,end){
         bdxRows = [["Reference","Variant","Type","Start","End","Promocode","Commission %","Net premium","Commission"]].concat(bdxRows)
         var csvDownloadHtml = '<button onclick="downloadCsv();" class="btnPink">Download CSV</button>';
         $(".block-in-content-platform").append(csvDownloadHtml);
+        $("#start").val(start);
+        $("#end").val(end);
 
         /*START GOOGLE*/
           google.charts.load('current', {packages: ['corechart', 'line']});
