@@ -325,7 +325,7 @@ google.charts.setOnLoadCallback(drawLogScales);
 
 function drawLogScales() {
       var data = new google.visualization.DataTable();
-      data.addColumn('number', 'Date');
+      data.addColumn('date', 'Date');
       data.addColumn('number', 'Contracts');
       data.addRows(graph);
 
