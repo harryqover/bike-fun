@@ -1,4 +1,4 @@
-  console.warn("2022-04-14 0700");
+  console.warn("2022-04-14 0709");
   $(".loading").hide();
   $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -303,7 +303,13 @@ function getstatistics(start,end){
         console.log(data.kpi.kpis.EUR);
         console.log(data.graph.data.EUR);
         var graph = JSON.parse(data.graph.data.EUR);
-        console.log(graph);
+        var newGraph = [];
+        graph.forEach(myFunction);
+        function myFunction(value) {
+          newGraph.push([new Date(value[0]),value[1]]);
+        }
+
+        console.log(newGraph);
       if (data == "not authorized"){
         logout();
       } else {
@@ -327,7 +333,7 @@ function drawLogScales() {
       var data = new google.visualization.DataTable();
       data.addColumn('date', 'Date');
       data.addColumn('number', 'Contracts');
-      data.addRows(graph);
+      data.addRows(newGraph);
 
       var options = {
         hAxis: {
