@@ -230,7 +230,7 @@ function showGeneralInfo(){
   $(".hide-when-loading").hide();
   //$(".form-check-validity-voucher").hide();
   $(".title-platform, .breadcrumb-here").text("General information");
-  var allHTML = '<div class="generalInfoContent"><h3>Welcome to our general info page</h3><p>In this admin you can redeem a voucher and see all vouchers used.</p>'+htmlVoucherSearchInput+'</div>';
+  var allHTML = '<div class="generalInfoContent"><h3>Welcome to our general info page</h3><p></p></div>';
   $(".block-in-content-platform").html(allHTML);
   $(".hide-when-loading").show();
   $(".loading").hide();
