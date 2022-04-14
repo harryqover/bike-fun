@@ -262,10 +262,18 @@ function getStatFromInput(){
   getstatistics(start,end);
 }
 
-function testStat(){
-  getstatistics("2022-03-01","2022-03-31");
+function showStat(){
+  var dateToday = new Date();
+  dateToday.setDate(dateToday.getDate() - 1);
+  dateToday = dateToday.toISOString().split('T')[0];
+
+  var thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 31);
+  thirtyDaysAgo = thirtyDaysAgo.toISOString().split('T')[0];
+  
+  getstatistics(thirtyDaysAgo,dateToday);
 }
-$('body').append('<button onclick="testStat();" class="btnPink">stat</button>');
+$('body').append('<button onclick="showStat();" class="btnPink">stat</button>');
 $('body').append('<button onclick="showTraining();" class="btnPink">Training</button>');
 
 
@@ -336,6 +344,7 @@ function drawLogScales() {
       data.addRows(newGraph);
 
       var options = {
+        title: 'Accumulated contracts',
         hAxis: {
           title: 'Date',
           format: 'd/M/yy',
