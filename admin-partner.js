@@ -338,10 +338,14 @@ function drawLogScales() {
       var options = {
         hAxis: {
           title: 'Date',
-          logScale: true
+          format: 'd/M/yy',
+          gridlines: {count: 15},
+          logScale: false
         },
         vAxis: {
           title: 'Contracts',
+          minValue: 0,
+          gridlines: {count: 15},
           logScale: false
         },
         colors: ['#3c84dc']
