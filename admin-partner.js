@@ -1,4 +1,4 @@
-  console.warn("2022-04-14 0743");
+  console.warn("2022-04-15 1444");
   $(".loading").hide();
   $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -250,7 +250,11 @@ function showTraining() {
   $(".loading").show();
   $(".hide-when-loading").hide();
   $(".title-platform, .breadcrumb-here").text("Training");
-  var allHTML = '<div id="tolstoy-container" style="line-height:0;overflow:hidden;height:100%;width:100%;text-align:center"><div class="blockvideo"><h4>Les arguments de vente</h4><iframe id="tolstoy" src="https://player.gotolstoy.com/0dhgsac8w95ew?host"style="width:100%;height:220px;max-width:270px"scrolling="no" frameborder="0" allow="autoplay *; clipboard-write *;camera *; microphone *; encrypted-media *; fullscreen *; display-capture *;"></iframe></div><div class="blockvideo"><h4>Les couvertures</h4><iframe id="tolstoy" src="https://player.gotolstoy.com/riwz73y1f1bdl?host"style="width:100%;height:220px;max-width:270px"scrolling="no" frameborder="0" allow="autoplay *; clipboard-write *;camera *; microphone *; encrypted-media *; fullscreen *; display-capture *;"></iframe></div><script src="https://widget.gotolstoy.com/script.js" defer></script></div>';
+  var allHTML = '<div id="tolstoy-container" style="line-height:0;overflow:hidden;height:100%;width:100%;text-align:center">';
+  allHTML = allHTML+'<div class="blockvideo"><h4>Les arguments de vente</h4><a href="https://player.gotolstoy.com/0dhgsac8w95ew" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-arguments.gif"></a></div>';
+  allHTML = allHTML+'<div class="blockvideo"><h4>Les arguments de vente</h4><a href="https://player.gotolstoy.com/riwz73y1f1bdl" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-tandc.gif"></a></div>';
+  allHTML = allHTML+'<div class="blockvideo"><h4>Les arguments de vente</h4><a href="https://player.gotolstoy.com/fh5qyco7kmcxq" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-qovermeflow.gif"></a></div>';
+  allHTML = allHTML+'</div>';
   $(".block-in-content-platform").html(allHTML);
   $(".hide-when-loading").show();
   $(".loading").hide();
