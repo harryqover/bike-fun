@@ -254,7 +254,7 @@ function showTraining() {
   allHTML = allHTML+'<div class="blockvideo"><h4>Les arguments de vente</h4><a href="https://player.gotolstoy.com/0dhgsac8w95ew" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-arguments.gif"></a></div>';
   allHTML = allHTML+'<div class="blockvideo"><h4>Les couvertures</h4><a href="https://player.gotolstoy.com/riwz73y1f1bdl" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-tandc.gif"></a></div>';
   allHTML = allHTML+'<div class="blockvideo"><h4>Le flow d\'achat Qover</h4><a href="https://player.gotolstoy.com/fh5qyco7kmcxq" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-qovermeflow.gif"></a></div>';
-  allHTML = allHTML+'</div><style>.blockvideo > a > img {width: 260px;}</style>';
+  allHTML = allHTML+'</div><style>.blockvideo > a > img {width: 260px;}div#tolstoy-container {display: flex;}</style>';
   $(".block-in-content-platform").html(allHTML);
   $(".hide-when-loading").show();
   $(".loading").hide();
