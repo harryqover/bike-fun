@@ -229,8 +229,8 @@ function showGeneralInfo(){
   $(".loading").show();
   $(".hide-when-loading").hide();
   //$(".form-check-validity-voucher").hide();
-  $(".title-platform, .breadcrumb-here").text("General information");
-  var allHTML = '<div class="generalInfoContent"><h3>Welcome to our general info page</h3><p></p></div>';
+  $(".title-platform, .breadcrumb-here").text("Bienvenue");
+  var allHTML = '<div class="generalInfoContent"><h3>Bienvenue</h3><p>Bienvenue sur votre espace partenaire. Utilisez le menu pour suivre un training ou vérifier vos ventes d\'assurance.</p></div>';
   $(".block-in-content-platform").html(allHTML);
   $(".hide-when-loading").show();
   $(".loading").hide();
@@ -239,7 +239,7 @@ function showGeneralInfo(){
 function showPOSRequest(){
   $(".loading").show();
   $(".hide-when-loading").hide();
-  $(".title-platform, .breadcrumb-here").text("Request marketing material");
+  $(".title-platform, .breadcrumb-here").text("Commande de PLV");
   var allHTML = '<div data-paperform-id="qover-me-pos-material-request"></div><script>(function() {var script = document.createElement("script"); script.src = "https://paperform.co/__embed.min.js"; document.body.appendChild(script); })()</script>';
   $(".block-in-content-platform").html(allHTML);
   $(".hide-when-loading").show();
@@ -249,7 +249,7 @@ function showPOSRequest(){
 function showTraining() {
   $(".loading").show();
   $(".hide-when-loading").hide();
-  $(".title-platform, .breadcrumb-here").text("Training");
+  $(".title-platform, .breadcrumb-here").text("Formation");
   var allHTML = '<div id="tolstoy-container" style="line-height:0;overflow:hidden;height:100%;width:100%;text-align:center">';
   allHTML = allHTML+'<div class="blockvideo"><h4>Les arguments de vente</h4><a href="https://player.gotolstoy.com/0dhgsac8w95ew" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-arguments.gif"></a></div>';
   allHTML = allHTML+'<div class="blockvideo"><h4>Les couvertures</h4><a href="https://player.gotolstoy.com/riwz73y1f1bdl" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-tandc.gif"></a></div>';
@@ -281,7 +281,7 @@ function showStat(){
 function getstatistics(start,end){
     $(".loading").show();
     $(".hide-when-loading").hide();
-    $(".title-platform, .breadcrumb-here").text("Sales dashboard");
+    $(".title-platform, .breadcrumb-here").text("Tablea de bord des ventes");
     var allHTML = '<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>';
     $(".block-in-content-platform").html(allHTML);
 
@@ -325,13 +325,13 @@ function getstatistics(start,end){
         var css = '<style>.allKpis {border-radius: 5px;background-color: #f5f8fd;padding: 30px 25px;display: flex;}.reportingKpi>p {font-size: 50px;margin-top: 20px;}.reportingKpi {margin: 20px;width: 30%;} .btnPink {position: relative;z-index: 1;height: 40px;/* margin-top: 40px; */ padding: 10px 20px;    border-radius: 60px;    background-color: #eb4f87;    -webkit-transform: translate(0,0);    -ms-transform: translate(0,0);    transform: translate(0,0);    -webkit-transition: .2s;    transition: .2s;    font-family: Circularstd,sans-serif;    font-size: 12px;    color: white;font-weight: 700;width: 150px;}input#end, input#start {display: block;    width: 170px;    height: 38px;    padding: 8px 6px 8px 15px;    margin-bottom: 10px;    font-size: 14px;    color: #171C34;    vertical-align: middle;    background-color: #fff;    border: 1px solid #f8f8f8;}.formDateInput {display: inline-flex;border-radius: 5px;margin-bottom: 20px;padding: 20px;border: 1px solid #f5f8fd;}input#start,input#end {margin-right: 15px;}</style>';
         $('head').append(css);
         var ttlcommission = data.kpi.kpis.EUR.tot_commission;
-        var allHTML = '<div class="allKpis"><div class="reportingKpi"><h5>New contracts</h5><p>'+data.kpi.kpis.EUR.nbr_create+'</p></div><div class="reportingKpi"><h5>Canceled contracts</h5><p>'+data.kpi.kpis.EUR.nbr_cancel+'</p></div><div class="reportingKpi"><h5>Total commission</h5><p>'+ttlcommission.toFixed(2)+'</p></div></div><div id="chart_div"></div>';
+        var allHTML = '<div class="allKpis"><div class="reportingKpi"><h5>Nouveaux contrats</h5><p>'+data.kpi.kpis.EUR.nbr_create+'</p></div><div class="reportingKpi"><h5>Contrats annulés</h5><p>'+data.kpi.kpis.EUR.nbr_cancel+'</p></div><div class="reportingKpi"><h5>Commission totale</h5><p>'+ttlcommission.toFixed(2)+'</p></div></div><div id="chart_div"></div>';
         $(".block-in-content-platform").html(allHTML);
-        var dateInput = '<div class="formDateInput"><input type="date" id="start" value="2022-01-01" min="2020-01-01" max="2030-12-31"><input type="date" id="end" value="2022-03-31" min="2020-01-01" max="2030-12-31"><br><br><button onclick="getStatFromInput();" class="btnPink">Search</button></div>';
+        var dateInput = '<div class="formDateInput"><input type="date" id="start" value="2022-01-01" min="2020-01-01" max="2030-12-31"><input type="date" id="end" value="2022-03-31" min="2020-01-01" max="2030-12-31"><br><br><button onclick="getStatFromInput();" class="btnPink">Recherche</button></div>';
         $(".block-in-content-platform").prepend(dateInput);
         window.bdxRows = JSON.parse(data.bdx.data.EUR);
         bdxRows = [["Reference","Variant","Type","Start","End","Promocode","Commission %","Net premium","Commission"]].concat(bdxRows)
-        var csvDownloadHtml = '<button onclick="downloadCsv();" class="btnPink">Download CSV</button>';
+        var csvDownloadHtml = '<button onclick="downloadCsv();" class="btnPink">Télécharger bordereau</button>';
         $(".block-in-content-platform").append(csvDownloadHtml);
         $("#start").val(start);
         $("#end").val(end);
@@ -343,18 +343,18 @@ google.charts.setOnLoadCallback(drawLogScales);
 function drawLogScales() {
       var data = new google.visualization.DataTable();
       data.addColumn('date', 'Date');
-      data.addColumn('number', 'Contracts');
+      data.addColumn('number', 'Contrats');
       data.addRows(newGraph);
 
       var options = {
-        title: 'Accumulated contracts',
+        title: 'Contrats cumulés',
         hAxis: {
           title: 'Date',
           format: 'd/M/yy',
           logScale: false
         },
         vAxis: {
-          title: 'Contracts',
+          title: 'Contrats',
           minValue: 0,
           logScale: false
         },
@@ -387,7 +387,7 @@ function downloadCsv() {
   var encodedUri = encodeURI(csvContent);
   var link = document.createElement("a");
   link.setAttribute("href", encodedUri);
-  link.setAttribute("download", "my_data.csv");
+  link.setAttribute("download", "qover_bordereau.csv");
   document.body.appendChild(link); // Required for FF
 
   link.click(); // This will download the data file named "my_data.csv".
