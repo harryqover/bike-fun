@@ -325,13 +325,13 @@ function getstatistics(start,end){
         var css = '<style>.allKpis {border-radius: 5px;background-color: #f5f8fd;padding: 30px 25px;display: flex;}.reportingKpi>p {font-size: 50px;margin-top: 20px;}.reportingKpi {margin: 20px;width: 30%;} .btnPink {position: relative;z-index: 1;height: 40px;/* margin-top: 40px; */ padding: 10px 20px;    border-radius: 60px;    background-color: #eb4f87;    -webkit-transform: translate(0,0);    -ms-transform: translate(0,0);    transform: translate(0,0);    -webkit-transition: .2s;    transition: .2s;    font-family: Circularstd,sans-serif;    font-size: 12px;    color: white;font-weight: 700;width: 150px;}input#end, input#start {display: block;    width: 170px;    height: 38px;    padding: 8px 6px 8px 15px;    margin-bottom: 10px;    font-size: 14px;    color: #171C34;    vertical-align: middle;    background-color: #fff;    border: 1px solid #f8f8f8;}.formDateInput {display: inline-flex;border-radius: 5px;margin-bottom: 20px;padding: 20px;border: 1px solid #f5f8fd;}input#start,input#end {margin-right: 15px;}</style>';
         $('head').append(css);
         var ttlcommission = data.kpi.kpis.EUR.tot_commission;
-        var allHTML = '<div class="allKpis"><div class="reportingKpi"><h5>Nouveaux contrats</h5><p>'+data.kpi.kpis.EUR.nbr_create+'</p></div><div class="reportingKpi"><h5>Contrats annulés</h5><p>'+data.kpi.kpis.EUR.nbr_cancel+'</p></div><div class="reportingKpi"><h5>Commission totale</h5><p>'+ttlcommission.toFixed(2)+'</p></div></div><div id="chart_div"></div>';
+        var allHTML = '<div class="allKpis"><div class="reportingKpi"><h5>Nouveaux contrats</h5><p>'+data.kpi.kpis.EUR.nbr_create+'</p></div><div class="reportingKpi"><h5>Contrats annulés</h5><p>'+data.kpi.kpis.EUR.nbr_cancel+'</p></div><div class="reportingKpi"><h5>Commission totale</h5><p>€'+ttlcommission.toFixed(2)+'</p></div></div><div id="chart_div"></div>';
         $(".block-in-content-platform").html(allHTML);
         var dateInput = '<div class="formDateInput"><input type="date" id="start" value="2022-01-01" min="2020-01-01" max="2030-12-31"><input type="date" id="end" value="2022-03-31" min="2020-01-01" max="2030-12-31"><br><br><button onclick="getStatFromInput();" class="btnPink">Recherche</button></div>';
         $(".block-in-content-platform").prepend(dateInput);
         window.bdxRows = JSON.parse(data.bdx.data.EUR);
         bdxRows = [["Reference","Variant","Type","Start","End","Promocode","Commission %","Net premium","Commission"]].concat(bdxRows)
-        var csvDownloadHtml = '<button onclick="downloadCsv();" class="btnPink">Télécharger bordereau</button>';
+        var csvDownloadHtml = '<button onclick="downloadCsv();" class="btnPink">Télécharger</button>';
         $(".block-in-content-platform").append(csvDownloadHtml);
         $("#start").val(start);
         $("#end").val(end);
