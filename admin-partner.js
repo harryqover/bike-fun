@@ -281,7 +281,7 @@ function showStat(){
 function getstatistics(start,end){
     $(".loading").show();
     $(".hide-when-loading").hide();
-    $(".title-platform, .breadcrumb-here").text("Tablea de bord des ventes");
+    $(".title-platform, .breadcrumb-here").text("Tableau de bord des ventes");
     var allHTML = '<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>';
     $(".block-in-content-platform").html(allHTML);
 
