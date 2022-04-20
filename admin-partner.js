@@ -277,9 +277,6 @@ function showStat(){
   
   getstatistics(thirtyDaysAgo,dateToday);
 }
-$('body').append('<button onclick="showStat();" class="btnPink">stat</button>');
-$('body').append('<button onclick="showTraining();" class="btnPink">Training</button>');
-
 
 function getstatistics(start,end){
     $(".loading").show();
