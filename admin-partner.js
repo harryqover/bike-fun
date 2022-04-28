@@ -251,7 +251,7 @@ function showTraining() {
   $(".hide-when-loading").hide();
   $(".title-platform, .breadcrumb-here").text("Formation");
   var allHTML = '<div id="tolstoy-container" style="line-height:0;overflow:hidden;height:100%;width:100%;text-align:center">';
-  allHTML = allHTML+'<div class="blockvideo"><h4>Les arguments de vente</h4><a href="https://player.gotolstoy.com/0dhgsac8w95ew" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-arguments.gif"></a></div>';
+  //allHTML = allHTML+'<div class="blockvideo"><h4>Les arguments de vente</h4><a href="https://player.gotolstoy.com/0dhgsac8w95ew" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-arguments.gif"></a></div>';
   allHTML = allHTML+'<div class="blockvideo"><h4>Les couvertures</h4><a href="https://player.gotolstoy.com/riwz73y1f1bdl" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-tandc.gif"></a></div>';
   allHTML = allHTML+'<div class="blockvideo"><h4>Le flow d\'achat Qover</h4><a href="https://player.gotolstoy.com/fh5qyco7kmcxq" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-qovermeflow.gif"></a></div>';
   allHTML = allHTML+'</div><style>.blockvideo > a > img {width: 260px;}div#tolstoy-container {display: flex;}.blockvideo {margin: 10px;}</style>';
