@@ -1,5 +1,5 @@
 var test = getParameterByName("test");
-console.warn("v3");
+console.warn("v4");
 
 if(test == "modal"){
   var qoverfor = getCookie("qoverfor");
