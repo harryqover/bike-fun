@@ -1,7 +1,7 @@
-var toRelease = true;
+var test = getParameterByName("test");
 console.warn("v3");
 
-if(toRelease){
+if(test == "modal"){
   var qoverfor = getCookie("qoverfor");
 if(qoverfor != "business"){
     var fancyboxCode = '<script async="" src="https://storage.googleapis.com/qover-assets/scripts/fancybox.js"></script><link rel="stylesheet" type="text/css" href="https://storage.googleapis.com/qover-assets/scripts/fancybox.css">'
