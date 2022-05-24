@@ -1,4 +1,5 @@
 var toRelease = true;
+console.warn("v3");
 
 if(toRelease){
   var qoverfor = getCookie("qoverfor");
