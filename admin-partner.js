@@ -330,7 +330,7 @@ function getstatistics(start, end) {
               var ttlcommission = data.kpi.kpis.EUR.tot_commission;
               var allHTML = '<div class="allKpis"><div class="reportingKpi"><h5>Nouveaux contrats</h5><p>' + data.kpi.kpis.EUR.nbr_create + '</p></div><div class="reportingKpi"><h5>Contrats annulés</h5><p>' + data.kpi.kpis.EUR.nbr_cancel + '</p></div><div class="reportingKpi"><h5>Commission totale</h5><p>€' + ttlcommission.toFixed(2) + '</p></div></div><div id="chart_div"></div>';
               $(".block-in-content-platform").html(allHTML);
-              var dateInput = '<div class="formDateInput"><input type="date" id="start" value="2022-01-01" min="2020-01-01" max="2030-12-31"><input type="date" id="end" value="2022-03-31" min="2020-01-01" max="2030-12-31"><br><br><button onclick="getStatFromInput();" class="btnPink">Recherche</button></div>';
+              var dateInput = '<div class="formDateInput"><input type="date" id="start" value="2022-01-01" min="2020-01-01" max="2030-12-31"><input type="date" id="end" value="2022-05-30" min="2020-01-01" max="2030-12-31"><br><br><button onclick="getStatFromInput();" class="btnPink">Recherche</button></div>';
               $(".block-in-content-platform").prepend(dateInput);
               window.bdxRows = JSON.parse(data.bdx.data.EUR);
               bdxRows = [
@@ -384,7 +384,7 @@ function getstatistics(start, end) {
           $('head').append(css);
           var allHTML = '<div class="allKpis"><div class="reportingKpi"><h5>Nouveaux contrats</h5><p>0</p></div><div class="reportingKpi"><h5>Contrats annulés</h5><p>0</p></div><div class="reportingKpi"><h5>Commission totale</h5><p>€ 0.00</p></div></div><div id="chart_div"></div>';
           $(".block-in-content-platform").html(allHTML);
-          var dateInput = '<div class="formDateInput"><input type="date" id="start" value="2022-01-01" min="2020-01-01" max="2030-12-31"><input type="date" id="end" value="2022-03-31" min="2020-01-01" max="2030-12-31"><br><br><button onclick="getStatFromInput();" class="btnPink">Recherche</button></div>';
+          var dateInput = '<div class="formDateInput"><input type="date" id="start" value="2022-01-01" min="2020-01-01" max="2030-12-31"><input type="date" id="end" value="2022-05-30" min="2020-01-01" max="2030-12-31"><br><br><button onclick="getStatFromInput();" class="btnPink">Recherche</button></div>';
           $(".block-in-content-platform").prepend(dateInput);
           $(".loading").hide();
           $(".hide-when-loading").show();
