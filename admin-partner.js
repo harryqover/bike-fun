@@ -285,6 +285,11 @@ function getstatistics(start, end) {
     $(".title-platform, .breadcrumb-here").text("Tableau de bord des ventes");
     var allHTML = '<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>';
     $(".block-in-content-platform").html(allHTML);
+    let todayX = new Date();
+    todayX.toISOString().split('T')[0];
+    let minDate = new Date();
+    minDate.setMonth(minDate.getMonth() - 3);
+    minDate.toISOString().split('T')[0];
 
     var username = getCookie("username");
     var authorization = getCookie("authvoucher");
@@ -308,11 +313,6 @@ function getstatistics(start, end) {
     $.ajax(settings).done(function(response) {
         var data = response.payload;
         //var datajson = JSON.parse(data);
-        let todayX = new Date();
-        todayX.toISOString().split('T')[0];
-        let minDate = new Date()
-        minDate.setMonth(minDate.getMonth() - 3);
-        minDate.toISOString().split('T')[0]
 
         console.warn(data);
         console.log(data.kpi.kpis);
