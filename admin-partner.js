@@ -288,7 +288,7 @@ function getstatistics(start, end) {
     let todayX = new Date();
     todayX.toISOString().split('T')[0];
     let minDate = new Date();
-    minDate.setMonth(minDate.getMonth() - 3);
+    minDate.setMonth(minDate.getMonth() - 12);
     minDate.toISOString().split('T')[0];
 
     var username = getCookie("username");
