@@ -1,4 +1,4 @@
-console.warn("2022-05-28 1119");
+console.warn("2022-05-28 1120");
 $(".loading").hide();
 $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -386,6 +386,9 @@ function getstatistics(start, end) {
           $(".block-in-content-platform").html(allHTML);
           var dateInput = '<div class="formDateInput"><input type="date" id="start" value="2022-01-01" min="2020-01-01" max="2030-12-31"><input type="date" id="end" value="2022-03-31" min="2020-01-01" max="2030-12-31"><br><br><button onclick="getStatFromInput();" class="btnPink">Recherche</button></div>';
           $(".block-in-content-platform").prepend(dateInput);
+          $(".loading").hide();
+          $(".hide-when-loading").show();
+          $(".form-check-validity-voucher").show();
         }
         
     });
