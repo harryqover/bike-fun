@@ -1,4 +1,4 @@
-console.warn("2022-05-28 1132");
+console.warn("2022-06-03 1621");
 $(".loading").hide();
 $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -255,6 +255,7 @@ function showTraining() {
     //allHTML = allHTML+'<div class="blockvideo"><h4>Les arguments de vente</h4><a href="https://player.gotolstoy.com/0dhgsac8w95ew" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-arguments.gif"></a></div>';
     allHTML = allHTML + '<div class="blockvideo"><h4>Les couvertures</h4><a href="https://player.gotolstoy.com/riwz73y1f1bdl" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-tandc.gif"></a></div>';
     allHTML = allHTML + '<div class="blockvideo"><h4>Le flow d\'achat Qover</h4><a href="https://player.gotolstoy.com/fh5qyco7kmcxq" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-qovermeflow.gif"></a></div>';
+    allHTML = allHTML + '<div class="blockvideo"><h4>Futurosoft/G8</h4><a href="https://player.gotolstoy.com/qrtyq0bd0i8kp" target="_blank"><img src="https://storage.googleapis.com/qover-assets/icons/tolstoy-futurosoft.gif"></a></div>';
     allHTML = allHTML + '</div><style>.blockvideo > a > img {width: 260px;}div#tolstoy-container {display: flex;}.blockvideo {margin: 10px;}</style>';
     $(".block-in-content-platform").html(allHTML);
     $(".hide-when-loading").show();
