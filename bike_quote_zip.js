@@ -121,7 +121,7 @@ function getDraft(payload, reason) {
     $(".error").hide();
     $(".successapiresponse").hide();
 
-    var postUrl = "https://app.qoverme.com/api/bike/v1/drafts?apikey=" + __QOVER_API_KEY__;
+    var postUrl = "https://app.qover.com/api/bike/v1/drafts?apikey=" + __QOVER_API_KEY__;
 
     if(environement == "sbx") {
         postUrl = "https://appqoverme-ui.sbx.qover.io/api/bike/v1/drafts?apikey=" + __QOVER_API_KEY__;
@@ -161,8 +161,8 @@ function getDraft(payload, reason) {
                     }
                 });
                 document.cookie = "draftId=" + window.draftid + "; expires=" +now.toGMTString() + "; path=/; domain=.webflow.io";
-                document.cookie = "draftId=" + window.draftid + "; expires=" +now.toGMTString() + "; path=/; domain=.qoverme.com";
-                var urlPolicyholder = 'https://app.qoverme.com/bike/policyholder?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
+                document.cookie = "draftId=" + window.draftid + "; expires=" +now.toGMTString() + "; path=/; domain=.qover.com";
+                var urlPolicyholder = 'https://app.qover.com/bike/policyholder?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
                 if (environement == "sbx"){
                     urlPolicyholder = 'https://appqoverme-ui.sbx.qover.io/bike/policyholder?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
                 }
@@ -250,7 +250,7 @@ function getPrice() {
             'eventLabel': 'SPEEDPEDELEC'
           });
     } else {
-        var urlGetPrice = 'https://app.qoverme.com/api/bike/v1/price-info?apikey=' + __QOVER_API_KEY__ + '&iecb=1592535798477&country=' + country + '&type=' + type + '&value=' + value + '&antiTheftMeasure=' + gpstracker + '&zip=' + zipcode + '&discountCodes=' + window.promocode;
+        var urlGetPrice = 'https://app.qover.com/api/bike/v1/price-info?apikey=' + __QOVER_API_KEY__ + '&iecb=1592535798477&country=' + country + '&type=' + type + '&value=' + value + '&antiTheftMeasure=' + gpstracker + '&zip=' + zipcode + '&discountCodes=' + window.promocode;
         if(environement == "sbx"){
             urlGetPrice = 'https://appqoverme-ui.sbx.qover.io/api/bike/v1/price-info?apikey=' + __QOVER_API_KEY__ + '&iecb=1592535798477&country=' + country + '&type=' + type + '&value=' + value + '&antiTheftMeasure=' + gpstracker + '&zip=' + zipcode + '&discountCodes=' + window.promocode;
         }
@@ -318,7 +318,7 @@ function getPrice() {
                     $(".discount").show(250);
                 } else if (window.promocode != "") {
                     if(window.promocode.substring(0,5) == "GIANT"){
-                      window.location.href = "https://app.qoverme.com/bike/quote?locale=fr-FR&key=pk_29D66CCD9AE08A1B59C9&promocode="+window.promocode;
+                      window.location.href = "https://app.qover.com/bike/quote?locale=fr-FR&key=pk_29D66CCD9AE08A1B59C9&promocode="+window.promocode;
                       $(".error").text(window.text.promocodeNotValid);
                     } else {
                       $(".error").text(window.text.promocodeNotValid);

@@ -13,7 +13,7 @@ if (getCookie("authvoucher") != "") {
 } else {
     $(".login-container").show();
     $(".form-check-validity-voucher,#nav").hide();
-    window.location.href = 'https://bike.qoverme.com/login-partner';
+    window.location.href = 'https://bike.qover.com/login-partner';
 }
 
 

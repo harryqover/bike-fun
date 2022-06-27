@@ -157,7 +157,7 @@ function getDraft(payload, reason) {
     $(".error").hide();
     $(".successapiresponse").hide();
 
-    var postUrl = "https://app.qoverme.com/api/bike/v1/drafts?apikey=" + __QOVER_API_KEY__;
+    var postUrl = "https://app.qover.com/api/bike/v1/drafts?apikey=" + __QOVER_API_KEY__;
     var environement = "prd";
 
     /*
@@ -200,9 +200,9 @@ function getDraft(payload, reason) {
                     }
                 });
                 document.cookie = "draftId=" + window.draftid + "; expires=" +now.toGMTString() + "; path=/; domain=.webflow.io";
-                document.cookie = "draftId=" + window.draftid + "; expires=" +now.toGMTString() + "; path=/; domain=.qoverme.com";
-                //var urlPolicyholder = 'https://app.qoverme.com/bike/policyholder?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
-                var urlPolicyholder = 'https://app.qoverme.com/bike/summary?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
+                document.cookie = "draftId=" + window.draftid + "; expires=" +now.toGMTString() + "; path=/; domain=.qover.com";
+                //var urlPolicyholder = 'https://app.qover.com/bike/policyholder?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
+                var urlPolicyholder = 'https://app.qover.com/bike/summary?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
                 if (environement == "sbx"){
                     urlPolicyholder = 'https://appqoverme-ui.sbx.qover.io/bike/policyholder?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
                 }

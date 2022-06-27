@@ -84,7 +84,7 @@ $.ajax(settings).done(function(response) {
     $("#voucher-status").text(response.payload.status);
     $(".hide-when-used").hide();
   }
-  var urlRedeem = "https://bike.qoverme.com/login-partner?voucher=" + response.payload.voucherCode;
+  var urlRedeem = "https://bike.qover.com/login-partner?voucher=" + response.payload.voucherCode;
   new QRCode(document.getElementById("qrcode"), {
     text: urlRedeem,
     width: 128,
