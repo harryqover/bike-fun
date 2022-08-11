@@ -241,7 +241,7 @@ function showPOSRequest() {
     $(".loading").show();
     $(".hide-when-loading").hide();
     $(".title-platform, .breadcrumb-here").text("Impression PLV");
-    var allHTML = '<div><p>Vous trouverez ci-dessous les liens pour télécharger les flyers</p><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_FR-FR.pdf">France (fr)</a><br><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_BE-FR.pdf">Belgique</a><br><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_BE-EN.pdf">Belgium</a><br><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_BE-NL.pdf">België</a><br><p>Nous travaillons avec Your Visual Here pour l\'impression des flyers.</p></div>';
+    var allHTML = '<div><p>Vous trouverez ci-dessous les liens pour télécharger les flyers et les faire imprimer.</p><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_FR-FR.pdf" target="_blank">France</a><br><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_BE-FR.pdf" target="_blank">Belgique</a><br><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_BE-EN.pdf" target="_blank">Belgium</a><br><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_BE-NL.pdf" target="_blank">België</a><br><p><em>Nous travaillons avec <a href="https://www.yourvisualhere.be/" target="_blank">Your Visual Here</a> pour l\'impression des flyers.</em></p></div>';
     $(".block-in-content-platform").html(allHTML);
     $(".hide-when-loading").show();
     $(".loading").hide();
