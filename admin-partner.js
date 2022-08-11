@@ -240,8 +240,8 @@ function showGeneralInfo() {
 function showPOSRequest() {
     $(".loading").show();
     $(".hide-when-loading").hide();
-    $(".title-platform, .breadcrumb-here").text("Commande de PLV");
-    var allHTML = '<div data-paperform-id="qover-me-pos-material-request"></div><script>(function() {var script = document.createElement("script"); script.src = "https://paperform.co/__embed.min.js"; document.body.appendChild(script); })()</script>';
+    $(".title-platform, .breadcrumb-here").text("Impression PLV");
+    var allHTML = '<div><p>Vous trouverez ci-dessous les liens pour télécharger les flyers</p><a href="xxx">xxx</a><br><p>Nous travaillons avec Your Visual Here pour l\'impression des flyers.</p></div>';
     $(".block-in-content-platform").html(allHTML);
     $(".hide-when-loading").show();
     $(".loading").hide();
