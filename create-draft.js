@@ -99,6 +99,7 @@ function createPayload(variant, reason) {
     window.payload.risk.model = decodedObject.mod;
     window.payload.risk.address.zip = decodedObject.zip;
     window.payload.risk.serialNumber = decodedObject.sn;
+    window.payload.risk.bikePurchaseDate = decodedObject.pdte;
     window.payload.policyholder.address.zip = decodedObject.zip;
     if(decodedObject.number){
         window.payload.policyholder.address.number = decodedObject.number;
