@@ -38,6 +38,10 @@ createPayload(variant, "redirect");
 function createPayload(variant, reason) {
     //$(".errorapiresponse").hide();
     //$(".successapiresponse").hide();
+    var startDate = new Date();
+    startDate.setDate(startDate.getDate() + 1);
+    startDate.toISOString().split('T')[0];
+
     window.payload = {
         "settings": {
             "language": ""
@@ -62,6 +66,7 @@ function createPayload(variant, reason) {
         "publicMetadata": [{"key": "version_bike_quote_JS","value": "redirect create draft 20220322"}],
         "metadata": []
     };
+    window.payload.startDate = startDate;
     window.payload.terms.damageDeductible = "DAMAGE_DEDUCTIBLE_"+decodedObject.dmgdeduc;
     window.payload.terms.theftDeductible = "THEFT_DEDUCTIBLE_"+decodedObject.thftdeduc;
     window.payload.settings.language = lang;
