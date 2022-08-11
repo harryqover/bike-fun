@@ -241,7 +241,7 @@ function showPOSRequest() {
     $(".loading").show();
     $(".hide-when-loading").hide();
     $(".title-platform, .breadcrumb-here").text("Impression PLV");
-    var allHTML = '<div><p>Vous trouverez ci-dessous les liens pour télécharger les flyers et les faire imprimer.</p><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_FR-FR.pdf" target="_blank">France</a><br><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_BE-FR.pdf" target="_blank">Belgique</a><br><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_BE-EN.pdf" target="_blank">Belgium</a><br><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_BE-NL.pdf" target="_blank">België</a><br><p><em>Nous travaillons avec <a href="https://www.yourvisualhere.be/" target="_blank">Your Visual Here</a> pour l\'impression des flyers.</em></p></div>';
+    var allHTML = '<div><p>Vous trouverez ci-dessous les liens pour télécharger les flyers et les faire imprimer.</p><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_FR-FR.pdf" target="_blank">France</a><br><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_BE-FR.pdf" target="_blank">Belgique</a><br><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_BE-EN.pdf" target="_blank">Belgium</a><br><a href="https://storage.googleapis.com/qover-assets/flyers/flyers_qover-bike_BE-NL.pdf" target="_blank">België</a><br><br><br><p><em>Nous travaillons avec <a href="https://www.yourvisualhere.be/" target="_blank">Your Visual Here</a> pour l\'impression des flyers.</em></p></div>';
     $(".block-in-content-platform").html(allHTML);
     $(".hide-when-loading").show();
     $(".loading").hide();
@@ -261,6 +261,18 @@ function showTraining() {
     $(".hide-when-loading").show();
     $(".loading").hide();
 }
+function showTraining2() {
+    $(".loading").show();
+    $(".hide-when-loading").hide();
+    $(".title-platform, .breadcrumb-here").text("Formation");
+    var allHTML = '<div id="tolstoy-container" style="line-height:0;overflow:hidden;height:100%;width:100%;text-align:center">';
+    allHTML = allHTML + '<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vTZE-Trc6QcG0WGnUudI3WaYc-hk8d4DI5LjIwPECaX9VzJ1WYCZQAqWGL8msLTMZJ7cqapeOV_n_g-/embed?start=true&loop=true&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>';
+    allHTML = allHTML + '</div>';
+    $(".block-in-content-platform").html(allHTML);
+    $(".hide-when-loading").show();
+    $(".loading").hide();
+}
+
 
 function getStatFromInput() {
     var start = $("#start").val();
