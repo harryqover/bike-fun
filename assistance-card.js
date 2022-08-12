@@ -28,6 +28,6 @@ if(contract){
 	$("[data-link='claim']").attr("href", "https://www.qover.com/claims?contract="+contract);	
 }
 
-if(!assistancePhone[country]){
+if(assistancePhone[country] == undefined){
 	$(".assistance").hide();
 }
