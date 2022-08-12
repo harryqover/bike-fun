@@ -1,4 +1,7 @@
-console.log("hello 1040");
+$(".assistance").hide();
+$("[data-phone='qover-text']").hide();
+$("[data-phone='qover-link']").hide();
+console.log("hello 1046");
 
 let country = getParameterByName("country");
 let contract = getParameterByName("contract");
@@ -31,9 +34,9 @@ let qoverPhone = {
 
 
 $("[data-phone='qover-text']").text(qoverPhone[country]);
-$("[data-phone='assistance-text']").text(assistancePhone[country]);
 $("[data-phone='qover-link']").attr("href", "tel:"+qoverPhone[country]);
-$("[data-phone='assistance-link']").attr("href", "tel:"+assistancePhone[country]);
+$("[data-phone='qover-text']").show();
+$("[data-phone='qover-link']").show();
 
 if(contract){
 	$("[data-link='claim']").attr("href", "https://www.qover.com/claims?contract="+contract);	
@@ -41,4 +44,8 @@ if(contract){
 
 if(assistancePhone[country] == undefined){
 	$(".assistance").hide();
+} else {
+	$("[data-phone='assistance-text']").text(assistancePhone[country]);
+	$("[data-phone='assistance-link']").attr("href", "tel:"+assistancePhone[country]);
+	$(".assistance").show();
 }
