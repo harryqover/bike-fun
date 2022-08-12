@@ -1,4 +1,4 @@
-console.log("hello");
+console.log("hello 1040");
 
 let country = getParameterByName("country");
 let contract = getParameterByName("contract");
