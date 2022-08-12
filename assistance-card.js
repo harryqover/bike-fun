@@ -3,18 +3,18 @@ $("[data-phone='qover-text']").hide();
 $("[data-phone='qover-link']").hide();
 console.log("hello 1046");
 
-let country = getParameterByName("country");
-let contract = getParameterByName("contract");
+var country = getParameterByName("country");
+var contract = getParameterByName("contract");
+var lang = getParameterByName("lang");
 
-
-let assistancePhone = {
+var assistancePhone = {
 	"BE" : "+32 2 541 92 01",
 	"FR" : "+33 9 78 46 61 24",
 	"DE" : "+49 800 589 39 21",
 	"NL" : "020 532 07 06"
 }
 
-let qoverPhone = {
+var qoverPhone = {
 	"BE" : "+32 2 541 92 01",
 	"FR" : "+33 9 78 46 61 24",
 	"DE" : "+49 800 589 39 21",
@@ -32,7 +32,6 @@ let qoverPhone = {
 	"IE" : "xxx"
 }
 
-
 $("[data-phone='qover-text']").text(qoverPhone[country]);
 $("[data-phone='qover-link']").attr("href", "tel:"+qoverPhone[country]);
 $("[data-phone='qover-text']").show();
@@ -49,3 +48,30 @@ if(assistancePhone[country] == undefined){
 	$("[data-phone='assistance-link']").attr("href", "tel:"+assistancePhone[country]);
 	$(".assistance").show();
 }
+
+if(lang !== undefined){
+	translateAll();
+}
+
+
+
+function translateAll(){
+      let xhrLocales = new XMLHttpRequest();
+      var content = "";
+      xhrLocales.open("get", "https://translations.qover.com/widget/" + lang + "-raw.json?refresh=007", true);
+      xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
+
+      xhrLocales.onreadystatechange = function() {
+        if (xhrLocales.readyState == 4) {
+          if (xhrLocales.status >= 200 && xhrLocales.status < 300 || xhrLocales.status == 304) {
+            content = JSON.parse(xhrLocales.responseText);
+            $( "[data-translation]" ).each(function( index ) {
+              $( this ).html(content[$( this ).data( "translation" )]);
+              var text = $( this ).html();
+            });
+          }
+        }
+      };
+      xhrLocales.send();
+
+  }
