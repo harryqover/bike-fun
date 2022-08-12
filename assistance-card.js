@@ -1,6 +1,7 @@
 console.log("hello");
 
 let country = getParameterByName("country");
+let contract = getParameterByName("contract");
 
 
 let assistancePhone = {
@@ -22,3 +23,11 @@ $("[data-phone='qover-text']").text(qoverPhone[country]);
 $("[data-phone='assistance-text']").text(assistancePhone[country]);
 $("[data-phone='qover-link']").attr("href", "tel:"+qoverPhone[country]);
 $("[data-phone='assistance-link']").attr("href", "tel:"+assistancePhone[country]);
+
+if(contract){
+	$("[data-link='claim']").attr("href", "https://www.qover.com/claims?contract="+contract);	
+}
+
+if(!assistancePhone[country]){
+	$(".assistance").hide();
+}
