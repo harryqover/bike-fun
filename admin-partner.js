@@ -461,15 +461,15 @@ function findInvoices() {
         if (data == "not authorized") {
             logout();
         } else {
-            /*var allHTML = "<table><tr><th>Invoice #</th><th>Code</th><th>Amount</th><th>Date</th><th>Invoice status</th><th>Used by</th></tr>";
+            var allHTML = "<table><tr><th>Invoice #</th><th>Amount</th><th>status</th><th>Date</th><th>Date</th><th>Date</th><th>Date</th></tr>";
 
             for (var i = 1; i < data.length; i++) {
                 console.log(data[i].code);
-                var codeUsed = data[i].code;
-                var codeUsed5Characters = "xxxx-xxxx-xxxx" + codeUsed.substr(codeUsed.length - 5);
-                var dateNotFormatted = new Date(data[i].dateUsed);
-                var dateFormatted = dateNotFormatted.toLocaleDateString("en-BE");
-                var htmllinevoucher = '<tr class="voucher-line"><td>' + data[i].purchasedInvoice + '</td><td>' + codeUsed5Characters + '</td><td>' + data[i].currency + ' ' + data[i].valueUsed + '</td><td>' + dateFormatted + '</td><td>' + data[i].invoiceStatus + '</td><td>' + data[i].usedby + '</td></tr>';
+                //var codeUsed = data[i].code;
+                //var codeUsed5Characters = "xxxx-xxxx-xxxx" + codeUsed.substr(codeUsed.length - 5);
+                //var dateNotFormatted = new Date(data[i].dateUsed);
+                //var dateFormatted = dateNotFormatted.toLocaleDateString("en-BE");
+                var htmllinevoucher = '<tr class="voucher-line"><td>' + data[i].invONumber + '</td><td>' + data[i].invONumber + '</td><td>' + data[i].invONumber + ' ' + data[i].invONumber + '</td><td>' + data[i].invONumber + '</td><td>' + data[i].invONumber + '</td><td>' + data[i].invONumber + '</td></tr>';
                 allHTML = allHTML + htmllinevoucher;
             }
             allHTML = allHTML + "</table>";
