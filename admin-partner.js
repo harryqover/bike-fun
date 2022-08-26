@@ -1,4 +1,4 @@
-console.warn("2022-08-26 0901");
+console.warn("2022-08-26 0906");
 $(".loading").hide();
 $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -463,7 +463,8 @@ function findInvoices() {
         } else {
             console.log("build table");
             var allHTML = "<h3>Factures commission</h3><p>Voici la liste des factures que nous avons reçues de votre part pour les commissions Qover sur l'assurance vélo.</p>"
-            allHTML = allHTML +"<table><tr><th>Factures #</th><th>Montant</th><th>Date</th></tr>";
+            allHTML = allHTML + "<p><a href='https://form.jotform.com/222293093915357?bikeShop="+getCookie("partnerName")+"' target='_blank'>Envoyer une nouvelle facture</a></p>";
+            allHTML = allHTML + "<table><tr><th>Factures #</th><th>Montant</th><th>Date</th></tr>";
 
             for (var i = 1; i < data.length; i++) {
                 console.log(data[i].code);
