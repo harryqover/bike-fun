@@ -469,7 +469,7 @@ function findInvoices() {
                 //var codeUsed5Characters = "xxxx-xxxx-xxxx" + codeUsed.substr(codeUsed.length - 5);
                 //var dateNotFormatted = new Date(data[i].dateUsed);
                 //var dateFormatted = dateNotFormatted.toLocaleDateString("en-BE");
-                var htmllinevoucher = '<tr class="voucher-line"><td>' + data[i].invONumber + '</td><td>' + data[i].invONumber + '</td><td>' + data[i].invONumber + ' ' + data[i].invONumber + '</td><td>' + data[i].invONumber + '</td><td>' + data[i].invONumber + '</td><td>' + data[i].invONumber + '</td></tr>';
+                var htmllinevoucher = '<tr class="voucher-line"><td>' + data[i].invONumber + '</td><td>' + data[i].invOAmount + '</td><td>' + data[i].invOStatus + ' ' + data[i].invONumber + '</td><td>' + data[i].invONumber + '</td><td>' + data[i].invONumber + '</td><td>' + data[i].invONumber + '</td></tr>';
                 allHTML = allHTML + htmllinevoucher;
             }
             allHTML = allHTML + "</table>";
