@@ -473,7 +473,6 @@ function findInvoices() {
                 allHTML = allHTML + htmllinevoucher;
             }
             allHTML = allHTML + "</table>";
-            */
             var allHTML = data;
             $(".title-platform, .breadcrumb-here").text("Invoices");
             $(".block-in-content-platform").html(allHTML);
