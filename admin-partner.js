@@ -462,7 +462,8 @@ function findInvoices() {
             logout();
         } else {
             console.log("build table");
-            var allHTML = "<table><tr><th>Invoice #</th><th>Amount</th><th>status</th><th>Date</th><th>Date</th><th>Date</th><th>Date</th></tr>";
+            var allHTML = "<h3>Factures Qover</h3><p>Voici la liste des factures envoyées par Qover.</p>"
+            var allHTML = "<table><tr><th>Invoice #</th><th>Amount</th><th>Date</th></tr>";
 
             for (var i = 1; i < data.length; i++) {
                 console.log(data[i].code);
@@ -470,7 +471,7 @@ function findInvoices() {
                 //var codeUsed5Characters = "xxxx-xxxx-xxxx" + codeUsed.substr(codeUsed.length - 5);
                 //var dateNotFormatted = new Date(data[i].dateUsed);
                 //var dateFormatted = dateNotFormatted.toLocaleDateString("en-BE");
-                var htmllinevoucher = '<tr class="voucher-line"><td>' + data[i].invONumber + '</td><td>' + data[i].invOAmount + '</td><td>' + data[i].invOStatus + ' ' + data[i].invONumber + '</td><td>' + data[i].invONumber + '</td><td>' + data[i].invONumber + '</td><td>' + data[i].invONumber + '</td></tr>';
+                var htmllinevoucher = '<tr class="voucher-line"><td>' + data[i].invONumber + '</td><td>' + data[i].invOAmount + '</td><td>' + data[i].invODate + '</td></tr>';
                 allHTML = allHTML + htmllinevoucher;
             }
             allHTML = allHTML + "</table>";
