@@ -1,4 +1,4 @@
-console.warn("2022-08-26 0848");
+console.warn("2022-08-26 0901");
 $(".loading").hide();
 $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -436,7 +436,7 @@ function downloadCsv() {
 function findInvoices() {
     $(".loading").show();
     $(".hide-when-loading").hide();
-    $(".title-platform, .breadcrumb-here").text("Invoices");
+    $(".title-platform, .breadcrumb-here").text("Factures");
 
     var username = getCookie("username");
     var authorization = getCookie("authvoucher");
@@ -462,21 +462,21 @@ function findInvoices() {
             logout();
         } else {
             console.log("build table");
-            var allHTML = "<h3>Factures Qover</h3><p>Voici la liste des factures envoyées par Qover.</p>"
-            allHTML = allHTML +"<table><tr><th>Invoice #</th><th>Amount</th><th>Date</th></tr>";
+            var allHTML = "<h3>Factures commission</h3><p>Voici la liste des factures que nous avons reçues de votre part pour les commissions Qover sur l'assurance vélo.</p>"
+            allHTML = allHTML +"<table><tr><th>Factures #</th><th>Montant</th><th>Date</th></tr>";
 
             for (var i = 1; i < data.length; i++) {
                 console.log(data[i].code);
                 //var codeUsed = data[i].code;
                 //var codeUsed5Characters = "xxxx-xxxx-xxxx" + codeUsed.substr(codeUsed.length - 5);
-                var dateNotFormatted = new Date(data[i].invODate);
+                var dateNotFormatted = new Date(data[i].invIDate);
                 var dateFormatted = dateNotFormatted.toLocaleDateString("en-BE");
-                var htmllinevoucher = '<tr class="voucher-line"><td>' + data[i].invONumber + '</td><td>' + data[i].invOAmount + '</td><td>' + dateFormatted + '</td></tr>';
+                var htmllinevoucher = '<tr class="voucher-line"><td>' + data[i].invINumber + '</td><td>' + data[i].invIAmount + '</td><td>' + dateFormatted + '</td></tr>';
                 allHTML = allHTML + htmllinevoucher;
             }
             allHTML = allHTML + "</table>";
             var allHTML = allHTML;
-            $(".title-platform, .breadcrumb-here").text("Invoices");
+            $(".title-platform, .breadcrumb-here").text("Factures");
             $(".block-in-content-platform").html(allHTML);
             $(".loading").hide();
             $(".hide-when-loading").show();
