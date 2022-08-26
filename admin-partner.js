@@ -469,9 +469,9 @@ function findInvoices() {
                 console.log(data[i].code);
                 //var codeUsed = data[i].code;
                 //var codeUsed5Characters = "xxxx-xxxx-xxxx" + codeUsed.substr(codeUsed.length - 5);
-                //var dateNotFormatted = new Date(data[i].dateUsed);
-                //var dateFormatted = dateNotFormatted.toLocaleDateString("en-BE");
-                var htmllinevoucher = '<tr class="voucher-line"><td>' + data[i].invONumber + '</td><td>' + data[i].invOAmount + '</td><td>' + data[i].invODate + '</td></tr>';
+                var dateNotFormatted = new Date(data[i].invODate);
+                var dateFormatted = dateNotFormatted.toLocaleDateString("en-BE");
+                var htmllinevoucher = '<tr class="voucher-line"><td>' + data[i].invONumber + '</td><td>' + data[i].invOAmount + '</td><td>' + dateFormatted + '</td></tr>';
                 allHTML = allHTML + htmllinevoucher;
             }
             allHTML = allHTML + "</table>";
