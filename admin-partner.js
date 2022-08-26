@@ -432,3 +432,56 @@ function downloadCsv() {
 
     link.click(); // This will download the data file named "my_data.csv".
 }
+
+function findInvoices() {
+    $(".loading").show();
+    $(".hide-when-loading").hide();
+    $(".title-platform, .breadcrumb-here").text("Invoices");
+
+    var username = getCookie("username");
+    var authorization = getCookie("authvoucher");
+
+    var settings = {
+        "url": googleSheetUrl,
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
+        "data": JSON.stringify({
+            "action": "getInvoices",
+            "checker": authorization,
+            "username": username
+        }),
+    };
+
+    $.ajax(settings).done(function(response) {
+        var data = response.payload;
+        console.warn("data: ", data);
+        if (data == "not authorized") {
+            logout();
+        } else {
+            /*var allHTML = "<table><tr><th>Invoice #</th><th>Code</th><th>Amount</th><th>Date</th><th>Invoice status</th><th>Used by</th></tr>";
+
+            for (var i = 1; i < data.length; i++) {
+                console.log(data[i].code);
+                var codeUsed = data[i].code;
+                var codeUsed5Characters = "xxxx-xxxx-xxxx" + codeUsed.substr(codeUsed.length - 5);
+                var dateNotFormatted = new Date(data[i].dateUsed);
+                var dateFormatted = dateNotFormatted.toLocaleDateString("en-BE");
+                var htmllinevoucher = '<tr class="voucher-line"><td>' + data[i].purchasedInvoice + '</td><td>' + codeUsed5Characters + '</td><td>' + data[i].currency + ' ' + data[i].valueUsed + '</td><td>' + dateFormatted + '</td><td>' + data[i].invoiceStatus + '</td><td>' + data[i].usedby + '</td></tr>';
+                allHTML = allHTML + htmllinevoucher;
+            }
+            allHTML = allHTML + "</table>";
+            */
+            var allHTML = data;
+            $(".title-platform, .breadcrumb-here").text("Invoices");
+            $(".block-in-content-platform").html(allHTML);
+            $(".loading").hide();
+            $(".hide-when-loading").show();
+            $(".form-check-validity-voucher").show();
+            //$("#allvouchers").show();
+        }
+    });
+
+}
