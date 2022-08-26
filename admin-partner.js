@@ -1,4 +1,4 @@
-console.warn("2022-08-26 0811");
+console.warn("2022-08-26 0814");
 $(".loading").hide();
 $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -461,6 +461,7 @@ function findInvoices() {
         if (data == "not authorized") {
             logout();
         } else {
+            console.log("build table");
             var allHTML = "<table><tr><th>Invoice #</th><th>Amount</th><th>status</th><th>Date</th><th>Date</th><th>Date</th><th>Date</th></tr>";
 
             for (var i = 1; i < data.length; i++) {
@@ -473,7 +474,7 @@ function findInvoices() {
                 allHTML = allHTML + htmllinevoucher;
             }
             allHTML = allHTML + "</table>";
-            var allHTML = data;
+            var allHTML = allHTML;
             $(".title-platform, .breadcrumb-here").text("Invoices");
             $(".block-in-content-platform").html(allHTML);
             $(".loading").hide();
