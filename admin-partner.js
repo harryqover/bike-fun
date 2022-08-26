@@ -1,4 +1,4 @@
-console.warn("2022-08-26 0814");
+console.warn("2022-08-26 0848");
 $(".loading").hide();
 $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -463,7 +463,7 @@ function findInvoices() {
         } else {
             console.log("build table");
             var allHTML = "<h3>Factures Qover</h3><p>Voici la liste des factures envoyées par Qover.</p>"
-            var allHTML = "<table><tr><th>Invoice #</th><th>Amount</th><th>Date</th></tr>";
+            allHTML = allHTML +"<table><tr><th>Invoice #</th><th>Amount</th><th>Date</th></tr>";
 
             for (var i = 1; i < data.length; i++) {
                 console.log(data[i].code);
