@@ -476,7 +476,7 @@ function findInvoices() {
                 allHTML = allHTML + htmllinevoucher;
             }
             allHTML = allHTML + "</table>";
-            if(data[i].length == 0){
+            if(data.length == 0){
                 allHTML = allHTML + "Nous n'avons pas encore reçu de factures. <a href='https://form.jotform.com/222293093915357?bikeShop="+getCookie("partnerName")+"' target='_blank'>Envoyer votre première facture</a>";
             }
             allHTML = allHTML + "<p><em>* Les factures envoyées à bdx@qover.com ne sont pas visibles directement dans l'interface mais elles seront bien traitées. N'hésitez pas à nous contacter à bdx@qover.com pour toutes questions relatives à la facturation.</em></p>";
