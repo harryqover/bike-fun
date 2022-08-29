@@ -1,4 +1,4 @@
-console.warn("2022-08-29 0855");
+console.warn("2022-08-29 0910");
 $(".loading").hide();
 $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -467,7 +467,7 @@ function findInvoices() {
             allHTML = allHTML + "<table><tr><th>Factures #</th><th>Montant</th><th>Date</th></tr>";
 
             for (var i = 1; i < data.length; i++) {
-                console.log(data[i].code);
+                console.log(data[i].invINumber);
                 //var codeUsed = data[i].code;
                 //var codeUsed5Characters = "xxxx-xxxx-xxxx" + codeUsed.substr(codeUsed.length - 5);
                 var dateNotFormatted = new Date(data[i].invIDate);
@@ -476,6 +476,9 @@ function findInvoices() {
                 allHTML = allHTML + htmllinevoucher;
             }
             allHTML = allHTML + "</table>";
+            if(data[i].length == 0){
+                allHTML = allHTML + "Nous n'avons pas encore reçu de factures. <a href='https://form.jotform.com/222293093915357?bikeShop="+getCookie("partnerName")+"' target='_blank'>Envoyer votre première facture</a>";
+            }
             allHTML = allHTML + "<p><em>* Les factures envoyées à bdx@qover.com ne sont pas visibles directement dans l'interface mais elles seront bien traitées. N'hésitez pas à nous contacter à bdx@qover.com pour toutes questions relatives à la facturation.</em></p>";
             var allHTML = allHTML;
             $(".title-platform, .breadcrumb-here").text("Factures");
