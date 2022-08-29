@@ -28,8 +28,8 @@ if(qoverfor != "business"){
     ]);
   }
   function forBusiness(){
-    document.cookie = "qoverfor=business; domain=qover.com; max-age=86400; path=/";
-    document.cookie = "qoverfor=business; max-age=86400; path=/";
+    document.cookie = "qoverfor=business; domain=qover.com; max-age=8640000; path=/";
+    document.cookie = "qoverfor=business; max-age=8640000; path=/";
     Fancybox.close();
     dataLayer.push({
       'event': 'allTagsWithEvents',
