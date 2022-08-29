@@ -462,7 +462,7 @@ function findInvoices() {
             logout();
         } else {
             console.log("build table");
-            var allHTML = "<h3>Factures commission</h3><p>Voici la liste des factures que nous avons reçues de votre part pour les commissions Qover sur l'assurance vélo.</p>"
+            var allHTML = "<h3>Factures commission</h3><p>Voici la liste des factures que nous avons reçues de votre part (via le lien ci-dessous) pour les commissions Qover sur l'assurance vélo.*</p>"
             allHTML = allHTML + "<p><a href='https://form.jotform.com/222293093915357?bikeShop="+getCookie("partnerName")+"' target='_blank'>Envoyer une nouvelle facture</a></p>";
             allHTML = allHTML + "<table><tr><th>Factures #</th><th>Montant</th><th>Date</th></tr>";
 
@@ -472,10 +472,11 @@ function findInvoices() {
                 //var codeUsed5Characters = "xxxx-xxxx-xxxx" + codeUsed.substr(codeUsed.length - 5);
                 var dateNotFormatted = new Date(data[i].invIDate);
                 var dateFormatted = dateNotFormatted.toLocaleDateString("en-BE");
-                var htmllinevoucher = '<tr class="voucher-line"><td>' + data[i].invINumber + '</td><td>€ ' + data[i].invIAmount + '</td><td>' + dateFormatted + '</td></tr>';
+                var htmllinevoucher = '<tr class="voucher-line"><td><a href="'+data[i].invIScreenshot+' target="_blank">' + data[i].invINumber + '</a></td><td>€ ' + data[i].invIAmount + '</td><td>' + dateFormatted + '</td></tr>';
                 allHTML = allHTML + htmllinevoucher;
             }
             allHTML = allHTML + "</table>";
+            allHTML = allHTML + "<p><em>* Les factures envoyées à bdx@qover.com ne sont pas visibles directement dans l'interface mais elles seront bien traitées. N'hésitez pas à nous contacter à bdx@qover.com pour toutes questions relatives à la facturation.</em></p>";
             var allHTML = allHTML;
             $(".title-platform, .breadcrumb-here").text("Factures");
             $(".block-in-content-platform").html(allHTML);
