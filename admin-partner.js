@@ -1,4 +1,4 @@
-console.warn("2022-09-01 1302");
+console.warn("2022-09-01 1306");
 $(".loading").hide();
 $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -329,9 +329,9 @@ function getstatistics(start, end) {
         //var datajson = JSON.parse(data);
 
         console.warn(data);
-        console.log(data.kpi.kpis);
-        console.log(data.kpi.kpis.EUR);
-        console.log(data.graph.data.EUR);
+        //console.log(data.kpi.kpis);
+        //console.log(data.kpi.kpis.EUR);
+        //console.log(data.graph.data.EUR);
 
 
         if (data.graph.data && data.graph.data.EUR) {
