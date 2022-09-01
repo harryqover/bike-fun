@@ -261,6 +261,7 @@ function showTraining() {
     $(".hide-when-loading").show();
     $(".loading").hide();
 }
+
 function showTraining2() {
     $(".loading").show();
     $(".hide-when-loading").hide();
@@ -331,85 +332,86 @@ function getstatistics(start, end) {
         console.log(data.kpi.kpis);
         console.log(data.kpi.kpis.EUR);
         console.log(data.graph.data.EUR);
-        if (data.graph.data.EUR) {
-          var graph = JSON.parse(data.graph.data.EUR);
-          var newGraph = [];
-          graph.forEach(myFunction);
 
-          function myFunction(value) {
-              newGraph.push([new Date(value[0]), value[1]]);
-          }
 
-          console.log(newGraph);
-          if (data == "not authorized") {
-              logout();
-          } else {
-              var css = '<style>.allKpis {border-radius: 5px;background-color: #f5f8fd;padding: 30px 25px;display: flex;}.reportingKpi>p {font-size: 50px;margin-top: 20px;}.reportingKpi {margin: 20px;width: 30%;} .btnPink {position: relative;z-index: 1;height: 40px;/* margin-top: 40px; */ padding: 10px 20px;    border-radius: 60px;    background-color: #eb4f87;    -webkit-transform: translate(0,0);    -ms-transform: translate(0,0);    transform: translate(0,0);    -webkit-transition: .2s;    transition: .2s;    font-family: Circularstd,sans-serif;    font-size: 12px;    color: white;font-weight: 700;width: 150px;}input#end, input#start {display: block;    width: 170px;    height: 38px;    padding: 8px 6px 8px 15px;    margin-bottom: 10px;    font-size: 14px;    color: #171C34;    vertical-align: middle;    background-color: #fff;    border: 1px solid #f8f8f8;}.formDateInput {display: inline-flex;border-radius: 5px;margin-bottom: 20px;padding: 20px;border: 1px solid #f5f8fd;}input#start,input#end {margin-right: 15px;}</style>';
-              $('head').append(css);
-              var ttlcommission = data.kpi.kpis.EUR.tot_commission;
-              var allHTML = '<div class="allKpis"><div class="reportingKpi"><h5>Nouveaux contrats</h5><p>' + data.kpi.kpis.EUR.nbr_create + '</p></div><div class="reportingKpi"><h5>Contrats annulés</h5><p>' + data.kpi.kpis.EUR.nbr_cancel + '</p></div><div class="reportingKpi"><h5>Commission totale</h5><p>€' + ttlcommission.toFixed(2) + '</p></div></div><div id="chart_div"></div>';
-              $(".block-in-content-platform").html(allHTML);
-              var dateInput = '<div class="formDateInput"><input type="date" id="start" value="'+minDate+'" min="2020-01-01" max="'+todayX+'"><input type="date" id="end" value="'+todayX+'" min="2020-01-01" max="'+todayX+'"><br><br><button onclick="getStatFromInput();" class="btnPink">Recherche</button></div>';
-              $(".block-in-content-platform").prepend(dateInput);
-              window.bdxRows = JSON.parse(data.bdx.data.EUR);
-              bdxRows = [
-                  ["Reference", "Variant", "Type", "Start", "End", "Promocode", "Commission %", "Net premium", "Commission"]
-              ].concat(bdxRows)
-              var csvDownloadHtml = '<button onclick="downloadCsv();" class="btnPink">Télécharger</button>';
-              $(".block-in-content-platform").append(csvDownloadHtml);
-              $("#start").val(start);
-              $("#end").val(end);
+        if (data.graph.data && data.graph.data.EUR) {
+            var graph = JSON.parse(data.graph.data.EUR);
+            var newGraph = [];
+            graph.forEach(myFunction);
 
-              /*START GOOGLE*/
-              google.charts.load('current', {
-                  packages: ['corechart', 'line']
-              });
-              google.charts.setOnLoadCallback(drawLogScales);
+            function myFunction(value) {
+                newGraph.push([new Date(value[0]), value[1]]);
+            }
 
-              function drawLogScales() {
-                  var data = new google.visualization.DataTable();
-                  data.addColumn('date', 'Date');
-                  data.addColumn('number', 'Contrats');
-                  data.addRows(newGraph);
+            console.log(newGraph);
+            if (data == "not authorized") {
+                logout();
+            } else {
+                var css = '<style>.allKpis {border-radius: 5px;background-color: #f5f8fd;padding: 30px 25px;display: flex;}.reportingKpi>p {font-size: 50px;margin-top: 20px;}.reportingKpi {margin: 20px;width: 30%;} .btnPink {position: relative;z-index: 1;height: 40px;/* margin-top: 40px; */ padding: 10px 20px;    border-radius: 60px;    background-color: #eb4f87;    -webkit-transform: translate(0,0);    -ms-transform: translate(0,0);    transform: translate(0,0);    -webkit-transition: .2s;    transition: .2s;    font-family: Circularstd,sans-serif;    font-size: 12px;    color: white;font-weight: 700;width: 150px;}input#end, input#start {display: block;    width: 170px;    height: 38px;    padding: 8px 6px 8px 15px;    margin-bottom: 10px;    font-size: 14px;    color: #171C34;    vertical-align: middle;    background-color: #fff;    border: 1px solid #f8f8f8;}.formDateInput {display: inline-flex;border-radius: 5px;margin-bottom: 20px;padding: 20px;border: 1px solid #f5f8fd;}input#start,input#end {margin-right: 15px;}</style>';
+                $('head').append(css);
+                var ttlcommission = data.kpi.kpis.EUR.tot_commission;
+                var allHTML = '<div class="allKpis"><div class="reportingKpi"><h5>Nouveaux contrats</h5><p>' + data.kpi.kpis.EUR.nbr_create + '</p></div><div class="reportingKpi"><h5>Contrats annulés</h5><p>' + data.kpi.kpis.EUR.nbr_cancel + '</p></div><div class="reportingKpi"><h5>Commission totale</h5><p>€' + ttlcommission.toFixed(2) + '</p></div></div><div id="chart_div"></div>';
+                $(".block-in-content-platform").html(allHTML);
+                var dateInput = '<div class="formDateInput"><input type="date" id="start" value="' + minDate + '" min="2020-01-01" max="' + todayX + '"><input type="date" id="end" value="' + todayX + '" min="2020-01-01" max="' + todayX + '"><br><br><button onclick="getStatFromInput();" class="btnPink">Recherche</button></div>';
+                $(".block-in-content-platform").prepend(dateInput);
+                window.bdxRows = JSON.parse(data.bdx.data.EUR);
+                bdxRows = [
+                    ["Reference", "Variant", "Type", "Start", "End", "Promocode", "Commission %", "Net premium", "Commission"]
+                ].concat(bdxRows)
+                var csvDownloadHtml = '<button onclick="downloadCsv();" class="btnPink">Télécharger</button>';
+                $(".block-in-content-platform").append(csvDownloadHtml);
+                $("#start").val(start);
+                $("#end").val(end);
 
-                  var options = {
-                      title: 'Contrats cumulés',
-                      hAxis: {
-                          title: 'Date',
-                          format: 'd/M/yy',
-                          logScale: false
-                      },
-                      vAxis: {
-                          title: 'Contrats',
-                          minValue: 0,
-                          logScale: false
-                      },
-                      colors: ['#3c84dc']
-                  };
+                /*START GOOGLE*/
+                google.charts.load('current', {
+                    packages: ['corechart', 'line']
+                });
+                google.charts.setOnLoadCallback(drawLogScales);
 
-                  var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-                  chart.draw(data, options);
-              }
-              /*STOP GOOGLE*/
-              $(".loading").hide();
-              $(".hide-when-loading").show();
-              $(".form-check-validity-voucher").show();
-              //$("#allvouchers").show();
-          }
+                function drawLogScales() {
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('date', 'Date');
+                    data.addColumn('number', 'Contrats');
+                    data.addRows(newGraph);
 
+                    var options = {
+                        title: 'Contrats cumulés',
+                        hAxis: {
+                            title: 'Date',
+                            format: 'd/M/yy',
+                            logScale: false
+                        },
+                        vAxis: {
+                            title: 'Contrats',
+                            minValue: 0,
+                            logScale: false
+                        },
+                        colors: ['#3c84dc']
+                    };
+
+                    var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+                    chart.draw(data, options);
+                }
+                /*STOP GOOGLE*/
+                $(".loading").hide();
+                $(".hide-when-loading").show();
+                $(".form-check-validity-voucher").show();
+                //$("#allvouchers").show();
+            }
         } else {
-          console.warn("no sales data");
-          var css = '<style>.allKpis {border-radius: 5px;background-color: #f5f8fd;padding: 30px 25px;display: flex;}.reportingKpi>p {font-size: 50px;margin-top: 20px;}.reportingKpi {margin: 20px;width: 30%;} .btnPink {position: relative;z-index: 1;height: 40px;/* margin-top: 40px; */ padding: 10px 20px;    border-radius: 60px;    background-color: #eb4f87;    -webkit-transform: translate(0,0);    -ms-transform: translate(0,0);    transform: translate(0,0);    -webkit-transition: .2s;    transition: .2s;    font-family: Circularstd,sans-serif;    font-size: 12px;    color: white;font-weight: 700;width: 150px;}input#end, input#start {display: block;    width: 170px;    height: 38px;    padding: 8px 6px 8px 15px;    margin-bottom: 10px;    font-size: 14px;    color: #171C34;    vertical-align: middle;    background-color: #fff;    border: 1px solid #f8f8f8;}.formDateInput {display: inline-flex;border-radius: 5px;margin-bottom: 20px;padding: 20px;border: 1px solid #f5f8fd;}input#start,input#end {margin-right: 15px;}</style>';
-          $('head').append(css);
-          var allHTML = '<div class="allKpis"><div class="reportingKpi"><h5>Nouveaux contrats</h5><p>0</p></div><div class="reportingKpi"><h5>Contrats annulés</h5><p>0</p></div><div class="reportingKpi"><h5>Commission totale</h5><p>€ 0.00</p></div></div><div id="chart_div"></div>';
-          $(".block-in-content-platform").html(allHTML);
-          var dateInput = '<div class="formDateInput"><input type="date" id="start" value="'+minDate+'" min="2020-01-01" max="'+todayX+'"><input type="date" id="end" value="'+todayX+'" min="2020-01-01" max="'+todayX+'"><br><br><button onclick="getStatFromInput();" class="btnPink">Recherche</button></div>';
-          $(".block-in-content-platform").prepend(dateInput);
-          $(".loading").hide();
-          $(".hide-when-loading").show();
-          $(".form-check-validity-voucher").show();
+            console.warn("no sales data");
+            var css = '<style>.allKpis {border-radius: 5px;background-color: #f5f8fd;padding: 30px 25px;display: flex;}.reportingKpi>p {font-size: 50px;margin-top: 20px;}.reportingKpi {margin: 20px;width: 30%;} .btnPink {position: relative;z-index: 1;height: 40px;/* margin-top: 40px; */ padding: 10px 20px;    border-radius: 60px;    background-color: #eb4f87;    -webkit-transform: translate(0,0);    -ms-transform: translate(0,0);    transform: translate(0,0);    -webkit-transition: .2s;    transition: .2s;    font-family: Circularstd,sans-serif;    font-size: 12px;    color: white;font-weight: 700;width: 150px;}input#end, input#start {display: block;    width: 170px;    height: 38px;    padding: 8px 6px 8px 15px;    margin-bottom: 10px;    font-size: 14px;    color: #171C34;    vertical-align: middle;    background-color: #fff;    border: 1px solid #f8f8f8;}.formDateInput {display: inline-flex;border-radius: 5px;margin-bottom: 20px;padding: 20px;border: 1px solid #f5f8fd;}input#start,input#end {margin-right: 15px;}</style>';
+            $('head').append(css);
+            var allHTML = '<div class="allKpis"><div class="reportingKpi"><h5>Nouveaux contrats</h5><p>0</p></div><div class="reportingKpi"><h5>Contrats annulés</h5><p>0</p></div><div class="reportingKpi"><h5>Commission totale</h5><p>€ 0.00</p></div></div><div id="chart_div"></div>';
+            $(".block-in-content-platform").html(allHTML);
+            var dateInput = '<div class="formDateInput"><input type="date" id="start" value="' + minDate + '" min="2020-01-01" max="' + todayX + '"><input type="date" id="end" value="' + todayX + '" min="2020-01-01" max="' + todayX + '"><br><br><button onclick="getStatFromInput();" class="btnPink">Recherche</button></div>';
+            $(".block-in-content-platform").prepend(dateInput);
+            $(".loading").hide();
+            $(".hide-when-loading").show();
+            $(".form-check-validity-voucher").show();
         }
-        
+
     });
 
 }
@@ -463,7 +465,7 @@ function findInvoices() {
         } else {
             console.log("build table");
             var allHTML = "<h3>Factures commission</h3><p>Voici la liste des factures que nous avons reçues de votre part (via le lien ci-dessous) pour les commissions Qover sur l'assurance vélo.*</p>"
-            allHTML = allHTML + "<p><a href='https://form.jotform.com/222293093915357?bikeShop="+getCookie("partnerName")+"' target='_blank'>Envoyer une nouvelle facture</a></p>";
+            allHTML = allHTML + "<p><a href='https://form.jotform.com/222293093915357?bikeShop=" + getCookie("partnerName") + "' target='_blank'>Envoyer une nouvelle facture</a></p>";
             allHTML = allHTML + "<table><tr><th>Factures #</th><th>Montant</th><th>Date</th></tr>";
 
             for (var i = 1; i < data.length; i++) {
@@ -472,12 +474,12 @@ function findInvoices() {
                 //var codeUsed5Characters = "xxxx-xxxx-xxxx" + codeUsed.substr(codeUsed.length - 5);
                 var dateNotFormatted = new Date(data[i].invIDate);
                 var dateFormatted = dateNotFormatted.toLocaleDateString("en-BE");
-                var htmllinevoucher = '<tr class="voucher-line"><td><a href="'+data[i].invIScreenshot+'" target="_blank">' + data[i].invINumber + '</a></td><td>€ ' + data[i].invIAmount + '</td><td>' + dateFormatted + '</td></tr>';
+                var htmllinevoucher = '<tr class="voucher-line"><td><a href="' + data[i].invIScreenshot + '" target="_blank">' + data[i].invINumber + '</a></td><td>€ ' + data[i].invIAmount + '</td><td>' + dateFormatted + '</td></tr>';
                 allHTML = allHTML + htmllinevoucher;
             }
             allHTML = allHTML + "</table>";
-            if(data.length == 0){
-                allHTML = allHTML + "<div style='padding: 20px; background-color: lightgrey; border-radius: 5px;'>Nous n'avons pas encore reçu de factures. <a href='https://form.jotform.com/222293093915357?bikeShop="+getCookie("partnerName")+"' target='_blank'>Envoyer votre première facture</a></div>";
+            if (data.length == 0) {
+                allHTML = allHTML + "<div style='padding: 20px; background-color: lightgrey; border-radius: 5px;'>Nous n'avons pas encore reçu de factures. <a href='https://form.jotform.com/222293093915357?bikeShop=" + getCookie("partnerName") + "' target='_blank'>Envoyer votre première facture</a></div>";
             }
             allHTML = allHTML + "<br><br><br><p><em>* Les factures envoyées à bdx@qover.com ne sont pas visibles directement dans l'interface mais elles seront bien traitées. N'hésitez pas à nous contacter à bdx@qover.com pour toutes questions relatives à la facturation.</em></p>";
             var allHTML = allHTML;
