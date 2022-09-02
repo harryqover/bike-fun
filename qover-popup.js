@@ -88,8 +88,6 @@ if (qoverEl) {
 	$("body").append(block_to_insert);
 
     qoverEl.innerHTML = text;
-    //loadExtraScripts();
-    //var popUpObj;
 
     function showModalPopUpQover() {
     	var modal = document.getElementById('modal-form');
@@ -106,20 +104,4 @@ if (qoverEl) {
 
 } else {
     console.log("not available")
-}
-
-
-
-
-function loadExtraScripts() {
-
-    var fancyAppJs = document.createElement('script');
-    fancyAppJs.src = "https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js";
-    document.getElementsByTagName('head')[0].appendChild(fancyAppJs);
-
-    var fancyAppCss = document.createElement('link');
-    fancyAppCss.rel = "stylesheet";
-    fancyAppCss.href = "https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css";
-    document.getElementsByTagName('head')[0].appendChild(fancyAppCss);
-
 }
