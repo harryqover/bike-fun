@@ -39,6 +39,11 @@ var typeInfo = {
 	}
 }
 
+function qover(obj){
+	console.log(obj.lang);
+	console.log(obj);
+}
+
 var text = '<a onclick="showModalPopUpQover()" style="text-decoration: underline;">'+typeInfo[type].txtCta[lang]+'<svg class="info-icon" width="13" height="13" viewBox="0 0 13 13" xmlns="http://www.w3.org/2000/svg" fill="#323232" tabindex="0"><g fill="inherit" fill-rule="even-odd"><path d="M6.5.91a5.59 5.59 0 110 11.182A5.59 5.59 0 016.5.91zm0-.91a6.5 6.5 0 100 13 6.5 6.5 0 000-13z"></path><path d="M6.525 3.248c.258.016.514.047.767.092.776.18 1.254.748 1.338 1.52a1.396 1.396 0 01-.561 1.323c-.2.158-.41.302-.61.457a.953.953 0 00-.43.88.551.551 0 01-.395.561.657.657 0 01-.755-.186.55.55 0 01-.095-.28 1.871 1.871 0 01.767-1.626c.225-.175.437-.366.633-.57a.666.666 0 00.156-.391c.02-.389-.252-.629-.675-.64-.512-.014-.937.127-1.222.566a.617.617 0 01-.618.296c-.435-.053-.632-.381-.468-.772.172-.382.48-.694.87-.88a3.277 3.277 0 011.298-.35z"></path><circle cx="6.5" cy="9.4" r="1"></circle></g></svg></a>';
 
 
