@@ -79,7 +79,7 @@ var text = '<a onclick="showModalPopUpQover()" style="text-decoration: underline
 
 var urlIframe = typeInfo[type].url+'?lang='+lang;
 urlIframe = ((key == "") ? urlIframe : urlIframe + "&key="+key);
-urlIframe = ((type == "") ? urlIframe : urlIframe + "&type="+type);
+//urlIframe = ((type == "") ? urlIframe : urlIframe + "&type="+type);
 urlIframe = ((countryDefault == "") ? urlIframe : urlIframe + "&countryDefault="+countryDefault);
 urlIframe = ((country == "") ? urlIframe : urlIframe + "&country="+country);
 urlIframe = ((contract == "") ? urlIframe : urlIframe + "&contract="+contract);
