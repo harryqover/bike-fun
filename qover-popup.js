@@ -24,8 +24,8 @@ var typeInfo = {
 		"txtCta" : {
 			"fr" : "Contacter Qover",
 			"en" : "Contact Qover",
-			"nl" : "Contact Qover",
-			"de" : "Contact Qover",
+			"nl" : "Contact opnemen met Qover",
+			"de" : "Kontakt zu Qover",
 			"it" : "Contact Qover",
 			"es" : "Contact Qover",
 			"pt" : "Contact Qover",
