@@ -40,7 +40,7 @@ var typeInfo = {
 		"txtCta" : {
 			"fr" : "En savoir plus sur l'assurance Qover",
 			"en" : "Learn more about Qover insurance.",
-			"nl" : "Learn more about Qover insurance.",
+			"nl" : "Meer informatie over Qover fietsverzekeringen.",
 			"de" : "Learn more about Qover insurance.",
 			"it" : "Learn more about Qover insurance.",
 			"es" : "Learn more about Qover insurance.",
@@ -56,7 +56,7 @@ var typeInfo = {
 		"txtCta" : {
 			"fr" : "En savoir plus sur l'assurance Qover",
 			"en" : "Learn more about Qover insurance.",
-			"nl" : "Learn more about Qover insurance.",
+			"nl" : "Meer informatie over Qover fietsverzekeringen..",
 			"de" : "Learn more about Qover insurance.",
 			"it" : "Learn more about Qover insurance.",
 			"es" : "Learn more about Qover insurance.",
