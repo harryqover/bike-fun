@@ -7,7 +7,7 @@ type => productPage / contact / usp
 x
 
 */
-console.log("helloHarry 20220905 1020");
+console.log("helloHarry 20220905 1035");
 
 var qoverEl = document.getElementById("qover");
 
