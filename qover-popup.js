@@ -7,7 +7,7 @@ type => productPage / contact / usp
 x
 
 */
-console.log("helloHarry 20220905 1035");
+console.log("helloHarry 20220905 1038");
 
 var qoverEl = document.getElementById("qover");
 
@@ -81,7 +81,7 @@ urlIframe = ((key == "") ? urlIframe : urlIframe + "key="+key);
 urlIframe = ((type == "") ? urlIframe : urlIframe + "type="+type);
 urlIframe = ((countryDefault == "") ? urlIframe : urlIframe + "countryDefault="+countryDefault);
 urlIframe = ((country == "") ? urlIframe : urlIframe + "country="+country);
-
+console.log("urlIframe "+ urlIframe);
 var modal = '<div id="modal-form" class="modal-issue"><div class="modal-content"><div class="modal-header"><span onclick="closeModal()" class="close">&times;</span></div><div class="modal-body"><iframe class="airtable-embed" src="'+urlIframe+'" frameborder="0" onmousewheel="" height="650px" style="background: transparent; border-radius: 5px;" width="100%"></iframe></div></div><</div>'
 var modalCss = '<style>.modal-issue{display:none;position:fixed;z-index:999;left:0;top:0;width:100%;height:100%;overflow:auto;background-color:rgba(0,0,0,.5)}.close{color:#000;float:right;font-size:50px;font-weight:700}.close:hover,.close:focus{text-decoration:none;cursor:pointer;-webkit-transition:all 200ms ease-in;transition:all 200ms ease-in}.modal-header{padding:2px 16px;color:#fff}.modal-body{padding:2px 16px;max-width:794px}.modal-content{position:relative;background-color:transparent;margin:auto;padding:0;width:50%;-webkit-animation-name:animatetop;-webkit-animation-duration:0.4s;animation-name:animatetop;animation-duration:0.4s}@-webkit-keyframes animatetop{from{top:-300px;opacity:0}to{top:0;opacity:1}}@keyframes animatetop{from{top:-300px;opacity:0}to{top:0;opacity:1}}</style>';
 modal = modal+modalCss;
