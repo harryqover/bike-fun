@@ -1,4 +1,4 @@
-console.warn("2022-09-01 1306");
+console.warn("2022-09-06 1619");
 $(".loading").hide();
 $("div.content-block-platform.hide-when-loading > div:nth-child(1)").remove();
 
@@ -468,7 +468,7 @@ function findInvoices() {
             allHTML = allHTML + "<p><a href='https://form.jotform.com/222293093915357?bikeShop=" + getCookie("partnerName") + "' target='_blank'>Envoyer une nouvelle facture</a></p>";
             allHTML = allHTML + "<table><tr><th>Factures #</th><th>Montant</th><th>Date</th></tr>";
 
-            for (var i = 1; i < data.length; i++) {
+            for (var i = 0; i < data.length; i++) {
                 console.log(data[i].invINumber);
                 //var codeUsed = data[i].code;
                 //var codeUsed5Characters = "xxxx-xxxx-xxxx" + codeUsed.substr(codeUsed.length - 5);
