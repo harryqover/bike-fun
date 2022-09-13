@@ -268,6 +268,7 @@ function showTraining2() {
     $(".title-platform, .breadcrumb-here").text("Formation");
     var allHTML = '<div id="tolstoy-container" style="line-height:0;overflow:hidden;height:100%;width:100%;text-align:center">';
     allHTML = allHTML + '<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vTZE-Trc6QcG0WGnUudI3WaYc-hk8d4DI5LjIwPECaX9VzJ1WYCZQAqWGL8msLTMZJ7cqapeOV_n_g-/embed?start=true&loop=true&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>';
+    allHTML = allHTML +'<a href="https://storage.googleapis.com/qover-assets/documents/bike/Qover_Manuel%20Utilisation.pdf" target="_blank">Documentation Futurosoft</a>'
     allHTML = allHTML + '</div>';
     $(".block-in-content-platform").html(allHTML);
     $(".hide-when-loading").show();
