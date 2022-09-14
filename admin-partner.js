@@ -269,6 +269,7 @@ function showTraining2() {
     var allHTML = '<div id="tolstoy-container" style="line-height:0;overflow:hidden;height:100%;width:100%;text-align:center">';
     allHTML = allHTML + '<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vTZE-Trc6QcG0WGnUudI3WaYc-hk8d4DI5LjIwPECaX9VzJ1WYCZQAqWGL8msLTMZJ7cqapeOV_n_g-/embed?start=true&loop=true&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>';
     allHTML = allHTML +'<div style="margin:30px;"><a href="https://storage.googleapis.com/qover-assets/documents/bike/Qover_Manuel%20Utilisation.pdf" target="_blank">Documentation Futurosoft</a></div>'
+    allHTML = allHTML +'<div style="margin:30px;"><a href="https://docs.google.com/document/d/1IgQBJPcVJEsDN_kcJmcEbDhtoIixWsHIaCuHVQQNyPY/edit?usp=sharing" target="_blank">E-mailing, communication sur le produit d’assurance, … les règles à suivre en tant qu’apporteur d’affaires</a></div>'
     allHTML = allHTML + '</div>';
     $(".block-in-content-platform").html(allHTML);
     $(".hide-when-loading").show();
