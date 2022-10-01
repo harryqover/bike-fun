@@ -53,7 +53,7 @@
 
   function showMagicLink(){
     $("#password").hide();
-    $("submit-button-5").hide();
+    $(".submit-button-5").hide();
     $('<button onclick="getMagicLink()" style="display:block; width:280px; margin: 15px auto;" class="submit-button-5 w-button">Obtenir un lien magique par email</button>').insertAfter( ".submit-button-5" );
 
   }
