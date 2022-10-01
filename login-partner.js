@@ -80,6 +80,9 @@
       //var authorization = response.payload.authorization;
       if(response.payload == "success"){
         setCookie("username", username, "7");
+        $(".hide-when-loading").text("Vérifiez votre boite email");
+      } else {
+        $(".hide-when-loading").text("Erreur avec votre email");
       }
       
       $(".hide-when-loading").show();
