@@ -1,7 +1,7 @@
-console.log("20220316 0943")
+  console.log("20221001 2118")
   var voucherparam = getParameterByName("voucher");
   var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxqUEiWrq_FvaW14kUD5xpRGXPYyb1D9P0yYVf62J8A5cmC9Qb0BAsG1Vge05RwT-ww/exec";
-$(".loading").hide();
+  $(".loading").hide();
   function loginvoucherpartner(){
     $(".loading").show(250);
     $(".hide-when-loading").hide(250);
@@ -47,4 +47,41 @@ $(".loading").hide();
         window.location.href = 'https://bike.qover.com/login-partner?voucher='+voucherparam;
       }
     });
+  }
+
+  $( "<a onclick='getMagicLink()'>Lien magique</a>" ).insertAfter( ".submit-button-5" );
+
+  function getMagicLink(){
+    $(".loading").show(250);
+    $(".hide-when-loading").hide(250);
+    var username = $("#username").val();
+    var settings = {
+      "url": googleSheetUrl,
+      "method": "POST",
+      "timeout": 0,
+      "headers": {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      "data": JSON.stringify({
+        "username": username,
+        "action": "magicLink"
+      }),
+    };
+
+    $.ajax(settings).done(function (response) {
+      console.log(response);
+      //var authorization = response.payload.authorization;
+      if(response.payload == "success"){
+        setCookie("username", username, "7");
+      }
+      
+      $(".hide-when-loading").show();
+      $(".loading").hide();
+    });
+  }
+
+  var auth = getParameterByName("auth");
+  if(auth){
+    setCookie("authvoucher", auth, "7");
+    window.location.href = 'https://bike.qover.com/portal/main';
   }
