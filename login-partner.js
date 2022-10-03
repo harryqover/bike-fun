@@ -49,11 +49,12 @@
     });
   }
 
-  $( "<a onclick='showMagicLink()'>Se connecter avec un lien magique</a>" ).insertAfter( ".submit-button-5" );
+  $( "<a onclick='showMagicLink()' id='magicLink'>Recevoir un lien magique pour se connecter</a>" ).insertAfter( ".submit-button-5" );
 
   function showMagicLink(){
     $("#password").hide();
     $(".submit-button-5").hide();
+    $("#magicLink").hide();
     $('<button onclick="getMagicLink()" style="display:block; width:280px; margin: 15px auto;" class="submit-button-5 w-button">Envoyer le lien par email</button>').insertAfter( ".submit-button-5" );
 
   }
