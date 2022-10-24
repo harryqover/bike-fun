@@ -1,7 +1,4 @@
-
-
-
-console.log("qoverSurveyStart");
+console.log("qoverSurveyStart 20221024");
 
 
 if(window.location.pathname == "/fr-fr" || window.location.pathname == "/fr-be"){
