@@ -1,5 +1,5 @@
-var hideAcceptanceCriteria = ["IT","FI","DK","SE","NL","PT","ES","DE","GB","IE"];
-var hidePricingCriteria = ["IT","FI","DK","SE","NL","PT","ES","DE","GB","IE"];
+var hideAcceptanceCriteria = ["IT","FI","DK","SE","NL","PT","ES","DE","GB","IE","PL"];
+var hidePricingCriteria = ["IT","FI","DK","SE","NL","PT","ES","DE","GB","IE","PL"];
 
 var country = getParameterByName("country");
 
