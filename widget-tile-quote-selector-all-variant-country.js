@@ -1,4 +1,4 @@
-console.log("v 20221205 1427");
+console.log("v 20221205 1431");
 
   $(".body-2").hide();
   $(".widget-card-big").hide();
