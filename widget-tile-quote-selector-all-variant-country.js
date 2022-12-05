@@ -123,9 +123,9 @@
         curr = countryCurrencySetup[country][0];
 
         if(countryWithAssistance.includes(country)){
-          $("#theftAssistance > div > div.div-block-51 > div:nth-child(3)").show()
+          $("#theftAssistance > div > div.div-block-51 > div:nth-child(3)","#omnium > div > div.div-block-51 > div:nth-child(3)").show()
         } else {
-          $("#theftAssistance > div > div.div-block-51 > div:nth-child(3)").hide()
+          $("#theftAssistance > div > div.div-block-51 > div:nth-child(3)","#omnium > div > div.div-block-51 > div:nth-child(3)").hide()
         }
 
   
