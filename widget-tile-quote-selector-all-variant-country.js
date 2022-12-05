@@ -1,4 +1,3 @@
- // Parse the URL 
   $(".body-2").hide();
   $(".widget-card-big").hide();
   $(".content-2").hide();
@@ -19,6 +18,7 @@
     "DK" : ["DKK", "DKK"],
     "PL" : ["PLN", "PLN"]
   }
+  var countryWithAssistance = ["BE","FR","DE","NL","AT"];
 
   function getParameterByName(name) { 
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]"); 
@@ -122,13 +122,13 @@
         currency = countryCurrencySetup[country][1];
         curr = countryCurrencySetup[country][0];
 
-        /*if (country=="GB"){
-          currency ="£";
-          curr = "GBP";
+        if(countryWithAssistance.includes(country)){
+          $("#theftAssistance > div > div.div-block-51 > div:nth-child(3)").show()
         } else {
-          currency ="€";
-          curr = "EUR";
-        }*/
+          $("#theftAssistance > div > div.div-block-51 > div:nth-child(3)").hide()
+        }
+
+  
 
         if(curr=="EUR"){
           //$('.widget-price').text(monthlyPriceOmnium+currency+txtMonthlyPrice);
