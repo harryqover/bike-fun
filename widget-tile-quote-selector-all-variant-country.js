@@ -1,4 +1,4 @@
-console.log("v 20221205 1424");
+console.log("v 20221205 1427");
 
   $(".body-2").hide();
   $(".widget-card-big").hide();
@@ -123,6 +123,9 @@ console.log("v 20221205 1424");
         
         currency = countryCurrencySetup[country][1];
         curr = countryCurrencySetup[country][0];
+        
+        console.warn("country", country);
+        console.log("countryWithAssistance.includes(country)", countryWithAssistance.includes(country));
 
         if(countryWithAssistance.includes(country)){
           $("#theftAssistance > div > div.div-block-51 > div:nth-child(3)","#omnium > div > div.div-block-51 > div:nth-child(3)").show()
