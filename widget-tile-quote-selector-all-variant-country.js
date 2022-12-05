@@ -1,3 +1,5 @@
+console.log("v 20221205 1424");
+
   $(".body-2").hide();
   $(".widget-card-big").hide();
   $(".content-2").hide();
@@ -127,8 +129,6 @@
         } else {
           $("#theftAssistance > div > div.div-block-51 > div:nth-child(3)","#omnium > div > div.div-block-51 > div:nth-child(3)").hide()
         }
-
-  
 
         if(curr=="EUR"){
           //$('.widget-price').text(monthlyPriceOmnium+currency+txtMonthlyPrice);
