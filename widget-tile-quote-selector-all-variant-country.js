@@ -4,6 +4,22 @@
   $(".content-2").hide();
   $(".widget-card-big").css('opacity', '0');
 
+  var countryCurrencySetup = {
+    "BE" : ["EUR", "€"],
+    "FR" : ["EUR", "€"],
+    "AT" : ["EUR", "€"],
+    "DE" : ["EUR", "€"],
+    "IE" : ["EUR", "€"],
+    "IT" : ["EUR", "€"],
+    "PT" : ["EUR", "€"],
+    "FI" : ["EUR", "€"],
+    "SE" : ["SEK", "SEK"],
+    "NO" : ["NOK", "NOK"],
+    "GB" : ["GBP", "£"],
+    "DK" : ["DKK", "DKK"],
+    "PL" : ["PLN", "PLN"]
+  }
+
   function getParameterByName(name) { 
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]"); 
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"), 
@@ -103,13 +119,16 @@
 
         var txtMonthlyPrice = content["general.perMonth"];
         
-        if (country=="GB"){
+        currency = countryCurrencySetup[country][1];
+        curr = countryCurrencySetup[country][0];
+
+        /*if (country=="GB"){
           currency ="£";
           curr = "GBP";
         } else {
           currency ="€";
           curr = "EUR";
-        }
+        }*/
 
         if(curr=="EUR"){
           //$('.widget-price').text(monthlyPriceOmnium+currency+txtMonthlyPrice);
