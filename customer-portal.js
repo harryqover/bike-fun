@@ -87,6 +87,8 @@ function goLogin(cigarId, email) {
             $("[data-var='cigarid']").text(cigarId);
             $("[data-var='start']").text(start.toLocaleDateString());
             $("[data-var='end']").text(end.toLocaleDateString());
+            $("[data-var='theftdeductible']").text(obj.theftDeductible);
+            $("[data-var='materialdeductible']").text(obj.damageDeductible);
 
             $("[data-var='cancel']").attr("href","https://form.jotform.com/222763047790359?lang=en&contractid="+cigarId+"&email="+email);
             $("[data-var='documentupload']").attr("href","https://form.jotform.com/223391631989063?email="+email+"&contractReference="+cigarId+"&language=en");
