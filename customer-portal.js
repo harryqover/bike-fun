@@ -19,6 +19,12 @@ setTimeout(function(){
 
  },5000);
 
+function clickToLogin(){
+  var cigarId = $('input[name="name"]').val();
+  var email = $('input[name="email"]').val();
+  goLogin(cigarId, email);
+}
+
 function goLogin(cigarId, email) {
     var data = JSON.stringify({
         "cigarId": cigarId,
