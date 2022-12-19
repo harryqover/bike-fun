@@ -129,7 +129,7 @@ function goLogin(cigarId, email) {
             $("[data-var='documentupload']").attr("href","https://form.jotform.com/223391631989063?email="+email+"&contractReference="+cigarId+"&language=en");
             $("[data-var='claims']").attr("href","https://www.qover.com/claims?lang=en&contract="+cigarId+"&email="+email);
 
-            $("[data-var='explanation-deductible']").text("In case of total loss or theft the maximum amount refunded is EUR"+refundTheft+" and in case of repairs we refund repairs above the deductible of EUR"+Math.round(damageDeductibleAmount * 100) / 100);
+            $("[data-var='explanation-deductible']").text("In case of total loss or theft the maximum amount refunded is EUR "+refundTheft+" and in case of repairs we refund repairs above the deductible of EUR "+Math.round(damageDeductibleAmount * 100) / 100);
 
             var responseTest = {"country":"BE","depreciation":false,"damageDeductible":"DAMAGE_DEDUCTIBLE_ENGLISH_10PC","endDate":"2023-08-07T21:59:59.999Z","originalValue":115200,"partnerId":"5e7a295467920985a134f426","startDate":"2022-08-07T22:00:00.000Z","status":"STATUS_OPEN","theftDeductible":"THEFT_DEDUCTIBLE_STANDARD_10PC","variant":"VARIANT_THEFT_DAMAGE_ASSISTANCE"};
 
