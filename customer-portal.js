@@ -21,9 +21,7 @@ if(login && cigarId){
 setTimeout(function(){
   $("#email").val(getParameterByName("email"));
   $("#cigardid").val(getParameterByName("contract"));
-  
   //getTranslation();
-
  },2500);
 
 function clickToLogin(){
@@ -122,8 +120,8 @@ function goLogin(cigarId, email) {
             $("[data-var='cigarid']").text(cigarId);
             $("[data-var='start']").text(start.toLocaleDateString());
             $("[data-var='end']").text(end.toLocaleDateString());
-            $("[data-var='theftdeductible']").text("EUR", Math.round(theftDeductibleAmount * 100) / 100);
-            $("[data-var='materialdeductible']").text("EUR ", Math.round(damageDeductibleAmount * 100) / 100);
+            $("[data-var='theftdeductible']").text("EUR "+ Math.round(theftDeductibleAmount * 100) / 100);
+            $("[data-var='materialdeductible']").text("EUR "+ Math.round(damageDeductibleAmount * 100) / 100);
 
             $("[data-var='cancel']").attr("href","https://form.jotform.com/222763047790359?lang=en&contractid="+cigarId+"&email="+email);
             $("[data-var='documentupload']").attr("href","https://form.jotform.com/223391631989063?email="+email+"&contractReference="+cigarId+"&language=en");
