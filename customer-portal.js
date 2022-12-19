@@ -24,7 +24,7 @@ setTimeout(function(){
   
   //getTranslation();
 
- },5000);
+ },2500);
 
 function clickToLogin(){
   var cigarId = $('input[name="name"]').val();
