@@ -83,12 +83,47 @@ function goLogin(cigarId, email) {
                 claims_handler = "Qover";
             }
 
+            /* START DEFINE DEDUCTIBLES */
+            var theftDeductible = obj.theftDeductible;
+            var damageDeductible = obj.damageDeductible;
+            var bikeValue = obj.originalValue / 100;
+
+            if (damageDeductible == "DAMAGE_DEDUCTIBLE_ENGLISH_10PC" || damageDeductible == "DAMAGE_DEDUCTIBLE_STANDARD_10PC") {
+                var damageDeductibleAmount = bikeValue * 0.1;
+                if (damageDeductibleAmount > 200) {
+                    damageDeductibleAmount = 200;
+                } else if (damageDeductibleAmount < 50) {
+                    damageDeductibleAmount = 50;
+                }
+            } else if (damageDeductible == "DAMAGE_DEDUCTIBLE_ENGLISH_75_FIX") {
+                var damageDeductibleAmount = 75;
+            } else if (damageDeductible == "DAMAGE_DEDUCTIBLE_STANDARD_35_FIX") {
+                var damageDeductibleAmount = 35;
+            }
+
+            if (theftDeductible == "THEFT_DEDUCTIBLE_STANDARD_10PC") {
+                var theftDeductibleAmount = bikeValue * 0.1;
+                if (theftDeductibleAmount > 200) {
+                    theftDeductibleAmount = 200;
+                } else if (theftDeductibleAmount < 50) {
+                    theftDeductibleAmount = 50;
+                }
+            } else if (theftDeductible == "THEFT_DEDUCTIBLE_NO_DEDUCTIBLE") {
+                var theftDeductibleAmount = 0;
+            }
+            var refundDamage = bikeValue - damageDeductibleAmount;
+            var refundTheft = bikeValue - theftDeductibleAmount;
+
+            $(".damage-deductible").text(Math.round(damageDeductibleAmount * 100) / 100);
+            $(".theft-deductible").text(refundTheft);
+            /* END DEFINE DEDUCTIBLES */
+
             $("[data-var='product']").text(variants[obj.variant]);
             $("[data-var='cigarid']").text(cigarId);
             $("[data-var='start']").text(start.toLocaleDateString());
             $("[data-var='end']").text(end.toLocaleDateString());
-            $("[data-var='theftdeductible']").text(obj.theftDeductible);
-            $("[data-var='materialdeductible']").text(obj.damageDeductible);
+            $("[data-var='theftdeductible']").text("EUR", Math.round(theftDeductibleAmount * 100) / 100);
+            $("[data-var='materialdeductible']").text("EUR ", Math.round(damageDeductibleAmount * 100) / 100);
 
             $("[data-var='cancel']").attr("href","https://form.jotform.com/222763047790359?lang=en&contractid="+cigarId+"&email="+email);
             $("[data-var='documentupload']").attr("href","https://form.jotform.com/223391631989063?email="+email+"&contractReference="+cigarId+"&language=en");
