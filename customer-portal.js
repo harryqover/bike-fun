@@ -8,7 +8,7 @@ var login = getCookie("login");
 var cigarId = getCookie("cigarId");
 
 if(login && cigarId){
-  goLogin(cigarId, email);
+  goLogin(cigarId, login);
 }
 
 setTimeout(function(){
