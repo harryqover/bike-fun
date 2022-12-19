@@ -35,6 +35,7 @@ function goLogin(cigarId, email) {
     $(".loading").show();
     $("#connected").hide();
     $("#disconnected").hide();
+    $("#bikedata").hide();
 
     var data = JSON.stringify({
         "cigarId": cigarId,
@@ -172,5 +173,28 @@ function getNinjaData(cigarId, email){
 
   $.ajax(settings).done(function (response) {
     console.log(response);
+    $("[data-var='brand']").text(response.payload.risk.make);
+    $("[data-var='model']").text(response.payload.risk.model);
+    $("[data-var='serial']").text(response.payload.risk.serialNumber);
+    $("[data-var='value']").text("EUR "+response.payload.risk.originalValue/100);
+    $("#bikedata").show();
   });
+}
+
+function logout(){
+    $(".loading").show();
+    $("#connected").hide();
+    $("#disconnected").hide();
+
+    var timeToAdd = 1000 * 60 * 60 * 24 * -1 * 1 * 1;
+    var date = new Date();
+    var expiryTime = parseInt(date.getTime()) + timeToAdd;
+    date.setTime(expiryTime);
+    var utcTime = date.toUTCString();
+
+    document.cookie = "login=; expires=" + utcTime + ";";
+    document.cookie = "cigarId=; expires=" + utcTime + ";";
+
+    $(".loading").hide();
+    $("#disconnected").show();
 }
