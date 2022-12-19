@@ -11,7 +11,15 @@ if(login && cigarId){
   login(cigarId, email);
 }
 
-function login(cigarId, email) {
+setTimeout(function(){
+  $("#email").val(getParameterByName("email"));
+  $("#cigardid").val(getParameterByName("contract"));
+  
+  //getTranslation();
+
+ },5000);
+
+function goLogin(cigarId, email) {
     var data = JSON.stringify({
         "cigarId": cigarId,
         "email": email
