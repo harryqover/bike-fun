@@ -56,6 +56,8 @@ function login(cigarId, email) {
                 claims_handler = "Qover";
             }
 
+            var responseTest = {"country":"BE","depreciation":false,"damageDeductible":"DAMAGE_DEDUCTIBLE_ENGLISH_10PC","endDate":"2023-08-07T21:59:59.999Z","originalValue":115200,"partnerId":"5e7a295467920985a134f426","startDate":"2022-08-07T22:00:00.000Z","status":"STATUS_OPEN","theftDeductible":"THEFT_DEDUCTIBLE_STANDARD_10PC","variant":"VARIANT_THEFT_DAMAGE_ASSISTANCE"};
+
             /* YOU ARE LOGGED IN*/
             $("#connected").show();
             $("#disconnected").hide();
