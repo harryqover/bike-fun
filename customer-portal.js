@@ -135,7 +135,7 @@ function goLogin(cigarId, email) {
             $("#connected").show();
             $("#disconnected").hide();
             $(".loading").hide();
-
+            getNinjaData(cigarId, email);
 
         } else if (this.readyState === 4 && this.status === 400) {
             $("#connected").hide();
@@ -150,4 +150,26 @@ function goLogin(cigarId, email) {
     xhr.open("POST", "https://api.prd.qover.io/bike/v1/contracts/claim-info?apikey=pk_C0132D71B8C4C4E55690");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(data);
+}
+
+function getNinjaData(cigarId, email){
+  var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxMbv5qoBCHH9cYabzTgql7Ml2I0SucLFCy8vYNgdUwzOE8eb1psn5aW7wk7dOvY5M/exec";
+
+  var settings = {
+    "url": googleSheetUrl,
+    "method": "POST",
+    "timeout": 0,
+    "headers": {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
+    "data": JSON.stringify({
+      "cigarId": cigarId,
+      "email": email,
+      "action": "getContractData"
+    }),
+  };
+
+  $.ajax(settings).done(function (response) {
+    console.log(response);
+  });
 }
