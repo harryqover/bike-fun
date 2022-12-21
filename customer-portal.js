@@ -195,7 +195,9 @@ function getNinjaData(cigarId, email){
         $("[data-var='renewal']").text("cancelled");
     } else if(response.payload.status == "STATUS_CLOSED") {
         console.log("closed");
-        $("[data-var='renewalorcanceltext']").text("Cancelled on "+response.payload.versionInfo.effectiveDate);
+        var cancelDate = new Date(response.payload.versionInfo.effectiveDate);
+        
+        $("[data-var='renewalorcanceltext']").text("Cancelled on "+cancelDate.toLocaleDateString());
     } else {
         console.log("something else: "+response.payload.status+" - "+response.payload.versionInfo);
     }
