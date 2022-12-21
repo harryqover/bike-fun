@@ -188,8 +188,12 @@ function getNinjaData(cigarId, email){
 
     if(response.payload.status == "STATUS_OPEN" && !response.payload.versionInfo.cancelInformation){
         console.log("full active")
+    } else if(response.payload.status == "STATUS_OPEN" && response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == true) {
+        console.log("active but cancel at renewal")
+    } else if(response.payload.status == "STATUS_CLOSED") {
+        console.log("closed");
     } else {
-        console.log("not full active")
+        console.log("something else: "+response.payload.status+" - "+response.payload.versionInfo);
     }
 
     $("[data-var='value']").text("EUR "+response.payload.risk.originalValue/100);
