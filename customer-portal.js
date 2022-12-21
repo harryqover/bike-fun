@@ -232,7 +232,8 @@ function logout(){
 function translateAll(){
   let xhrLocales = new XMLHttpRequest();
   var content = "";
-  xhrLocales.open("get", "https://translations.qover.com/widget/" + lang + "-raw.json?refresh=007", true);
+  //https://api.prd.qover.io/i18n/v1/projects/webflow-customer-portal/en.json
+  xhrLocales.open("get", "https://api.prd.qover.io/i18n/v1/projects/" + lang + ".json?refresh=007", true);
   xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
 
   xhrLocales.onreadystatechange = function() {
