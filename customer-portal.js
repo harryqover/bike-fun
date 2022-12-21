@@ -192,11 +192,12 @@ function getNinjaData(cigarId, email){
         $("[data-var='renewal']").text("renewed");
     } else if(response.payload.status == "STATUS_OPEN" && response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == true) {
         console.log("active but cancel at renewal")
+        $(".statusdiv").css("background-color","#FFC1BC")
         $("[data-var='renewal']").text("cancelled");
     } else if(response.payload.status == "STATUS_CLOSED") {
         console.log("closed");
         var cancelDate = new Date(response.payload.versionInfo.effectiveDate);
-        
+        $(".statusdiv").css("background-color","#FFC1BC")
         $("[data-var='renewalorcanceltext']").text("Cancelled on "+cancelDate.toLocaleDateString());
     } else {
         console.log("something else: "+response.payload.status+" - "+response.payload.versionInfo);
