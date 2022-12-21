@@ -176,7 +176,7 @@ function getNinjaData(cigarId, email){
     $("[data-var='brand']").text(response.payload.risk.make);
     $("[data-var='model']").text(response.payload.risk.model);
     $("[data-var='serial']").text(response.payload.risk.serialNumber);
-    $("[data-var='price']").text(response.payload.price/100);
+    $("[data-var='price']").text("EUR "+response.payload.price/100);
     $("[data-var='status']").text(response.payload.status);
     
     $("[data-var='value']").text("EUR "+response.payload.risk.originalValue/100);
