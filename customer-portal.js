@@ -156,6 +156,13 @@ function goLogin(cigarId, email) {
 
 function getNinjaData(cigarId, email){
   var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxMbv5qoBCHH9cYabzTgql7Ml2I0SucLFCy8vYNgdUwzOE8eb1psn5aW7wk7dOvY5M/exec";
+  const statusContract = {
+    "STATUS_OPEN":"ACTIVE",
+    "STATUS_CLOSED":"CLOSED",
+    "STATUS_PENDING":"NOT ACTIVE",
+    "STATUS_INCOMPLETE":"MISSING DATA"
+  }
+
 
   var settings = {
     "url": googleSheetUrl,
@@ -177,8 +184,14 @@ function getNinjaData(cigarId, email){
     $("[data-var='model']").text(response.payload.risk.model);
     $("[data-var='serial']").text(response.payload.risk.serialNumber);
     $("[data-var='price']").text("EUR "+response.payload.price/100);
-    $("[data-var='status']").text(response.payload.status);
-    
+    $("[data-var='status']").text(statusContract[response.payload.status]);
+
+    if(response.payload.status == "STATUS_OPEN" && !response.payload.versionInfo.cancelInformation){
+        console.log("full active")
+    } else {
+        console.log("not full active")
+    }
+
     $("[data-var='value']").text("EUR "+response.payload.risk.originalValue/100);
     $("#bikedata").show();
     $("#connected").show();
