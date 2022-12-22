@@ -230,6 +230,7 @@ function logout(){
 }
 
 function translateAll(){
+    var lang = $('#langinput').find(":selected").val();
   let xhrLocales = new XMLHttpRequest();
   var content = "";
   //https://api.prd.qover.io/i18n/v1/projects/webflow-customer-portal/en.json
