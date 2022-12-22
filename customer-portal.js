@@ -3,9 +3,9 @@ const cowboyIds = ["60a75f9f987d3f484ed24ef4", "607937e4654780240a132641", "6093
 const cowboyAlteosIds = ["5ff6cf4fceba6039aadb446f", "60938efba79100e71519a03b", "607937e4654780240a132641", "61b1b145415df342d60f4e0f", "61b1c260415df342d60f4e10", "60a75f9f987d3f484ed24ef4"]
 
 const variants = {
-  "VARIANT_THEFT_DAMAGE_ASSISTANCE":"Omnium",
-  "VARIANT_THEFT_ASSISTANCE":"Theft & Assistance",
-  "VARIANT_ASSISTANCE":"Assistance 24/7"
+    "VARIANT_THEFT_DAMAGE_ASSISTANCE": "Omnium",
+    "VARIANT_THEFT_ASSISTANCE": "Theft & Assistance",
+    "VARIANT_ASSISTANCE": "Assistance 24/7"
 }
 
 $(".loading").hide();
@@ -15,20 +15,20 @@ $("#disconnected").show();
 var login = getCookie("login");
 var cigarId = getCookie("cigarId");
 
-if(login && cigarId){
-  goLogin(cigarId, login);
+if (login && cigarId) {
+    goLogin(cigarId, login);
 }
 
-setTimeout(function(){
-  $("#email").val(getParameterByName("email"));
-  $("#cigardid").val(getParameterByName("contract"));
-  //getTranslation();
- },2500);
+setTimeout(function() {
+    $("#email").val(getParameterByName("email"));
+    $("#cigardid").val(getParameterByName("contract"));
+    //getTranslation();
+}, 2500);
 
-function clickToLogin(){
-  var cigarId = $('input[name="name"]').val();
-  var email = $('input[name="email"]').val();
-  goLogin(cigarId, email);
+function clickToLogin() {
+    var cigarId = $('input[name="name"]').val();
+    var email = $('input[name="email"]').val();
+    goLogin(cigarId, email);
 }
 
 function goLogin(cigarId, email) {
@@ -56,8 +56,8 @@ function goLogin(cigarId, email) {
             var expiryTime = parseInt(date.getTime()) + timeToAdd;
             date.setTime(expiryTime);
             var utcTime = date.toUTCString();
-            document.cookie = "login="+email+"; expires=" + utcTime + ";";
-            document.cookie = "cigarId="+cigarId+"; expires=" + utcTime + ";";
+            document.cookie = "login=" + email + "; expires=" + utcTime + ";";
+            document.cookie = "cigarId=" + cigarId + "; expires=" + utcTime + ";";
 
             var obj = JSON.parse(this.responseText);
             var partnerId = obj.partnerId;
@@ -122,21 +122,32 @@ function goLogin(cigarId, email) {
             $("[data-var='cigarid']").text(cigarId);
             $("[data-var='start']").text(start.toLocaleDateString());
             $("[data-var='end']").text(end.toLocaleDateString());
-            $("[data-var='theftdeductible']").text("EUR "+ Math.round(theftDeductibleAmount * 100) / 100);
-            $("[data-var='materialdeductible']").text("EUR "+ Math.round(damageDeductibleAmount * 100) / 100);
+            $("[data-var='theftdeductible']").text("EUR " + Math.round(theftDeductibleAmount * 100) / 100);
+            $("[data-var='materialdeductible']").text("EUR " + Math.round(damageDeductibleAmount * 100) / 100);
 
-            $("[data-var='cancel']").attr("href","https://form.jotform.com/222763047790359?lang=en&contractid="+cigarId+"&email="+email);
-            $("[data-var='documentupload']").attr("href","https://form.jotform.com/223391631989063?email="+email+"&contractReference="+cigarId+"&language=en");
-            $("[data-var='claims']").attr("href","https://www.qover.com/claims?lang=en&contract="+cigarId+"&email="+email);
-            $("[data-var='amendlink']").attr("href","https://qoverme.zendesk.com/hc/fr/requests/new?tf_anonymous_requester_email="+email);
-            $("[data-var='contracttandlink']").attr("href","https://qoverme.zendesk.com/hc/fr/requests/new?tf_anonymous_requester_email="+email);
+            $("[data-var='cancel']").attr("href", "https://form.jotform.com/222763047790359?lang=en&contractid=" + cigarId + "&email=" + email);
+            $("[data-var='documentupload']").attr("href", "https://form.jotform.com/223391631989063?email=" + email + "&contractReference=" + cigarId + "&language=en");
+            $("[data-var='claims']").attr("href", "https://www.qover.com/claims?lang=en&contract=" + cigarId + "&email=" + email);
+            $("[data-var='amendlink']").attr("href", "https://qoverme.zendesk.com/hc/fr/requests/new?tf_anonymous_requester_email=" + email);
+            $("[data-var='contracttandlink']").attr("href", "https://qoverme.zendesk.com/hc/fr/requests/new?tf_anonymous_requester_email=" + email);
 
-            $("[data-var='explanation-deductible']").text("In case of total loss or theft the maximum amount refunded is EUR "+refundTheft+" and in case of repairs we refund repairs above the deductible of EUR "+Math.round(damageDeductibleAmount * 100) / 100);
+            $("[data-var='explanation-deductible']").text("In case of total loss or theft the maximum amount refunded is EUR " + refundTheft + " and in case of repairs we refund repairs above the deductible of EUR " + Math.round(damageDeductibleAmount * 100) / 100);
 
-            var responseTest = {"country":"BE","depreciation":false,"damageDeductible":"DAMAGE_DEDUCTIBLE_ENGLISH_10PC","endDate":"2023-08-07T21:59:59.999Z","originalValue":115200,"partnerId":"5e7a295467920985a134f426","startDate":"2022-08-07T22:00:00.000Z","status":"STATUS_OPEN","theftDeductible":"THEFT_DEDUCTIBLE_STANDARD_10PC","variant":"VARIANT_THEFT_DAMAGE_ASSISTANCE"};
+            var responseTest = {
+                "country": "BE",
+                "depreciation": false,
+                "damageDeductible": "DAMAGE_DEDUCTIBLE_ENGLISH_10PC",
+                "endDate": "2023-08-07T21:59:59.999Z",
+                "originalValue": 115200,
+                "partnerId": "5e7a295467920985a134f426",
+                "startDate": "2022-08-07T22:00:00.000Z",
+                "status": "STATUS_OPEN",
+                "theftDeductible": "THEFT_DEDUCTIBLE_STANDARD_10PC",
+                "variant": "VARIANT_THEFT_DAMAGE_ASSISTANCE"
+            };
 
             /* YOU ARE LOGGED IN*/
-            
+
             getNinjaData(cigarId, email);
 
         } else if (this.readyState === 4 && this.status === 400) {
@@ -154,64 +165,64 @@ function goLogin(cigarId, email) {
     xhr.send(data);
 }
 
-function getNinjaData(cigarId, email){
-  var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxMbv5qoBCHH9cYabzTgql7Ml2I0SucLFCy8vYNgdUwzOE8eb1psn5aW7wk7dOvY5M/exec";
-  const statusContract = {
-    "STATUS_OPEN":"ACTIVE",
-    "STATUS_CLOSED":"CLOSED",
-    "STATUS_PENDING":"NOT ACTIVE",
-    "STATUS_INCOMPLETE":"MISSING DATA"
-  }
-
-
-  var settings = {
-    "url": googleSheetUrl,
-    "method": "POST",
-    "timeout": 0,
-    "headers": {
-      "Content-Type": "text/plain;charset=utf-8"
-    },
-    "data": JSON.stringify({
-      "cigarId": cigarId,
-      "email": email,
-      "action": "getContractData"
-    }),
-  };
-
-  $.ajax(settings).done(function (response) {
-    console.log(response);
-    $("[data-var='brand']").text(response.payload.risk.make);
-    $("[data-var='model']").text(response.payload.risk.model);
-    $("[data-var='serial']").text(response.payload.risk.serialNumber);
-    $("[data-var='price']").text("EUR "+response.payload.price/100);
-    $("[data-var='status']").text(statusContract[response.payload.status]);
-    
-
-    if(response.payload.status == "STATUS_OPEN" && !response.payload.versionInfo.cancelInformation){
-        console.log("full active")
-        $("[data-var='renewal']").text("renewed");
-    } else if(response.payload.status == "STATUS_OPEN" && response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == true) {
-        console.log("active but cancel at renewal")
-        $(".statusdiv").css("background-color","#FFC1BC")
-        $("[data-var='renewal']").text("cancelled");
-    } else if(response.payload.status == "STATUS_CLOSED") {
-        console.log("closed");
-        var cancelDate = new Date(response.payload.versionInfo.effectiveDate);
-        $(".statusdiv").css("background-color","#FFC1BC")
-        $("[data-var='renewalorcanceltext']").text("Cancelled on "+cancelDate.toLocaleDateString());
-    } else {
-        console.log("something else: "+response.payload.status+" - "+response.payload.versionInfo);
+function getNinjaData(cigarId, email) {
+    var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxMbv5qoBCHH9cYabzTgql7Ml2I0SucLFCy8vYNgdUwzOE8eb1psn5aW7wk7dOvY5M/exec";
+    const statusContract = {
+        "STATUS_OPEN": "ACTIVE",
+        "STATUS_CLOSED": "CLOSED",
+        "STATUS_PENDING": "NOT ACTIVE",
+        "STATUS_INCOMPLETE": "MISSING DATA"
     }
 
-    $("[data-var='value']").text("EUR "+response.payload.risk.originalValue/100);
-    $("#bikedata").show();
-    $("#connected").show();
-    $("#disconnected").hide();
-    $(".loading").hide();
-  });
+
+    var settings = {
+        "url": googleSheetUrl,
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
+        "data": JSON.stringify({
+            "cigarId": cigarId,
+            "email": email,
+            "action": "getContractData"
+        }),
+    };
+
+    $.ajax(settings).done(function(response) {
+        console.log(response);
+        $("[data-var='brand']").text(response.payload.risk.make);
+        $("[data-var='model']").text(response.payload.risk.model);
+        $("[data-var='serial']").text(response.payload.risk.serialNumber);
+        $("[data-var='price']").text("EUR " + response.payload.price / 100);
+        $("[data-var='status']").text(statusContract[response.payload.status]);
+
+
+        if (response.payload.status == "STATUS_OPEN" && !response.payload.versionInfo.cancelInformation) {
+            console.log("full active")
+            $("[data-var='renewal']").text("renewed");
+        } else if (response.payload.status == "STATUS_OPEN" && response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == true) {
+            console.log("active but cancel at renewal")
+            $(".statusdiv").css("background-color", "#FFC1BC")
+            $("[data-var='renewal']").text("cancelled");
+        } else if (response.payload.status == "STATUS_CLOSED") {
+            console.log("closed");
+            var cancelDate = new Date(response.payload.versionInfo.effectiveDate);
+            $(".statusdiv").css("background-color", "#FFC1BC")
+            $("[data-var='renewalorcanceltext']").text("Cancelled on " + cancelDate.toLocaleDateString());
+        } else {
+            console.log("something else: " + response.payload.status + " - " + response.payload.versionInfo);
+        }
+
+        $("[data-var='value']").text("EUR " + response.payload.risk.originalValue / 100);
+        $("#bikedata").show();
+        $("#connected").show();
+        $("#disconnected").hide();
+        $(".loading").hide();
+    });
 }
 
-function logout(){
+function logout() {
     $(".loading").show();
     $("#connected").hide();
     $("#disconnected").hide();
@@ -229,24 +240,24 @@ function logout(){
     $("#disconnected").show();
 }
 
-function translateAll(){
+function translateAll() {
     var lang = $('#langinput').find(":selected").val();
-  let xhrLocales = new XMLHttpRequest();
-  var content = "";
-  //https://api.prd.qover.io/i18n/v1/projects/webflow-customer-portal/en.json
-  xhrLocales.open("get", "https://api.prd.qover.io/i18n/v1/projects/webflow-customer-portal/" + lang + ".json?refresh=007", true);
-  xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
+    let xhrLocales = new XMLHttpRequest();
+    var content = "";
+    //https://api.prd.qover.io/i18n/v1/projects/webflow-customer-portal/en.json
+    xhrLocales.open("get", "https://api.prd.qover.io/i18n/v1/projects/webflow-customer-portal/" + lang + ".json?refresh=007", true);
+    xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
 
-  xhrLocales.onreadystatechange = function() {
-    if (xhrLocales.readyState == 4) {
-      if (xhrLocales.status >= 200 && xhrLocales.status < 300 || xhrLocales.status == 304) {
-        content = JSON.parse(xhrLocales.responseText);
-        $( "[data-translation]" ).each(function( index ) {
-          $( this ).html(content[$( this ).data( "translation" )]);
-          var text = $( this ).html();
-        });
-      }
-    }
-  };
-  xhrLocales.send();
+    xhrLocales.onreadystatechange = function() {
+        if (xhrLocales.readyState == 4) {
+            if (xhrLocales.status >= 200 && xhrLocales.status < 300 || xhrLocales.status == 304) {
+                content = JSON.parse(xhrLocales.responseText);
+                $("[data-translation]").each(function(index) {
+                    $(this).html(content[$(this).data("translation")]);
+                    var text = $(this).html();
+                });
+            }
+        }
+    };
+    xhrLocales.send();
 }
