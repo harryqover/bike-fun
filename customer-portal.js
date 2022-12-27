@@ -1,4 +1,4 @@
-console.warn("v20221227 1243");
+console.warn("v20221227 1307");
 const cowboyIds = ["60a75f9f987d3f484ed24ef4", "607937e4654780240a132641", "60938efba79100e71519a03b", "5ff6cf4fceba6039aadb446f", "61b1c260415df342d60f4e10", "61b1b145415df342d60f4e0f", "61b1d0a02656f6227dc3476f", "61b8a43042cef3c0bc2cc26d", "61b8a49f11e584fcae0ee070", "61b8a45842cef3c0bc2cc26e", "61b8a4c211e584fcae0ee071", "61b8a4e807007c0a5b94d673", "61b8a51111e584fcae0ee072", "61b8a52111e584fcae0ee073"];
 const cowboyAlteosIds = ["5ff6cf4fceba6039aadb446f", "60938efba79100e71519a03b", "607937e4654780240a132641", "61b1b145415df342d60f4e0f", "61b1c260415df342d60f4e10", "60a75f9f987d3f484ed24ef4"]
 
@@ -7,6 +7,30 @@ const variants = {
     "VARIANT_THEFT_ASSISTANCE": "Theft & Assistance",
     "VARIANT_ASSISTANCE": "Assistance 24/7"
 }
+const assistancePhone = {
+    "BE" : "+32 2 541 92 01",
+    "FR" : "+33 9 78 46 61 24",
+    "DE" : "+49 800 589 39 21",
+    "NL" : "020 532 07 06"
+};
+
+const qoverPhone = {
+    "BE" : "+32 2 588 25 50",
+    "FR" : "+33 9 71 07 28 38",
+    "DE" : "+49 800 000 97 29",
+    "NL" : "020 532 07 05",
+    "ES" : "+34 900 861 622",
+    "IT" : "+39 800 693 271",
+    "PT" : "+351 800 181 009",
+    "GB" : "+44 800 048 8899",
+    "DK" : "xxx",
+    "NO" : "xxx",
+    "SE" : "xxx",
+    "FI" : "xxx",
+    "AT" : "xxx",
+    "PL" : "xxx",
+    "IE" : "xxx"
+};
 
 $(".loading").hide();
 $("#connected").hide();
@@ -125,6 +149,8 @@ function goLogin(cigarId, email) {
             $("[data-var='end']").text(end.toLocaleDateString());
             $("[data-var='theftdeductible']").text("EUR " + Math.round(theftDeductibleAmount * 100) / 100);
             $("[data-var='materialdeductible']").text("EUR " + Math.round(damageDeductibleAmount * 100) / 100);
+            $("[data-var='phone']").text(qoverPhone[country]);
+            $("[data-var='phoneassistance']").text(assistancePhone[country]);
 
             $("[data-var='cancel']").attr("href", "https://form.jotform.com/222763047790359?lang=en&contractid=" + cigarId + "&email=" + email);
             $("[data-var='documentupload']").attr("href", "https://form.jotform.com/223391631989063?email=" + email + "&contractReference=" + cigarId + "&language=en");
