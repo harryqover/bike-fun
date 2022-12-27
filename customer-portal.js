@@ -153,8 +153,9 @@ function goLogin(cigarId, email) {
             if(variant == "VARIANT_ASSISTANCE"){
                 $("[data-var='phoneassistance']").text("02 533 75 75");    
             } else if(variant == "VARIANT_THEFT_ASSISTANCE" || variant == "VARIANT_THEFT_DAMAGE_ASSISTANCE"){
-                $("[data-var='phoneassistance']").text(assistancePhone[country]);    
+                $("[data-var='phoneassistance']").text(assistancePhone[country]);
             } else {
+                $("[data-var='phoneassistance']").text("not available");    
                 $(".assistance-emergency").hide();
                 $(".div-block-324").hide();
             }

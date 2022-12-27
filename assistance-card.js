@@ -12,7 +12,7 @@ var assistancePhone = {
 	"FR" : "+33 9 78 46 61 24",
 	"DE" : "+49 800 589 39 21",
 	"NL" : "020 532 07 06"
-}
+};
 
 var qoverPhone = {
 	"BE" : "+32 2 588 25 50",
@@ -30,7 +30,7 @@ var qoverPhone = {
 	"AT" : "xxx",
 	"PL" : "xxx",
 	"IE" : "xxx"
-}
+};
 
 $("[data-phone='qover-text']").text(qoverPhone[country]);
 $("[data-phone='qover-link']").attr("href", "tel:"+qoverPhone[country]);
