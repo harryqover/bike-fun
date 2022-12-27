@@ -150,7 +150,15 @@ function goLogin(cigarId, email) {
             $("[data-var='theftdeductible']").text("EUR " + Math.round(theftDeductibleAmount * 100) / 100);
             $("[data-var='materialdeductible']").text("EUR " + Math.round(damageDeductibleAmount * 100) / 100);
             $("[data-var='phone']").text(qoverPhone[country]);
-            $("[data-var='phoneassistance']").text(assistancePhone[country]);
+            if(variant == "VARIANT_ASSISTANCE"){
+                $("[data-var='phoneassistance']").text("02 533 75 75");    
+            } else if(variant == "VARIANT_THEFT_ASSISTANCE" || variant == "VARIANT_THEFT_DAMAGE_ASSISTANCE"){
+                $("[data-var='phoneassistance']").text(assistancePhone[country]);    
+            } else {
+                $(".assistance-emergency").hide();
+                $(".div-block-324").hide();
+            }
+            
 
             $("[data-var='cancel']").attr("href", "https://form.jotform.com/222763047790359?lang=en&contractid=" + cigarId + "&email=" + email);
             $("[data-var='documentupload']").attr("href", "https://form.jotform.com/223391631989063?email=" + email + "&contractReference=" + cigarId + "&language=en");
