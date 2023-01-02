@@ -34,6 +34,8 @@ const qoverPhone = {
     "IE" : "xxx"
 };
 
+var translations;
+
 $(".loading").hide();
 $("#connected").hide();
 $("#disconnected").show();
@@ -268,7 +270,7 @@ function getNinjaData(cigarId, email) {
 
         if(partnerWith120Fee.includes(response.payload.refs.partnerId)){
             var partnerServiceFee = 12000 - response.payload.price;
-            $(".div-block-323").after("<div class='subprice'>Doesn\'t include partner\'s Premium Software Services "+currency+" "+partnerServiceFee/100+"</div>")
+            $(".div-block-323").after("<div class='subprice' data-translation='premiumsoftwareservices'><span>Doesn\'t include partner\'s Premium Software Services</span> ("+currency+" "+partnerServiceFee/100+")</div>")
         }
 
         $("[data-var='value']").text(currency+" " + response.payload.risk.originalValue / 100);
@@ -301,7 +303,6 @@ function translateAll() {
     var lang = $('#langinput').find(":selected").val();
     let xhrLocales = new XMLHttpRequest();
     var content = "";
-    //https://api.prd.qover.io/i18n/v1/projects/webflow-customer-portal/en.json
     xhrLocales.open("get", "https://api.prd.qover.io/i18n/v1/projects/webflow-customer-portal/" + lang + ".json?refresh=007", true);
     xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
 
@@ -309,6 +310,8 @@ function translateAll() {
         if (xhrLocales.readyState == 4) {
             if (xhrLocales.status >= 200 && xhrLocales.status < 300 || xhrLocales.status == 304) {
                 content = JSON.parse(xhrLocales.responseText);
+                window.translations = content;
+                console.log(window.translations);
                 $("[data-translation]").each(function(index) {
                     $(this).html(content[$(this).data("translation")]);
                     var text = $(this).html();
