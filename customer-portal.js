@@ -257,7 +257,7 @@ function getNinjaData(cigarId, email) {
 
         if(response.payload.terms.variant == "VARIANT_ASSISTANCE"){
             $("[data-var='phoneassistance']").text("02 533 75 75"); 
-            $(".div-block-324").hide();   
+            $(".div-block-324,.div-block-309").hide();   
         } else if(response.payload.terms.variant == "VARIANT_THEFT_ASSISTANCE" || response.payload.terms.variant == "VARIANT_THEFT_DAMAGE_ASSISTANCE"){
             $("[data-var='phoneassistance']").text(assistancePhone[response.payload.refs.country]);
             $("[data-var='explanation-deductible']").text(translations['incaseoftheft']+ " "+ currency + " " + refundTheft + " "+translations['incaseofdamage']+ " "+ currency + " " + Math.round(damageDeductibleAmount * 100) / 100);
