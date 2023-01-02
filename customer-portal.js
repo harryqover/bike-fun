@@ -37,6 +37,7 @@ const qoverPhone = {
 var translations;
 var refundDamage = 0;
 var refundTheft = 0;
+var damageDeductibleAmount = 0;
 
 $(".loading").hide();
 $("#connected").hide();
@@ -145,6 +146,7 @@ function goLogin(cigarId, email) {
             }
             window.refundDamage = bikeValue - damageDeductibleAmount;
             window.refundTheft = bikeValue - theftDeductibleAmount;
+            window.damageDeductibleAmount = damageDeductibleAmount;
 
             $(".damage-deductible").text(Math.round(damageDeductibleAmount * 100) / 100);
             $(".theft-deductible").text(refundTheft);
