@@ -35,6 +35,8 @@ const qoverPhone = {
 };
 
 var translations;
+var refundDamage = 0;
+var refundTheft = 0;
 
 $(".loading").hide();
 $("#connected").hide();
@@ -141,8 +143,8 @@ function goLogin(cigarId, email) {
             } else if (theftDeductible == "THEFT_DEDUCTIBLE_NO_DEDUCTIBLE") {
                 var theftDeductibleAmount = 0;
             }
-            var refundDamage = bikeValue - damageDeductibleAmount;
-            var refundTheft = bikeValue - theftDeductibleAmount;
+            window.refundDamage = bikeValue - damageDeductibleAmount;
+            window.refundTheft = bikeValue - theftDeductibleAmount;
 
             $(".damage-deductible").text(Math.round(damageDeductibleAmount * 100) / 100);
             $(".theft-deductible").text(refundTheft);
@@ -181,21 +183,6 @@ function goLogin(cigarId, email) {
             $("[data-var='claims']").attr("href", "https://www.qover.com/claims?lang="+lang+"&contract=" + cigarId + "&email=" + email);
             $("[data-var='amendlink']").attr("href", "https://qoverme.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_anonymous_requester_email=" + email);
             $("[data-var='contracttandlink']").attr("href", "https://qoverme.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_anonymous_requester_email=" + email);
-
-            $("[data-var='explanation-deductible']").text("In case of total loss or theft the maximum amount refunded is EUR " + refundTheft + " and in case of repairs we refund repairs above the deductible of EUR " + Math.round(damageDeductibleAmount * 100) / 100);
-
-            var responseTest = {
-                "country": "BE",
-                "depreciation": false,
-                "damageDeductible": "DAMAGE_DEDUCTIBLE_ENGLISH_10PC",
-                "endDate": "2023-08-07T21:59:59.999Z",
-                "originalValue": 115200,
-                "partnerId": "5e7a295467920985a134f426",
-                "startDate": "2022-08-07T22:00:00.000Z",
-                "status": "STATUS_OPEN",
-                "theftDeductible": "THEFT_DEDUCTIBLE_STANDARD_10PC",
-                "variant": "VARIANT_THEFT_DAMAGE_ASSISTANCE"
-            };
 
             /* YOU ARE LOGGED IN*/
 
@@ -273,6 +260,7 @@ function getNinjaData(cigarId, email) {
             $(".div-block-324").hide();   
         } else if(response.payload.terms.variant == "VARIANT_THEFT_ASSISTANCE" || response.payload.terms.variant == "VARIANT_THEFT_DAMAGE_ASSISTANCE"){
             $("[data-var='phoneassistance']").text(assistancePhone[response.payload.refs.country]);
+            $("[data-var='explanation-deductible']").text(translations['incaseoftheft']+ " "+ currency + " " + refundTheft + " "+translations['incaseofdamage']+ " "+ currency + " " + Math.round(damageDeductibleAmount * 100) / 100);
         } else {
             $("[data-var='phoneassistance']").text("not available");    
             $(".assistance-emergency").hide();
