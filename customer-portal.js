@@ -166,13 +166,21 @@ function goLogin(cigarId, email) {
                 $(".assistance-emergency").hide();
                 $(".div-block-324").hide();
             }
-            */            
+            */  
+            var lang = $('#langinput').find(":selected").val(); 
 
-            $("[data-var='cancel']").attr("href", "https://form.jotform.com/222763047790359?lang=en&contractid=" + cigarId + "&email=" + email);
-            $("[data-var='documentupload']").attr("href", "https://form.jotform.com/223391631989063?email=" + email + "&contractReference=" + cigarId + "&language=en");
-            $("[data-var='claims']").attr("href", "https://www.qover.com/claims?lang=en&contract=" + cigarId + "&email=" + email);
-            $("[data-var='amendlink']").attr("href", "https://qoverme.zendesk.com/hc/fr/requests/new?tf_anonymous_requester_email=" + email);
-            $("[data-var='contracttandlink']").attr("href", "https://qoverme.zendesk.com/hc/fr/requests/new?tf_anonymous_requester_email=" + email);
+            var zendeskLang = "fr";
+            if(lang == "en"){
+                zendeskLang = "en-be";
+            } else if (lang == "nl") {
+                zendeskLang = "nl-be";
+            }
+
+            $("[data-var='cancel']").attr("href", "https://form.jotform.com/222763047790359?lang="+lang+"&contractid=" + cigarId + "&email=" + email);
+            $("[data-var='documentupload']").attr("href", "https://form.jotform.com/223391631989063?email=" + email + "&contractReference=" + cigarId + "&language="+lang);
+            $("[data-var='claims']").attr("href", "https://www.qover.com/claims?lang="+lang+"&contract=" + cigarId + "&email=" + email);
+            $("[data-var='amendlink']").attr("href", "https://qoverme.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_anonymous_requester_email=" + email);
+            $("[data-var='contracttandlink']").attr("href", "https://qoverme.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_anonymous_requester_email=" + email);
 
             $("[data-var='explanation-deductible']").text("In case of total loss or theft the maximum amount refunded is EUR " + refundTheft + " and in case of repairs we refund repairs above the deductible of EUR " + Math.round(damageDeductibleAmount * 100) / 100);
 
