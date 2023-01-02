@@ -1,4 +1,4 @@
-console.warn("v20230102 1213");
+console.warn("v20230102 1412");
 const cowboyIds = ["60a75f9f987d3f484ed24ef4", "607937e4654780240a132641", "60938efba79100e71519a03b", "5ff6cf4fceba6039aadb446f", "61b1c260415df342d60f4e10", "61b1b145415df342d60f4e0f", "61b1d0a02656f6227dc3476f", "61b8a43042cef3c0bc2cc26d", "61b8a49f11e584fcae0ee070", "61b8a45842cef3c0bc2cc26e", "61b8a4c211e584fcae0ee071", "61b8a4e807007c0a5b94d673", "61b8a51111e584fcae0ee072", "61b8a52111e584fcae0ee073"];
 const cowboyAlteosIds = ["5ff6cf4fceba6039aadb446f", "60938efba79100e71519a03b", "607937e4654780240a132641", "61b1b145415df342d60f4e0f", "61b1c260415df342d60f4e10", "60a75f9f987d3f484ed24ef4"]
 
@@ -229,6 +229,7 @@ function getNinjaData(cigarId, email) {
 
     $.ajax(settings).done(function(response) {
         console.log(response);
+        const currency = response.payload.currency;
         $("[data-var='brand']").text(response.payload.risk.make);
         $("[data-var='model']").text(response.payload.risk.model);
         $("[data-var='serial']").text(response.payload.risk.serialNumber);
@@ -264,10 +265,11 @@ function getNinjaData(cigarId, email) {
         }
 
         if(response.payload.refs.partnerId == "606c50af2c855b773d15fd37"){
-            $("[data-translation='peryear']").after("<div class='subprice'>Price doesn\'t include partner\'s premium fee</div>")
+            var partnerServiceFee = 12000 - response.payload.price;
+            $(".div-block-323").after("<div class='subprice'>Doesn\'t include partner\'s Premium Software Services "+currency+" "+partnerServiceFee/100+"</div>")
         }
 
-        $("[data-var='value']").text("EUR " + response.payload.risk.originalValue / 100);
+        $("[data-var='value']").text(currency+" " + response.payload.risk.originalValue / 100);
         $("#bikedata").show();
         $("#connected").show();
         $("#disconnected").hide();
