@@ -322,3 +322,4 @@ function translateAll() {
     };
     xhrLocales.send();
 }
+translateAll();
