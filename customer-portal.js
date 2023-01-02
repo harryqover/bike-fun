@@ -150,6 +150,8 @@ function goLogin(cigarId, email) {
             $("[data-var='theftdeductible']").text("EUR " + Math.round(theftDeductibleAmount * 100) / 100);
             $("[data-var='materialdeductible']").text("EUR " + Math.round(damageDeductibleAmount * 100) / 100);
             $("[data-var='phone']").text(qoverPhone[country]);
+
+            /*
             if(variant == "VARIANT_ASSISTANCE"){
                 $("[data-var='phoneassistance']").text("02 533 75 75");    
             } else if(variant == "VARIANT_THEFT_ASSISTANCE" || variant == "VARIANT_THEFT_DAMAGE_ASSISTANCE"){
@@ -159,7 +161,7 @@ function goLogin(cigarId, email) {
                 $(".assistance-emergency").hide();
                 $(".div-block-324").hide();
             }
-            
+            */            
 
             $("[data-var='cancel']").attr("href", "https://form.jotform.com/222763047790359?lang=en&contractid=" + cigarId + "&email=" + email);
             $("[data-var='documentupload']").attr("href", "https://form.jotform.com/223391631989063?email=" + email + "&contractReference=" + cigarId + "&language=en");
@@ -248,6 +250,17 @@ function getNinjaData(cigarId, email) {
             $("[data-var='renewalorcanceltext']").text("Cancelled on " + cancelDate.toLocaleDateString());
         } else {
             console.log("something else: " + response.payload.status + " - " + response.payload.versionInfo);
+        }
+
+        if(response.payload.terms.variant == "VARIANT_ASSISTANCE"){
+            $("[data-var='phoneassistance']").text("02 533 75 75"); 
+            $(".div-block-324").hide();   
+        } else if(response.payload.terms.variant == "VARIANT_THEFT_ASSISTANCE" || response.payload.terms.variant == "VARIANT_THEFT_DAMAGE_ASSISTANCE"){
+            $("[data-var='phoneassistance']").text(assistancePhone[response.payload.refs.country]);
+        } else {
+            $("[data-var='phoneassistance']").text("not available");    
+            $(".assistance-emergency").hide();
+            //$(".div-block-324").hide();
         }
 
         $("[data-var='value']").text("EUR " + response.payload.risk.originalValue / 100);
