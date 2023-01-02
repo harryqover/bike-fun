@@ -39,6 +39,7 @@ var translations;
 $(".loading").hide();
 $("#connected").hide();
 $("#disconnected").show();
+$("[data-translation='logout']").hide();
 
 var login = getCookie("login");
 var cigarId = getCookie("cigarId");
@@ -192,6 +193,8 @@ function goLogin(cigarId, email) {
 
             getNinjaData(cigarId, email);
 
+            $("[data-translation='logout']").show();
+
         } else if (this.readyState === 4 && this.status === 400) {
             $("#connected").hide();
             $("#disconnected").show();
@@ -298,6 +301,7 @@ function logout() {
 
     $(".loading").hide();
     $("#disconnected").show();
+    $("[data-translation='logout']").hide();
 }
 
 function translateAll() {
