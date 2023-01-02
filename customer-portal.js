@@ -1,4 +1,4 @@
-console.warn("v20230102 1430");
+console.warn("v20230102 1433");
 const cowboyIds = ["60a75f9f987d3f484ed24ef4", "607937e4654780240a132641", "60938efba79100e71519a03b", "5ff6cf4fceba6039aadb446f", "61b1c260415df342d60f4e10", "61b1b145415df342d60f4e0f", "61b1d0a02656f6227dc3476f", "61b8a43042cef3c0bc2cc26d", "61b8a49f11e584fcae0ee070", "61b8a45842cef3c0bc2cc26e", "61b8a4c211e584fcae0ee071", "61b8a4e807007c0a5b94d673", "61b8a51111e584fcae0ee072", "61b8a52111e584fcae0ee073"];
 const cowboyAlteosIds = ["5ff6cf4fceba6039aadb446f", "60938efba79100e71519a03b", "607937e4654780240a132641", "61b1b145415df342d60f4e0f", "61b1c260415df342d60f4e10", "60a75f9f987d3f484ed24ef4"]
 
@@ -270,7 +270,7 @@ function getNinjaData(cigarId, email) {
 
         if(partnerWith120Fee.includes(response.payload.refs.partnerId)){
             var partnerServiceFee = 12000 - response.payload.price;
-            $(".div-block-323").after("<div class='subprice' data-translation='premiumsoftwareservices'><span>Doesn\'t include partner\'s Premium Software Services</span> ("+currency+" "+partnerServiceFee/100+")</div>")
+            $(".div-block-323").after("<div class='subprice' >"+translations['premiumsoftwareservices']+" ("+currency+" "+partnerServiceFee/100+")</div>")
         }
 
         $("[data-var='value']").text(currency+" " + response.payload.risk.originalValue / 100);
