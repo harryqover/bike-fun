@@ -294,6 +294,7 @@ function logout() {
 
     document.cookie = "login=; expires=" + utcTime + ";";
     document.cookie = "cigarId=; expires=" + utcTime + ";";
+    $("#cigardid,#email").val('');
 
     $(".loading").hide();
     $("#disconnected").show();
