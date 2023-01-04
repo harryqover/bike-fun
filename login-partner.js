@@ -50,6 +50,8 @@
   }
 
   $( "<a onclick='showMagicLink()' id='magicLink'>Recevoir un lien magique pour se connecter</a>" ).insertAfter( ".submit-button-5" );
+  $( "<a onclick='showCreateAccount()' id='showCreateAccount'>Créer un compte ou mettre à jour le mot de passe</a>" ).insertAfter( ".submit-button-5" );
+
 
   function showMagicLink(){
     $("#password").hide();
