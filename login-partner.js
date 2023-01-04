@@ -89,10 +89,9 @@
       console.log(response);
       //var authorization = response.payload.authorization;
       if(response.payload == "success"){
-        setCookie("username", username, "7");
-        $(".hide-when-loading").text("Vérifiez votre boite email");
+        $(".hide-when-loading").text("Un administrateur va valider votre compte");
       } else {
-        $(".hide-when-loading").text("Erreur avec votre email");
+        $(".hide-when-loading").text("Erreur");
       }
       
       $(".hide-when-loading").show();
