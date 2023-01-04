@@ -56,14 +56,14 @@
   function showMagicLink(){
     $("#password").hide();
     $(".submit-button-5").hide();
-    $("#magicLink").hide();
+    $("#magicLink,#showCreateAccount").hide();
     $('<button onclick="getMagicLink()" style="display:block; width:280px; margin: 15px auto;" class="submit-button-5 w-button">Envoyer le lien par email</button>').insertAfter( ".submit-button-5" );
 
   }
 
   function showCreateAccount(){
     $(".submit-button-5").hide();
-    $("#magicLink").hide();
+    $("#magicLink,#showCreateAccount").hide();
     $('<input type="text" id="partnershop" name="partnershop" placeholder="Nom du magasin" class="text-field-3 w-input" value="" autocomplete="off">').insertAfter( "#password" );
     $('<button onclick="createAccount()" style="display:block; width:280px; margin: 15px auto;" class="submit-button-5 w-button">Créer un compte ou mettre à jour le mot de passe</button>').insertAfter( ".submit-button-5" );
 
