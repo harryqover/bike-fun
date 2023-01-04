@@ -49,7 +49,7 @@
     });
   }
 
-  $( "<a onclick='showMagicLink()' id='magicLink'>Recevoir un lien magique pour se connecter</a><br>" ).insertAfter( ".submit-button-5" );
+  $( "<a onclick='showMagicLink()' id='magicLink'>Se connecter à l'aide d'un lien</a><br>" ).insertAfter( ".submit-button-5" );
   $( "<a onclick='showCreateAccount()' id='showCreateAccount'>Créer un compte ou mettre à jour le mot de passe</a><br>" ).insertAfter( ".submit-button-5" );
 
 
