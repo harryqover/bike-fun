@@ -62,7 +62,9 @@
   function showCreateAccount(){
     $(".submit-button-5").hide();
     $("#magicLink").hide();
+    $('<input type="text" id="partnershop" name="partnershop" placeholder="Nom du magasin" class="text-field-3 w-input" value="" autocomplete="off">').insertAfter( "#password" );
     $('<button onclick="createAccount()" style="display:block; width:280px; margin: 15px auto;" class="submit-button-5 w-button">Créer un compte ou mettre à jour le mot de passe</button>').insertAfter( ".submit-button-5" );
+
 
   }
 
@@ -71,6 +73,7 @@
     $(".hide-when-loading").hide(250);
     var username = $("#username").val();
     var password = $("#password").val();
+    var partnershop = $("#partnershop").val();
     var settings = {
       "url": googleSheetUrl,
       "method": "POST",
@@ -81,6 +84,7 @@
       "data": JSON.stringify({
         "username": username,
         "password": password,
+        "partnershop":partnershop,
         "action": "createAccount"
       }),
     };
