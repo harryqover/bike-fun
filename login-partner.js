@@ -59,6 +59,48 @@
 
   }
 
+  function showCreateAccount(){
+    $(".submit-button-5").hide();
+    $("#magicLink").hide();
+    $('<button onclick="createAccount()" style="display:block; width:280px; margin: 15px auto;" class="submit-button-5 w-button">Créer un compte ou mettre à jour le mot de passe</button>').insertAfter( ".submit-button-5" );
+
+  }
+
+  function createAccount(){
+    $(".loading").show(250);
+    $(".hide-when-loading").hide(250);
+    var username = $("#username").val();
+    var password = $("#password").val();
+    var settings = {
+      "url": googleSheetUrl,
+      "method": "POST",
+      "timeout": 0,
+      "headers": {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      "data": JSON.stringify({
+        "username": username,
+        "password": password,
+        "action": "createAccount"
+      }),
+    };
+
+    $.ajax(settings).done(function (response) {
+      console.log(response);
+      //var authorization = response.payload.authorization;
+      if(response.payload == "success"){
+        setCookie("username", username, "7");
+        $(".hide-when-loading").text("Vérifiez votre boite email");
+      } else {
+        $(".hide-when-loading").text("Erreur avec votre email");
+      }
+      
+      $(".hide-when-loading").show();
+      $(".loading").hide();
+    });
+  }
+
+
   function getMagicLink(){
     $(".loading").show(250);
     $(".hide-when-loading").hide(250);
