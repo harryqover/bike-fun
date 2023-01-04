@@ -139,7 +139,12 @@
   }
 
   var auth = getParameterByName("auth");
+
   if(auth){
+    var partner = getParameterByName("partner");
+    var username = getParameterByName("username");
+    setCookie("username", username, "7");
+    setCookie("partnerName", partner, "7");
     setCookie("authvoucher", auth, "7");
     window.location.href = 'https://bike.qover.com/portal/main';
   }
