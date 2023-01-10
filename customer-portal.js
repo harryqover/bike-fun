@@ -98,6 +98,7 @@ function goLogin(cigarId, email) {
             var country = obj.country;
             var start = new Date(obj.startDate);
             var end = new Date(obj.endDate);
+            end.setDate(end.getDate() + 1);
             console.log(obj);
             console.log(partnerMapping[partnerId]);
 
