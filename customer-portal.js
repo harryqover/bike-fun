@@ -91,8 +91,8 @@ function goLogin(cigarId, email) {
             var expiryTime = parseInt(date.getTime()) + timeToAdd;
             date.setTime(expiryTime);
             var utcTime = date.toUTCString();
-            document.cookie = "login=" + email + "; expires=" + utcTime + ";";
-            document.cookie = "cigarId=" + cigarId + "; expires=" + utcTime + ";";
+            //document.cookie = "login=" + email + "; expires=" + utcTime + ";";
+            //document.cookie = "cigarId=" + cigarId + "; expires=" + utcTime + ";";
 
             var obj = JSON.parse(this.responseText);
             var partnerId = obj.partnerId;
