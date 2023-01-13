@@ -49,10 +49,11 @@ $("[data-translation='logout']").hide();
 
 var login = getCookie("login");
 var cigarId = getCookie("cigarId");
-
+/*
 if (login && cigarId) {
     goLogin(cigarId, login);
 }
+*/
 
 setTimeout(function() {
     $("#email").val(getParameterByName("email"));
@@ -67,26 +68,24 @@ function clickToLogin() {
 }
 
 function goLogin(cigarId, email) {
+    console.log("start goLogin")
     translateAll();
     $(".loading").show();
     $("#connected").hide();
     $("#disconnected").hide();
     $("#bikedata").hide();
+    console.log("loading should be visible")
 
     var data = JSON.stringify({
         "cigarId": cigarId,
         "email": email
     });
-    var partnerMapping = {
-        "5e58cf936ad8cf0e9dc678a6": "unknown",
-    };
 
     var xhr = new XMLHttpRequest();
     xhr.withCredentials = true;
 
     xhr.addEventListener("readystatechange", function() {
         if (this.readyState === 4 && this.status === 200) {
-
             var timeToAdd = 1000 * 60 * 60 * 24 * 1 * 1 * 1;
             var date = new Date();
             var expiryTime = parseInt(date.getTime()) + timeToAdd;
@@ -103,7 +102,6 @@ function goLogin(cigarId, email) {
             var end = new Date(obj.endDate);
             end.setDate(end.getDate() + 1);
             console.log(obj);
-            console.log(partnerMapping[partnerId]);
 
             var isCowboy = cowboyIds.includes(partnerId);
             var isCowboyAlteosId = cowboyAlteosIds.includes(partnerId);
@@ -164,17 +162,7 @@ function goLogin(cigarId, email) {
             $("[data-var='materialdeductible']").text("EUR " + Math.round(damageDeductibleAmount * 100) / 100);
             $("[data-var='phone']").text(qoverPhone[country]);
 
-            /*
-            if(variant == "VARIANT_ASSISTANCE"){
-                $("[data-var='phoneassistance']").text("02 533 75 75");    
-            } else if(variant == "VARIANT_THEFT_ASSISTANCE" || variant == "VARIANT_THEFT_DAMAGE_ASSISTANCE"){
-                $("[data-var='phoneassistance']").text(assistancePhone[country]);
-            } else {
-                $("[data-var='phoneassistance']").text("not available");    
-                $(".assistance-emergency").hide();
-                $(".div-block-324").hide();
-            }
-            */  
+     
             var lang = $('#langinput').find(":selected").val(); 
 
             var zendeskLang = "fr";
@@ -227,7 +215,6 @@ function getNinjaData(cigarId, email) {
         "STATUS_INCOMPLETE": translations['missingdata']
     }
 
-
     var settings = {
         "url": googleSheetUrl,
         "method": "POST",
@@ -252,10 +239,10 @@ function getNinjaData(cigarId, email) {
         $("[data-var='status']").text(statusContract[response.payload.status]);
 
 
-        if (response.payload.status == "STATUS_OPEN" && !response.payload.versionInfo.cancelInformation) {
+        if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && !response.payload.versionInfo.cancelInformation) {
             console.log("full active")
             $("[data-var='renewal']").text(translations['renewed']);
-        } else if (response.payload.status == "STATUS_OPEN" && response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == true) {
+        } else if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == true) {
             console.log("active but cancel at renewal")
             $(".statusdiv").css("background-color", "#FFC1BC")
             $("[data-var='renewal']").text(translations['cancelled']);
