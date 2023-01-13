@@ -195,7 +195,7 @@ function goLogin(cigarId, email) {
             console.log(this.status);
             var obj = JSON.parse(this.responseText);
             alert(obj.message);
-        } else {
+        } else if (this.readyState === 4) {
             logout();
             console.log(this.status);
         }
