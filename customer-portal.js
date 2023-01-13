@@ -198,23 +198,17 @@ function goLogin(cigarId, email) {
             $("[data-translation='logout']").show();
 
         } else if (this.readyState === 4 && this.status === 400) {
-            $("#connected").hide();
-            $("#disconnected").show();
-            $(".loading").hide();
+            logout();
             console.log(this.status);
             var obj = JSON.parse(this.responseText);
             alert(obj.message);
         } else if (this.readyState === 4 && this.status === 404) {
-            $("#connected").hide();
-            $("#disconnected").show();
-            $(".loading").hide();
+            logout();
             console.log(this.status);
             var obj = JSON.parse(this.responseText);
             alert(obj.message);
         } else {
-            $("#connected").hide();
-            $("#disconnected").show();
-            $(".loading").hide();
+            logout();
             console.log(this.status);
         }
     });
