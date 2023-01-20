@@ -345,3 +345,10 @@ function trck(cigarId, click) {
         console.log(response);
     });
 }
+$(function(){
+    $("[data-var]").click(function() {
+        var clickedThing = $(this).data('var');
+        var cigarId = $("#cigardid").val();
+        trck(cigarId, clickedThing)
+    });
+});
