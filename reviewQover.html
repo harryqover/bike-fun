@@ -15,7 +15,7 @@
 			var cigarId = getParameterByName("c");
 			var source = getParameterByName("s");
 
-			console.warn(score);
+			console.warn(rating);
 
 			var googleSheetUrl = "https://script.google.com/macros/s/AKfycbyzxKUaL5DCzI3ND_9j4WgLW0-8eXH3wDG276jZD7wbwhTY8ut2FRIMTrkeHUQQOceD/exec";
 
@@ -28,7 +28,7 @@
 		        },
 		        "data": JSON.stringify({
 		            "cigarId": cigarId,
-		            "score": score,
+		            "rating": rating,
 		            "zendeskId": zendeskId,
 		            "source": source
 		        }),
