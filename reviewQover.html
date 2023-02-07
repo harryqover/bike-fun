@@ -53,7 +53,10 @@
 			if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
 				console.log(this.responseText);
 			    if (rating > 3) {
-				  window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
+			    	var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://g.page/r/CeJV3VPdzwkCEAI/review"];
+					var randomIndex = Math.floor(Math.random() * redirectUrls.length);
+					window.location.replace(redirectUrls[randomIndex]);
+				  	//window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
 				} else {
 				  window.location.replace("https://form.jotform.com/221674111787054");
 				}
