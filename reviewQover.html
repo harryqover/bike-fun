@@ -36,13 +36,13 @@
 
 		    $.ajax(settings).done(function(response) {
 		        console.log(response);
-		    });
 
-			if(rating > 3){
+		        if(rating > 3){
 				window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
-			} else {
-				window.location.replace("https://form.jotform.com/221674111787054");
-			}
+				} else {
+					window.location.replace("https://form.jotform.com/221674111787054");
+				}
+		    });
 
 
 			console.log("https://harryqover.github.io/bike-fun/reviewQover?r=3&z=56788&c=BE109817398&s=emailConfirmation");
