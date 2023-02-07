@@ -17,7 +17,7 @@
 
 			console.warn(rating);
 
-			var googleSheetUrl = "https://script.google.com/macros/s/AKfycbyzxKUaL5DCzI3ND_9j4WgLW0-8eXH3wDG276jZD7wbwhTY8ut2FRIMTrkeHUQQOceD/exec";
+			/*var googleSheetUrl = "https://script.google.com/macros/s/AKfycbyzxKUaL5DCzI3ND_9j4WgLW0-8eXH3wDG276jZD7wbwhTY8ut2FRIMTrkeHUQQOceD/exec";
 
 		    var settings = {
 		        "url": googleSheetUrl,
@@ -42,7 +42,24 @@
 				} else {
 					window.location.replace("https://form.jotform.com/221674111787054");
 				}
-		    });
+		    });*/
+		    var googleSheetUrl = "https://script.google.com/macros/s/AKfycbyzxKUaL5DCzI3ND_9j4WgLW0-8eXH3wDG276jZD7wbwhTY8ut2FRIMTrkeHUQQOceD/exec";
+
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", googleSheetUrl, true);
+			xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
+			xhr.timeout = 0;
+			xhr.onreadystatechange = function() {
+			if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+				console.log(this.responseText);
+			    if (rating > 3) {
+				  window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
+				} else {
+				  window.location.replace("https://form.jotform.com/221674111787054");
+				}
+		    }
+			};
+			xhr.send(JSON.stringify({ cigarId: cigarId, rating: rating, zendeskId: zendeskId, source: source }));
 
 
 			console.log("https://harryqover.github.io/bike-fun/reviewQover?r=3&z=56788&c=BE109817398&s=emailConfirmation");
