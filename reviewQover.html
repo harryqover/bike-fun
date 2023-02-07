@@ -9,6 +9,18 @@
 			var score = getParameterByName("s");
 			var zendeskId = getParameterByName("z");
 			var cigarId = getParameterByName("c");
+
+			console.log(score);
+			console.log("should call here google script");
+
+			if(score > 3){
+				window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
+			} else {
+				window.location.replace("https://form.jotform.com/221674111787054");
+			}
+
+
+			console.log("https://harryqover.github.io/bike-fun/reviewQover?s=3&z=56788&c=BE109817398");
 		</script>
 	</body>
 </html>
