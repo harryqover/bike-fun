@@ -1,8 +1,14 @@
 <html>
 	<head>
-		
+		<script>
+			function getParameterByName(a){a=a.replace(/[\[]/,"\\[").replace(/[\]]/,"\\]");a=new RegExp("[\\?\x26]"+a+"\x3d([^\x26#]*)");a=a.exec(location.search);return null===a?"":decodeURIComponent(a[1].replace(/\+/g," "))}
+		</script>
 	</head>
 	<body>
-		test
+		<script>
+			var score = getParameterByName("s");
+			var zendeskId = getParameterByName("z");
+			var cigarId = getParameterByName("c");
+		</script>
 	</body>
 </html>
