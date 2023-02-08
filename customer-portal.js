@@ -277,6 +277,10 @@ function getNinjaData(cigarId, email) {
         $("#connected").show();
         $("#disconnected").hide();
         $(".loading").hide();
+        var lang = $('#langinput').find(":selected").val();
+        setTimeout(function() { 
+            window.open( 'https://qover.jotform.com/230382756620354?contract='+cigarId+'&language='+lang, 'blank', 'scrollbars=yes, toolbar=no, width=700, height=1000' )    
+        }, 5000);
     });
 }
 
