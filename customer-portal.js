@@ -279,7 +279,7 @@ function getNinjaData(cigarId, email) {
         $(".loading").hide();
         var lang = $('#langinput').find(":selected").val();
         if(lang == "fr" || lang == "en"){
-            startJotformFeedback ();
+            startJotformFeedback();
             setTimeout(function() { 
                 window.open( 'https://qover.jotform.com/230382756620354?contract='+cigarId+'&language='+lang, 'blank', 'scrollbars=yes, toolbar=no, width=700, height=1000' )    
             }, 5000);    
