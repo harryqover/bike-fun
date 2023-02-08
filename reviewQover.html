@@ -17,32 +17,6 @@
 
 			console.warn(rating);
 
-			/*var googleSheetUrl = "https://script.google.com/macros/s/AKfycbyzxKUaL5DCzI3ND_9j4WgLW0-8eXH3wDG276jZD7wbwhTY8ut2FRIMTrkeHUQQOceD/exec";
-
-		    var settings = {
-		        "url": googleSheetUrl,
-		        "method": "POST",
-		        "timeout": 0,
-		        "headers": {
-		            "Content-Type": "text/plain;charset=utf-8"
-		        },
-		        "data": JSON.stringify({
-		            "cigarId": cigarId,
-		            "rating": rating,
-		            "zendeskId": zendeskId,
-		            "source": source
-		        }),
-		    };
-
-		    $.ajax(settings).done(function(response) {
-		        console.log(response);
-
-		        if(rating > 3){
-				window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
-				} else {
-					window.location.replace("https://form.jotform.com/221674111787054");
-				}
-		    });*/
 		    var googleSheetUrl = "https://script.google.com/macros/s/AKfycbyzxKUaL5DCzI3ND_9j4WgLW0-8eXH3wDG276jZD7wbwhTY8ut2FRIMTrkeHUQQOceD/exec";
 
 			var xhr = new XMLHttpRequest();
@@ -58,7 +32,8 @@
 					window.location.replace(redirectUrls[randomIndex]);
 				  	//window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
 				} else {
-				  window.location.replace("https://form.jotform.com/221674111787054");
+					var ref = ((cigarId)?cigarId:zendeskId)
+					window.location.replace("https://form.jotform.com/221674111787054?contractReference="+ref);
 				}
 		    }
 			};
