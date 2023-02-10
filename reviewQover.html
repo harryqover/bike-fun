@@ -14,6 +14,7 @@
 			var zendeskId = getParameterByName("z");
 			var cigarId = getParameterByName("c");
 			var source = getParameterByName("s");
+			var lang = getParameterByName("l");
 
 			console.warn(rating);
 
@@ -32,8 +33,8 @@
 					window.location.replace(redirectUrls[randomIndex]);
 				  	//window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
 				} else {
-					var ref = ((cigarId)?cigarId:zendeskId)
-					window.location.replace("https://form.jotform.com/221674111787054?contractReference="+ref);
+					var ref = ((cigarId)?cigarId:zendeskId);
+					window.location.replace("https://form.jotform.com/221674111787054?contractReference="+ref+"&language="+lang);
 				}
 		    }
 			};
