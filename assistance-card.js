@@ -58,7 +58,8 @@ if(lang !== undefined){
 function translateAll(){
   let xhrLocales = new XMLHttpRequest();
   var content = "";
-  xhrLocales.open("get", "https://translations.qover.com/widget/" + lang + "-raw.json?refresh=007", true);
+  //xhrLocales.open("get", "https://translations.qover.com/widget/" + lang + "-raw.json?refresh=007", true);
+  xhrLocales.open("get", "https://api.prd.qover.io/i18n/v1/projects/widget/" + lang + ".json?refresh=007", true);
   xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
 
   xhrLocales.onreadystatechange = function() {
