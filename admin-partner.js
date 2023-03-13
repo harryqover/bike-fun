@@ -355,7 +355,9 @@ function getstatistics(start, end) {
                 /* HIDE WHILE WORKING ON ISSUE 
                 var allHTML = '<div class="allKpis"><div class="reportingKpi"><h5>Nouveaux contrats</h5><p>' + data.kpi.kpis.EUR.nbr_create + '</p></div><div class="reportingKpi"><h5>Contrats annulés</h5><p>' + data.kpi.kpis.EUR.nbr_cancel + '</p></div><div class="reportingKpi"><h5>Commission totale</h5><p>€' + ttlcommission.toFixed(2) + '</p></div></div><div id="chart_div"></div>';
                 */
+                //START WE ARE WORKING ON THE ISSUE WITH THE DASHBOARD MESSAGE
                 var allHTML = '<div class="allKpis"><div><p>Chers partenaires,</p><p>Nous sommes désolés de vous informer que notre tableau de bord des ventes est actuellement indisponible en raison d\'un problème technique. Nous travaillons activement à la résolution de ce problème et nous espérons pouvoir vous fournir une mise à jour dès que possible.</p><p>Nous vous remercions de votre patience et de votre compréhension pendant que nous travaillons à rétablir le service.</p><p>Cordialement,</p><p>L\'équipe Qover</p></div><div id="chart_div"></div>';
+                //END WE ARE WORKING ON THE ISSUE WITH THE DASHBOARD MESSAGE
                 $(".block-in-content-platform").html(allHTML);
                 var dateInput = '<div class="formDateInput"><input type="date" id="start" value="' + minDate + '" min="2020-01-01" max="' + todayX + '"><input type="date" id="end" value="' + todayX + '" min="2020-01-01" max="' + todayX + '"><br><br><button onclick="getStatFromInput();" class="btnPink">Recherche</button></div>';
                 $(".block-in-content-platform").prepend(dateInput);
