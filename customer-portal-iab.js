@@ -120,7 +120,7 @@ function getNinjaData(cigarId, email) {
         $("[data-var='vin']").text(response.payload.risk.vin);
         //$("[data-var='price']").text("EUR " + response.payload.price / 100);
         $("[data-var='status']").text(statusContract[response.payload.status]);
-        $("[data-var='product']").text(variants[obj.variant]);
+        //$("[data-var='product']").text(variants[obj.variant]);
         /*$("[data-var='cigarid']").text(cigarId);
         $("[data-var='start']").text(start.toLocaleDateString());
         $("[data-var='end']").text(end.toLocaleDateString());
