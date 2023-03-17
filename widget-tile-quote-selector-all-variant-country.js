@@ -1,9 +1,22 @@
 console.log("v 20221205 1431");
 
-  $(".body-2").hide();
+ $(".body-2").hide();
   $(".widget-card-big").hide();
   $(".content-2").hide();
   $(".widget-card-big").css('opacity', '0');
+
+  var btnColor = getParameterByName('btnColor');
+  var txtColor = getParameterByName('txtColor');
+
+  if(btnColor!=""){
+    $("#moreInfo").css('background-color','#'+btnColor);
+    $(".small").css('background-color','#'+btnColor);
+  }
+  if(txtColor!=""){
+    $("#moreInfo").css('color','#'+txtColor);
+    $("image-38").css('color','#'+txtColor);
+  }
+
 
   var countryCurrencySetup = {
     "BE" : ["EUR", "€"],
@@ -45,8 +58,6 @@ console.log("v 20221205 1431");
   var country = "BE";
   var curr = "EUR";
   
-  var btnColor = getParameterByName('btnColor');
-  var txtColor = getParameterByName('txtColor');
 
   //var xhr = new XMLHttpRequest();
   var content = "";
@@ -210,14 +221,7 @@ console.log("v 20221205 1431");
       $(".content-2").hide(); 
     }); 
   }
-  if(btnColor!=""){
-    $("#moreInfo").css('background-color','#'+btnColor);
-    $(".small").css('background-color','#'+btnColor);
-  }
-  if(txtColor!=""){
-    $("#moreInfo").css('color','#'+txtColor);
-    $("image-38").css('color','#'+txtColor);
-  }
+
   
   $('#Country-2 > option').hide();
     for (var i = 0; i < countries.length; i++) {
