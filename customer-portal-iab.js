@@ -6,12 +6,9 @@ const cowboyAlteosIds = ["5ff6cf4fceba6039aadb446f", "60938efba79100e71519a03b",
 const partnerWith120Fee = ["606c50af2c855b773d15fd37"]
 
 const variants = {
-    "VARIANT_THEFT_DAMAGE_ASSISTANCE": "Omnium",
-    "VARIANT_THEFT_ASSISTANCE": "Theft & Assistance",
-    "VARIANT_THEFT_CASH_INCL": "Theft & Emergency expense",
-    "VARIANT_THEFT_DAMAGE_CASH_INCL": "Premium",
-    "VARIANT_THEFT": "Theft",
-    "VARIANT_ASSISTANCE": "Assistance 24/7"
+    "VARIANT_SILVER": "Preferred",
+    "VARIANT_GOLD": "Complete",
+    "VARIANT_BRONZE": "Essential"
 }
 const assistancePhone = {
     "BE" : "+32 2 541 92 01",
@@ -108,7 +105,8 @@ function getNinjaData(cigarId, email) {
         const currency = response.payload.currency;
         $("[data-var='brand']").text(response.payload.risk.make);
         $("[data-var='model']").text(response.payload.risk.model);
-        $("[data-var='serial']").text(response.payload.risk.serialNumber);
+        $("[data-var='registrationPlate']").text(response.payload.risk.registrationPlate);
+        $("[data-var='vin']").text(response.payload.risk.vin);
         $("[data-var='price']").text("EUR " + response.payload.price / 100);
         $("[data-var='status']").text(statusContract[response.payload.status]);
         $("[data-var='product']").text(variants[obj.variant]);
