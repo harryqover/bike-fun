@@ -122,8 +122,10 @@ function getNinjaData(cigarId, email) {
         $("[data-var='status']").text(statusContract[response.payload.status]);
         $("[data-var='product']").text(translations['iabproduct']);
         $("[data-var='cigarid']").text(cigarId);
-        $("[data-var='start']").text(response.payload.start.toLocaleDateString());
-        $("[data-var='end']").text(response.payload.end.toLocaleDateString());
+        var start = response.payload.start;
+        var end = response.payload.end;
+        $("[data-var='start']").text(start.toLocaleDateString());
+        $("[data-var='end']").text(end.toLocaleDateString());
         $("[data-var='phone']").text(qoverPhone[response.payload.refs.country]);
 /*
         var lang = $('#langinput').find(":selected").val(); 
