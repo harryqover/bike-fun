@@ -35,10 +35,10 @@ const qoverPhone = {
     "IE" : "xxx"
 };
 
-const make = {
+const makeTranslation = {
     "MAKE_TESLA": "Tesla"
 };
-const model = {
+const modelTranslation = {
     "MODEL_S": "S",
     "MODEL_E": "E",
     "MODEL_X": "X",
@@ -114,8 +114,8 @@ function getNinjaData(cigarId, email) {
     $.ajax(settings).done(function(response) {
         console.log(response);
         const currency = response.payload.currency;
-        $("[data-var='brand']").text(make[response.payload.risk.make]);
-        $("[data-var='model']").text(model[response.payload.risk.model]);
+        $("[data-var='brand']").text(makeTranslation[response.payload.risk.make]);
+        $("[data-var='model']").text(modelTranslation[response.payload.risk.model]);
         $("[data-var='registrationPlate']").text(response.payload.risk.registrationPlate);
         $("[data-var='vin']").text(response.payload.risk.vin);
         //$("[data-var='price']").text("EUR " + response.payload.price / 100);
