@@ -94,6 +94,7 @@ console.log("v 20230317 1119");
         $(".content").html($(".content").html().replace('general.getMyPrice',content["general.getMyPrice"]));
         $(".content-2").html($(".content-2").html().replace(new RegExp('general.chooseThisPlan', 'g'),content["general.chooseThisPlan"]));
         $(".body-2").show();
+        $(".loading").hide();
         listenToClicks();
       }
     }
