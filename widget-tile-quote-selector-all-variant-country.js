@@ -145,7 +145,14 @@ console.log("v 20221205 1431");
 
         //$('#omniumPrice').text(monthlyPriceOmnium+txtMonthlyPrice);
         //$('#theftPrice').text(monthlyPriceTheft+txtMonthlyPrice);
-        $('#moreInfo').attr('href', 'https://app.qoverme.com/bike/quote?key='+apikey+'&locale='+getParameterByName('lang')+'-'+country+'&promocode='+discountCodes+'&bikevalue='+value+'&biketype='+type+'');
+
+        //var country = $( "select[name='Country'] option:selected" ).val();
+        var langForRedirect = getParameterByName('lang');
+        langForRedirect = (country == "IT")?"it":langForRedirect;
+        langForRedirect = (country == "ES")?"es":langForRedirect;
+        langForRedirect = (country == "PT")?"pt":langForRedirect;
+        
+        $('#moreInfo').attr('href', 'https://app.qover.com/bike/quote?key='+apikey+'&locale='+langForRedirect+'-'+country+'&promocode='+discountCodes+'&bikevalue='+value+'&biketype='+type+'');
         $(".content-2").show();
         $(".widget-card-big").css('opacity', '1');
         console.log(responseGetPrice);
