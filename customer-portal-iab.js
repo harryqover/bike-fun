@@ -118,11 +118,11 @@ function getNinjaData(cigarId, email) {
         $("[data-var='model']").text(modelTranslation[response.payload.risk.model]);
         $("[data-var='registrationPlate']").text(response.payload.risk.registrationPlate);
         $("[data-var='vin']").text(response.payload.risk.vin);
-        //$("[data-var='price']").text("EUR " + response.payload.price / 100);
+        $("[data-var='price']").text("EUR " + response.payload.price / 100);
         $("[data-var='status']").text(statusContract[response.payload.status]);
         $("[data-var='product']").text(translations['iabproduct']);
-        /*$("[data-var='cigarid']").text(cigarId);
-        $("[data-var='start']").text(start.toLocaleDateString());
+        $("[data-var='cigarid']").text(cigarId);
+        /*$("[data-var='start']").text(start.toLocaleDateString());
         $("[data-var='end']").text(end.toLocaleDateString());
         $("[data-var='phone']").text(qoverPhone[country]);
 
