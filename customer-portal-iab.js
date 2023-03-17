@@ -76,141 +76,8 @@ function goLogin(cigarId, email) {
     $("#disconnected").hide();
     $("#bikedata").hide();
     console.log("loading should be visible")
-
-    var data = JSON.stringify({
-        "cigarId": cigarId,
-        "email": email
-    });
-
-    var xhr = new XMLHttpRequest();
-    xhr.withCredentials = true;
-
-    xhr.addEventListener("readystatechange", function() {
-        if (this.readyState === 4 && this.status === 200) {
-            var timeToAdd = 1000 * 60 * 60 * 24 * 1 * 1 * 1;
-            var date = new Date();
-            var expiryTime = parseInt(date.getTime()) + timeToAdd;
-            date.setTime(expiryTime);
-            var utcTime = date.toUTCString();
-            //document.cookie = "login=" + email + "; expires=" + utcTime + ";";
-            //document.cookie = "cigarId=" + cigarId + "; expires=" + utcTime + ";";
-
-            var obj = JSON.parse(this.responseText);
-            var partnerId = obj.partnerId;
-            var variant = obj.variant;
-            var country = obj.country;
-            var start = new Date(obj.startDate);
-            var end = new Date(obj.endDate);
-            end.setDate(end.getDate() + 1);
-            console.log(obj);
-
-            var isCowboy = cowboyIds.includes(partnerId);
-            var isCowboyAlteosId = cowboyAlteosIds.includes(partnerId);
-
-            var claims_handler = "to be verified";
-
-            if (isCowboyAlteosId === true && country == "DE") {
-                claims_handler = "Alteos";
-            } else if (country == "DE" || country == "FR" || country == "NL" || country == "BE" || country == "NO" || country == "SE" || country == "DK" || country == "FI" || country == "AT") {
-                claims_handler = "Van Ameyde";
-            } else if (country == "ES" || country == "IT" || country == "PT" || country == "IE" || country == "PL") {
-                claims_handler = "Qover";
-            } else if (country == "GB") {
-                claims_handler = "Qover";
-            }
-
-            /* START DEFINE DEDUCTIBLES */
-            var theftDeductible = obj.theftDeductible;
-            var damageDeductible = obj.damageDeductible;
-            var bikeValue = obj.originalValue / 100;
-
-            if (damageDeductible == "DAMAGE_DEDUCTIBLE_ENGLISH_10PC" || damageDeductible == "DAMAGE_DEDUCTIBLE_STANDARD_10PC") {
-                var damageDeductibleAmount = bikeValue * 0.1;
-                if (damageDeductibleAmount > 200) {
-                    damageDeductibleAmount = 200;
-                } else if (damageDeductibleAmount < 50) {
-                    damageDeductibleAmount = 50;
-                }
-            } else if (damageDeductible == "DAMAGE_DEDUCTIBLE_ENGLISH_75_FIX") {
-                var damageDeductibleAmount = 75;
-            } else if (damageDeductible == "DAMAGE_DEDUCTIBLE_STANDARD_35_FIX") {
-                var damageDeductibleAmount = 35;
-            }
-
-            if (theftDeductible == "THEFT_DEDUCTIBLE_STANDARD_10PC") {
-                var theftDeductibleAmount = bikeValue * 0.1;
-                if (theftDeductibleAmount > 200) {
-                    theftDeductibleAmount = 200;
-                } else if (theftDeductibleAmount < 50) {
-                    theftDeductibleAmount = 50;
-                }
-            } else if (theftDeductible == "THEFT_DEDUCTIBLE_NO_DEDUCTIBLE") {
-                var theftDeductibleAmount = 0;
-            }
-            window.refundDamage = bikeValue - damageDeductibleAmount;
-            window.refundTheft = bikeValue - theftDeductibleAmount;
-            window.damageDeductibleAmount = damageDeductibleAmount;
-
-            $(".damage-deductible").text(Math.round(damageDeductibleAmount * 100) / 100);
-            $(".theft-deductible").text(refundTheft);
-            /* END DEFINE DEDUCTIBLES */
-
-            $("[data-var='product']").text(variants[obj.variant]);
-            $("[data-var='cigarid']").text(cigarId);
-            $("[data-var='start']").text(start.toLocaleDateString());
-            $("[data-var='end']").text(end.toLocaleDateString());
-            $("[data-var='theftdeductible']").text("EUR " + Math.round(theftDeductibleAmount * 100) / 100);
-            $("[data-var='materialdeductible']").text("EUR " + Math.round(damageDeductibleAmount * 100) / 100);
-            $("[data-var='phone']").text(qoverPhone[country]);
-
-     
-            var lang = $('#langinput').find(":selected").val(); 
-
-            var zendeskLang = "fr";
-            if(lang == "en"){
-                zendeskLang = "en-be";
-            } else if (lang == "nl") {
-                zendeskLang = "nl-be";
-            }
-            
-            $("[data-var='cancel']").attr("href", "https://form.jotform.com/230021764194349?language="+lang+"&cigarid=" + cigarId + "&email=" + email);
-            //$("[data-var='cancel']").attr("href", "https://form.jotform.com/222763047790359?lang="+lang+"&contractid=" + cigarId + "&email=" + email);
-            $("[data-var='documentupload']").attr("href", "https://qover.jotform.com/223391631989063?email=" + email + "&contractReference=" + cigarId + "&language="+lang);
-            $("[data-var='claims']").attr("href", "https://www.qover.com/claims?lang="+lang+"&contract=" + cigarId + "&email=" + email);
-            $("[data-var='amendlink']").attr("href", "https://qoverme.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_4414433182481=bike_amend&tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
-            $("[data-var='contracttandlink']").attr("href", "https://qoverme.zendesk.com/hc/"+zendeskLang);
-            $("[data-var='1starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=1&c=" + cigarId + "&l="+lang+"&s=customer_portal");
-            $("[data-var='2starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=2&c=" + cigarId + "&l="+lang+"&s=customer_portal");
-            $("[data-var='3starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=3&c=" + cigarId + "&l="+lang+"&s=customer_portal");
-            $("[data-var='4starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=4&c=" + cigarId + "&l="+lang+"&s=customer_portal");
-            $("[data-var='5starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=5&c=" + cigarId + "&l="+lang+"&s=customer_portal");
-
-
-            /* YOU ARE LOGGED IN*/
-
-            getNinjaData(cigarId, email);
-
-            $("[data-translation='logout']").show();
-
-        } else if (this.readyState === 4 && this.status === 400) {
-            logout();
-            console.log(this.status);
-            var obj = JSON.parse(this.responseText);
-            alert(obj.message);
-        } else if (this.readyState === 4 && this.status === 404) {
-            logout();
-            console.log(this.status);
-            var obj = JSON.parse(this.responseText);
-            alert(obj.message);
-        } else if (this.readyState === 4) {
-            logout();
-            console.log(this.status);
-        }
-    });
-
-    xhr.open("POST", "https://api.prd.qover.io/bike/v1/contracts/claim-info?apikey=pk_C0132D71B8C4C4E55690");
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(data);
+    getNinjaData(cigarId, email);
+    $("[data-translation='logout']").show();
 }
 
 function getNinjaData(cigarId, email) {
@@ -244,6 +111,34 @@ function getNinjaData(cigarId, email) {
         $("[data-var='serial']").text(response.payload.risk.serialNumber);
         $("[data-var='price']").text("EUR " + response.payload.price / 100);
         $("[data-var='status']").text(statusContract[response.payload.status]);
+        $("[data-var='product']").text(variants[obj.variant]);
+        /*$("[data-var='cigarid']").text(cigarId);
+        $("[data-var='start']").text(start.toLocaleDateString());
+        $("[data-var='end']").text(end.toLocaleDateString());
+        $("[data-var='phone']").text(qoverPhone[country]);
+
+        var lang = $('#langinput').find(":selected").val(); 
+
+            var zendeskLang = "fr";
+            if(lang == "en"){
+                zendeskLang = "en-be";
+            } else if (lang == "nl") {
+                zendeskLang = "nl-be";
+            }
+            
+            $("[data-var='cancel']").attr("href", "https://form.jotform.com/230021764194349?language="+lang+"&cigarid=" + cigarId + "&email=" + email);
+            //$("[data-var='cancel']").attr("href", "https://form.jotform.com/222763047790359?lang="+lang+"&contractid=" + cigarId + "&email=" + email);
+            $("[data-var='documentupload']").attr("href", "https://qover.jotform.com/223391631989063?email=" + email + "&contractReference=" + cigarId + "&language="+lang);
+            $("[data-var='claims']").attr("href", "https://www.qover.com/claims?lang="+lang+"&contract=" + cigarId + "&email=" + email);
+            $("[data-var='amendlink']").attr("href", "https://qoverme.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_4414433182481=bike_amend&tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
+            $("[data-var='contracttandlink']").attr("href", "https://qoverme.zendesk.com/hc/"+zendeskLang);
+            $("[data-var='1starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=1&c=" + cigarId + "&l="+lang+"&s=customer_portal");
+            $("[data-var='2starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=2&c=" + cigarId + "&l="+lang+"&s=customer_portal");
+            $("[data-var='3starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=3&c=" + cigarId + "&l="+lang+"&s=customer_portal");
+            $("[data-var='4starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=4&c=" + cigarId + "&l="+lang+"&s=customer_portal");
+            $("[data-var='5starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=5&c=" + cigarId + "&l="+lang+"&s=customer_portal");
+
+        */
 
 
         if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && !response.payload.versionInfo.cancelInformation) {
