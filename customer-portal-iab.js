@@ -35,6 +35,17 @@ const qoverPhone = {
     "IE" : "xxx"
 };
 
+const make = {
+    "MAKE_TESLA": "Tesla"
+};
+const model = {
+    "MODEL_S": "S",
+    "MODEL_E": "E",
+    "MODEL_X": "X",
+    "MODEL_Y": "Y"
+};
+
+
 var translations;
 var refundDamage = 0;
 var refundTheft = 0;
@@ -107,7 +118,7 @@ function getNinjaData(cigarId, email) {
         $("[data-var='model']").text(response.payload.risk.model);
         $("[data-var='registrationPlate']").text(response.payload.risk.registrationPlate);
         $("[data-var='vin']").text(response.payload.risk.vin);
-        $("[data-var='price']").text("EUR " + response.payload.price / 100);
+        //$("[data-var='price']").text("EUR " + response.payload.price / 100);
         $("[data-var='status']").text(statusContract[response.payload.status]);
         $("[data-var='product']").text(variants[obj.variant]);
         /*$("[data-var='cigarid']").text(cigarId);
