@@ -151,6 +151,7 @@ console.log("v 20221205 1431");
         langForRedirect = (country == "IT")?"it":langForRedirect;
         langForRedirect = (country == "ES")?"es":langForRedirect;
         langForRedirect = (country == "PT")?"pt":langForRedirect;
+        langForRedirect = (country == "FI")?"fi":langForRedirect;
         
         $('#moreInfo').attr('href', 'https://app.qover.com/bike/quote?key='+apikey+'&locale='+langForRedirect+'-'+country+'&promocode='+discountCodes+'&bikevalue='+value+'&biketype='+type+'');
         $(".content-2").show();
