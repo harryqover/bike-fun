@@ -328,7 +328,7 @@ function reSendEmail(){
             "Content-Type": "text/plain;charset=utf-8"
         },
         "data": JSON.stringify({
-            "contractId": "cigarId",
+            "contractId": "looks-like-a-contractid",
             "request": "contract",
             "product": "BIKE"
         }),
