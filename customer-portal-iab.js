@@ -127,11 +127,22 @@ function getNinjaData(cigarId, email) {
         $("[data-var='model']").text(modelTranslation[response.payload.risk.model]);
         $("[data-var='mileage']").text(mileageTranslation[response.payload.risk.yearMileageKm]+translations['peryear']);
         $("[data-var='bonusmalus']").text(response.payload.risk.bonusmalus);
-        $("[data-var='seconddriver']").text(response.payload.risk.seconddriver);
+        $("[data-var='seconddriver']").text(response.payload.risk.seconddrivermonth);
         
         $("[data-var='registrationPlate']").text(response.payload.risk.registrationPlate);
         $("[data-var='vin']").text(response.payload.risk.vin);
-        $("[data-var='price']").text("EUR " + response.payload.price / 100);
+        
+
+        if(response.payload != "PAYMENT_METHOD_SEPADD"){
+            //showing only price per year
+            $(".permonth").hide();
+            $("[data-var='price']").text("EUR " + response.payload.price / 100);
+        } else {
+            //showing only price per month
+            $(".peryear").hide();
+            $("[data-var='pricepermonth']").text("EUR " + response.payload.price / 100 / 12);
+        }
+        
         $("[data-var='status']").text(statusContract[response.payload.status]);
         $("[data-var='product']").text(translations['iabproduct']);
         $("[data-var='cigarid']").text(cigarId);
