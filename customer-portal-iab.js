@@ -127,8 +127,8 @@ function getNinjaData(cigarId, email) {
         $("[data-var='brand']").text(makeTranslation[response.payload.risk.make]);
         $("[data-var='model']").text(modelTranslation[response.payload.risk.model]);
         $("[data-var='mileage']").text(mileageTranslation[response.payload.risk.yearMileageKm]+translations['peryear']);
-        $("[data-var='bonusmalus']").text(response.payload.risk.bonusmalus);
-        $("[data-var='seconddriver']").text(response.payload.risk.seconddrivermonth);
+        $("[data-var='bonusmalus']").text(response.payload.risk.bonusMalus);
+        $("[data-var='seconddriver']").text(response.payload.risk.hasSecondDriver);
         
         $("[data-var='registrationPlate']").text(response.payload.risk.registrationPlate);
         $("[data-var='vin']").text(response.payload.risk.vin);
