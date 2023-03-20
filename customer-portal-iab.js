@@ -328,9 +328,10 @@ function reSendEmail(){
             "Content-Type": "text/plain;charset=utf-8"
         },
         "data": JSON.stringify({
-            "contractId": "looks-like-a-contractid",
+            "contractId": window.payloadFromNinja.payload.contractId,
             "request": "contract",
-            "product": "BIKE"
+            "product": "IAB",
+            "versionNumber": window.payloadFromNinja.payload.versionInfo.versionNumber
         }),
     };
 
