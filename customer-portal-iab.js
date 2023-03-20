@@ -45,6 +45,15 @@ const modelTranslation = {
     "MODEL_Y": "Model Y"
 };
 
+const mileageTranslation = {
+    "MILEAGE_0TO9999": "0 - 9.999 km",
+    "MILEAGE_10000TO14999": "10.000 - 14.999 km",
+    "MILEAGE_15000TO19999": "15.000 - 19.999 km",
+    "MILEAGE_20000TO24999": "20.000 - 24.999 km",
+    "MILEAGE_25000TO29999": "25.000 - 29.999 km",
+    "MILEAGE_OVER30000": ">30.000 km"
+};
+
 
 var translations;
 var refundDamage = 0;
@@ -116,6 +125,10 @@ function getNinjaData(cigarId, email) {
         const currency = response.payload.currency;
         $("[data-var='brand']").text(makeTranslation[response.payload.risk.make]);
         $("[data-var='model']").text(modelTranslation[response.payload.risk.model]);
+        $("[data-var='mileage']").text(mileageTranslation[response.payload.risk.yearMileageKm]+translations['peryear']);
+        $("[data-var='bonusmalus']").text(response.payload.risk.bonusmalus);
+        $("[data-var='seconddriver']").text(response.payload.risk.seconddriver);
+        
         $("[data-var='registrationPlate']").text(response.payload.risk.registrationPlate);
         $("[data-var='vin']").text(response.payload.risk.vin);
         $("[data-var='price']").text("EUR " + response.payload.price / 100);
