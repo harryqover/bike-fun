@@ -132,6 +132,10 @@ function getNinjaData(cigarId, email) {
         
         $("[data-var='registrationPlate']").text(response.payload.risk.registrationPlate);
         $("[data-var='vin']").text(response.payload.risk.vin);
+
+        $("[data-var='resendcontract']").click(function() {
+          reSendEmail();
+        });
         
 
         if(response.payload != "PAYMENT_METHOD_SEPADD"){
