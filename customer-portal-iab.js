@@ -39,10 +39,10 @@ const makeTranslation = {
     "MAKE_TESLA": "Tesla"
 };
 const modelTranslation = {
-    "MODEL_S": "S",
-    "MODEL_E": "E",
-    "MODEL_X": "X",
-    "MODEL_Y": "Y"
+    "MODEL_S": "Model S",
+    "MODEL_E": "Model E",
+    "MODEL_X": "Model X",
+    "MODEL_Y": "Model Y"
 };
 
 
@@ -180,12 +180,9 @@ function getNinjaData(cigarId, email) {
             console.log("something else: " + response.payload.status + " - " + response.payload.versionInfo);
         }
 
-        if(response.payload.terms.variant == "VARIANT_ASSISTANCE"){
-            $("[data-var='phoneassistance']").text("02 533 75 75"); 
-            $(".div-block-324,.div-block-309").hide();   
-        } else if(response.payload.terms.variant == "VARIANT_THEFT_ASSISTANCE" || response.payload.terms.variant == "VARIANT_THEFT_DAMAGE_ASSISTANCE"){
+        if(response.payload.terms.variant == "VARIANT_SILVER" || response.payload.terms.variant == "VARIANT_GOLD"){
             $("[data-var='phoneassistance']").text(assistancePhone[response.payload.refs.country]);
-            $("[data-var='explanation-deductible']").text(translations['incaseoftheft']+ " "+ currency + " " + refundTheft + " "+translations['incaseofdamage']+ " "+ currency + " " + Math.round(damageDeductibleAmount * 100) / 100);
+            //$("[data-var='explanation-deductible']").text(translations['incaseoftheft']+ " "+ currency + " " + refundTheft + " "+translations['incaseofdamage']+ " "+ currency + " " + Math.round(damageDeductibleAmount * 100) / 100);
         } else {
             $("[data-var='phoneassistance']").text("not available");    
             $(".assistance-emergency").hide();
