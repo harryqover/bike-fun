@@ -122,6 +122,7 @@ function getNinjaData(cigarId, email) {
 
     $.ajax(settings).done(function(response) {
         console.log(response);
+        window.payloadFromNinja = response;
         const currency = response.payload.currency;
         $("[data-var='brand']").text(makeTranslation[response.payload.risk.make]);
         $("[data-var='model']").text(modelTranslation[response.payload.risk.model]);
@@ -213,14 +214,13 @@ function getNinjaData(cigarId, email) {
             //$(".div-block-324").hide();
         }
 
-        if(partnerWith120Fee.includes(response.payload.refs.partnerId)){
-            var partnerServiceFee = 12000 - response.payload.price;
-            $(".div-block-323").after("<div class='subprice' >"+translations['premiumsoftwareservices']+" ("+currency+" "+partnerServiceFee/100+")</div>")
-        }
+
 
         $("[data-var='value']").text(currency+" " + response.payload.risk.originalValue / 100);
+
         $("#bikedata").show();
         $("#connected").show();
+        $(".loading-resend-email").hide();
         $("#disconnected").hide();
         $(".loading").hide();
         var lang = $('#langinput').find(":selected").val();
@@ -301,6 +301,7 @@ function trck(cigarId, click) {
         console.log(response);
     });
 }
+
 $(function(){
     $("[data-var]").click(function() {
         var clickedThing = $(this).data('var');
@@ -309,102 +310,30 @@ $(function(){
     });
 });
 
-function startJotformFeedback (){
-    new JotformFeedback({
-      
-  type: false,
-  width: 700,
-  height: 1000,
-  fontColor: "#FFFFFF",
-  background: "#2f44dd",
-  isCardForm: false,
-  formId: "230382756620354"
-  ,
-      buttonText: "Feedback",
-      buttonSide: "bottom",
-      buttonAlign: "left",
-      base: "https://qover.jotform.com/",
+
+function reSendEmail(){
+    $(".loading-resend-email").show();
+    $("[data-translation='requestresendcontract']").hide();
+    var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
+
+    var settings = {
+        "url": googleSheetUrl,
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
+        "data": JSON.stringify({
+            "contractId": "cigarId",
+            "request": "contract",
+            "product": "BIKE"
+        }),
+    };
+
+    $.ajax(settings).done(function(response) {
+        console.log(response);
+        $(".loading-resend-email").hide();
+        $("[data-translation='requestresendcontract']").text("sent");
+        $("[data-translation='requestresendcontract']").show();
     });
-  
-    var ifr = document.getElementById("lightbox-230382756620354");
-    if (ifr) {
-      var src = ifr.src;
-      var iframeParams = [];
-      if (window.location.href && window.location.href.indexOf("?") > -1) {
-        iframeParams = iframeParams.concat(window.location.href.substr(window.location.href.indexOf("?") + 1).split('&'));
-      }
-      if (src && src.indexOf("?") > -1) {
-        iframeParams = iframeParams.concat(src.substr(src.indexOf("?") + 1).split("&"));
-        src = src.substr(0, src.indexOf("?"))
-      }
-      iframeParams.push("isIframeEmbed=1");
-      ifr.src = src + "?" + iframeParams.join('&');
-    }
-    window.handleIFrameMessage = function(e) {
-      if (typeof e.data === 'object') { return; }
-      var args = e.data.split(":");
-      if (args.length > 2) { iframe = document.getElementById("lightbox-" + args[(args.length - 1)]); } else { iframe = document.getElementById("lightbox"); }
-      if (!iframe) { return; }
-      switch (args[0]) {
-        case "scrollIntoView":
-          iframe.scrollIntoView();
-          break;
-        case "setHeight":
-          iframe.style.height = args[1] + "px";
-          if (!isNaN(args[1]) && parseInt(iframe.style.minHeight) > parseInt(args[1])) {
-            iframe.style.minHeight = args[1] + "px";
-          }
-          break;
-        case "collapseErrorPage":
-          if (iframe.clientHeight > window.innerHeight) {
-            iframe.style.height = window.innerHeight + "px";
-          }
-          break;
-        case "reloadPage":
-          window.location.reload();
-          break;
-        case "loadScript":
-          if( !window.isPermitted(e.origin, ['jotform.com', 'jotform.pro']) ) { break; }
-          var src = args[1];
-          if (args.length > 3) {
-              src = args[1] + ':' + args[2];
-          }
-          var script = document.createElement('script');
-          script.src = src;
-          script.type = 'text/javascript';
-          document.body.appendChild(script);
-          break;
-        case "exitFullscreen":
-          if      (window.document.exitFullscreen)        window.document.exitFullscreen();
-          else if (window.document.mozCancelFullScreen)   window.document.mozCancelFullScreen();
-          else if (window.document.mozCancelFullscreen)   window.document.mozCancelFullScreen();
-          else if (window.document.webkitExitFullscreen)  window.document.webkitExitFullscreen();
-          else if (window.document.msExitFullscreen)      window.document.msExitFullscreen();
-          break;
-      }
-      var isJotForm = (e.origin.indexOf("jotform") > -1) ? true : false;
-      if(isJotForm && "contentWindow" in iframe && "postMessage" in iframe.contentWindow) {
-        var urls = {"docurl":encodeURIComponent(document.URL),"referrer":encodeURIComponent(document.referrer)};
-        iframe.contentWindow.postMessage(JSON.stringify({"type":"urls","value":urls}), "*");
-      }
-    };
-    window.isPermitted = function(originUrl, whitelisted_domains) {
-      var url = document.createElement('a');
-      url.href = originUrl;
-      var hostname = url.hostname;
-      var result = false;
-      if( typeof hostname !== 'undefined' ) {
-        whitelisted_domains.forEach(function(element) {
-            if( hostname.slice((-1 * element.length - 1)) === '.'.concat(element) ||  hostname === element ) {
-                result = true;
-            }
-        });
-        return result;
-      }
-    };
-    if (window.addEventListener) {
-      window.addEventListener("message", handleIFrameMessage, false);
-    } else if (window.attachEvent) {
-      window.attachEvent("onmessage", handleIFrameMessage);
-    }
 }
