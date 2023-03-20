@@ -337,7 +337,7 @@ function reSendEmail(){
     $.ajax(settings).done(function(response) {
         console.log(response);
         $(".loading-resend-email").hide();
-        $("[data-translation='requestresendcontract']").text("sent");
+        $("[data-translation='requestresendcontract']").text(translations['emailsent']);
         $("[data-translation='requestresendcontract']").show();
     });
 }
