@@ -20,6 +20,7 @@ console.log("v 20230317 1119");
 
   var countryCurrencySetup = {
     "BE" : ["EUR", "€"],
+    "NL" : ["EUR", "€"],
     "FR" : ["EUR", "€"],
     "AT" : ["EUR", "€"],
     "DE" : ["EUR", "€"],
