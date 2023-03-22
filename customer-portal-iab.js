@@ -170,7 +170,7 @@ function getNinjaData(cigarId, email) {
         var country = response.payload.refs.country;
 
         var zendeskLang = lang+"-"+country.toLowerCase();
-
+        console.log("country: ", country);
         if (country == "NL"){
             zendeskLang = (lang == "nl") ? "nl":"en-"+country.toLowerCase();
         } else if (country == "FR"){
