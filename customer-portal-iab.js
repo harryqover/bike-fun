@@ -123,6 +123,8 @@ function getNinjaData(cigarId, email) {
         $("[data-var='mileage']").text(mileageTranslation[response.payload.risk.yearMileageKm]+translations['peryear']);
         //$("[data-var='bonusmalus']").text(response.payload.risk.bonusMalus);
         $("[data-var='seconddriver']").text(translations[response.payload.risk.hasSecondDriver]);
+
+        $('[data-var="greencardbypost"]').attr('href','https://forms.qover.com/230804510892049?contractReference='+cigarId);
         
         $("[data-var='registrationPlate']").text(response.payload.risk.registrationPlate);
         $("[data-var='vin']").text(response.payload.risk.vin);
