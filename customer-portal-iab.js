@@ -141,7 +141,7 @@ function getNinjaData(cigarId, email) {
         }
         
 
-        if(response.payload != "PAYMENT_METHOD_SEPADD"){
+        if(response.payload.paymentMethod != "PAYMENT_METHOD_SEPADD"){
             //showing only price per year
             $(".permonth").hide();
             $("[data-var='price']").text("EUR " + response.payload.price / 100);
