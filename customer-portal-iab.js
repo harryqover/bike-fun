@@ -135,7 +135,7 @@ function getNinjaData(cigarId, email) {
            $("[data-var='mileagerenewal']").text(mileageTranslation[response.payload.nextVersion.risk.yearMileageKm]+translations['peryear']);
            $("[data-var='seconddriverrenewal']").text(translations[response.payload.nextVersion.risk.hasSecondDriver]);
            var lang = $('#langinput').find(":selected").val()
-           $("[data-var='linkrenewal']").attr("href","https://app.qover.com/iab/contracts/"+response.payload.contractId+"/renewal?key=pk_8608895FC72565DF474D&locale="+lang+"-"+response.payload.refs.country)
+           $("[data-var='linkrenewal']").attr("href","https://app.qover.com/iab/contracts/"+response.payload.contractId+"/renewal?key=pk_8608895FC72565DF474D&locale="+response.payload.language+"-"+response.payload.refs.country)
            $("[data-var='renewalblock']").show();
         } else {
             $("[data-var='renewalblock']").hide();
@@ -143,7 +143,7 @@ function getNinjaData(cigarId, email) {
 
         if(response.payload.status == "STATUS_INCOMPLETE" && allowedLinkIncomplete.includes(response.payload.refs.country)){
             $("[data-var='incompleteblock']").show();
-            $("[data-var='linkincomplete']").attr('href','https://app.qoverme.com/iab/contracts/'+response.payload.contractId+'/missing-data?key=pk_8608895FC72565DF474D&locale='+lang+'-'+response.payload.refs.country)
+            $("[data-var='linkincomplete']").attr('href','https://app.qover.com/iab/contracts/'+response.payload.contractId+'/missing-data?key=pk_8608895FC72565DF474D&locale='+response.payload.language+'-'+response.payload.refs.country)
         } else {
             $("[data-var='incompleteblock']").hide();
         }
