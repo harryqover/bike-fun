@@ -182,6 +182,7 @@ function getNinjaData(cigarId, email) {
         } else if (country == "PT"){
             zendeskLang = (lang == "pt") ? "pt":"en-"+country.toLowerCase();
         }
+        console.log("zendeskLang: ", zendeskLang);
 
         $("[data-var='amendlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_4414433182481=iab_amend&tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
         $("[data-var='contracttandlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang);
