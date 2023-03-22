@@ -174,14 +174,21 @@ function getNinjaData(cigarId, email) {
         if (country == "NL"){
             zendeskLang = (lang == "nl") ? "nl":"en-"+country.toLowerCase();
         } else if (country == "FR"){
-            zendeskLang = (lang == "fr") ? "fr":"en-"+country.toLowerCase();
+            zendeskLang = "fr";
         } else if (country == "DE"){
-            zendeskLang = (lang == "de") ? "de":"en-"+country.toLowerCase();
+            zendeskLang = "de";
         } else if (country == "ES"){
-            zendeskLang = (lang == "es") ? "es":"en-"+country.toLowerCase();
+            zendeskLang = "es";
         } else if (country == "PT"){
-            zendeskLang = (lang == "pt") ? "pt":"en-"+country.toLowerCase();
+            zendeskLang = "pt";
+        } else if (country == "DK"){
+            zendeskLang = "da-dk";
+        } else if (country == "AT"){
+            zendeskLang = (lang == "de") ? "de-at":"en-at";
         }
+
+        //english only in AT, BE, NL
+
         console.log("zendeskLang: ", zendeskLang);
 
         $("[data-var='amendlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_4414433182481=iab_amend&tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
