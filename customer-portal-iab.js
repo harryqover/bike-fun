@@ -134,16 +134,30 @@ function getNinjaData(cigarId, email) {
         $("[data-var='resendcontract']").click(function() {
           reSendEmail();
         });
+
+        if(response.payload.nextVersion){
+           $("[data-var='bonusmalus']").text(response.payload.nextVersion.risk.bonusMalus);
+           $("[data-var='seconddriver']").text(response.payload.nextVersion.risk.hasSecondDriver);
+           $("[data-var='renewalblock']").show();
+        } else {
+            $("[data-var='renewalblock']").hide();
+        }
         
 
         if(response.payload != "PAYMENT_METHOD_SEPADD"){
             //showing only price per year
             $(".permonth").hide();
             $("[data-var='price']").text("EUR " + response.payload.price / 100);
+            if(response.payload.nextVersion){
+                $("[data-var='pricerenewal']").text("EUR " + response.payload.nextVersion.price / 100);
+            }
         } else {
             //showing only price per month
             $(".peryear").hide();
             $("[data-var='pricepermonth']").text("EUR " + response.payload.price / 100 / 12);
+            if(response.payload.nextVersion){
+                $("[data-var='pricepermonthrenewal']").text("EUR " + response.payload.nextVersion.price / 100 /12);
+            }
         }
         
         $("[data-var='status']").text(statusContract[response.payload.status]);
