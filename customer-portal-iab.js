@@ -1,4 +1,4 @@
-console.warn("v20230322 1650");
+console.warn("v20230322 1653");
 
 const variants = {
     "VARIANT_SILVER": "Preferred",
@@ -141,7 +141,7 @@ function getNinjaData(cigarId, email) {
             $("[data-var='renewalblock']").hide();
         }
 
-        if(response.payload.status == "STATUS_INCOMPLETE"){
+        if(response.payload.status == "STATUS_INCOMPLETE" && allowedLinkIncomplete.includes(response.payload.refs.country)){
             $("[data-var='incompleteblock']").show();
             $("[data-var='linkincomplete']").attr('href','https://app.qoverme.com/iab/contracts/'+response.payload.contractId+'/missing-data?key=pk_8608895FC72565DF474D&locale='+lang+'-'+response.payload.refs.country)
         } else {
