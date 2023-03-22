@@ -147,7 +147,7 @@ function getNinjaData(cigarId, email) {
         }
         
         $("[data-var='status']").text(statusContract[response.payload.status]);
-        $("[data-var='product']").text(translations['iabproduct']);
+        $("[data-var='product']").text(variants[response.payload.terms.variant]);
         $("[data-var='cigarid']").text(cigarId);
         var start = new Date(response.payload.start);
         var end = new Date(response.payload.end);
