@@ -120,8 +120,8 @@ function getNinjaData(cigarId, email) {
         $("[data-var='brand']").text(makeTranslation[response.payload.risk.make]);
         $("[data-var='model']").text(modelTranslation[response.payload.risk.model]);
         $("[data-var='mileage']").text(mileageTranslation[response.payload.risk.yearMileageKm]+translations['peryear']);
-        $("[data-var='bonusmalus']").text(response.payload.risk.bonusMalus);
-        $("[data-var='seconddriver']").text(response.payload.risk.hasSecondDriver);
+        //$("[data-var='bonusmalus']").text(response.payload.risk.bonusMalus);
+        $("[data-var='seconddriver']").text(translations[response.payload.risk.hasSecondDriver]);
         
         $("[data-var='registrationPlate']").text(response.payload.risk.registrationPlate);
         $("[data-var='vin']").text(response.payload.risk.vin);
@@ -132,7 +132,7 @@ function getNinjaData(cigarId, email) {
 
         if(response.payload.nextVersion){
            $("[data-var='mileagerenewal']").text(mileageTranslation[response.payload.nextVersion.risk.yearMileageKm]+translations['peryear']);
-           $("[data-var='seconddriverrenewal']").text(response.payload.nextVersion.risk.hasSecondDriver);
+           $("[data-var='seconddriverrenewal']").text(translations[response.payload.nextVersion.risk.hasSecondDriver]);
            var lang = $('#langinput').find(":selected").val()
            $("[data-var='linkrenewal']").attr("href","https://app.qover.com/iab/contracts/"+response.payload.contractId+"/renewal?key=pk_8608895FC72565DF474D&locale="+lang+"-"+response.payload.refs.country)
            $("[data-var='renewalblock']").show();
