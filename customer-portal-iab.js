@@ -152,16 +152,16 @@ function getNinjaData(cigarId, email) {
         if(response.payload.paymentMethod != "PAYMENT_METHOD_SEPADD"){
             //showing only price per year
             $(".permonth").hide();
-            $("[data-var='price']").text("EUR " + response.payload.price / 100);
+            $("[data-var='price']").text("EUR " + formatPrice(response.payload.price));
             if(response.payload.nextVersion){
-                $("[data-var='pricerenewal']").text("EUR " + response.payload.nextVersion.price / 100);
+                $("[data-var='pricerenewal']").text("EUR " + formatPrice(response.payload.nextVersion.price));
             }
         } else {
             //showing only price per month
             $(".peryear").hide();
-            $("[data-var='pricepermonth']").text("EUR " + response.payload.price / 100 / 12);
+            $("[data-var='pricepermonth']").text("EUR " + formatPrice(response.payload.price/12));
             if(response.payload.nextVersion){
-                $("[data-var='pricepermonthrenewal']").text("EUR " + response.payload.nextVersion.price / 100 /12);
+                $("[data-var='pricepermonthrenewal']").text("EUR " + formatPrice(response.payload.nextVersion.price/12));
             }
         }
         
@@ -366,4 +366,10 @@ function reSendEmail(){
         $("[data-translation='requestresendcontract']").text(translations['emailsent']);
         $("[data-translation='requestresendcontract']").show();
     });
+}
+
+function formatPrice(amount){
+    amount = amount /100;
+    amount = amount.toFixed(2);
+    return amount
 }
