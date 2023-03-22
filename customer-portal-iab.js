@@ -138,6 +138,7 @@ function getNinjaData(cigarId, email) {
         if(response.payload.nextVersion){
            $("[data-var='bonusmalus']").text(response.payload.nextVersion.risk.bonusMalus);
            $("[data-var='seconddriver']").text(response.payload.nextVersion.risk.hasSecondDriver);
+           $("[data-var='linkrenewal']").href("https://app.qover.com/iab/contracts/"+response.payload.contractId+"/renewal?key=pk_8608895FC72565DF474D&locale="+$('#langinput').find(":selected").val();+"-"+response.payload.refs.country)
            $("[data-var='renewalblock']").show();
         } else {
             $("[data-var='renewalblock']").hide();
