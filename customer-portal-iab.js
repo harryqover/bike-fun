@@ -142,10 +142,10 @@ function getNinjaData(cigarId, email) {
         }
 
         if(response.payload.status == "STATUS_INCOMPLETE"){
-            $(".incompleteblock").show();
+            $("[data-var='incompleteblock']").show();
             $("[data-var='linkincomplete']").attr('href','https://app.qoverme.com/iab/contracts/'+response.payload.contractId+'/missing-data?key=pk_8608895FC72565DF474D&locale='+lang+'-'+response.payload.refs.country)
         } else {
-            $(".incompleteblock").hide();
+            $("[data-var='incompleteblock']").hide();
         }
         
 
