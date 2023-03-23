@@ -33,7 +33,7 @@ const makeTranslation = {
 };
 const modelTranslation = {
     "MODEL_S": "Model S",
-    "MODEL_E": "Model E",
+    "MODEL_3": "Model 3",
     "MODEL_X": "Model X",
     "MODEL_Y": "Model Y"
 };
