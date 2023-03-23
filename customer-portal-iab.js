@@ -151,10 +151,10 @@ function getNinjaData(cigarId, email) {
         }
 
         //START action to display/hide block to request Qover to cancel old contract cfr Loi Hamon in France
-        //We want to show this block only within the first 2 months of the contracts
-        var startDateJs = new Date(response.payload.start);
+        //We want to show this block only within the first 2 months after purchase date
+        var purchaseDate = new Date(response.payload.purchaseDate);
         var today = new Date();
-        var diffInMonths = (today.getFullYear() - startDateJs.getFullYear()) * 12 + (today.getMonth() - startDateJs.getMonth());
+        var diffInMonths = (today.getFullYear() - purchaseDate.getFullYear()) * 12 + (today.getMonth() - purchaseDate.getMonth());
 
         if(response.payload.refs.country == "FR" && diffInMonths <= 2){
             $("[data-var='requestcanceloldcontract']").show();
