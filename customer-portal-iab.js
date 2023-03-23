@@ -163,6 +163,15 @@ function getNinjaData(cigarId, email) {
             $("[data-var='requestcanceloldcontract']").hide();
         }
         //END action to display/hide block to request Qover to cancel old contract cfr Loi Hamon in France
+
+        //START show button to request invoice for companies
+        if(response.payload.entityType == "ENTITY_TYPE_COMPANY"){
+             $("[data-var='requestinvoice']").show();
+             $("[data-var='requestinvoice']").attr('onclick','alert("we still need to implement this")');
+        } else {
+            $("[data-var='requestinvoice']").hide();
+        }
+        //END show button to request invoice for companies
         
 
         if(response.payload.paymentMethod != "PAYMENT_METHOD_SEPADD"){
