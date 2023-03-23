@@ -149,6 +149,20 @@ function getNinjaData(cigarId, email) {
         } else {
             $("[data-var='incompleteblock']").hide();
         }
+
+        //START action to display/hide block to request Qover to cancel old contract cfr Loi Hamon in France
+        //We want to show this block only within the first 2 months of the contracts
+        var startDateJs = new Date(response.payload.start);
+        var today = new Date();
+        var diffInMonths = (today.getFullYear() - startDateJs.getFullYear()) * 12 + (today.getMonth() - startDateJs.getMonth());
+
+        if(response.payload.refs.country == "FR" && diffInMonths <= 2){
+            $("[data-var='requestcanceloldcontract']").show();
+            $("[data-var='requestcanceloldcontract']").attr('href','https://forms.qover.com/230812152139044?contractReference='+cigarId)
+        } else {
+            $("[data-var='requestcanceloldcontract']").hide();
+        }
+        //END action to display/hide block to request Qover to cancel old contract cfr Loi Hamon in France
         
 
         if(response.payload.paymentMethod != "PAYMENT_METHOD_SEPADD"){
