@@ -1,4 +1,4 @@
-console.warn("v20230323 0959");
+console.warn("v20230323 1008");
 
 const variants = {
     "VARIANT_SILVER": "Preferred",
@@ -158,7 +158,7 @@ function getNinjaData(cigarId, email) {
 
         if(response.payload.refs.country == "FR" && diffInMonths <= 2){
             $("[data-var='requestcanceloldcontract']").show();
-            $("[data-var='requestcanceloldcontract']").attr('href','https://forms.qover.com/230812152139044?contractReference='+cigarId)
+            $("[data-var='requestcanceloldcontract']").attr('href','https://forms.qover.com/230812152139044?contractReference='+cigarId+'&registrationPlate='+response.payload.risk.registrationPlate)
         } else {
             $("[data-var='requestcanceloldcontract']").hide();
         }
