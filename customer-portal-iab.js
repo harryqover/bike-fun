@@ -150,6 +150,8 @@ function getNinjaData(cigarId, email) {
             $("[data-var='incompleteblock']").hide();
         }
 
+        $("[data-var='requeststatementofinformation']").attr('onclick','alert("we still need to implement this")');
+
         //START action to display/hide block to request Qover to cancel old contract cfr Loi Hamon in France
         //We want to show this block only within the first 2 months after purchase date
         var purchaseDate = new Date(response.payload.purchaseDate);
