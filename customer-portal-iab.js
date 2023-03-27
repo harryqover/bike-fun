@@ -361,7 +361,7 @@ $(function(){
 
 function reSendEmail(){
     $(".loading-resend-email").show();
-    $("[data-translation='requestresendcontract']").hide();
+    $("[data-translation='requestresendcontractgreencard']").hide();
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
 
     var settings = {
@@ -382,8 +382,8 @@ function reSendEmail(){
     $.ajax(settings).done(function(response) {
         console.log(response);
         $(".loading-resend-email").hide();
-        $("[data-translation='requestresendcontract']").text(translations['emailsent']);
-        $("[data-translation='requestresendcontract']").show();
+        $("[data-translation='requestresendcontractgreencard']").text(translations['emailsent']);
+        $("[data-translation='requestresendcontractgreencard']").show();
     });
 }
 
