@@ -362,8 +362,7 @@ $(function(){
 
 
 function reSendEmail(){
-    $(".loading-resend-email").show();
-    $("[data-translation='requestresendcontractgreencard']").hide();
+    $("[data-translation='requestresendcontractgreencard']").text(translations['waitwhilesending']);
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
 
     var settings = {
