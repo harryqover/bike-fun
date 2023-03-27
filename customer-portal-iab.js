@@ -89,11 +89,13 @@ function clickToLogin() {
 function goLogin(cigarId, email) {
     console.log("start goLogin")
     translateAll();
+
+    //HIDING EVERYHTING BEHIND LOADING ICON
     $(".loading").show();
     $("#connected").hide();
     $("#disconnected").hide();
     $("#bikedata").hide();
-    console.log("loading should be visible")
+    $(".head-cp-connected").hide();
     getNinjaData(cigarId, email);
     $("[data-translation='logout']").show();
 }
@@ -125,6 +127,27 @@ function getNinjaData(cigarId, email) {
         console.log(response);
         window.payloadFromNinja = response;
         const currency = response.payload.currency;
+        const lang = $('#langinput').find(":selected").val();
+        const country = response.payload.refs.country;
+
+        //START create var for zendesk lang based on zendesk locales availabilities
+        var zendeskLang = lang+"-"+country.toLowerCase();
+        if (country == "NL"){
+            zendeskLang = (lang == "nl") ? "nl":"en-"+country.toLowerCase();
+        } else if (country == "FR"){
+            zendeskLang = "fr";
+        } else if (country == "DE"){
+            zendeskLang = "de";
+        } else if (country == "ES"){
+            zendeskLang = "es";
+        } else if (country == "PT"){
+            zendeskLang = "pt";
+        } else if (country == "DK"){
+            zendeskLang = "da-dk";
+        } else if (country == "AT"){
+            zendeskLang = (lang == "de") ? "de-at":"en-at";
+        }
+        //STOP create var for zendesk lang based on zendesk locales availabilities
 
         //START adding dynamic info from ninja on page
         $("[data-var='brand']").text(makeTranslation[response.payload.risk.make]);
@@ -133,6 +156,16 @@ function getNinjaData(cigarId, email) {
         $("[data-var='seconddriver']").text(translations[response.payload.risk.hasSecondDriver]);
         $("[data-var='registrationPlate']").text(response.payload.risk.registrationPlate);
         $("[data-var='vin']").text(response.payload.risk.vin);
+        $("[data-var='status']").text(statusContract[response.payload.status]);
+        $("[data-var='product']").text(variants[response.payload.terms.variant]);
+        $("[data-var='cigarid']").text(cigarId);
+        var start = new Date(response.payload.start);
+        var end = new Date(response.payload.end);
+        $("[data-var='start']").text(start.toLocaleDateString());
+        $("[data-var='end']").text(end.toLocaleDateString());
+        $("[data-var='phone']").text(qoverPhone[response.payload.refs.country]);
+        $("[data-var='teslamodelimg']").text("src",modelPic[response.payload.risk.model]);
+        $("[data-var='value']").text(currency+" " + response.payload.risk.originalValue / 100);
         //STOP adding dynamic info from ninja on page
 
         //START adding interactions 
@@ -141,13 +174,17 @@ function getNinjaData(cigarId, email) {
           reSendEmail();
         });
         $("[data-var='requeststatementofinformation']").attr('onclick','alert("we still need to implement this")');
+        $("[data-var='amendlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_4414433182481=iab_amend&tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
+        $("[data-var='contracttandlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang);
+        $("[data-var='cancel']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_4414433182481=iab_cancel&tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
+        $("[data-var='makeaclaim']").attr("href", "https://www.qover.com/claims?lang="+lang+"&contract=" + cigarId + "&email=" + email);
         //STOP adding interactions 
 
         //START RENEWAL BLOCK
         if(response.payload.nextVersion){
            $("[data-var='mileagerenewal']").text(mileageTranslation[response.payload.nextVersion.risk.yearMileageKm]+translations['peryear']);
            $("[data-var='seconddriverrenewal']").text(translations[response.payload.nextVersion.risk.hasSecondDriver]);
-           var lang = $('#langinput').find(":selected").val()
+           //var lang = $('#langinput').find(":selected").val()
            $("[data-var='linkrenewal']").attr("href","https://app.qover.com/iab/contracts/"+response.payload.contractId+"/renewal?key=pk_8608895FC72565DF474D&locale="+response.payload.language+"-"+response.payload.refs.country)
            $("[data-var='renewalblock']").show();
         } else {
@@ -191,76 +228,25 @@ function getNinjaData(cigarId, email) {
         if(response.payload.paymentMethod != "PAYMENT_METHOD_SEPADD"){
             //showing only price per year
             $(".permonth").hide();
-            $("[data-var='price']").text("EUR " + formatPrice(response.payload.price));
+            $("[data-var='price']").text(currency + formatPrice(response.payload.price));
             if(response.payload.nextVersion){
-                $("[data-var='pricerenewal']").text("EUR " + formatPrice(response.payload.nextVersion.price));
+                $("[data-var='pricerenewal']").text(currency + formatPrice(response.payload.nextVersion.price));
             }
         } else {
             //showing only price per month
             $(".peryear").hide();
-            $("[data-var='pricepermonth']").text("EUR " + formatPrice(response.payload.price/12));
+            $("[data-var='pricepermonth']").text(currency + formatPrice(response.payload.price/12));
             if(response.payload.nextVersion){
-                $("[data-var='pricepermonthrenewal']").text("EUR " + formatPrice(response.payload.nextVersion.price/12));
+                $("[data-var='pricepermonthrenewal']").text(currency + formatPrice(response.payload.nextVersion.price/12));
             }
         }
         //STOP show prices information
         
-        $("[data-var='status']").text(statusContract[response.payload.status]);
-        $("[data-var='product']").text(variants[response.payload.terms.variant]);
-        $("[data-var='cigarid']").text(cigarId);
-        var start = new Date(response.payload.start);
-        var end = new Date(response.payload.end);
-        $("[data-var='start']").text(start.toLocaleDateString());
-        $("[data-var='end']").text(end.toLocaleDateString());
-        $("[data-var='phone']").text(qoverPhone[response.payload.refs.country]);
-
-        var lang = $('#langinput').find(":selected").val();
-        var country = response.payload.refs.country;
-
-        var zendeskLang = lang+"-"+country.toLowerCase();
-        console.log("country: ", country);
-        if (country == "NL"){
-            zendeskLang = (lang == "nl") ? "nl":"en-"+country.toLowerCase();
-        } else if (country == "FR"){
-            zendeskLang = "fr";
-        } else if (country == "DE"){
-            zendeskLang = "de";
-        } else if (country == "ES"){
-            zendeskLang = "es";
-        } else if (country == "PT"){
-            zendeskLang = "pt";
-        } else if (country == "DK"){
-            zendeskLang = "da-dk";
-        } else if (country == "AT"){
-            zendeskLang = (lang == "de") ? "de-at":"en-at";
-        }
-
-        //english only in AT, BE, NL
-
-        console.log("zendeskLang: ", zendeskLang);
-
-        $("[data-var='amendlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_4414433182481=iab_amend&tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
-        $("[data-var='contracttandlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang);
-        $("[data-var='cancel']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_4414433182481=iab_cancel&tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
-        $("[data-var='documentupload']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_4414433182481=iab_upload&tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
-        $("[data-var='makeaclaim']").attr("href", "https://www.qover.com/claims?lang="+lang+"&contract=" + cigarId + "&email=" + email);
-        /*
-            $("[data-var='cancel']").attr("href", "https://form.jotform.com/230021764194349?language="+lang+"&cigarid=" + cigarId + "&email=" + email);
-            $("[data-var='documentupload']").attr("href", "https://qover.jotform.com/223391631989063?email=" + email + "&contractReference=" + cigarId + "&language="+lang);
-            $("[data-var='claims']").attr("href", "https://www.qover.com/claims?lang="+lang+"&contract=" + cigarId + "&email=" + email);
-            
-            $("[data-var='1starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=1&c=" + cigarId + "&l="+lang+"&s=customer_portal");
-            $("[data-var='2starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=2&c=" + cigarId + "&l="+lang+"&s=customer_portal");
-            $("[data-var='3starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=3&c=" + cigarId + "&l="+lang+"&s=customer_portal");
-            $("[data-var='4starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=4&c=" + cigarId + "&l="+lang+"&s=customer_portal");
-            $("[data-var='5starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=5&c=" + cigarId + "&l="+lang+"&s=customer_portal");
-
-        */
-
-
+        //START show correct renewal status and color
         if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && !response.payload.versionInfo.cancelInformation) {
             console.log("full active")
             $("[data-var='renewal']").text(translations['renewed']);
+            $(".statusdiv").css("background-color", "#80cc7a")
         } else if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == true) {
             console.log("active but cancel at renewal")
             $(".statusdiv").css("background-color", "#FFC1BC")
@@ -273,36 +259,26 @@ function getNinjaData(cigarId, email) {
         } else {
             console.log("something else: " + response.payload.status + " - " + response.payload.versionInfo);
         }
+        //STOP show correct renewal status and color
 
+        //START show assistance block if SILVER or GOLD
         if(response.payload.terms.variant == "VARIANT_SILVER" || response.payload.terms.variant == "VARIANT_GOLD"){
             $("[data-var='phoneassistance']").text(assistancePhone[response.payload.refs.country]);
-            //$("[data-var='explanation-deductible']").text(translations['incaseoftheft']+ " "+ currency + " " + refundTheft + " "+translations['incaseofdamage']+ " "+ currency + " " + Math.round(damageDeductibleAmount * 100) / 100);
+            $(".assistance-emergency").show();
         } else {
             $("[data-var='phoneassistance']").text("not available");    
             $(".assistance-emergency").hide();
-            //$(".div-block-324").hide();
         }
+        //STOP show assistance block if SILVER or GOLD
 
-        $("[data-var='teslamodelimg']").text("src",modelPic[response.payload.risk.model]);
-
-
-        $("[data-var='value']").text(currency+" " + response.payload.risk.originalValue / 100);
-
+        
+        //SHOWING BACK ALL BLOCKS AFTER COMPUTING EVERYTHING
         $("#bikedata").show();
         $("#connected").show();
         $(".loading-resend-email").hide();
         $("#disconnected").hide();
         $(".loading").hide();
-        var lang = $('#langinput').find(":selected").val();
-        /* HIDE JOTFORM FEEDBACK
-        if(lang == "fr" || lang == "en"){
-            startJotformFeedback();
-            setTimeout(function() { 
-                window.open( 'https://qover.jotform.com/230382756620354?contract='+cigarId+'&language='+lang, 'blank', 'scrollbars=yes, toolbar=no, width=700, height=1000' )    
-            }, 5000);    
-        }
-        */
-        
+        $(".head-cp-connected").show();
     });
 }
 
