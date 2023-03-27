@@ -66,6 +66,7 @@ $("#connected").hide();
 $(".head-cp-connected").hide();
 $("#disconnected").show();
 $("[data-translation='logout']").hide();
+$("[data-var='assistance-icon']").hide();
 
 var login = getCookie("login");
 var cigarId = getCookie("cigarId");
@@ -269,7 +270,7 @@ function getNinjaData(cigarId, email) {
             $("[data-var='assistance-icon']").show();
         } else {
             $("[data-var='phoneassistance']").text("not available");    
-            $(".assistance-emergency").hide();
+            $("[data-var='assistance-icon']").hide();
         }
         //STOP show assistance block if SILVER or GOLD
 
