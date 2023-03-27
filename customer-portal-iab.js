@@ -39,10 +39,10 @@ const modelTranslation = {
 };
 
 const modelPic = {
-    "MODEL_S": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/64218f31a4c76c265ae9b4e9_Capture%20d%E2%80%99e%CC%81cran%202023-03-27%20a%CC%80%2014.40.55.png",
-    "MODEL_3": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/64218f3c3c62b4c04a258d07_model3.webp",
-    "MODEL_X": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/64218f3d85883ccb22a490e2_X.png",
-    "MODEL_Y": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/64218f3c1b100d7ddf18da62_Y.png"
+    "MODEL_S": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/6333002f43ba3deb577247df_Model%20S%402x.png",
+    "MODEL_3": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/6333002f43ba3d1c337247e3_Model%203%402x.png",
+    "MODEL_X": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/6333002f43ba3d0df37247dd_Model%20X%402x.png",
+    "MODEL_Y": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/6333002f43ba3de2607247e1_Model%20Y%402x.png"
 };
 
 const mileageTranslation = {
@@ -125,21 +125,25 @@ function getNinjaData(cigarId, email) {
         console.log(response);
         window.payloadFromNinja = response;
         const currency = response.payload.currency;
+
+        //START adding dynamic info from ninja on page
         $("[data-var='brand']").text(makeTranslation[response.payload.risk.make]);
         $("[data-var='model']").text(modelTranslation[response.payload.risk.model]);
         $("[data-var='mileage']").text(mileageTranslation[response.payload.risk.yearMileageKm]+translations['peryear']);
-        //$("[data-var='bonusmalus']").text(response.payload.risk.bonusMalus);
         $("[data-var='seconddriver']").text(translations[response.payload.risk.hasSecondDriver]);
-
-        $('[data-var="greencardbypost"]').attr('href','https://forms.qover.com/230804510892049?contractReference='+cigarId);
-        
         $("[data-var='registrationPlate']").text(response.payload.risk.registrationPlate);
         $("[data-var='vin']").text(response.payload.risk.vin);
+        //STOP adding dynamic info from ninja on page
 
+        //START adding interactions 
+        $('[data-var="greencardbypost"]').attr('href','https://forms.qover.com/230804510892049?contractReference='+cigarId);
         $("[data-var='resendcontract']").click(function() {
           reSendEmail();
         });
+        $("[data-var='requeststatementofinformation']").attr('onclick','alert("we still need to implement this")');
+        //STOP adding interactions 
 
+        //START RENEWAL BLOCK
         if(response.payload.nextVersion){
            $("[data-var='mileagerenewal']").text(mileageTranslation[response.payload.nextVersion.risk.yearMileageKm]+translations['peryear']);
            $("[data-var='seconddriverrenewal']").text(translations[response.payload.nextVersion.risk.hasSecondDriver]);
@@ -149,15 +153,16 @@ function getNinjaData(cigarId, email) {
         } else {
             $("[data-var='renewalblock']").hide();
         }
+        //STOP RENEWAL BLOCK
 
+        //START show incomplete banner if STATUS_INCOMPLETE
         if(response.payload.status == "STATUS_INCOMPLETE" && allowedLinkIncomplete.includes(response.payload.refs.country)){
             $("[data-var='incompleteblock']").show();
             $("[data-var='linkincomplete']").attr('href','https://app.qover.com/iab/contracts/'+response.payload.contractId+'/missing-data?key=pk_8608895FC72565DF474D&locale='+response.payload.language+'-'+response.payload.refs.country)
         } else {
             $("[data-var='incompleteblock']").hide();
         }
-
-        $("[data-var='requeststatementofinformation']").attr('onclick','alert("we still need to implement this")');
+        //STOP show incomplete banner if STATUS_INCOMPLETE
 
         //START action to display/hide block to request Qover to cancel old contract cfr Loi Hamon in France
         //We want to show this block only within the first 2 months after purchase date
@@ -182,7 +187,7 @@ function getNinjaData(cigarId, email) {
         }
         //END show button to request invoice for companies
         
-
+        //START show prices information
         if(response.payload.paymentMethod != "PAYMENT_METHOD_SEPADD"){
             //showing only price per year
             $(".permonth").hide();
@@ -198,6 +203,7 @@ function getNinjaData(cigarId, email) {
                 $("[data-var='pricepermonthrenewal']").text("EUR " + formatPrice(response.payload.nextVersion.price/12));
             }
         }
+        //STOP show prices information
         
         $("[data-var='status']").text(statusContract[response.payload.status]);
         $("[data-var='product']").text(variants[response.payload.terms.variant]);
