@@ -266,7 +266,7 @@ function getNinjaData(cigarId, email) {
         //START show assistance block if SILVER or GOLD
         if(response.payload.terms.variant == "VARIANT_SILVER" || response.payload.terms.variant == "VARIANT_GOLD"){
             $("[data-var='phoneassistance']").text(assistancePhone[response.payload.refs.country]);
-            $(".assistance-emergency").show();
+            $("[data-var='assistance-icon']").show();
         } else {
             $("[data-var='phoneassistance']").text("not available");    
             $(".assistance-emergency").hide();
