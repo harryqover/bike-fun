@@ -37,12 +37,7 @@ const modelTranslation = {
     "MODEL_X": "Model X",
     "MODEL_Y": "Model Y"
 };
-const modelPic = {
-    "MODEL_S": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/64218f31a4c76c265ae9b4e9_Capture%20d%E2%80%99e%CC%81cran%202023-03-27%20a%CC%80%2014.40.55.png",
-    "MODEL_3": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/64218f3c3c62b4c04a258d07_model3.webp",
-    "MODEL_X": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/64218f3d85883ccb22a490e2_X.png",
-    "MODEL_Y": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/64218f3c1b100d7ddf18da62_Y.png"
-};
+
 
 const mileageTranslation = {
     "MILEAGE_0TO9999": "0 - 9.999 km",
