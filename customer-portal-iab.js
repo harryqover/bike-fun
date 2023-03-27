@@ -165,7 +165,8 @@ function getNinjaData(cigarId, email) {
         $("[data-var='start']").text(start.toLocaleDateString());
         $("[data-var='end']").text(end.toLocaleDateString());
         $("[data-var='phone']").text(qoverPhone[response.payload.refs.country]);
-        $("[data-var='teslamodelimg']").text("src",modelPic[response.payload.risk.model]);
+        $("[data-var='teslamodelimg']").attr("src",modelPic[response.payload.risk.model]);
+        $("[data-var='teslamodelimg']").attr("srcset",modelPic[response.payload.risk.model]);
         $("[data-var='value']").text(currency+ " " + response.payload.risk.originalValue / 100);
         //STOP adding dynamic info from ninja on page
 
