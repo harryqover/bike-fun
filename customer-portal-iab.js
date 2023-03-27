@@ -166,7 +166,7 @@ function getNinjaData(cigarId, email) {
         $("[data-var='end']").text(end.toLocaleDateString());
         $("[data-var='phone']").text(qoverPhone[response.payload.refs.country]);
         $("[data-var='teslamodelimg']").text("src",modelPic[response.payload.risk.model]);
-        $("[data-var='value']").text(currency+" " + response.payload.risk.originalValue / 100);
+        $("[data-var='value']").text(currency+ " " + response.payload.risk.originalValue / 100);
         //STOP adding dynamic info from ninja on page
 
         //START adding interactions 
@@ -229,16 +229,16 @@ function getNinjaData(cigarId, email) {
         if(response.payload.paymentMethod != "PAYMENT_METHOD_SEPADD"){
             //showing only price per year
             $(".permonth").hide();
-            $("[data-var='price']").text(currency + formatPrice(response.payload.price));
+            $("[data-var='price']").text(currency+ " " + formatPrice(response.payload.price));
             if(response.payload.nextVersion){
-                $("[data-var='pricerenewal']").text(currency + formatPrice(response.payload.nextVersion.price));
+                $("[data-var='pricerenewal']").text(currency+ " " + formatPrice(response.payload.nextVersion.price));
             }
         } else {
             //showing only price per month
             $(".peryear").hide();
-            $("[data-var='pricepermonth']").text(currency + formatPrice(response.payload.price/12));
+            $("[data-var='pricepermonth']").text(currency+ " " + formatPrice(response.payload.price/12));
             if(response.payload.nextVersion){
-                $("[data-var='pricepermonthrenewal']").text(currency + formatPrice(response.payload.nextVersion.price/12));
+                $("[data-var='pricepermonthrenewal']").text(currency+ " " + formatPrice(response.payload.nextVersion.price/12));
             }
         }
         //STOP show prices information
