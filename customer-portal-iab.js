@@ -63,7 +63,7 @@ var damageDeductibleAmount = 0;
 
 $(".loading").hide();
 $("#connected").hide();
-(".head-cp-connected").hide();
+$(".head-cp-connected").hide();
 $("#disconnected").show();
 $("[data-translation='logout']").hide();
 
