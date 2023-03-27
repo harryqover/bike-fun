@@ -316,6 +316,7 @@ function translateAll() {
                 content = JSON.parse(xhrLocales.responseText);
                 window.translations = content;
                 console.log(window.translations);
+                //translate all data attributes that contains data-translation
                 $("[data-translation]").each(function(index) {
                     $(this).html(content[$(this).data("translation")]);
                     var text = $(this).html();
