@@ -189,6 +189,8 @@ function getNinjaData(cigarId, email) {
            $("[data-var='mileagerenewal']").text(mileageTranslation[response.payload.nextVersion.risk.yearMileageKm]+translations['peryear']);
            $("[data-var='seconddriverrenewal']").text(translations[response.payload.nextVersion.risk.hasSecondDriver]);
            //var lang = $('#langinput').find(":selected").val()
+           var startRenew = new Date(response.payload.nextVersion.start);
+           $("[data-var='startrenewal']").text(startRenew.toLocaleDateString());
            $("[data-var='linkrenewal']").attr("href","https://app.qover.com/iab/contracts/"+response.payload.contractId+"/renewal?key="+response.payload.pkey+"&locale="+response.payload.language+"-"+response.payload.refs.country)
            $("[data-var='renewalblock']").show();
         } else {
