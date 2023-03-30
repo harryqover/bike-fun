@@ -160,7 +160,7 @@ function getNinjaData(cigarId, email) {
         $("[data-var='vin']").text(response.payload.risk.vin);
         $("[data-var='status']").text(statusContract[response.payload.status]);
         $("[data-var='product']").text(variants[response.payload.terms.variant]);
-        $("[data-var='cigarid']").text(cigarId);
+        $("[data-var='cigarid']").text(response.payload.cigarId);
         var start = new Date(response.payload.start);
         var end = new Date(response.payload.end);
         $("[data-var='start']").text(start.toLocaleDateString());
@@ -172,15 +172,15 @@ function getNinjaData(cigarId, email) {
         //STOP adding dynamic info from ninja on page
 
         //START adding interactions 
-        $('[data-var="greencardbypost"]').attr('href','https://forms.qover.com/230804510892049?contractReference='+cigarId);
+        $('[data-var="greencardbypost"]').attr('href','https://forms.qover.com/230804510892049?contractReference='+response.payload.cigarId);
         $("[data-var='resendcontract']").click(function() {
           reSendEmail();
         });
         $("[data-var='requeststatementofinformation']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
-        $("[data-var='amendlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
+        $("[data-var='amendlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
         $("[data-var='contracttandlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang);
-        $("[data-var='cancel']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
-        $("[data-var='contact']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
+        $("[data-var='cancel']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
+        $("[data-var='contact']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
         $("[data-var='makeaclaim']").attr("href", "https://insuremytesla.qover.com/claims?language="+lang);
         //STOP adding interactions 
 
@@ -215,7 +215,7 @@ function getNinjaData(cigarId, email) {
 
         if(response.payload.refs.country == "FR" && diffInMonths <= 2){
             $("[data-var='requestcanceloldcontract']").show();
-            $("[data-var='requestcanceloldcontract']").attr('href','https://forms.qover.com/230812152139044?contractReference='+cigarId+'&registrationPlate='+response.payload.risk.registrationPlate)
+            $("[data-var='requestcanceloldcontract']").attr('href','https://forms.qover.com/230812152139044?contractReference='+response.payload.cigarId+'&registrationPlate='+response.payload.risk.registrationPlate)
         } else {
             $("[data-var='requestcanceloldcontract']").hide();
         }
