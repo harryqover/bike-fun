@@ -237,6 +237,7 @@ function getNinjaData(cigarId, email) {
             $("[data-var='requeststatementofinformation']").hide();
             $("[data-var='start']").text("not available");
             $("[data-var='end']").text("not available");
+            $("[data-translation='requestresendcontractgreencard'").text("resend last email");
             if(response.payload.risk.registrationPlate == ""){
                 $("[data-var='registrationPlate']").text("missing");
             }            
