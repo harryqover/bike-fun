@@ -229,6 +229,22 @@ function getNinjaData(cigarId, email) {
             $("[data-var='requestinvoice']").hide();
         }
         //END show button to request invoice for companies
+
+        //START hide stuff not available for pending contracts
+        if(response.payload.status == "STATUS_PENDING"){
+            $("[data-var='makeaclaim']").hide();
+            $("[data-var='greencardbypost']").hide();
+            $("[data-var='requeststatementofinformation']").hide();
+            $("[data-var='start']").text("not available");
+            $("[data-var='end']").text("not available");
+            if(response.payload.risk.registrationPlate == ""){
+                $("[data-var='registrationPlate']").text("missing");
+            }            
+            if(response.payload.risk.vin == ""){
+                $("[data-var='vin']").text("missing");
+            }
+        }
+        //END hide stuff not available for pending contracts
         
         //START show prices information
         if(response.payload.paymentMethod != "PAYMENT_METHOD_SEPADD"){
