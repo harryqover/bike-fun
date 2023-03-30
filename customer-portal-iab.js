@@ -241,18 +241,7 @@ function getNinjaData(cigarId, email) {
 
             //START hide stuff not available for pending contracts
             if(response.payload.status == "STATUS_PENDING"){
-                $("[data-var='makeaclaim']").hide();
-                $("[data-var='greencardbypost']").hide();
-                $("[data-var='requeststatementofinformation']").hide();
-                $("[data-var='start']").text("not available");
-                $("[data-var='end']").text("not available");
-                $("[data-translation='requestresendcontractgreencard'").text("resend last email");
-                if(response.payload.risk.registrationPlate == ""){
-                    $("[data-var='registrationPlate']").text("missing");
-                }            
-                if(response.payload.risk.vin == ""){
-                    $("[data-var='vin']").text("missing");
-                }
+                
             }
             //END hide stuff not available for pending contracts
             
@@ -281,13 +270,27 @@ function getNinjaData(cigarId, email) {
                 $(".statusdiv").css("background-color", "#80cc7a")
             } else if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == true) {
                 console.log("active but cancel at renewal")
-                $(".statusdiv").css("background-color", "#FFC1BC")
+                $(".statusdiv").css("background-color", "#FFC1BC");
                 $("[data-var='renewal']").text(translations['cancelled']);
             } else if (response.payload.status == "STATUS_CLOSED") {
                 console.log("closed");
                 var cancelDate = new Date(response.payload.versionInfo.effectiveDate);
                 $(".statusdiv").css("background-color", "#FFC1BC")
                 $("[data-var='renewalorcanceltext']").text(translations['cancelledon']+" " + cancelDate.toLocaleDateString());
+            } else if (response.payload.status == "STATUS_PENDING") {
+                $(".statusdiv").css("background-color", "#FFC1BC");
+                $("[data-var='makeaclaim']").hide();
+                $("[data-var='greencardbypost']").hide();
+                $("[data-var='requeststatementofinformation']").hide();
+                $("[data-var='start']").text("not available");
+                $("[data-var='end']").text("not available");
+                $("[data-translation='requestresendcontractgreencard'").text("resend last email");
+                if(response.payload.risk.registrationPlate == ""){
+                    $("[data-var='registrationPlate']").text("missing");
+                }            
+                if(response.payload.risk.vin == ""){
+                    $("[data-var='vin']").text("missing");
+                }
             } else {
                 console.log("something else: " + response.payload.status + " - " + response.payload.versionInfo);
             }
