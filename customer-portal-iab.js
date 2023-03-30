@@ -282,14 +282,14 @@ function getNinjaData(cigarId, email) {
                 $("[data-var='makeaclaim']").hide();
                 $("[data-var='greencardbypost']").hide();
                 $("[data-var='requeststatementofinformation']").hide();
-                $("[data-var='start']").text("not available");
-                $("[data-var='end']").text("not available");
-                $("[data-translation='requestresendcontractgreencard'").text("resend last email");
-                if(response.payload.risk.registrationPlate == ""){
-                    $("[data-var='registrationPlate']").text("missing");
+                $("[data-var='start']").text(translations['notavailable']);
+                $("[data-var='end']").text(translations['notavailable']);
+                $("[data-translation='requestresendcontractgreencard'").text(translations['resendemailpending']);
+                if(!response.payload.risk.registrationPlate){
+                    $("[data-var='registrationPlate']").text(translations['missing']);
                 }            
-                if(response.payload.risk.vin == ""){
-                    $("[data-var='vin']").text("missing");
+                if(!response.payload.risk.vin){
+                    $("[data-var='vin']").text(translations['missing']);
                 }
             } else {
                 console.log("something else: " + response.payload.status + " - " + response.payload.versionInfo);
