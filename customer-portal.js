@@ -473,7 +473,13 @@ function startJotformFeedback (){
 }
 
 function reSendEmail(){
-    $("[data-translation='requestresendcontract']").text(translations['waitwhilesending']);
+    
+    i = 0;
+    setInterval(function() {
+        i = ++i % 4;
+        $("[data-translation='requestresendcontract']").html(translations['waitwhilesending']+Array(i+1).join("."));
+    }, 500);
+    
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
 
     var settings = {
