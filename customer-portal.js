@@ -179,6 +179,9 @@ function goLogin(cigarId, email) {
             $("[data-var='claims']").attr("href", "https://www.qover.com/claims?lang="+lang+"&contract=" + cigarId + "&email=" + email);
             $("[data-var='amendlink']").attr("href", "https://qoverme.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_4414433182481=bike_amend&tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
             $("[data-var='contracttandlink']").attr("href", "https://qoverme.zendesk.com/hc/"+zendeskLang);
+            $("[data-var='resendcontract']").click(function() {
+              reSendEmail();
+            });
             $("[data-var='1starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=1&c=" + cigarId + "&l="+lang+"&s=customer_portal");
             $("[data-var='2starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=2&c=" + cigarId + "&l="+lang+"&s=customer_portal");
             $("[data-var='3starlink']").attr("href","https://harryqover.github.io/bike-fun/reviewQover?r=3&c=" + cigarId + "&l="+lang+"&s=customer_portal");
@@ -238,6 +241,7 @@ function getNinjaData(cigarId, email) {
 
     $.ajax(settings).done(function(response) {
         console.log(response);
+        window.payloadFromNinja = response;
         const currency = response.payload.currency;
         $("[data-var='brand']").text(response.payload.risk.make);
         $("[data-var='model']").text(response.payload.risk.model);
@@ -466,4 +470,31 @@ function startJotformFeedback (){
     } else if (window.attachEvent) {
       window.attachEvent("onmessage", handleIFrameMessage);
     }
+}
+
+function reSendEmail(){
+    $("[data-translation='requestresendcontractgreencard']").text(translations['waitwhilesending']);
+    var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
+
+    var settings = {
+        "url": googleSheetUrl,
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
+        "data": JSON.stringify({
+            "contractId": window.payloadFromNinja.payload.contractId,
+            "request": "contract",
+            "product": "BIKE",
+            "versionNumber": window.payloadFromNinja.payload.versionInfo.versionNumber
+        }),
+    };
+
+    $.ajax(settings).done(function(response) {
+        console.log(response);
+        $(".loading-resend-email").hide();
+        $("[data-translation='requestresendcontractgreencard']").text(translations['emailsent']);
+        $("[data-translation='requestresendcontractgreencard']").show();
+    });
 }
