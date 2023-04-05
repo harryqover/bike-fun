@@ -289,11 +289,11 @@ function getNinjaData(cigarId, email) {
         $("#disconnected").hide();
         $(".loading").hide();
         var lang = $('#langinput').find(":selected").val();
-        if(lang == "fr" || lang == "en"){
+        if(lang == "fr" || lang == "en"|| lang == "de"|| lang == "nl"){
             startJotformFeedback();
             setTimeout(function() { 
                 window.open( 'https://qover.jotform.com/230382756620354?contract='+cigarId+'&language='+lang, 'blank', 'scrollbars=yes, toolbar=no, width=700, height=1000' )    
-            }, 5000);    
+            }, 10000);    
         }
         
     });
@@ -492,9 +492,13 @@ function reSendEmail(){
     };
 
     $.ajax(settings).done(function(response) {
-        console.log(response);
         $(".loading-resend-email").hide();
-        $("[data-translation='requestresendcontractgreencard']").text(translations['emailsent']);
+        if(response.status == 201){
+            $("[data-translation='requestresendcontractgreencard']").text(translations['emailsent']);    
+        } else {
+            $("[data-translation='requestresendcontractgreencard']").text("error");    
+        }
+        console.log(response);
         $("[data-translation='requestresendcontractgreencard']").show();
     });
 }
