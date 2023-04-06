@@ -297,7 +297,7 @@ function getNinjaData(cigarId, email) {
             //STOP show correct renewal status and color
 
             //START hide incomplete status for DE
-            if (response.payload.status == "STATUS_INCOMPLETE" && response.payload.refs.country == "DE") {
+            if (response.payload.status == "STATUS_INCOMPLETE" && (response.payload.refs.country == "DE"||response.payload.refs.country == "NL") {
                 $(".statusdiv").hide();
             }
             //STOP hide incomplete status for DE
