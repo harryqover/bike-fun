@@ -296,6 +296,12 @@ function getNinjaData(cigarId, email) {
             }
             //STOP show correct renewal status and color
 
+            //START hide incomplete status for DE
+            if (response.payload.status == "STATUS_INCOMPLETE" && response.payload.refs.country == "DE") {
+                $(".statusdiv").hide();
+            }
+            //STOP hide incomplete status for DE
+
             //START show assistance block if SILVER or GOLD
             if(response.payload.terms.variant == "VARIANT_SILVER" || response.payload.terms.variant == "VARIANT_GOLD"){
                 $("[data-var='phoneassistance']").text(assistancePhone[response.payload.refs.country]);
