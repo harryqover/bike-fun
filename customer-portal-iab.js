@@ -276,7 +276,7 @@ function getNinjaData(cigarId, email) {
                 console.log("closed");
                 var cancelDate = new Date(response.payload.versionInfo.effectiveDate);
                 $(".statusdiv").css("background-color", "#FFC1BC")
-                $("[data-var='renewalorcanceltext']").text(translations['cancelledon']+" " + cancelDate.toLocaleDateString());
+                $("[data-var='renewal']").text(translations['cancelledon']+ " " + cancelDate.toLocaleDateString());
             } else if (response.payload.status == "STATUS_PENDING") {
                 $(".statusdiv").css("background-color", "#FFC1BC");
                 $("[data-var='makeaclaim']").hide();
