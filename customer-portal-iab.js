@@ -233,7 +233,8 @@ function getNinjaData(cigarId, email) {
             //START show button to request invoice for companies
             if(response.payload.entityType == "ENTITY_TYPE_COMPANY"){
                  $("[data-var='requestinvoice']").show();
-                 $("[data-var='requestinvoice']").attr('onclick','alert("we still need to implement this")');
+                 //$("[data-var='requestinvoice']").attr('onclick','alert("we still need to implement this")');
+                 $("[data-var='requestinvoice']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
             } else {
                 $("[data-var='requestinvoice']").hide();
             }
