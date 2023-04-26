@@ -80,8 +80,9 @@ $.ajax(settings).done(function(response) {
 
 	// Get the total and format it
 	var total = response.total;
-	total = total.toLocaleString();
-
+	//total = total.toLocaleString();
+	total = (total * 100).toFixed(1);
+	
 	// Update the element text
 	$("[data-var='live-damage']").html('<b>'+total+'</b>' + tradSocialProof[lang]);
 });
