@@ -34,6 +34,14 @@ function animateLoading() {
 
 const apiDamage = "https://script.google.com/macros/s/AKfycbzzVrd1MmC3pHOWZJ7RIEBbTwtxs-8XYN23E16oQ7yix0bLlR1mxSAt3JkEoNvnkwzq/exec";
 
+const tradSocialProof = {
+	"fr": " clients de Qover ont choisi d'assurer leur vélo contre les accidents.",
+	"nl": " klanten van Qover hebben ervoor gekozen hun fiets te verzekeren tegen ongevallen.",
+	"de": " clients de Qover ont choisi d'assurer leur vélo contre les accidents.",
+	"en": " clients de Qover ont choisi d'assurer leur vélo contre les accidents."
+}
+
+
 var settings = {
 	"url": apiDamage,
 	"method": "POST",
@@ -75,5 +83,6 @@ $.ajax(settings).done(function(response) {
 	total = total.toLocaleString();
 
 	// Update the element text
-	$("[data-var='live-damage']").text(total);
+	$("[data-var='live-damage']").html('<b>> '+total+'</b>' + tradSocialProof[lang]);
 });
+
