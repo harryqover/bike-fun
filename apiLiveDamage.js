@@ -14,5 +14,8 @@ var settings = {
 
 $.ajax(settings).done(function(response) {
 	console.log(response.total);
-	$("[data-var='liveDamage']").text(response.total);
+	var total = response.total;
+	total = total.toLocaleString();
+	console.log(total);
+	$("[data-var='liveDamage']").text(total);
 })
