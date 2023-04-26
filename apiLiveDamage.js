@@ -36,8 +36,8 @@ const apiDamage = "https://script.google.com/macros/s/AKfycbzzVrd1MmC3pHOWZJ7RIE
 
 const tradSocialProof = {
 	"fr": "% des clients de Qover ont choisi d'assurer leur vélo contre les accidents.",
-	"nl": "% klanten van Qover hebben ervoor gekozen hun fiets te verzekeren tegen ongevallen.",
-	"de": "% Kunden von Qover haben sich dafür entschieden, ihr Fahrrad gegen Unfälle zu versichern.",
+	"nl": "% van de Qover-klanten heeft ervoor gekozen hun fiets te verzekeren tegen ongevallen.",
+	"de": " % der Qover-Kunden haben sich dafür entschieden, ihre Fahrräder gegen Unfälle zu versichern.",
 	"en": "% of Qover customers have chosen to insure their bikes against accidents."
 }
 
