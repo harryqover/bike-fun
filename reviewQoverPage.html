@@ -27,6 +27,7 @@
 			    margin-right: 40px;
 			    font-size: 64px;
 			    line-height: 68px;
+			    filter: blur(5px);
 			}
 			h2{
 				color: #fff;
@@ -39,11 +40,12 @@
 			    opacity: 1;
 			    filter: blur(0px);
 			    transform-style: preserve-3d;
+			    filter: blur(5px);
 			}
 		</style>
 	</head>
 	<body>
-		<h1></h1>
+		<h1>Thanks</h1>
 		<h2></h2>
 		<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 		<script>
@@ -99,6 +101,10 @@
 				h1.textContent = "Thanks for your feedback!";
 				h2.textContent = 'We would love to get more information.';
 			}
+			h1.style.filter = 'blur(0)';
+			setTimeout(function() {
+			    h2.style.filter = 'blur(0)';
+			  }, 1000);
 
 			console.log("https://harryqover.github.io/bike-fun/reviewQover?r=8&z=56788&c=BE109817398&s=emailClaimNPS&l=FR");
 		</script>
