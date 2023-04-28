@@ -30,6 +30,11 @@
 			xhr.onreadystatechange = function() {
 			if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
 				console.log(this.responseText);
+
+				if(source == "emailClaimNPS" && rating > 0){
+					rating = rating /2;
+				}
+
 			    if (rating > 3) {
 			    	//var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://g.page/r/CeJV3VPdzwkCEAI/review"];
 			    	var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://www.trustpilot.com/evaluate/qover.com"];
