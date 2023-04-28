@@ -8,6 +8,8 @@
 		</style>
 	</head>
 	<body>
+		<h1></h1>
+		<h2></h2>
 		<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 		<script>
 			var rating = getParameterByName("r");
@@ -18,6 +20,13 @@
 			var product = getParameterByName("product");
 			var partner = getParameterByName("partner");
 			var country = getParameterByName("country");
+			var minPublicRating = 3;
+			const h2 = document.querySelector('h2');
+
+			if(source == "emailClaimNPS" && rating > 0){
+				rating = rating /2;
+			}
+
 
 			console.warn(rating);
 
@@ -28,27 +37,30 @@
 			xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
 			xhr.timeout = 0;
 			xhr.onreadystatechange = function() {
-			if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-				console.log(this.responseText);
+				if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+					console.log(this.responseText);
 
-				if(source == "emailClaimNPS" && rating > 0){
-					rating = rating /2;
-				}
-
-			    if (rating > 3) {
-			    	//var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://g.page/r/CeJV3VPdzwkCEAI/review"];
-			    	var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://www.trustpilot.com/evaluate/qover.com"];
-					var randomIndex = Math.floor(Math.random() * redirectUrls.length);
-					window.location.replace(redirectUrls[randomIndex]);
-				  	//window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
-				} else {
-					var ref = ((cigarId)?cigarId:zendeskId);
-					window.location.replace("https://form.jotform.com/221674111787054?contractReference="+ref+"&language="+lang);
-				}
-		    }
+				    if (rating > minPublicRating) {
+				    	//var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://g.page/r/CeJV3VPdzwkCEAI/review"];
+				    	var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://www.trustpilot.com/evaluate/qover.com"];
+						var randomIndex = Math.floor(Math.random() * redirectUrls.length);
+						window.location.replace(redirectUrls[randomIndex]);
+					  	//window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
+					} else {
+						var ref = ((cigarId)?cigarId:zendeskId);
+						window.location.replace("https://form.jotform.com/221674111787054?contractReference="+ref+"&language="+lang);
+					}
+			    }
 			};
 			xhr.send(JSON.stringify({ cigarId: cigarId, rating: rating, zendeskId: zendeskId, source: source, product: product, partner: partner, country: country }));
 
+			if (rating > minPublicRating) {
+				h1.textContent = "Thanks for your feedback!";
+				h2.textContent = "If you're feeling especially satisfied with our service, we would be over the moon if you could share your positive experience with other customers. Not only would it help us spread the word to other potential customers, but it would also make us feel warm and fuzzy inside.";
+			} else {
+				h1.textContent = "Thanks for your feedback!";
+				h2.textContent = 'We are loading our form to get more information';
+			}
 
 			console.log("https://harryqover.github.io/bike-fun/reviewQover?r=3&z=56788&c=BE109817398&s=emailConfirmation");
 		</script>
