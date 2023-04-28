@@ -27,6 +27,10 @@
 			    margin-right: 40px;
 			    font-size: 64px;
 			    line-height: 68px;
+			    filter: blur(5px);
+			    transform: scale(0.5); /* initial scale */
+				opacity: 0; /* initial opacity */
+				transition: all 1s ease-out; /* transition effect */
 			}
 			h2{
 				color: #fff;
@@ -39,11 +43,15 @@
 			    opacity: 1;
 			    filter: blur(0px);
 			    transform-style: preserve-3d;
+			    filter: blur(5px);
+			    transform: scale(0.5); /* initial scale */
+				opacity: 0; /* initial opacity */
+				transition: all 1s ease-out; /* transition effect */
 			}
 		</style>
 	</head>
 	<body>
-		<h1></h1>
+		<h1>Thanks</h1>
 		<h2></h2>
 		<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 		<script>
@@ -53,6 +61,7 @@
 			var cigarId = getParameterByName("c");
 			var source = getParameterByName("s");
 			var lang = getParameterByName("l");
+			lang = lang.toLowerCase();
 			var product = getParameterByName("product");
 			var partner = getParameterByName("partner");
 			var country = getParameterByName("country");
@@ -85,20 +94,59 @@
 					  	//window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
 					} else {
 						var ref = ((cigarId)?cigarId:zendeskId);
-						lang = lang.toLowerCase();
 						window.location.replace("https://form.jotform.com/221674111787054?contractReference="+ref+"&language="+lang);
 					}
 			    }
 			};
 			xhr.send(JSON.stringify({ cigarId: cigarId, rating: originalRating, zendeskId: zendeskId, source: source, product: product, partner: partner, country: country }));
+			const translationH1 = {
+				"fr": "Merci!",
+				"en": "Thanks for your feedback!",
+				"es": "Thanks for your feedback!",
+				"nl": "Bedankt voor je feedback!",
+				"de": "Vielen Dank für Ihr Feedback!",
+				"it": "Thanks for your feedback!",
+				"pt": "Thanks for your feedback!"
+			}
+			const textH1 = translationH1[lang];
+
+			const translationH2Positive = {
+				"fr": "Nous serions ravis que vous puissiez partager votre expérience positive avec d'autres clients.",
+				"en": "We would be over the moon if you could share your positive experience with other customers.",
+				"es": "We would be over the moon if you could share your positive experience with other customers.",
+				"nl": "We would be over the moon if you could share your positive experience with other customers.",
+				"de": "We would be over the moon if you could share your positive experience with other customers.",
+				"it": "We would be over the moon if you could share your positive experience with other customers.",
+				"pt": "We would be over the moon if you could share your positive experience with other customers."
+			}
+			const textH2Positive = translationH2Positive[lang];
+
+			const translationH2Negative = {
+				"fr": "Nous serions ravis d'obtenir de plus amples informations.",
+				"en": "We would love to get more information.",
+				"es": "We would love to get more information.",
+				"nl": "We would love to get more information.",
+				"de": "We would love to get more information.",
+				"it": "We would love to get more information.",
+				"pt": "We would love to get more information."
+			}
+			const textH2Negative = translationH2Negative[lang];
 
 			if (rating > minPublicRating) {
-				h1.textContent = "Thanks for your feedback!";
-				h2.textContent = "If you're feeling especially satisfied with our service, we would be over the moon if you could share your positive experience with other customers.";
+				h1.textContent = textH1;
+				h2.textContent = textH2Positive;
 			} else {
-				h1.textContent = "Thanks for your feedback!";
-				h2.textContent = 'We would love to get more information.';
+				h1.textContent = textH1;
+				h2.textContent = textH2Negative;
 			}
+			h1.style.filter = 'blur(0)';
+		    h1.style.transform = 'scale(1)';
+		    h1.style.opacity = 1;
+			setTimeout(function() {
+			    h2.style.filter = 'blur(0)';
+			    h2.style.transform = 'scale(1)';
+		    	h2.style.opacity = 1;
+			  }, 500);
 
 			console.log("https://harryqover.github.io/bike-fun/reviewQover?r=8&z=56788&c=BE109817398&s=emailClaimNPS&l=FR");
 		</script>
