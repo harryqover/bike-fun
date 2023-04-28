@@ -28,6 +28,9 @@
 			    font-size: 64px;
 			    line-height: 68px;
 			    filter: blur(5px);
+			    transform: scale(0.5); /* initial scale */
+				opacity: 0; /* initial opacity */
+				transition: all 1s ease-out; /* transition effect */
 			}
 			h2{
 				color: #fff;
@@ -41,6 +44,9 @@
 			    filter: blur(0px);
 			    transform-style: preserve-3d;
 			    filter: blur(5px);
+			    transform: scale(0.5); /* initial scale */
+				opacity: 0; /* initial opacity */
+				transition: all 1s ease-out; /* transition effect */
 			}
 		</style>
 	</head>
@@ -102,8 +108,12 @@
 				h2.textContent = 'We would love to get more information.';
 			}
 			h1.style.filter = 'blur(0)';
+		    h1.style.transform = 'scale(1)';
+		    h1.style.opacity = 1;
 			setTimeout(function() {
 			    h2.style.filter = 'blur(0)';
+			    h2.style.transform = 'scale(1)';
+		    	h2.style.opacity = 1;
 			  }, 1000);
 
 			console.log("https://harryqover.github.io/bike-fun/reviewQover?r=8&z=56788&c=BE109817398&s=emailClaimNPS&l=FR");
