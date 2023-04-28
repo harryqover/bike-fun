@@ -15,6 +15,9 @@
 			var cigarId = getParameterByName("c");
 			var source = getParameterByName("s");
 			var lang = getParameterByName("l");
+			var product = getParameterByName("product");
+			var partner = getParameterByName("partner");
+			var country = getParameterByName("country");
 
 			console.warn(rating);
 
@@ -39,7 +42,7 @@
 				}
 		    }
 			};
-			xhr.send(JSON.stringify({ cigarId: cigarId, rating: rating, zendeskId: zendeskId, source: source }));
+			xhr.send(JSON.stringify({ cigarId: cigarId, rating: rating, zendeskId: zendeskId, source: source, product: product, partner: partner, country: country }));
 
 
 			console.log("https://harryqover.github.io/bike-fun/reviewQover?r=3&z=56788&c=BE109817398&s=emailConfirmation");
