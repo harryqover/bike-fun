@@ -12,7 +12,8 @@
 		<h2></h2>
 		<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 		<script>
-			var rating = getParameterByName("r");
+			var originalRating = getParameterByName("r");
+			var rating = originalRating;
 			var zendeskId = getParameterByName("z");
 			var cigarId = getParameterByName("c");
 			var source = getParameterByName("s");
@@ -54,7 +55,7 @@
 					}
 			    }
 			};
-			xhr.send(JSON.stringify({ cigarId: cigarId, rating: rating, zendeskId: zendeskId, source: source, product: product, partner: partner, country: country }));
+			xhr.send(JSON.stringify({ cigarId: cigarId, rating: originalRating, zendeskId: zendeskId, source: source, product: product, partner: partner, country: country }));
 
 			if (rating > minPublicRating) {
 				h1.textContent = "Thanks for your feedback!";
@@ -64,7 +65,7 @@
 				h2.textContent = 'We are loading our form to get more information';
 			}
 
-			console.log("https://harryqover.github.io/bike-fun/reviewQover?r=3&z=56788&c=BE109817398&s=emailConfirmation");
+			console.log("https://harryqover.github.io/bike-fun/reviewQover?r=8&z=56788&c=BE109817398&s=emailClaimNPS");
 		</script>
 	</body>
 </html>
