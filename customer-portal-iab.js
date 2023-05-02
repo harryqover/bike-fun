@@ -181,7 +181,8 @@ function getNinjaData(cigarId, email) {
             //STOP adding dynamic info from ninja on page
 
             //START adding interactions 
-            $('[data-var="greencardbypost"]').attr('href','https://forms.qover.com/230804510892049?contractReference='+response.payload.cigarId);
+            //$('[data-var="greencardbypost"]').attr('href','https://forms.qover.com/230804510892049?contractReference='+response.payload.cigarId);
+            $('[data-var="greencardbypost"]').attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
             $("[data-var='resendcontract']").click(function() {
               reSendEmail();
             });
