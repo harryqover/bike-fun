@@ -42,3 +42,4 @@ function getPrice(truckAmount, truckType, dangerousGoodsTrucks, leasedTrucks, de
         }
     )
 }
+clickToGetPrice()
