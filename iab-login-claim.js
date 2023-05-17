@@ -4,7 +4,10 @@ const isValidCigar = (str) => /^[A-Za-z]{2}20\d{9}$/.test(str);
 const isValidEmail = (str) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str);
 
 const baseUrlClaim = {
-	"MAKE_TESLA": "https://insuremytesla.qover.com/claims"
+    "MAKE_TESLA": "https://insuremytesla.qover.com/claims",
+    "MAKE_NIO": "https://form.jotform.com/230372864555663",
+    "MAKE_FISKER": "https://form.jotform.com/230644976859373", 
+    "MAKE_LUCID": "https://form.jotform.com/223494218513354", 
 }
 
 $("#disconnected").hide();
