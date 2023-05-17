@@ -1,4 +1,4 @@
-function getPrice() {
+function getPrice(truckAmount, truckType, dangerousGoodsTrucks, leasedTrucks, deductible_MTPL, deductible_PartialCasco, deductible_CollisionCasco) {
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxd7iLSKEWjn4Kjsh6SR4zVDZCz2HxnAXA1OHG_7pzBrE0VLi5ze-9DOV1Y7tpyr13d6Q/exec";
 
     var settings = {
@@ -9,20 +9,20 @@ function getPrice() {
             "Content-Type": "text/plain;charset=utf-8"
         },
         "data": JSON.stringify({
-            "truckAmount": 1,
-            "truckType": "18tRefriBi",
-            "dangerousGoodsTrucks": true,
-            "leasedTrucks": true,
-            "deductible_MTPL": "2000EUR",
-            "deductible_PartialCasco": "2000EUR",
-            "deductible_CollisionCasco": "2000EUR",
+            "truckAmount": truckAmount,
+            "truckType": truckType,
+            "dangerousGoodsTrucks": dangerousGoodsTrucks,
+            "leasedTrucks": leasedTrucks,
+            "deductible_MTPL": deductible_MTPL,
+            "deductible_PartialCasco": deductible_PartialCasco,
+            "deductible_CollisionCasco": deductible_CollisionCasco,
         }),
     };
 
     $.ajax(settings).done(function(response) {
             console.log(response);
             window.payloadFromNinja = response;
-
-
         }
-    }
+    )
+}
+getPrice(1, "18tRefriBi", true, true, "2000EUR", "2000EUR", "2000EUR");
