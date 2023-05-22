@@ -56,7 +56,7 @@ checkboxDangerous.addEventListener('change', function() {
   }
 });
 
-const checkboxRefrigerated = document.querySelector('#dangerous');
+const checkboxRefrigerated = document.querySelector('#refrigerated');
 checkboxRefrigerated.addEventListener('change', function() {
   if (this.checked) {
     console.log('The checkboxRefrigerated is toggled on');
