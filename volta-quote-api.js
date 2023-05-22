@@ -11,7 +11,7 @@ var quoteInfo = {
     "deductible_CollisionCasco": "2000EUR",
     "tons" : "16t",
     "type" : "Ambient",
-    "zone" : "Mono"
+    "zone" : ""
 }
 
 function clickToGetPrice(){
