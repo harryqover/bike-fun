@@ -8,7 +8,8 @@ var quoteInfo = {
     "leasedTrucks": false,
     "deductible_MTPL": "2000EUR",
     "deductible_PartialCasco": "2000EUR",
-    "deductible_CollisionCasco": "2000EUR"
+    "deductible_CollisionCasco": "2000EUR",
+    "tons" : "16t"
 }
 
 function clickToGetPrice(){
@@ -97,6 +98,28 @@ checkboxRefrigerated.addEventListener('change', function() {
     // Perform additional actions when the checkbox is toggled off
     $(".ambient-vz, .img-ambient").show();
     $(".refrigerated-vz, .img-refrigerated").hide();
+  }
+  console.log(quoteInfo);
+});
+
+
+const radio16T = document.querySelector('#tons16');
+const radio18T = document.querySelector('#tons18');
+
+radio16T.addEventListener('change', function() {
+  if (this.checked) {
+    console.log('16T is selected');
+    quoteInfo.tons = "16t";
+    // Perform additional actions when 16T is selected
+  }
+  console.log(quoteInfo);
+});
+
+radio18T.addEventListener('change', function() {
+  if (this.checked) {
+    console.log('18T is selected');
+    quoteInfo.tons = "18t";
+    // Perform additional actions when 18T is selected
   }
   console.log(quoteInfo);
 });
