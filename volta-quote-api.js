@@ -124,3 +124,14 @@ radio18T.addEventListener('change', function() {
   }
   console.log(quoteInfo);
 });
+
+
+
+const trucksAmount = document.querySelector('#trucksamount');
+
+trucksAmount.addEventListener('input', function() {
+  const value = this.value;
+  quoteInfo.truckAmount = value;
+  // Perform additional actions with the updated value
+  console.log(quoteInfo);
+});
