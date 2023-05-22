@@ -168,6 +168,7 @@ const trucksAmount = document.querySelector('#trucksamount');
 trucksAmount.addEventListener('input', function() {
   const value = parseFloat(this.value);
   quoteInfo.truckAmount = value;
+  $("[data-var=truckamount]").text(value);
   // Perform additional actions with the updated value
   clickToGetPrice();
 });
