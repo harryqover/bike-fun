@@ -3,7 +3,7 @@ $(".refrigerated-vz, .img-refrigerated").hide();
 
 var quoteInfo = {
     "truckAmount": 1,
-    "truckType": "18tRefriBi",
+    "truckType": "16tAmbient",
     "dangerousGoodsTrucks": false,
     "leasedTrucks": false,
     "deductible_MTPL": "2000EUR",
@@ -121,7 +121,7 @@ checkboxRefrigerated.addEventListener('change', function() {
     $(".ambient-vz, .img-ambient").hide();
     $(".refrigerated-vz, .img-refrigerated, .zoneblock").show();
     quoteInfo.type = "Refri";
-    quoteInfo.zone = "mono";
+    quoteInfo.zone = "Mono";
     quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
   } else {
     console.log('The checkboxRefrigerated is toggled off');
