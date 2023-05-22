@@ -9,7 +9,9 @@ var quoteInfo = {
     "deductible_MTPL": "2000EUR",
     "deductible_PartialCasco": "2000EUR",
     "deductible_CollisionCasco": "2000EUR",
-    "tons" : "16t"
+    "tons" : "16t",
+    "type" : "Ambient",
+    "zone" : "Mono"
 }
 
 function clickToGetPrice(){
@@ -93,11 +95,15 @@ checkboxRefrigerated.addEventListener('change', function() {
     // Perform additional actions when the checkbox is toggled on
     $(".ambient-vz, .img-ambient").hide();
     $(".refrigerated-vz, .img-refrigerated").show();
+    quoteInfo.type = "Refri";
+    quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
   } else {
     console.log('The checkboxRefrigerated is toggled off');
     // Perform additional actions when the checkbox is toggled off
     $(".ambient-vz, .img-ambient").show();
     $(".refrigerated-vz, .img-refrigerated").hide();
+    quoteInfo.type = "Ambient";
+    quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
   }
   console.log(quoteInfo);
 });
@@ -111,6 +117,7 @@ radio16T.addEventListener('change', function() {
   if (this.checked) {
     console.log('16T is selected');
     quoteInfo.tons = "16t";
+    quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
     // Perform additional actions when 16T is selected
   }
   console.log(quoteInfo);
@@ -120,6 +127,7 @@ radio18T.addEventListener('change', function() {
   if (this.checked) {
     console.log('18T is selected');
     quoteInfo.tons = "18t";
+    quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
     // Perform additional actions when 18T is selected
   }
   console.log(quoteInfo);
