@@ -1,4 +1,5 @@
-
+$(".ambient-vz, .img-ambient").show();
+$(".refrigerated-vz, .img-refrigerated").hide();
 
 function clickToGetPrice(){
 	var truckAmount = 1;
@@ -42,4 +43,30 @@ function getPrice(truckAmount, truckType, dangerousGoodsTrucks, leasedTrucks, de
         }
     )
 }
-clickToGetPrice()
+clickToGetPrice();
+
+const checkboxDangerous = document.querySelector('#dangerous');
+checkboxDangerous.addEventListener('change', function() {
+  if (this.checked) {
+    console.log('The checkboxDangerous is toggled on');
+    // Perform additional actions when the checkbox is toggled on
+  } else {
+    console.log('The checkboxDangerous is toggled off');
+    // Perform additional actions when the checkbox is toggled off
+  }
+});
+
+const checkboxRefrigerated = document.querySelector('#dangerous');
+checkboxRefrigerated.addEventListener('change', function() {
+  if (this.checked) {
+    console.log('The checkboxRefrigerated is toggled on');
+    // Perform additional actions when the checkbox is toggled on
+    $(".ambient-vz, .img-ambient").hide();
+    $(".refrigerated-vz, .img-refrigerated").show();
+  } else {
+    console.log('The checkboxRefrigerated is toggled off');
+    // Perform additional actions when the checkbox is toggled off
+    $(".ambient-vz, .img-ambient").show();
+    $(".refrigerated-vz, .img-refrigerated").hide();
+  }
+});
