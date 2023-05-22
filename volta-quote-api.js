@@ -166,7 +166,7 @@ radio18T.addEventListener('change', function() {
 const trucksAmount = document.querySelector('#trucksamount');
 
 trucksAmount.addEventListener('input', function() {
-  const value = this.value;
+  const value = parseFloat(this.value);
   quoteInfo.truckAmount = value;
   // Perform additional actions with the updated value
   clickToGetPrice();
