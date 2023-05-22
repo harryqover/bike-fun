@@ -45,6 +45,19 @@ function getPrice(truckAmount, truckType, dangerousGoodsTrucks, leasedTrucks, de
 }
 clickToGetPrice();
 
+
+
+const checkboxLeasing = document.querySelector('#leasing');
+checkboxLeasing.addEventListener('change', function() {
+  if (this.checked) {
+    console.log('The checkboxLeasing is toggled on');
+    // Perform additional actions when the checkbox is toggled on
+  } else {
+    console.log('The checkboxLeasing is toggled off');
+    // Perform additional actions when the checkbox is toggled off
+  }
+});
+
 const checkboxDangerous = document.querySelector('#dangerous');
 checkboxDangerous.addEventListener('change', function() {
   if (this.checked) {
