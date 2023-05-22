@@ -88,6 +88,31 @@ checkboxDangerous.addEventListener('change', function() {
   console.log(quoteInfo);
 });
 
+const radioZone1 = document.querySelector('#zone1');
+radioZone1.click(); //select 16t by default
+const radioZone2 = document.querySelector('#zone2');
+
+radioZone1.addEventListener('change', function() {
+  if (this.checked) {
+    console.log('radioZone1 is selected');
+    quoteInfo.zone = "Mono";
+    quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
+    // Perform additional actions when 16T is selected
+  }
+  console.log(quoteInfo);
+});
+radioZone2.addEventListener('change', function() {
+  if (this.checked) {
+    console.log('radioZone2 is selected');
+    quoteInfo.zone = "Bi";
+    quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
+    // Perform additional actions when 16T is selected
+  }
+  console.log(quoteInfo);
+});
+
+
+
 const checkboxRefrigerated = document.querySelector('#refrigerated');
 checkboxRefrigerated.addEventListener('change', function() {
   if (this.checked) {
@@ -96,6 +121,7 @@ checkboxRefrigerated.addEventListener('change', function() {
     $(".ambient-vz, .img-ambient").hide();
     $(".refrigerated-vz, .img-refrigerated, .zoneblock").show();
     quoteInfo.type = "Refri";
+    quoteInfo.zone = "mono";
     quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
   } else {
     console.log('The checkboxRefrigerated is toggled off');
@@ -103,6 +129,7 @@ checkboxRefrigerated.addEventListener('change', function() {
     $(".ambient-vz, .img-ambient").show();
     $(".refrigerated-vz, .img-refrigerated, .zoneblock").hide();
     quoteInfo.type = "Ambient";
+    quoteInfo.zone = "";
     quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
   }
   console.log(quoteInfo);
