@@ -167,11 +167,35 @@ radio18T.addEventListener('change', function() {
 
 
 const trucksAmount = document.querySelector('#trucksamount');
+$("#trucksamount").val(1);
 
 trucksAmount.addEventListener('input', function() {
   const value = parseFloat(this.value);
   quoteInfo.truckAmount = value;
   $("[data-var=truckamount]").text(value);
   // Perform additional actions with the updated value
+  clickToGetPrice();
+});
+
+const selectDeductible_MTPL = document.querySelector('#deductible_MTPL');
+selectDeductible_MTPL.addEventListener('change', function() {
+  const selectedValue = this.value;
+  quoteInfo.deductible_MTPL = selectedValue;
+  clickToGetPrice();
+});
+
+
+const selectDeductible_PartialCasco = document.querySelector('#deductible_PartialCasco');
+selectDeductible_PartialCasco.addEventListener('change', function() {
+  const selectedValue = this.value;
+  quoteInfo.deductible_PartialCasco = selectedValue;
+  clickToGetPrice();
+});
+
+
+const selectDeductible_CollisionCasco = document.querySelector('#deductible_CollisionCasco');
+selectDeductible_CollisionCasco.addEventListener('change', function() {
+  const selectedValue = this.value;
+  quoteInfo.deductible_CollisionCasco = selectedValue;
   clickToGetPrice();
 });
