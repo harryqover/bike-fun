@@ -94,14 +94,14 @@ checkboxRefrigerated.addEventListener('change', function() {
     console.log('The checkboxRefrigerated is toggled on');
     // Perform additional actions when the checkbox is toggled on
     $(".ambient-vz, .img-ambient").hide();
-    $(".refrigerated-vz, .img-refrigerated").show();
+    $(".refrigerated-vz, .img-refrigerated, .zoneblock").show();
     quoteInfo.type = "Refri";
     quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
   } else {
     console.log('The checkboxRefrigerated is toggled off');
     // Perform additional actions when the checkbox is toggled off
     $(".ambient-vz, .img-ambient").show();
-    $(".refrigerated-vz, .img-refrigerated").hide();
+    $(".refrigerated-vz, .img-refrigerated, .zoneblock").hide();
     quoteInfo.type = "Ambient";
     quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
   }
