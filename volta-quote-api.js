@@ -1,6 +1,16 @@
 $(".ambient-vz, .img-ambient").show();
 $(".refrigerated-vz, .img-refrigerated").hide();
 
+var quoteInfo = {
+    "truckAmount": 1,
+    "truckType": "18tRefriBi",
+    "dangerousGoodsTrucks": false,
+    "leasedTrucks": false,
+    "deductible_MTPL": "2000EUR",
+    "deductible_PartialCasco": "2000EUR",
+    "deductible_CollisionCasco": "2000EUR"
+}
+
 function clickToGetPrice(){
 	var truckAmount = 1;
 	var truckType = "18tRefriBi";
@@ -51,11 +61,14 @@ const checkboxLeasing = document.querySelector('#leasing');
 checkboxLeasing.addEventListener('change', function() {
   if (this.checked) {
     console.log('The checkboxLeasing is toggled on');
+    quoteInfo.leasedTrucks = true;
     // Perform additional actions when the checkbox is toggled on
   } else {
     console.log('The checkboxLeasing is toggled off');
+    quoteInfo.leasedTrucks = false;
     // Perform additional actions when the checkbox is toggled off
   }
+  console.log(quoteInfo);
 });
 
 const checkboxDangerous = document.querySelector('#dangerous');
@@ -67,6 +80,7 @@ checkboxDangerous.addEventListener('change', function() {
     console.log('The checkboxDangerous is toggled off');
     // Perform additional actions when the checkbox is toggled off
   }
+  console.log(quoteInfo);
 });
 
 const checkboxRefrigerated = document.querySelector('#refrigerated');
@@ -82,4 +96,5 @@ checkboxRefrigerated.addEventListener('change', function() {
     $(".ambient-vz, .img-ambient").show();
     $(".refrigerated-vz, .img-refrigerated").hide();
   }
+  console.log(quoteInfo);
 });
