@@ -104,6 +104,7 @@ checkboxRefrigerated.addEventListener('change', function() {
 
 
 const radio16T = document.querySelector('#tons16');
+radio16T.click(); //select 16t by default
 const radio18T = document.querySelector('#tons18');
 
 radio16T.addEventListener('change', function() {
