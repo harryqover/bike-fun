@@ -75,9 +75,11 @@ const checkboxDangerous = document.querySelector('#dangerous');
 checkboxDangerous.addEventListener('change', function() {
   if (this.checked) {
     console.log('The checkboxDangerous is toggled on');
+    quoteInfo.dangerousGoodsTrucks = true;
     // Perform additional actions when the checkbox is toggled on
   } else {
     console.log('The checkboxDangerous is toggled off');
+    quoteInfo.dangerousGoodsTrucks = false;
     // Perform additional actions when the checkbox is toggled off
   }
   console.log(quoteInfo);
