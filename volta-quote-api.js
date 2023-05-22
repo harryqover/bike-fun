@@ -29,7 +29,7 @@ function clickToGetPrice(){
 
 function getPrice(truckAmount, truckType, dangerousGoodsTrucks, leasedTrucks, deductible_MTPL, deductible_PartialCasco, deductible_CollisionCasco) {
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxd7iLSKEWjn4Kjsh6SR4zVDZCz2HxnAXA1OHG_7pzBrE0VLi5ze-9DOV1Y7tpyr13d6Q/exec";
-
+    $(".amount").text("loading prices");
     var settings = {
         "url": googleSheetUrl,
         "method": "POST",
@@ -52,8 +52,8 @@ function getPrice(truckAmount, truckType, dangerousGoodsTrucks, leasedTrucks, de
             console.log(response);
             window.payloadFromNinja = response;
             var formattedTotalPrice = response.response.total.toLocaleString("en-BE", {style: "currency", currency: "EUR"});
-            
-            $("#form-quote > div.flex-v-25.margin-bottom-60 > div.price > div:nth-child(2)").text(formattedTotalPrice);
+            $(".amount").text(formattedTotalPrice);
+            //$("#form-quote > div.flex-v-25.margin-bottom-60 > div.price > div:nth-child(2)").text(formattedTotalPrice);
         }
     )
 }
