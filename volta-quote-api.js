@@ -15,14 +15,15 @@ var quoteInfo = {
 }
 
 function clickToGetPrice(){
-	var truckAmount = 1;
+	/*var truckAmount = 1;
 	var truckType = "18tRefriBi";
 	var dangerousGoodsTrucks = true;
 	var leasedTrucks = true;
 	var deductible_MTPL = "2000EUR";
 	var deductible_PartialCasco = "2000EUR";
-	var deductible_CollisionCasco = "2000EUR";
-	getPrice(truckAmount, truckType, dangerousGoodsTrucks, leasedTrucks, deductible_MTPL, deductible_PartialCasco, deductible_CollisionCasco);
+	var deductible_CollisionCasco = "2000EUR";*/
+    console.log(quoteInfo);
+	getPrice(quoteInfo.truckAmount, quoteInfo.truckType, quoteInfo.dangerousGoodsTrucks, quoteInfo.leasedTrucks, quoteInfo.deductible_MTPL, quoteInfo.deductible_PartialCasco, quoteInfo.deductible_CollisionCasco);
 }
 
 
@@ -71,7 +72,7 @@ checkboxLeasing.addEventListener('change', function() {
     quoteInfo.leasedTrucks = false;
     // Perform additional actions when the checkbox is toggled off
   }
-  console.log(quoteInfo);
+  clickToGetPrice();
 });
 
 const checkboxDangerous = document.querySelector('#dangerous');
@@ -85,7 +86,7 @@ checkboxDangerous.addEventListener('change', function() {
     quoteInfo.dangerousGoodsTrucks = false;
     // Perform additional actions when the checkbox is toggled off
   }
-  console.log(quoteInfo);
+  clickToGetPrice();
 });
 
 const radioZone1 = document.querySelector('#zone1');
@@ -99,7 +100,7 @@ radioZone1.addEventListener('change', function() {
     quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
     // Perform additional actions when 16T is selected
   }
-  console.log(quoteInfo);
+  clickToGetPrice();
 });
 radioZone2.addEventListener('change', function() {
   if (this.checked) {
@@ -108,7 +109,7 @@ radioZone2.addEventListener('change', function() {
     quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
     // Perform additional actions when 16T is selected
   }
-  console.log(quoteInfo);
+  clickToGetPrice();
 });
 
 
@@ -132,7 +133,7 @@ checkboxRefrigerated.addEventListener('change', function() {
     quoteInfo.zone = "";
     quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
   }
-  console.log(quoteInfo);
+  clickToGetPrice();
 });
 
 
@@ -147,7 +148,7 @@ radio16T.addEventListener('change', function() {
     quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
     // Perform additional actions when 16T is selected
   }
-  console.log(quoteInfo);
+  clickToGetPrice();
 });
 
 radio18T.addEventListener('change', function() {
@@ -157,7 +158,7 @@ radio18T.addEventListener('change', function() {
     quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
     // Perform additional actions when 18T is selected
   }
-  console.log(quoteInfo);
+  clickToGetPrice();
 });
 
 
@@ -168,5 +169,5 @@ trucksAmount.addEventListener('input', function() {
   const value = this.value;
   quoteInfo.truckAmount = value;
   // Perform additional actions with the updated value
-  console.log(quoteInfo);
+  clickToGetPrice();
 });
