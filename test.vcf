@@ -1,0 +1,8 @@
+BEGIN:VCARD
+VERSION:4.0
+ORG:QOVER ASSISTANCE
+PHOTO;MEDIATYPE#image/jpg:https://pbs.twimg.com/profile_images/1592948107188264961/5fSkUn7I_400x400.jpg
+TEL;TYPE#work,voice;VALUE#uri:tel:+33978466124
+EMAIL:bike@qover.com
+NOTE:test
+END:VCARD
