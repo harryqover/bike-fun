@@ -29,6 +29,8 @@ function loadAtStart(){
 }
 
 function clickToLogin() {
+    $("#disconnected").hide();
+    $(".loading").show();
     var cigarId = $('input[name="name"]').val();
     var email = $('input[name="email"]').val();
     if (isValidCigar(cigarId)){
@@ -39,9 +41,13 @@ function clickToLogin() {
     	} else {
     		//not valid email
     		alert("Email format is not valid");
+            $("#disconnected").show();
+            $(".loading").hide();
    		 }
     } else {
     	//not valid cigar id
+        $("#disconnected").show();
+        $(".loading").hide();
     	alert("Contract reference is not valid");
     }
 }
@@ -77,6 +83,7 @@ function getNinjaData(cigarId, email) {
         	window.location.href = baseUrlClaim[brand]+"?language="+lang+"&claimant_email="+email+"&policy_reference="+cigarId+"&vehicle_plate_number="+vin+"&ref_country="+country;
         }
         $(".loading").hide();
+        $("#disconnected").show();
     })
 }
 
