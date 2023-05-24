@@ -14,19 +14,16 @@ $("#disconnected").hide();
 $(".loading").hide();
 
 function loadAtStart(){
-	var contract = getParameterByName("policy_reference");
 	$(".loading").show();
+    var contract = getParameterByName("policy_reference");
 	if(contract == ""){
 		//show login
+        $("#disconnected").show();
 		$(".loading").hide();
+        $(".jotform-form").hide();
 	} else {
 		//show claim form
-
-		/*START IMPORT JOTFORM SCRIPT*/
-		var jf = document.createElement('script');
-		jf.src = "https://form.jotform.com/jsform/211861951435356";
-		document.getElementsByTagName('head')[0].appendChild(jf);
-		/*END IMPORT  JOTFORM SCRIPT*/
+        $(".claimform").show();
 		$(".loading").hide();
 	}
 }
@@ -76,7 +73,8 @@ function getNinjaData(cigarId, email) {
         	var lang = response.payload.language;
         	var vin = response.payload.risk.vin;
         	var brand = response.payload.risk.make;
-        	window.location.href = baseUrlClaim[brand]+"?language="+lang+"&claimant_email="+email+"&policy_reference="+cigarId+"&vehicle_plate_number="+vin;
+            var country = cigarId.substring(0, 2);
+        	window.location.href = baseUrlClaim[brand]+"?language="+lang+"&claimant_email="+email+"&policy_reference="+cigarId+"&vehicle_plate_number="+vin+"&ref_country="+country;
         }
         $(".loading").hide();
     })
