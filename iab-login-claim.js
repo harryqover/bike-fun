@@ -20,10 +20,10 @@ function loadAtStart(){
 		//show login
         $("#disconnected").show();
 		$(".loading").hide();
-        $(".jotform-form").hide();
+        $("#claimform").hide();
 	} else {
 		//show claim form
-        $(".claimform").show();
+        $("#claimform").show();
 		$(".loading").hide();
 	}
 }
