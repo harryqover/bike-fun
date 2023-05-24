@@ -75,6 +75,7 @@ function getNinjaData(cigarId, email) {
         window.payloadFromNinja = response;
         if(response.payload == "error"){
             console.warn("error while trying to connect");
+            alert("Make sure you connect with the email and contract reference from your contract");
         } else {
         	var lang = response.payload.language;
         	var vin = response.payload.risk.vin;
