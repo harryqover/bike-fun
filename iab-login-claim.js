@@ -78,10 +78,10 @@ function getNinjaData(cigarId, email) {
             alert("Make sure you connect with the email and contract reference from your contract");
         } else {
         	var lang = response.payload.language;
-        	var vin = response.payload.risk.vin;
+        	var registrationPlate = response.payload.risk.registrationPlate;
         	var brand = response.payload.risk.make;
             var country = cigarId.substring(0, 2);
-        	window.location.href = baseUrlClaim[brand]+"?language="+lang+"&claimant_email="+email+"&policy_reference="+cigarId+"&vehicle_plate_number="+vin+"&ref_country="+country;
+        	window.location.href = baseUrlClaim[brand]+"?language="+lang+"&claimant_email="+email+"&policy_reference="+cigarId+"&vehicle_plate_number="+registrationPlate+"&ref_country="+country;
         }
         $(".loading").hide();
         $("#disconnected").show();
