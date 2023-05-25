@@ -25,6 +25,7 @@ function loadAtStart(){
 		//show claim form
         $("#claimform").show();
 		$(".loading").hide();
+        $("#disconnected").hide();
 	}
 }
 
