@@ -15,6 +15,7 @@ $(".loading").hide();
 
 function loadAtStart(){
 	$(".loading").show();
+    translateAll();
     var contract = getParameterByName("policy_reference");
 	if(contract == ""){
 		//show login
@@ -88,11 +89,26 @@ function getNinjaData(cigarId, email) {
     })
 }
 
-/*
-TO INCLUDE IN FORM REDIRECT
+function translateAll() {
+    var lang = $('#langinput').find(":selected").val();
+    let xhrLocales = new XMLHttpRequest();
+    var content = "";
+    xhrLocales.open("get", "https://api.prd.qover.io/i18n/v1/projects/webflow-customer-portal/" + lang + ".json?refresh=007", true);
+    xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
 
-claimant_email
-policy_reference
-vehicle_plate_number
-ref_country
-*/
+    xhrLocales.onreadystatechange = function() {
+        if (xhrLocales.readyState == 4) {
+            if (xhrLocales.status >= 200 && xhrLocales.status < 300 || xhrLocales.status == 304) {
+                content = JSON.parse(xhrLocales.responseText);
+                window.translations = content;
+                console.log(window.translations);
+                //translate all data attributes that contains data-translation
+                $("[data-translation]").each(function(index) {
+                    $(this).html(content[$(this).data("translation")]);
+                    var text = $(this).html();
+                });
+            }
+        }
+    };
+    xhrLocales.send();
+}
