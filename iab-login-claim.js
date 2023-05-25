@@ -10,8 +10,7 @@ const baseUrlClaim = {
     "MAKE_LUCID": "https://form.jotform.com/223494218513354", 
 }
 
-$("#disconnected").hide();
-$(".loading").hide();
+
 
 function loadAtStart(){
 	$(".loading").show();
@@ -112,3 +111,5 @@ function translateAll() {
     };
     xhrLocales.send();
 }
+
+loadAtStart();
