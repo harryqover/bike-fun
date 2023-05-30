@@ -289,7 +289,8 @@ function getNinjaData(cigarId, email) {
         $("#disconnected").hide();
         $(".loading").hide();
         var lang = $('#langinput').find(":selected").val();
-        if(lang == "fr" || lang == "en"|| lang == "de"|| lang == "nl"){
+        var browserWidth = getWidth();
+        if((lang == "fr" || lang == "en"|| lang == "de"|| lang == "nl") && browserWidth > 500){
             startJotformFeedback();
             setTimeout(function() { 
                 window.open( 'https://qover.jotform.com/230382756620354?contract='+cigarId+'&language='+lang, 'blank', 'scrollbars=yes, toolbar=no, width=700, height=1000' )    
@@ -508,4 +509,14 @@ function reSendEmail(){
         console.log(response);
         $("[data-translation='requestresendcontract']").show();
     });
+}
+
+function getWidth() {
+  return Math.max(
+    document.body.scrollWidth,
+    document.documentElement.scrollWidth,
+    document.body.offsetWidth,
+    document.documentElement.offsetWidth,
+    document.documentElement.clientWidth
+  );
 }
