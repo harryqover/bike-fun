@@ -1,7 +1,7 @@
 /* version: 20230502 1126 */
 
 console.warn("to remove when publish");
-console.warn("version: 20230502 1302");
+console.warn("version: 20230502 1306");
 
 
 var payload = "";
@@ -46,7 +46,7 @@ function retry(){
 
 const errorsDB = {
                 "policyholder.address.zip" : {
-                    "fr":"Code postal nécessaire pour continuer",
+                    "fr":"Code postal non invalide",
                     "en":"Zipcode required to continue",
                     "nl":"Postcode vereist om verder te gaan",
                     "de":"Zipcode required to continue",
@@ -380,10 +380,16 @@ function getPrice() {
                 console.warn(`Error ${xhrPrice.status}: ${xhrPrice.statusText}`); // e.g. 404: Not Found
                 var responseGetPrice = JSON.parse(xhrPrice.response);
                 //$(".error").text(window.text.priceLimits);
-                var errorToShow = errorsDB[responseGetPrice.details[0].fields[0]];
+                if(responseGetPrice.details){
+                    var errorToShow = errorsDB[responseGetPrice.details[0].fields[0]];
+                    errorToShow = errorToShow[lang];   
+                } else {
+                    var errorToShow = responseGetPrice.message;
+                }
+                
 
                 //$(".error").text(response.details[0].message);
-                $(".error").text(errorToShow[lang]);
+                $(".error").text(errorToShow);
                 $(".error").show(250);
                 
                 //$(".error").show();
