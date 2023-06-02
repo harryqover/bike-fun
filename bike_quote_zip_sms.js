@@ -430,7 +430,7 @@ function getPrice() {
                             $("#percentdiscountVariant3").text(percentdiscountVariant3);
                         }
                     }
-                    $(".discount").show(250);
+                    $(".discount, .promo-label").show(250);
                 } else if (window.promocode != "") {
                     if(window.promocode.substring(0,5) == "GIANT"){
                       window.location.href = "https://app.qover.com/bike/quote?locale=fr-FR&key=pk_29D66CCD9AE08A1B59C9&promocode="+window.promocode;
@@ -445,9 +445,9 @@ function getPrice() {
                         'eventAction': 'getPrice',
                         'eventLabel': 'promocode not valid '+window.promocode+ ' '+window.__QOVER_API_KEY__
                       });
-                    $(".discount").hide(250);
+                    $(".discount, .promo-label").hide(250);
                 } else {
-                  $(".discount").hide(250);
+                  $(".discount, .promo-label").hide(250);
                 }
 
                 var priceEur = value / 100;
@@ -582,7 +582,7 @@ function gpsCheck() {
 }
 
 function hidePrice() {
-    $(".price, .refunded-value, .select-plan, .discount, .save4later-cta, .div-save4later, .retry").hide(250);
+    $(".price, .refunded-value, .select-plan, .discount, .save4later-cta, .div-save4later, .retry, .promo-label").hide(250);
     gpsCheck();
 }
 
