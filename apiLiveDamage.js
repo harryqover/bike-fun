@@ -74,16 +74,21 @@ var loadingInterval = setInterval(function() {
   $("[data-var='live-damage']").text(text);
 }, 500);
 
-$.ajax(settings).done(function(response) {
-	// Clear the loading interval
-	clearInterval(loadingInterval);
+setTimeout(getDamageStat, 1000);
 
-	// Get the total and format it
-	var total = response.total;
-	//total = total.toLocaleString();
-	total = (total * 100).toFixed(1);
-	
-	// Update the element text
-	$("[data-var='live-damage']").html('<b>'+total+'</b>' + tradSocialProof[lang]);
-});
+function getDamageStat(){
+	$.ajax(settings).done(function(response) {
+		// Clear the loading interval
+		clearInterval(loadingInterval);
+
+		// Get the total and format it
+		var total = response.total;
+		//total = total.toLocaleString();
+		total = (total * 100).toFixed(1);
+		
+		// Update the element text
+		$("[data-var='live-damage']").html('<b>'+total+'</b>' + tradSocialProof[lang]);
+	});
+}
+
 
