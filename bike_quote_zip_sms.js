@@ -599,3 +599,40 @@ function ihavecodecheck() {
         text.style.display = "none";
     }
 }
+
+
+// Function to check if all inputs are filled
+function validateForm() {
+  var inputs = document.getElementsByClassName('input-embed');
+  for (var i = 0; i < inputs.length; i++) {
+    if (inputs[i].value === '') {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Function to enable/disable the button based on form validation
+function toggleButton() {
+    if(validateForm()){
+        $("[data-var='startQuote']").attr("onclick","getPrice()");
+        $("[data-var='startQuote']").attr("style","background-color:#2f44dd");
+    } else {
+        $("[data-var='startQuote']").attr("onclick","");
+        $("[data-var='startQuote']").attr("style","background-color:#e8e8e8");
+    }
+}
+toggleButton();
+
+// Attach event listeners to input fields
+var inputs = document.getElementsByClassName('input-embed');
+for (var i = 0; i < inputs.length; i++) {
+  inputs[i].addEventListener('input', toggleButton);
+}
+
+// Attach event listener to select fields
+var selects = document.getElementsByTagName('select');
+for (var i = 0; i < selects.length; i++) {
+  selects[i].addEventListener('change', toggleButton);
+}
+
