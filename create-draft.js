@@ -208,11 +208,21 @@ function getDraft(payload, reason) {
                 document.cookie = "draftId=" + window.draftid + "; expires=" +now.toGMTString() + "; path=/; domain=.webflow.io";
                 document.cookie = "draftId=" + window.draftid + "; expires=" +now.toGMTString() + "; path=/; domain=.qover.com";
                 //var urlPolicyholder = 'https://app.qover.com/bike/policyholder?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
-                var urlPolicyholder = 'https://app.qover.com/bike/summary?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
-                if (environement == "sbx"){
-                    urlPolicyholder = 'https://appqoverme-ui.sbx.qover.io/bike/policyholder?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
+                var urlSummary = 'https://app.qover.com/bike/summary?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
+                var urlQuote = 'https://app.qover.com/bike/quote?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
+                
+                var urlToRedirect = urlQuote;
+
+                if(__QOVER_API_KEY__ == "pk_98DABF9A747BE244BC22"){
+                    //if mediahuis redirect to summary
+                    urlToRedirect = urlSummary; 
                 }
-                window.location.href = urlPolicyholder;
+                
+
+                if (environement == "sbx" && __QOVER_API_KEY__ == "pk_98DABF9A747BE244BC22"){
+                    urlToRedirect = 'https://appqoverme-ui.sbx.qover.io/bike/policyholder?locale=' + locale + '&id=' + window.draftid + '&key=' + __QOVER_API_KEY__;
+                }
+                window.location.href = urlToRedirect;
             }
 
         } else if (this.status === 400) {
