@@ -382,7 +382,7 @@ function getPrice() {
                 //$(".error").text(window.text.priceLimits);
                 var errorToShow = errorsDB[responseGetPrice.details[0].fields[0]];
 
-                $(".error").text(response.details[0].message);
+                //$(".error").text(response.details[0].message);
                 $(".error").text(errorToShow[lang]);
                 $(".error").show(250);
                 
