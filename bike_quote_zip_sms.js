@@ -564,7 +564,7 @@ function getPrice() {
                 elmnt.scrollIntoView();
                 gpsCheck();
 
-                $(".price, .save4later-cta, .select-plan, .quote-section, .refunded-value").show(250);
+                $(".price, .save4later-cta, .select-plan, .quote-section, .refunded-value, .save-for-later-link").show(250);
                 $(".div-save4later").show(500);
             }
         };
@@ -582,7 +582,7 @@ function gpsCheck() {
 }
 
 function hidePrice() {
-    $(".price, .refunded-value, .select-plan, .discount, .save4later-cta, .div-save4later, .retry, .promo-label").hide(250);
+    $(".price, .refunded-value, .select-plan, .discount, .save4later-cta, .div-save4later, .retry, .promo-label, .save-for-later-link").hide(250);
     gpsCheck();
 }
 
