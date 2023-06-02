@@ -622,7 +622,7 @@ function toggleButton() {
         $("[data-var='startQuote']").attr("style","background-color:#e8e8e8");
     }
 }
-toggleButton();
+setTimeout(toggleButton, 1000);
 
 // Attach event listeners to input fields
 var inputs = document.getElementsByClassName('input-embed');
