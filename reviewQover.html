@@ -87,9 +87,9 @@
 					console.log(this.responseText);
 
 				    if (rating > minPublicRating) {
-				    	//var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://g.page/r/CeJV3VPdzwkCEAI/review"];//mix
+				    	var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://g.page/r/CeJV3VPdzwkCEAI/review"];//mix
 				    	//var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://www.trustpilot.com/evaluate/qover.com"];//full trustpilot
-				    	var redirectUrls = ["https://g.page/r/CeJV3VPdzwkCEAI/review","https://g.page/r/CeJV3VPdzwkCEAI/review"];//full Google
+				    	//var redirectUrls = ["https://g.page/r/CeJV3VPdzwkCEAI/review","https://g.page/r/CeJV3VPdzwkCEAI/review"];//full Google
 						var randomIndex = Math.floor(Math.random() * redirectUrls.length);
 						window.location.replace(redirectUrls[randomIndex]);
 					  	//window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
