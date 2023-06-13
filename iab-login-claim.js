@@ -82,7 +82,7 @@ function getNinjaData(cigarId, email) {
         	var registrationPlate = response.payload.risk.registrationPlate;
         	var brand = response.payload.risk.make;
             var country = cigarId.substring(0, 2);
-            if(lang = "de"||lang = "pt"){
+            if(lang == "de"||lang == "pt"){
                 lang = "de-"+country;
             }
         	window.location.href = baseUrlClaim[brand]+"?language="+lang+"&claimant_email="+email+"&policy_reference="+cigarId+"&vehicle_plate_number="+registrationPlate+"&ref_country="+country;
