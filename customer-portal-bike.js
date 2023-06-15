@@ -41,7 +41,7 @@ const qoverPhone = {
 
 const imgPartner = {
     "canyon": "https://storage.googleapis.com/qover-assets/Logos/canyon.svg",
-    //"veloretti": "https://assets.website-files.com/5e8d84b86a72718111ce868b/647f14309ccf4fe4b07c0f0f_logo%20canyon.svg",
+    "veloretti": "https://storage.googleapis.com/qover-assets/Logos/veloretti.png",
     "cowboy": "https://storage.googleapis.com/qover-assets/Logos/cowboy.png",
     "decathlon":"https://storage.googleapis.com/qover-assets/Logos/decathlon.svg"
 }
