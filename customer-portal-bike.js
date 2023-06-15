@@ -39,6 +39,13 @@ const qoverPhone = {
     "IE" : "xxx"
 };
 
+const imgPartner = {
+    "canyon": "https://assets.website-files.com/5e8d84b86a72718111ce868b/647f14309ccf4fe4b07c0f0f_logo%20canyon.svg",
+    "veloretti": "https://assets.website-files.com/5e8d84b86a72718111ce868b/647f14309ccf4fe4b07c0f0f_logo%20canyon.svg",
+    "cowboy": "https://assets.website-files.com/5e8d84b86a72718111ce868b/647f14309ccf4fe4b07c0f0f_logo%20canyon.svg",
+    "decathlon":"https://assets.website-files.com/5e8d84b86a72718111ce868b/647f14309ccf4fe4b07c0f0f_logo%20canyon.svg"
+}
+
 var translations;
 var refundDamage = 0;
 var refundTheft = 0;
@@ -173,6 +180,17 @@ function goLogin(cigarId, email) {
             } else if (lang == "nl") {
                 zendeskLang = "nl-be";
             }
+
+            var brandLower = response.payload.risk.make.toLowerCase();
+
+            if (imgPartner.hasOwnProperty(brandLower)) {
+                $("[data-var='imgpartner'").attr('href',imgPartner[brandLower]);
+            } else {
+                $("[data-var='divimgpartner'").hide();
+            }
+
+
+            
             
             $("[data-var='cancel']").attr("href", "https://form.jotform.com/230021764194349?language="+lang+"&cigarid=" + cigarId + "&email=" + email);
             //$("[data-var='cancel']").attr("href", "https://form.jotform.com/222763047790359?lang="+lang+"&contractid=" + cigarId + "&email=" + email);
