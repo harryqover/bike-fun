@@ -181,13 +181,7 @@ function goLogin(cigarId, email) {
                 zendeskLang = "nl-be";
             }
 
-            var brandLower = response.payload.risk.make.toLowerCase();
-
-            if (imgPartner.hasOwnProperty(brandLower)) {
-                $("[data-var='imgpartner'").attr('href',imgPartner[brandLower]);
-            } else {
-                $("[data-var='divimgpartner'").hide();
-            }
+            
 
 
             
@@ -300,6 +294,14 @@ function getNinjaData(cigarId, email) {
         if(partnerWith120Fee.includes(response.payload.refs.partnerId)){
             var partnerServiceFee = 12000 - response.payload.price;
             $(".div-block-323").after("<div class='subprice' >"+translations['premiumsoftwareservices']+" ("+currency+" "+partnerServiceFee/100+")</div>")
+        }
+
+        var brandLower = response.payload.risk.make.toLowerCase();
+
+        if (imgPartner.hasOwnProperty(brandLower)) {
+            $("[data-var='imgpartner'").attr('href',imgPartner[brandLower]);
+        } else {
+            $("[data-var='divimgpartner'").hide();
         }
 
         $("[data-var='value']").text(currency+" " + response.payload.risk.originalValue / 100);
