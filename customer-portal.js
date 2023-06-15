@@ -520,3 +520,32 @@ function getWidth() {
     document.documentElement.clientWidth
   );
 }
+
+
+
+function buildCancelForm (){
+    var cssForm = '<style>.cancellation-form-section {z-index: 10009;background-color: rgba(8,20,37,.5);justify-content: center;align-items: center;display: flex;position: fixed;top: 0%;bottom: 0%;left: 0%;right: 0%;}</style>';
+    htmlForm = htmlForm +'<div class="container-131 w-container">';
+    var htmlForm = '<section style="display: flex;" class="cancellation-form-section wf-section">';
+    htmlForm = htmlForm +'<div class="div-block-363"><div data-w-id="720d9468-571e-13c5-51d5-cf7437bcaefe" class="div-block-364"><img src="https://assets.website-files.com/5e8d84b86a72718111ce868b/646dff6ba2da6a846106e659_cross%20grey.svg" loading="lazy" alt=""><div>Close</div></div></div>';
+    htmlForm = htmlForm +'<h2>Cancel your contract</h2>';
+    htmlForm = htmlForm +'<div class="grey-block"><p class="paragraph-73">xxxxxxxxx</p></div>';
+    htmlForm = htmlForm +'<div class="question-to-replace"><div data-w-id="8e4188b9-ce7f-5e01-9bc1-52b7b12ebc2e" style="display:block" class="_1st">Je souhaite résilier mon contrat <a href="#">à son renouvellement (14/04/2024)</a> car :</div><div style="display:none" class="div-block-360"><div class="_2nd">Je désire annuler mon contrat d’assurance (sous réserve d’acceptation)</div><div class="div-block-359"><label data-w-id="37b7db80-b51c-aafb-a063-8a074f319fa8" class="radio-button-field-2 w-radio"><input type="radio" data-name="Radio" id="radio" name="radio" value="Radio" class="w-form-formradioinput w-radio-input"><span class="w-form-label" for="radio">au renouvellement</span></label><div class="div-block-358"><label class="radio-button-field-2 w-radio"><input type="radio" data-name="Radio 2" id="radio-2" name="radio" value="Radio" class="w-form-formradioinput w-radio-input"><span class="w-form-label" for="radio-2">à une date spécifique</span></label><input type="text" class="field w-input" maxlength="256" name="date" data-name="date" placeholder="__/__/____" id="date" required=""></div></div></div></div>';
+    htmlForm = htmlForm +'<div><label data-w-id="625614ec-6999-0f12-3741-8673026b0ce4" class="w-checkbox checkbox-2"><input type="checkbox" id="checkbox" name="checkbox" data-name="Checkbox" class="w-checkbox-input checkbox-3"><span class="checkbox-label-3 w-form-label" for="checkbox">Je n’utilise pas assez mon vélo pour justifier le coût de l’assurance</span></label><div style="display:none" class="advice"><div class="text-block-272">☝️ N’oubliez pas qu’il suffit d’une fois pour avoir un accident ou se faire voler son vélo et tout perdre.</div></div></div>';
+    htmlForm = htmlForm +'x';
+    htmlForm = htmlForm +'x';
+    htmlForm = htmlForm +'x';
+    htmlForm = htmlForm +'x';
+    htmlForm = htmlForm +'x';
+    htmlForm = htmlForm +'x';
+    htmlForm = htmlForm +'x';
+    htmlForm = htmlForm +'x';
+    htmlForm = htmlForm +'x';
+    htmlForm = htmlForm +'x';
+
+    htmlForm = htmlForm +'xxx';
+
+    htmlForm = htmlForm +'</div></section>';
+    var htmlToShowForForm = cssForm + htmlForm;
+    $("body").prepend(htmlToShowForForm);
+}
