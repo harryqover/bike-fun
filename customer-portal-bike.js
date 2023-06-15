@@ -299,7 +299,7 @@ function getNinjaData(cigarId, email) {
         var brandLower = response.payload.risk.make.toLowerCase();
 
         if (imgPartner.hasOwnProperty(brandLower)) {
-            $("[data-var='imgpartner'").attr('href',imgPartner[brandLower]);
+            $("[data-var='imgpartner'").attr('src',imgPartner[brandLower]);
         } else {
             $("[data-var='divimgpartner'").hide();
         }
