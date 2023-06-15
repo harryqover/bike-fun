@@ -40,10 +40,10 @@ const qoverPhone = {
 };
 
 const imgPartner = {
-    "canyon": "https://assets.website-files.com/5e8d84b86a72718111ce868b/647f14309ccf4fe4b07c0f0f_logo%20canyon.svg",
+    "canyon": "https://storage.googleapis.com/qover-assets/Logos/canyon.svg",
     //"veloretti": "https://assets.website-files.com/5e8d84b86a72718111ce868b/647f14309ccf4fe4b07c0f0f_logo%20canyon.svg",
-    //"cowboy": "https://assets.website-files.com/5e8d84b86a72718111ce868b/647f14309ccf4fe4b07c0f0f_logo%20canyon.svg",
-    //"decathlon":"https://assets.website-files.com/5e8d84b86a72718111ce868b/647f14309ccf4fe4b07c0f0f_logo%20canyon.svg"
+    "cowboy": "https://storage.googleapis.com/qover-assets/Logos/cowboy.png",
+    "decathlon":"https://storage.googleapis.com/qover-assets/Logos/decathlon.svg"
 }
 
 var translations;
