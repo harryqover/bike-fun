@@ -186,9 +186,9 @@ function goLogin(cigarId, email) {
 
             
             
-            $("[data-var='cancel']").attr("href", "https://form.jotform.com/230021764194349?language="+lang+"&cigarid=" + cigarId + "&email=" + email);
+            $("[data-var='cancel']").attr("href", "https://forms.qover.com/230021764194349?language="+lang+"&cigarid=" + cigarId + "&email=" + email);
             //$("[data-var='cancel']").attr("href", "https://form.jotform.com/222763047790359?lang="+lang+"&contractid=" + cigarId + "&email=" + email);
-            $("[data-var='documentupload']").attr("href", "https://qover.jotform.com/223391631989063?email=" + email + "&contractReference=" + cigarId + "&language="+lang);
+            $("[data-var='documentupload']").attr("href", "https://forms.qover.com/223391631989063?email=" + email + "&contractReference=" + cigarId + "&language="+lang);
             $("[data-var='claims']").attr("href", "https://www.qover.com/claims?lang="+lang+"&contract=" + cigarId + "&email=" + email);
             $("[data-var='makeaclaim']").attr("href", "https://www.qover.com/claims?lang="+lang+"&contract=" + cigarId + "&email=" + email);
             $("[data-var='amendlink']").attr("href", "https://qoverme.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_4414433182481=bike_amend&tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
@@ -315,7 +315,7 @@ function getNinjaData(cigarId, email) {
         if((lang == "fr" || lang == "en"|| lang == "de"|| lang == "nl") && browserWidth > 500){
             startJotformFeedback();
             setTimeout(function() { 
-                window.open( 'https://qover.jotform.com/230382756620354?contract='+cigarId+'&language='+lang, 'blank', 'scrollbars=yes, toolbar=no, width=700, height=1000' )    
+                window.open( 'https://forms.qover.com/230382756620354?contract='+cigarId+'&language='+lang, 'blank', 'scrollbars=yes, toolbar=no, width=700, height=1000' )    
             }, 10000);    
         }
         
