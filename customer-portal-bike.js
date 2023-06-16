@@ -159,6 +159,14 @@ function goLogin(cigarId, email) {
             window.refundTheft = bikeValue - theftDeductibleAmount;
             window.damageDeductibleAmount = damageDeductibleAmount;
 
+            var currency = "€";
+            currency = (country == "GB")?"£":currency;
+            currency = (country == "DK")?"DKK":currency;
+            currency = (country == "SE")?"SEK":currency;
+            currency = (country == "NO")?"NOK":currency;
+            currency = (country == "PL")?"PLN":currency;
+        
+
             $(".damage-deductible").text(Math.round(damageDeductibleAmount * 100) / 100);
             $(".theft-deductible").text(refundTheft);
             /* END DEFINE DEDUCTIBLES */
@@ -167,8 +175,8 @@ function goLogin(cigarId, email) {
             $("[data-var='cigarid']").text(cigarId);
             $("[data-var='start']").text(start.toLocaleDateString());
             $("[data-var='end']").text(end.toLocaleDateString());
-            $("[data-var='theftdeductible']").text("EUR " + Math.round(theftDeductibleAmount * 100) / 100);
-            $("[data-var='materialdeductible']").text("EUR " + Math.round(damageDeductibleAmount * 100) / 100);
+            $("[data-var='theftdeductible']").text(currency+ " " + Math.round(theftDeductibleAmount * 100) / 100);
+            $("[data-var='materialdeductible']").text(currency+" " + Math.round(damageDeductibleAmount * 100) / 100);
             $("[data-var='phone']").text(qoverPhone[country]);
 
      
@@ -260,7 +268,7 @@ function getNinjaData(cigarId, email) {
         $("[data-var='brand']").text(response.payload.risk.make);
         $("[data-var='model']").text(response.payload.risk.model);
         $("[data-var='serial']").text(response.payload.risk.serialNumber);
-        $("[data-var='price']").text("EUR " + response.payload.price / 100);
+        $("[data-var='price']").text(currency + response.payload.price / 100);
         $("[data-var='status']").text(statusContract[response.payload.status]);
 
 
