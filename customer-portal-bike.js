@@ -143,6 +143,9 @@ function goLogin(cigarId, email) {
                 var damageDeductibleAmount = 75;
             } else if (damageDeductible == "DAMAGE_DEDUCTIBLE_STANDARD_35_FIX") {
                 var damageDeductibleAmount = 35;
+                damageDeductibleAmount = (country == "DK")?260:damageDeductibleAmount;
+                damageDeductibleAmount = (country == "SE")?350:damageDeductibleAmount;
+                damageDeductibleAmount = (country == "NO")?350:damageDeductibleAmount;
             }
 
             if (theftDeductible == "THEFT_DEDUCTIBLE_STANDARD_10PC") {
