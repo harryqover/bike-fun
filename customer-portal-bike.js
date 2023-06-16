@@ -300,6 +300,7 @@ function getNinjaData(cigarId, email) {
         } else {
             $("[data-var='phoneassistance']").text("not available");    
             $(".assistance-emergency").hide();
+            $("[data-var='explanation-deductible']").text(translations['incaseoftheft']+ " "+ currency + " " + refundTheft + " "+translations['incaseofdamage']+ " "+ currency + " " + Math.round(damageDeductibleAmount * 100) / 100);
             //$(".div-block-324").hide();
         }
 
