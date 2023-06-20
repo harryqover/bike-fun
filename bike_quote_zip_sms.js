@@ -1,7 +1,7 @@
-/* version: 20230502 1126 */
+/* version: 20230502 1242 */
 
 console.warn("to remove when publish");
-console.warn("version: 20230620 1209");
+console.warn("version: 20230620 1242");
 
 
 var payload = "";
@@ -382,13 +382,19 @@ function getPrice() {
                 console.log("responseGetPrice ", responseGetPrice);
                 console.log("responseGetPrice.details ", responseGetPrice.details);
                 console.log("responseGetPrice.message ", responseGetPrice.message);
+                console.log("window.text ", window.text)
 
                 //$(".error").text(window.text.priceLimits);
                 if(responseGetPrice.details){
                     var errorToShow = errorsDB[responseGetPrice.details[0].fields[0]];
                     errorToShow = errorToShow[lang];   
                 } else {
-                    var errorToShow = responseGetPrice.message;
+                    if(responseGetPrice.message == "Value is not valid."){
+                        var errorToShow = responseGetPrice.message;
+                    } else {
+                        var errorToShow = responseGetPrice.message;    
+                    }
+                    
                 }
                 
 
