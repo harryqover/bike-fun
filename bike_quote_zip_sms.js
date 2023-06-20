@@ -1,7 +1,7 @@
 /* version: 20230502 1242 */
 
 console.warn("to remove when publish");
-console.warn("version: 20230620 1242");
+console.warn("version: 20230620 1307");
 
 
 var payload = "";
@@ -390,7 +390,7 @@ function getPrice() {
                     errorToShow = errorToShow[lang];   
                 } else {
                     if(responseGetPrice.message == "Value is not valid."){
-                        var errorToShow = responseGetPrice.message;
+                        var errorToShow = window.text.priceLimits;
                     } else {
                         var errorToShow = responseGetPrice.message;    
                     }
