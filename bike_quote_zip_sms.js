@@ -379,6 +379,10 @@ function getPrice() {
             if (xhrPrice.status != 200) {
                 console.warn(`Error ${xhrPrice.status}: ${xhrPrice.statusText}`); // e.g. 404: Not Found
                 var responseGetPrice = JSON.parse(xhrPrice.response);
+                console.log("responseGetPrice ", responseGetPrice);
+                console.log("responseGetPrice.details ", responseGetPrice.details);
+                console.log("responseGetPrice.message ", responseGetPrice.message);
+           
                 //$(".error").text(window.text.priceLimits);
                 if(responseGetPrice.details){
                     var errorToShow = errorsDB[responseGetPrice.details[0].fields[0]];
