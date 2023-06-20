@@ -55,23 +55,23 @@ var settings = {
 };
 
 // Set initial text and dot counter
-var text = "";
+var textApiLiveDamage = "";
 var dotCount = 0;
 
 // Create interval to add dots
 var loadingInterval = setInterval(function() {
   // Add a dot
-  text += ".";
+  textApiLiveDamage += ".";
   dotCount++;
 
   // If there are more than three dots, reset the counter
   if (dotCount > 3) {
-    text = "Loading";
+    textApiLiveDamage = "Loading";
     dotCount = 0;
   }
 
   // Update the text
-  $("[data-var='live-damage']").text(text);
+  $("[data-var='live-damage']").text(textApiLiveDamage);
 }, 500);
 
 setTimeout(getDamageStat, 1000);
