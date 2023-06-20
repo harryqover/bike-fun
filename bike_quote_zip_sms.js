@@ -1,7 +1,7 @@
 /* version: 20230502 1126 */
 
 console.warn("to remove when publish");
-console.warn("version: 20230502 1306");
+console.warn("version: 20230620 1209");
 
 
 var payload = "";
@@ -382,7 +382,7 @@ function getPrice() {
                 console.log("responseGetPrice ", responseGetPrice);
                 console.log("responseGetPrice.details ", responseGetPrice.details);
                 console.log("responseGetPrice.message ", responseGetPrice.message);
-           
+
                 //$(".error").text(window.text.priceLimits);
                 if(responseGetPrice.details){
                     var errorToShow = errorsDB[responseGetPrice.details[0].fields[0]];
