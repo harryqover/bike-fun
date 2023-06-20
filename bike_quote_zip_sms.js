@@ -377,12 +377,12 @@ function getPrice() {
         xhrPrice.send();
         xhrPrice.onload = function() {
             if (xhrPrice.status != 200) {
-                console.warn(`Error ${xhrPrice.status}: ${xhrPrice.statusText}`); // e.g. 404: Not Found
+                console.warn(`Error ${xhrPrice.status}: ${xhrPrice.message} `); // e.g. 404: Not Found
                 var responseGetPrice = JSON.parse(xhrPrice.response);
-                console.log("responseGetPrice ", responseGetPrice);
+                /*console.log("responseGetPrice ", responseGetPrice);
                 console.log("responseGetPrice.details ", responseGetPrice.details);
                 console.log("responseGetPrice.message ", responseGetPrice.message);
-                console.log("window.text ", window.text)
+                console.log("window.text ", window.text)*/
 
                 //$(".error").text(window.text.priceLimits);
                 if(responseGetPrice.details){
@@ -394,9 +394,7 @@ function getPrice() {
                     } else {
                         var errorToShow = responseGetPrice.message;    
                     }
-                    
                 }
-                
 
                 //$(".error").text(response.details[0].message);
                 $(".error").text(errorToShow);
