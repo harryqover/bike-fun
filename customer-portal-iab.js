@@ -325,6 +325,7 @@ function getNinjaData(cigarId, email) {
             $("#disconnected").hide();
             $(".loading").hide();
             $(".head-cp-connected").show();
+            getBanners("IAB", lang);
 
         }
 
@@ -338,6 +339,7 @@ function logout() {
     $(".loading").show();
     $("#connected").hide();
     $("#disconnected").hide();
+    $(".alert-banner").remove();
 
     var timeToAdd = 1000 * 60 * 60 * 24 * -1 * 1 * 1;
     var date = new Date();
@@ -442,3 +444,35 @@ function formatPrice(amount){
     amount = amount.toFixed(2);
     return amount
 }
+
+
+function getBanners(product, lang) {
+    var googleSheetUrl = "https://script.google.com/macros/s/AKfycbyuWuOPkdF-6k1KzVCpd9rt-3_5rTw6LjhmSE3zsm66eCph9D5GI8GSp9PWGjd4-N2J/exec";
+
+    var settings = {
+        "url": googleSheetUrl,
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
+        "data": JSON.stringify({
+            "product": product,
+            "lang": lang
+        }),
+    };
+
+    $.ajax(settings).done(function(response) {
+        if(response.payload.message){
+            console.log(response.payload.message);
+            var divAlert = "<div class='alert-banner' style='background-color:"+response.payload.backgroundColor+";line-height: 1.3em;padding: 10px 30px;display:flex;justify-content: center;'>";
+divAlert = divAlert + "<span style='color:"+response.payload.textColor+";'>"+response.payload.message+"</span>";
+divAlert = divAlert + "</div>";
+
+$( "body" ).prepend(divAlert);
+        }
+        console.log(response);
+    });
+}
+
+
