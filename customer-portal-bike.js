@@ -593,90 +593,89 @@ function buildCancelForm (){
                 htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'<div class="inputReason">';
                     htmlForm = htmlForm +'<div>';
-                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-1" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice"><span class="w-form-label" for="checkbox-1">'+window.translations.cancelReasonNotEnoughRiding+'</span></label>';
+                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-1" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice" value="cancelReasonNotEnoughRiding"><span class="w-form-label" for="checkbox-1">'+window.translations.cancelReasonNotEnoughRiding+'</span></label>';
                         htmlForm = htmlForm +'<div style="display:none" class="advice"><div class="adviceText">'+window.translations.cancelReasonNotEnoughRidingAdvice+'</div></div>';
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm +'<div>';
-                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-2" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice"><span class="w-form-label" for="checkbox-2">'+window.translations.cancelReasonNotRiding+'</span></label>';
+                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-2" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice" value="cancelReasonNotRiding"><span class="w-form-label" for="checkbox-2">'+window.translations.cancelReasonNotRiding+'</span></label>';
                         htmlForm = htmlForm +'<div style="display:none" class="advice"><div class="adviceText">'+window.translations.cancelReasonNotRidingAdvice+'</div></div>';
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm +'<div>';
-                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-3" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice"><span class="w-form-label" for="checkbox-3">'+window.translations.cancelReasonPriceTooHigh+'</span></label>';
+                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-3" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice" value="cancelReasonPriceTooHigh"><span class="w-form-label" for="checkbox-3">'+window.translations.cancelReasonPriceTooHigh+'</span></label>';
                         htmlForm = htmlForm +'<div style="display:none" class="advice"><div class="adviceText">'+window.translations.cancelReasonPriceTooHighAdvice+'</div></div>';
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm +'<div>';
-                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-4" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice"><span class="w-form-label" for="checkbox-4">'+window.translations.cancelReasonOtherInsurer+'</span></label>';
+                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-4" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice" value="cancelReasonOtherInsurer"><span class="w-form-label" for="checkbox-4">'+window.translations.cancelReasonOtherInsurer+'</span></label>';
                         htmlForm = htmlForm +'<div style="display:none" class="advice"><div class="adviceText">'+window.translations.cancelReasonOtherInsurerAdvice+'</div></div>';
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm +'<div>';
-                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-5" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice"><span class="w-form-label" for="checkbox-5">'+window.translations.cancelReasonBadExperience+'</span></label>';
+                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-5" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice" value="cancelReasonBadExperience"><span class="w-form-label" for="checkbox-5">'+window.translations.cancelReasonBadExperience+'</span></label>';
                         htmlForm = htmlForm +'<div style="display:none" class="advice"><div class="adviceText">'+window.translations.cancelReasonBadExperienceAdvice+'</div></div>';
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm +'<div>';
-                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-6" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice"><span class="w-form-label" for="checkbox-6">'+window.translations.cancelReasonNotExposed+'</span></label>';
+                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-6" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice" value="cancelReasonNotExposed"><span class="w-form-label" for="checkbox-6">'+window.translations.cancelReasonNotExposed+'</span></label>';
                         htmlForm = htmlForm +'<div style="display:none" class="advice"><div class="adviceText">'+window.translations.cancelReasonNotExposedAdvice+'</div></div>';
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm +'<div>';
-                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-7" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice"><span class="w-form-label" for="checkbox-7">'+window.translations.cancelReasonOrderCancelled+'</span></label>';
+                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-7" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice" value="cancelReasonOrderCancelled"><span class="w-form-label" for="checkbox-7">'+window.translations.cancelReasonOrderCancelled+'</span></label>';
                         htmlForm = htmlForm +'<div style="display:none" class="advice"><div class="adviceText">'+window.translations.cancelReasonOrderCancelledAdvice+'</div></div>';
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm +'<div>';
-                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-8" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice"><span class="w-form-label" for="checkbox-8">'+window.translations.cancelReasonReturnWithinWarranty+'</span></label>';
+                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-8" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice" value="cancelReasonReturnWithinWarranty"><span class="w-form-label" for="checkbox-8">'+window.translations.cancelReasonReturnWithinWarranty+'</span></label>';
                         htmlForm = htmlForm +'<div style="display:none" class="advice"><div class="adviceText">'+window.translations.cancelReasonReturnWithinWarrantyAdvice+'</div></div>';
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm +'<div>';
-                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-9" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice"><span class="w-form-label" for="checkbox-9">'+window.translations.cancelReasonMoveAbroad+'</span></label>';
+                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-9" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice" value="cancelReasonMoveAbroad"><span class="w-form-label" for="checkbox-9">'+window.translations.cancelReasonMoveAbroad+'</span></label>';
                         htmlForm = htmlForm +'<div style="display:none" class="advice"><div class="adviceText">'+window.translations.cancelReasonMoveAbroadAdvice+'</div></div>';
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm +'<div>';
-                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-10" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice"><span class="w-form-label" for="checkbox-10">'+window.translations.cancelReasonNotSatisfiedWithClaim+'</span></label>';
+                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-10" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice" value="cancelReasonNotSatisfiedWithClaim"><span class="w-form-label" for="checkbox-10">'+window.translations.cancelReasonNotSatisfiedWithClaim+'</span></label>';
                         htmlForm = htmlForm +'<div style="display:none" class="advice"><div class="adviceText">'+window.translations.cancelReasonNotSatisfiedWithClaimAdvice+'</div></div>';
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm +'<div>';
-                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-11" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice"><span class="w-form-label" for="checkbox-11">'+window.translations.cancelReasonBikeSold+'</span></label>';
+                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-11" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice" value="cancelReasonBikeSold"><span class="w-form-label" for="checkbox-11">'+window.translations.cancelReasonBikeSold+'</span></label>';
                         htmlForm = htmlForm +'<div style="display:none" class="advice"><div class="adviceText">'+window.translations.cancelReasonBikeSoldAdvice+'</div></div>';
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm +'<div>';
-                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-12" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice"><span class="w-form-label" for="checkbox-12">'+window.translations.cancelReasonOther+'</span></label>';
-                        htmlForm = htmlForm +'<div style="display: none;" class="advice"><textarea placeholder="'+window.translations.cancelReasonOtherMore+'" maxlength="5000" id="field-2" name="field-2" data-name="Field 2" class="w-input"></textarea></div>';
+                        htmlForm = htmlForm +'<label class="w-checkbox"><input type="checkbox" id="checkbox-12" name="checkbox-reason" data-name="Checkbox" class="w-checkbox-input withAdvice" value="cancelReasonOther"><span class="w-form-label" for="checkbox-12">'+window.translations.cancelReasonOther+'</span></label>';
+                        htmlForm = htmlForm +'<div style="display: none;" class="advice"><textarea placeholder="'+window.translations.cancelReasonOtherMore+'" maxlength="5000" id="textAreaCancelReasonOtherMore" name="field-2" data-name="Field 2" class="w-input"></textarea></div>';
                     htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'<div class="formSubTitles">';
                     htmlForm = htmlForm +'Avez-vous des suggestions/commentaires pour faire évoluer notre assurance vélo ?';
                 htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'<div class="inputReason">';
-                    htmlForm = htmlForm +'<textarea placeholder="Tapez ici votre réponse …" maxlength="5000" id="field" name="field" data-name="Field" class="w-input"></textarea>';
+                    htmlForm = htmlForm +'<textarea placeholder="typeYourAnswer" maxlength="5000" id="textAreaSuggestions" name="field" data-name="Field" class="w-input"></textarea>';
                 htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'<div class="formSubTitles">';
                     htmlForm = htmlForm +'Fréquence dutilisation de votre vélo';
                 htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'<div class="inputReason">';
-                    htmlForm = htmlForm +'<label class="radio-button-field-2 w-radio"><input type="radio" data-name="Radio 3" id="frequency-1" name="radio-frequency" value="Radio" class="w-form-formradioinput w-radio-input"><span class="w-form-label" for="frequency-1">Plusieurs fois par jour</span></label>';
-                    htmlForm = htmlForm +'<label class="radio-button-field-2 w-radio"><input type="radio" data-name="Radio 6" id="frequency-2" name="radio-frequency" value="Radio" class="w-form-formradioinput w-radio-input"><span class="w-form-label" for="frequency-2">Plusieurs fois par semaine</span></label>';
-                    htmlForm = htmlForm +'<label class="radio-button-field-2 w-radio"><input type="radio" data-name="Radio 5" id="frequency-3" name="radio-frequency" value="Radio" class="w-form-formradioinput w-radio-input"><span class="w-form-label" for="frequency-3">Plusieurs fois par mois</span></label>';
-                    htmlForm = htmlForm +'<label class="radio-button-field-2 w-radio"><input type="radio" data-name="Radio 4" id="frequency-4" name="radio-frequency" value="Radio" class="w-form-formradioinput w-radio-input"><span class="w-form-label" for="frequency-4">Plusieurs fois par an</span></label>';
+                    htmlForm = htmlForm +'<label class="radio-button-field-2 w-radio"><input type="radio" data-name="Radio 3" id="frequency-1" name="radio-frequency" value="1-daily" class="w-form-formradioinput w-radio-input"><span class="w-form-label" for="frequency-1">Plusieurs fois par jour</span></label>';
+                    htmlForm = htmlForm +'<label class="radio-button-field-2 w-radio"><input type="radio" data-name="Radio 6" id="frequency-2" name="radio-frequency" value="2-weekly" class="w-form-formradioinput w-radio-input"><span class="w-form-label" for="frequency-2">Plusieurs fois par semaine</span></label>';
+                    htmlForm = htmlForm +'<label class="radio-button-field-2 w-radio"><input type="radio" data-name="Radio 5" id="frequency-3" name="radio-frequency" value="3-monthly" class="w-form-formradioinput w-radio-input"><span class="w-form-label" for="frequency-3">Plusieurs fois par mois</span></label>';
+                    htmlForm = htmlForm +'<label class="radio-button-field-2 w-radio"><input type="radio" data-name="Radio 4" id="frequency-4" name="radio-frequency" value="4-yearly" class="w-form-formradioinput w-radio-input"><span class="w-form-label" for="frequency-4">Plusieurs fois par an</span></label>';
                 htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'<div class="formSubTitles">';
                     htmlForm = htmlForm +'Vous utilisez votre vélo :';
                 htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'<div class="inputReason">';
-                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-usage-1" name="checkbox-usage" data-name="Checkbox 11" class="w-checkbox-input checkbox-3"><span class="checkbox-label-3 w-form-label" for="chckbx-usage-1">pour vous rendre au travail, à l’école/université</span></label>';
-                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-usage-2" name="checkbox-usage" data-name="Checkbox 11" class="w-checkbox-input checkbox-3"><span class="checkbox-label-3 w-form-label" for="chckbx-usage-2">pour aller faire des courses</span></label>';
-                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-usage-3" name="checkbox-usage" data-name="Checkbox 11" class="w-checkbox-input checkbox-3"><span class="checkbox-label-3 w-form-label" for="chckbx-usage-3">comme outil de travail (livraison)</span></label>';
-                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-usage-4" name="checkbox-usage" data-name="Checkbox 11" class="w-checkbox-input checkbox-3"><span class="checkbox-label-3 w-form-label" for="chckbx-usage-4">pour des activités ludiques (balades)</span></label>';
-                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-usage-5" name="checkbox-usage" data-name="Checkbox 11" class="w-checkbox-input checkbox-3"><span class="checkbox-label-3 w-form-label" for="chckbx-usage-5">pour des activités sportives (courses amateurs, entre amis)</span></label>';
-                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-usage-6" name="checkbox-usage" data-name="Checkbox 11" class="w-checkbox-input checkbox-3"><span class="checkbox-label-3 w-form-label" for="chckbx-usage-6">autre</span></label>';
+                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-usage-1" name="checkbox-usage" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="workschool"><span class="checkbox-label-3 w-form-label" for="chckbx-usage-1">pour vous rendre au travail, à l’école/université</span></label>';
+                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-usage-2" name="checkbox-usage" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="shopping"><span class="checkbox-label-3 w-form-label" for="chckbx-usage-2">pour aller faire des courses</span></label>';
+                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-usage-3" name="checkbox-usage" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="delivery"><span class="checkbox-label-3 w-form-label" for="chckbx-usage-3">comme outil de travail (livraison)</span></label>';
+                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-usage-4" name="checkbox-usage" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="entertainment"><span class="checkbox-label-3 w-form-label" for="chckbx-usage-4">pour des activités ludiques (balades)</span></label>';
+                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-usage-5" name="checkbox-usage" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="sport"><span class="checkbox-label-3 w-form-label" for="chckbx-usage-5">pour des activités sportives (courses amateurs, entre amis)</span></label>';
+                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-usage-6" name="checkbox-usage" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="other"><span class="checkbox-label-3 w-form-label" for="chckbx-usage-6">autre</span></label>';
                 htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'<div class="formSubTitles">';
                     htmlForm = htmlForm +'Où garez-vous votre vélo ?';
                 htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'<div class="inputReason">';
-                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-1" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-1">dans un parking sécurisé</span></label>';
-                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-2" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-2">dans un local/parking commun</span></label>';
-                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-3" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-3">attaché à un point fixe à l’extérieur</span></label>';
-                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-4" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-4">dans ma maison/appartement</span></label>';
-                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-5" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-5">pour des activités sportives (courses amateurs, entre amis)</span></label>';
-                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-6" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-6">autre</span></label>';
+                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-1" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="securedparking"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-1">dans un parking sécurisé</span></label>';
+                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-2" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="sharedparking"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-2">dans un local/parking commun</span></label>';
+                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-3" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="outside"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-3">attaché à un point fixe à l’extérieur</span></label>';
+                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-4" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="insidehouse"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-4">dans ma maison/appartement</span></label>';
+                    htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-6" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="other"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-6">autre</span></label>';
                 htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'<div class="summaryDiv">';
                     htmlForm = htmlForm +'<div class="formSubTitles">';
@@ -730,13 +729,85 @@ function buildCancelForm (){
 }
 
 function getAllInputsChecked (){
-    var inputs = document.getElementsByTagName('input');
-    for (i = 0; i < inputs.length; i++) {
-        if (inputs[i].type = "radio") {
+    
+    var wishType = $("input[name='radio-cancelDate']:checked").val();
+    var cancelDate = document.getElementById("cancelDate").value;
 
-            if (inputs[i].checked){
-                console.log(inputs[i].name + " Value: " + inputs[i].value + "<br>");
-            }
+    var allReasonsEl = $("input[name='checkbox-reason']");
+    var allReasonsArray = [];
+    var allReasonsTxt = "";
+    for (i = 0; i < allReasonsEl.length; i++) {
+        if(allReasonsEl[i].checked){
+            allReasonsArray.push(allReasonsEl[i].value);
+            allReasonsTxt = allReasonsTxt + allReasonsEl[i].value + ", ";
         }
     }
+    var suggestions = document.getElementById("textAreaSuggestions").value;
+    var frequencyEl = $("input[name='radio-frequency']:checked");
+    
+    var usageEl = $("input[name='checkbox-usage']:checked");
+    var allUsageArray = [];
+    var allUsageTxt = "";
+    usageEl.each(function() {
+        var val = $(this).val();
+        allUsageArray.push(val);
+        allUsageTxt = allUsageTxt + val + ", ";
+    });
+
+    var parkingEl = $("input[name='checkbox-parking']:checked");
+    var allParkingArray = [];
+    var allParkingTxt = "";
+    parkingEl.each(function() {
+        var val = $(this).val();
+        allParkingArray.push(val);
+        allParkingTxt = allParkingTxt + val + ", ";
+    });
+    var lang = $('#langinput').find(":selected").val();
+    var email = $('input[name="email"]').val();
+    var cigarId = $('input[name="name"]').val();
+
+    /*var inputs = document.getElementsByTagName('input');
+    for (i = 0; i < inputs.length; i++) {
+        if(inputs[i].checked){
+            console.log(inputs[i].type, " ",inputs[i].name, " ", inputs[i].value);
+        }
+    }*/
+    
+    //document.getElementById("textAreaCancelReasonOtherMore").value
+    
+
+    var payloadToCancel = {
+        "contractId": cigarId,
+        "lang": lang,
+        "wishType": wishType,
+        "wishDate": cancelDate,
+        "reason": allReasonsTxt,
+        "reasonArr": allReasonsArray,
+        "suggestion": suggestions,
+        "frequency": frequencyEl[0].value,
+        "usage": allUsageTxt,
+        "usageArr": allUsageArray,
+        "parking": allParkingTxt,
+        "parkingArr": allParkingArray,
+        "attachment": "url todo",
+        "country" : payloadFromNinja.payload.refs.country,
+        "email": email
+    }
+
+    var settings = {
+      "url": "https://script.google.com/macros/s/AKfycbwF-Vfm9aeG4aNrGL2q1Yh9ZTumAtQA17tf2NnV_XjnovJiTSl1W5lK4leMyHK2r6w/exec",
+      "method": "POST",
+      "timeout": 0,
+      "headers": {
+        "Content-Type": "text/plain;charset=utf-8",
+      },
+      "data": JSON.stringify(payloadToCancel),
+    };
+
+    $.ajax(settings).done(function (response) {
+      console.log(response);
+    });
+    console.log(payloadToCancel);
+    
+    
 }
