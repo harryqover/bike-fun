@@ -75,7 +75,7 @@ function clickToLogin() {
     var email = $('input[name="email"]').val();
     goLogin(cigarId, email);
 }
-
+ 
 function goLogin(cigarId, email) {
     console.log("start goLogin")
     translateAll();
@@ -110,6 +110,7 @@ function goLogin(cigarId, email) {
             var start = new Date(obj.startDate);
             var end = new Date(obj.endDate);
             end.setDate(end.getDate() + 1);
+            window.payloadFromApi = {"partnerId": partnerId, "variant": variant, "startDate": start, "endDate": end};
             console.log(obj);
 
             var isCowboy = cowboyIds.includes(partnerId);
@@ -558,6 +559,10 @@ function getWidth() {
 
 
 function buildCancelForm (){
+    var endDateString = window.payloadFromApi.endDate;
+    var endDateParts = endDateString.split('/');
+    var formattedEndDate = endDateParts[2] + '-' + endDateParts[1] + '-' + endDateParts[0];
+
     var cssForm = '<style>';
     cssForm = cssForm + '.cancellationSection{z-index: 10000; background-color: rgba(8,20,37,.5); position: fixed; top: 0%; bottom: 0%; left: 0%; right: 0%}';
     cssForm = cssForm + '.cancellationContainer{ max-height: 85vh; background-color: #fff; border-radius: 3px; padding: 0 40px 40px; position: relative; overflow: scroll; max-width: 728px; margin-left:auto; margin-right: auto;}';
@@ -581,13 +586,13 @@ function buildCancelForm (){
             htmlForm = htmlForm +'<div class="grey-block"><p class="paragraph-73">'+window.translations.legalInfoTextOnHowToCancel+'</p></div>';
             htmlForm = htmlForm +'<div class="cancelFormQuestions">';
                 htmlForm = htmlForm +'<div class="question-to-replace formSubTitles">';
-                    htmlForm = htmlForm +'<div style="display:block" class="_1st">Je souhaite résilier mon contrat <a href="#" data-var="cancelFormLinkAtRenewal">à son renouvellement (14/04/2024)</a> car :</div>';
+                    htmlForm = htmlForm +'<div style="display:block" class="_1st">Je souhaite résilier mon contrat <a href="#" data-var="cancelFormLinkAtRenewal">à son renouvellement ('+endDateString+')</a> car :</div>';
                     htmlForm = htmlForm +'<div style="display:none" class="_2nd div-block-360">';
                         htmlForm = htmlForm +'<div class="_2nd">Je désire annuler mon contrat d’assurance (sous réserve d’acceptation)</div>';
                         hhtmlForm = htmlForm +'<div class="_2nd div-block-359">';
                             htmlForm = htmlForm +'<label class="radio-button-field-2 w-radio"><input type="radio" id="radio-cancelDate-atRenewal" name="radio-cancelDate" value="radio-cancelDate-atRenewal" class="w-form-formradioinput w-radio-input" checked><span class="w-form-label" for="radio">au renouvellement</span></label>';
                             htmlForm = htmlForm +'<div class="div-block-358"><label class="radio-button-field-2 w-radio"><input type="radio"  id="radio-cancelDate-specificDate" name="radio-cancelDate" value="radio-cancelDate-specificDate" class="w-form-formradioinput w-radio-input"><span class="w-form-label" for="radio-2">à une date spécifique</span></label>';
-                            htmlForm = htmlForm +'<input type="date" class="fieldDate w-input" name="cancelDate" id="cancelDate" required="" value="2024-04-14"></div>';
+                            htmlForm = htmlForm +'<input type="date" class="fieldDate w-input" name="cancelDate" id="cancelDate" required="" value="'+formattedEndDate+'"></div>';
                         htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'</div>';
@@ -722,7 +727,7 @@ function buildCancelForm (){
     // Add click event listener to the radio button
     radioCancelDateAtRenewal.addEventListener('click', function() {
       // Set the value of the date input to "2024-04-14"
-      cancelDateInput.value = '2024-04-14';
+      cancelDateInput.value = formattedEndDate;
     });
 
 
