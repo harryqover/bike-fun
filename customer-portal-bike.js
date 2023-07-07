@@ -72,6 +72,7 @@ setTimeout(function() {
 
 function clickToLogin() {
     var cigarId = $('input[name="name"]').val();
+    window.cigarId = cigarId;
     var email = $('input[name="email"]').val();
     goLogin(cigarId, email);
 }
@@ -565,7 +566,8 @@ function getWidth() {
 
 function buildCancelForm (){
     var endDateObj = window.payloadFromApi.endDate;
-    var endDateString = endDateObj.toLocaleDateString()
+    var endDateString = endDateObj.toLocaleDateString();
+    window.endDateString = endDateString;
     var endDateParts = endDateString.split('/');
     var formattedEndDate = endDateParts[2] + '-' + endDateParts[1] + '-' + endDateParts[0];
 
@@ -694,9 +696,9 @@ function buildCancelForm (){
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm +'<div>';
                         htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le souscripteur :</div><div class="formSubTitles">Answer</div></div>';
-                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le contrat :</div><div class="formSubTitles">Answer</div></div>';
-                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Votre demande de résiliation :</div><div class="formSubTitles">Answer</div></div>';
-                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>La raison :</div><div class="formSubTitles">Answer</div></div>';
+                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le contrat :</div><div class="formSubTitles">'+window.cigarId+'</div></div>';
+                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Votre demande de résiliation :</div><div class="formSubTitles" data-var="textResiliationRequest"></div></div>';
+                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>La raison :</div><div class="formSubTitles" data-var="textReasons">Answer</div></div>';
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm + '<input type="submit" onclick="getAllInputsChecked()" value="Je confirme la demande de résiliation" data-wait="Please wait..." class="buttonCancel">';
                 htmlForm = htmlForm +'</div>';
@@ -736,11 +738,35 @@ function buildCancelForm (){
       cancelDateInput.value = formattedEndDate;
     });
 
-
+    //below code is to update the summary when there is a change
+    $('input[name="checkbox-reason"]').change(function() {
+        var reasonsCheckedTxt = "";
+        // Loop through all checked checkboxes
+        $('input[name="checkbox-reason"]:checked').each(function() {
+          // Get the text associated with the checkbox
+          var text = $(this).siblings('span.w-form-label').text();
+          
+          // Append the text to the reasonsCheckedTxt variable
+          reasonsCheckedTxt += text + "\n";
+        });
+        
+        // Display the updated reasonsCheckedTxt variable
+        console.log(reasonsCheckedTxt);
+        $("[data-var='textReasons']").html(reasonsCheckedTxt);
+    });
+    $('input[name="radio-cancelDate"]').change(function() {
+        //CONTINUE HERE
+        var radioCancelDateChecked = $("input[name='radio-cancelDate']:checked").val();
+        if(radioCancelDateChecked == "radio-cancelDate-atRenewal"){
+            $("[data-var='textResiliationRequest']").html('at renewal text ' + window.endDateString);
+        } else {
+            $("[data-var='textResiliationRequest']").html('at a custom date ' + window.endDateString);
+        }
+    });
 }
 
+
 function getAllInputsChecked (){
-    
     var wishType = $("input[name='radio-cancelDate']:checked").val();
     var cancelDate = document.getElementById("cancelDate").value;
 
