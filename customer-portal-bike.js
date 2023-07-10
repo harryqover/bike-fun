@@ -284,7 +284,7 @@ function getNinjaData(cigarId, email) {
         var cancelAtRenewalFlag = false;
         if(response.payload.versionInfo.cancelInformation){
             if(response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == true){
-                cancelAtRenewalFlag == true;
+                cancelAtRenewalFlag = true;
             }
         }
         console.log("cancelAtRenewalFlag", cancelAtRenewalFlag);
@@ -873,7 +873,7 @@ function getAllInputsChecked (){
         $.ajax(settings).done(function (response) {
           console.log(response);
           var responseText = JSON.stringify(response);
-          $(".cancelFormQuestions").hide();
+          //$(".cancelFormQuestions").hide();
           //$("#blockStartForm").html(responseText + '<br><br>'+ response.payload.actionDone.transKey+ '<br><br>'+ window.translations[response.payload.actionDone.transKey]);
           $("#blockStartForm").html(window.translations[response.payload.actionDone.transKey]);
           console.warn("response cancel:", responseText);
