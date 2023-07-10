@@ -754,6 +754,7 @@ function buildCancelForm (){
     $('input[name="fname"], input[name="lname"]').change(function() {
         checkIfCancelButtonDisable();
     });
+    checkIfCancelButtonDisable();
 
     $('input[name="radio-cancelDate"]').change(function() {
         //CONTINUE HERE
@@ -876,7 +877,7 @@ function checkIfCancelButtonDisable(){
         $(".buttonCancel").attr("style","background-color:lightgrey;color:black;");
     }
 }
-checkIfCancelButtonDisable();
+
 
 function closeCancelSection(){
     $("section.cancellationSection").remove();
