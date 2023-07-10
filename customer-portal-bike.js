@@ -205,6 +205,7 @@ function goLogin(cigarId, email) {
             if(devTest == "cancelPopup"){
                 $("[data-var='cancel']").attr("onclick", "buildCancelForm()");
             }
+
             //$("[data-var='cancel']").attr("href", "https://form.jotform.com/222763047790359?lang="+lang+"&contractid=" + cigarId + "&email=" + email);
             $("[data-var='documentupload']").attr("href", "https://forms.qover.com/223391631989063?email=" + email + "&contractReference=" + cigarId + "&language="+lang);
             $("[data-var='claims']").attr("href", "https://www.qover.com/claims?lang="+lang+"&contract=" + cigarId + "&email=" + email);
@@ -299,8 +300,10 @@ function getNinjaData(cigarId, email) {
             console.log("active but cancel at renewal")
             $(".statusdiv").css("background-color", "#FFC1BC");
             $("[data-var='renewal']").text(translations['cancelled']);
+            $("[data-var='cancel']").hide();
         } else if (response.payload.status == "STATUS_CLOSED") {
             console.log("closed");
+            $("[data-var='cancel']").hide();
             var cancelDate = new Date(response.payload.versionInfo.effectiveDate);
             $(".statusdiv").css("background-color", "#FFC1BC")
             $("[data-var='renewalorcanceltext']").text(translations['cancelledon']+" " + cancelDate.toLocaleDateString());
