@@ -281,13 +281,20 @@ function getNinjaData(cigarId, email) {
         $("[data-var='price']").text(currency + response.payload.price / 100);
         $("[data-var='status']").text(statusContract[response.payload.status]);
 
+        var cancelAtRenewalFlag = false;
+        if(response.payload.versionInfo.cancelInformation){
+            if(response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == true){
+                cancelAtRenewalFlag == true;
+            }
+        }
 
-        if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && !response.payload.versionInfo.cancelInformation) {
+
+        if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && (!response.payload.versionInfo.cancelInformation || cancelAtRenewalFlag == false) {
             console.log("full active")
             $("[data-var='renewal']").text(translations['renewed']);
-        } else if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == true) {
+        } else if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && cancelAtRenewalFlag == true) {
             console.log("active but cancel at renewal")
-            $(".statusdiv").css("background-color", "#FFC1BC")
+            $(".statusdiv").css("background-color", "#FFC1BC");
             $("[data-var='renewal']").text(translations['cancelled']);
         } else if (response.payload.status == "STATUS_CLOSED") {
             console.log("closed");
