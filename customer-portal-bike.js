@@ -690,11 +690,7 @@ function buildCancelForm (){
                     htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-4" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="insidehouse"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-4">dans ma maison/appartement</span></label>';
                     htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-6" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="other"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-6">autre</span></label>';
                 htmlForm = htmlForm +'</div>';
-                htmlForm = htmlForm +'<div class="summaryDiv">';
-                    htmlForm = htmlForm +'<div class="formSubTitles">';
-                        htmlForm = htmlForm +'Vous utilisez votre vélo :';
-                    htmlForm = htmlForm +'</div>';
-                    htmlForm = htmlForm +'<div>';
+                htmlForm = htmlForm +'<div class="summaryDiv"><div class="formSubTitles">'+window.translations.cancelSummaryRequestTitle+'</div><div>';
                         htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le souscripteur :</div><div class="formSubTitles">Answer</div></div>';
                         htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le contrat :</div><div class="formSubTitles">'+window.cigarId+'</div></div>';
                         htmlForm = htmlForm +'<div class="summaryAnswers"><div>Votre demande de résiliation :</div><div class="formSubTitles" data-var="textResiliationRequest"></div></div>';
