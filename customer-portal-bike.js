@@ -766,7 +766,7 @@ function buildCancelForm (){
         if(radioCancelDateChecked == "radio-cancelDate-atRenewal"){
             $("[data-var='textResiliationRequest']").html(window.translations.textResiliationRequestAtRenewal + window.endDateString);
         } else {
-            $("[data-var='textResiliationRequest']").html(window.translations.textResiliationRequestAtSpecificDate + date.getDate() + '/' + date.getMonth() + 1 + '/' + date.getFullYear());
+            $("[data-var='textResiliationRequest']").html(window.translations.textResiliationRequestAtSpecificDate + dateCancelDateInputVal.getDate() + '/' + dateCancelDateInputVal.getMonth() + 1 + '/' + dateCancelDateInputVal.getFullYear());
         }
     });
 }
