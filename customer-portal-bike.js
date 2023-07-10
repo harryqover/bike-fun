@@ -759,7 +759,7 @@ function buildCancelForm (){
     $('input[name="radio-cancelDate"], #cancelDate').change(function() {
         //CONTINUE HERE
         var cancelDateInputVal = $('#cancelDate').val();
-        var partsCancelDateInputVal = dateString.split('-');
+        var partsCancelDateInputVal = cancelDateInputVal.split('-');
         var dateCancelDateInputVal = new Date(partsCancelDateInputVal[0], partsCancelDateInputVal[1] - 1, partsCancelDateInputVal[2]);
 
         var radioCancelDateChecked = $("input[name='radio-cancelDate']:checked").val();
@@ -788,6 +788,7 @@ function getAllInputsChecked (){
     }
     var suggestions = document.getElementById("textAreaSuggestions").value;
     var frequencyEl = $("input[name='radio-frequency']:checked");
+    var frequencyElVal = (frequencyEl[0])?frequencyEl[0].value:"none";
     
     var usageEl = $("input[name='checkbox-usage']:checked");
     var allUsageArray = [];
@@ -827,7 +828,7 @@ function getAllInputsChecked (){
         "reason": allReasonsTxt,
         "reasonArr": allReasonsArray,
         "suggestion": suggestions,
-        "frequency": frequencyEl[0].value,
+        "frequency": frequencyElVal,
         "usage": allUsageTxt,
         "usageArr": allUsageArray,
         "parking": allParkingTxt,
