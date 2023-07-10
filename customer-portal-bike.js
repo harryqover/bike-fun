@@ -289,7 +289,7 @@ function getNinjaData(cigarId, email) {
         }
 
 
-        if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && (!response.payload.versionInfo.cancelInformation || cancelAtRenewalFlag == false) {
+        if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && (!response.payload.versionInfo.cancelInformation && cancelAtRenewalFlag == false) {
             console.log("full active")
             $("[data-var='renewal']").text(translations['renewed']);
         } else if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && cancelAtRenewalFlag == true) {
