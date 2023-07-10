@@ -658,7 +658,7 @@ function buildCancelForm (){
                     htmlForm = htmlForm +'Avez-vous des suggestions/commentaires pour faire évoluer notre assurance vélo ?';
                 htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'<div class="inputReason">';
-                    htmlForm = htmlForm +'<textarea placeholder="typeYourAnswer" maxlength="5000" id="textAreaSuggestions" name="field" data-name="Field" class="w-input"></textarea>';
+                    htmlForm = htmlForm +'<textarea placeholder="'+window.translations.cancelTypeYourFeedback+'" maxlength="5000" id="textAreaSuggestions" name="field" data-name="Field" class="w-input"></textarea>';
                 htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'<div class="formSubTitles">';
                     htmlForm = htmlForm +'Fréquence dutilisation de votre vélo';
