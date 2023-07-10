@@ -691,10 +691,10 @@ function buildCancelForm (){
                     htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-6" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="other"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-6">autre</span></label>';
                 htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'<div class="summaryDiv"><div class="formSubTitles">'+window.translations.cancelSummaryRequestTitle+'</div><div>';
-                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le souscripteur :</div><div class="formSubTitles">Answer</div></div>';
+                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le souscripteur :</div><div class="formSubTitles"><input type="text" id="fname" name="fname" placeholder="First name">&nbsp;&nbsp;<input type="text" id="lname" name="lname" placeholder="Last Name"></div></div>';
                         htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le contrat :</div><div class="formSubTitles">'+window.cigarId+'</div></div>';
                         htmlForm = htmlForm +'<div class="summaryAnswers"><div>Votre demande de résiliation :</div><div class="formSubTitles" data-var="textResiliationRequest">'+window.translations.textResiliationRequestAtRenewal + window.endDateString+'</div></div>';
-                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>La raison :</div><div class="formSubTitles" data-var="textReasons">Answer</div></div>';
+                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>La raison :</div><div class="formSubTitles" data-var="textReasons"></div></div>';
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm + '<input type="submit" onclick="getAllInputsChecked()" value="Je confirme la demande de résiliation" data-wait="Please wait..." class="buttonCancel">';
                 htmlForm = htmlForm +'</div>';
@@ -736,6 +736,7 @@ function buildCancelForm (){
 
     //below code is to update the summary when there is a change
     $('input[name="checkbox-reason"]').change(function() {
+        checkIfCancelButtonDisable();
         var reasonsCheckedTxt = "";
         // Loop through all checked checkboxes
         $('input[name="checkbox-reason"]:checked').each(function() {
@@ -743,13 +744,17 @@ function buildCancelForm (){
           var text = $(this).siblings('span.w-form-label').text();
           
           // Append the text to the reasonsCheckedTxt variable
-          reasonsCheckedTxt += text + "\n";
+          reasonsCheckedTxt += text + ",\n";
         });
         
         // Display the updated reasonsCheckedTxt variable
         console.log(reasonsCheckedTxt);
         $("[data-var='textReasons']").html(reasonsCheckedTxt);
     });
+    $('input[name="fname"], input[name="lname"]').change(function() {
+        checkIfCancelButtonDisable();
+    });
+
     $('input[name="radio-cancelDate"]').change(function() {
         //CONTINUE HERE
         var radioCancelDateChecked = $("input[name='radio-cancelDate']:checked").val();
@@ -765,6 +770,8 @@ function buildCancelForm (){
 function getAllInputsChecked (){
     var wishType = $("input[name='radio-cancelDate']:checked").val();
     var cancelDate = document.getElementById("cancelDate").value;
+    var lname = document.getElementById("lname").value;
+    var fname = document.getElementById("fname").value;
 
     var allReasonsEl = $("input[name='checkbox-reason']");
     var allReasonsArray = [];
@@ -808,7 +815,6 @@ function getAllInputsChecked (){
     
     //document.getElementById("textAreaCancelReasonOtherMore").value
     
-
     var payloadToCancel = {
         "contractId": cigarId,
         "lang": lang,
@@ -824,26 +830,52 @@ function getAllInputsChecked (){
         "parkingArr": allParkingArray,
         "attachment": "url todo",
         "country" : payloadFromNinja.payload.refs.country,
-        "email": email
+        "email": email,
+        "lname": lname,
+        "fname": fname
     }
 
-    var settings = {
-      "url": "https://script.google.com/macros/s/AKfycbwF-Vfm9aeG4aNrGL2q1Yh9ZTumAtQA17tf2NnV_XjnovJiTSl1W5lK4leMyHK2r6w/exec",
-      "method": "POST",
-      "timeout": 0,
-      "headers": {
-        "Content-Type": "text/plain;charset=utf-8",
-      },
-      "data": JSON.stringify(payloadToCancel),
-    };
+    console.log("payloadToCancel",payloadToCancel);
 
-    $.ajax(settings).done(function (response) {
-      console.log(response);
-    });
-    console.log(payloadToCancel);
-    
+    if(payloadToCancel.lname != "" && payloadToCancel.fname != "" && payloadToCancel.reasonArr.length >0){
+        var settings = {
+          "url": "https://script.google.com/macros/s/AKfycbwF-Vfm9aeG4aNrGL2q1Yh9ZTumAtQA17tf2NnV_XjnovJiTSl1W5lK4leMyHK2r6w/exec",
+          "method": "POST",
+          "timeout": 0,
+          "headers": {
+            "Content-Type": "text/plain;charset=utf-8",
+          },
+          "data": JSON.stringify(payloadToCancel),
+        };
+
+        $.ajax(settings).done(function (response) {
+          console.log(response);
+        });
+
+    } else {
+        window.alert("missing info before continue")
+    }
+
     
 }
+
+function checkIfCancelButtonDisable(){
+    var lname = document.getElementById("lname").value;
+    var fname = document.getElementById("fname").value;
+    var allReasonsArray = [];
+    for (i = 0; i < allReasonsEl.length; i++) {
+        if(allReasonsEl[i].checked){
+            allReasonsArray.push(allReasonsEl[i].value);
+            //allReasonsTxt = allReasonsTxt + allReasonsEl[i].value + ", ";
+        }
+    }
+    if(lname != "" && fname != "" && allReasonsArray.length >0){
+        $(".buttonCancel").attr("style","");
+    } else {
+        $(".buttonCancel").attr("style","background-color:lightgrey;color:black;");
+    }
+}
+checkIfCancelButtonDisable();
 
 function closeCancelSection(){
     $("section.cancellationSection").remove();
