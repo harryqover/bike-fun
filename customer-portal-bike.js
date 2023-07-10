@@ -756,7 +756,7 @@ function buildCancelForm (){
     });
     checkIfCancelButtonDisable();
 
-    $('input[name="radio-cancelDate"]').change(function() {
+    $('input[name="radio-cancelDate"], #cancelDate').change(function() {
         //CONTINUE HERE
         var cancelDateInputVal = $('#cancelDate').val();
         var partsCancelDateInputVal = dateString.split('-');
