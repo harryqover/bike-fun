@@ -584,7 +584,7 @@ function buildCancelForm (){
     cssForm = cssForm + '.adviceText{max-width: 75ch; margin-top: 10px; margin-bottom: 10px}';
     cssForm = cssForm + '.summaryDiv{background-color: #fcfcfc; padding: 25px}';
     cssForm = cssForm + '.summaryAnswers{grid-column-gap: 10px; grid-row-gap: 10px; align-items: center; margin-top: 10px; margin-bottom: 10px; display: flex}';
-    cssForm = cssForm + '.buttonCancel{text-align: center; background-color: #2f44dd; border:none; color: white; border-radius: 40px; margin-left: auto; margin-right: auto; padding: 12px 24px; display: block}';
+    cssForm = cssForm + '.buttonCancel{transition: opacity 0.5s;text-align: center; background-color: #2f44dd; border:none; color: white; border-radius: 40px; margin-left: auto; margin-right: auto; padding: 12px 24px; display: block}';
     cssForm = cssForm + '</style>';
 
     var htmlForm = '<section class="cancellationSection">';
@@ -874,7 +874,7 @@ function checkIfCancelButtonDisable(){
     if(lname != "" && fname != "" && allReasonsArray.length >0){
         $(".buttonCancel").attr("style","");
     } else {
-        $(".buttonCancel").attr("style","background-color:lightgrey;color:black;");
+        $(".buttonCancel").attr("style","opacity:25%;");
     }
 }
 
