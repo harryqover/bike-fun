@@ -857,7 +857,7 @@ function getAllInputsChecked (){
           console.log(response);
           var responseText = JSON.stringify(response);
           $(".cancelFormQuestions").hide();
-          $("#blockStartForm").html(responseText + '<br><br>'+ response.payload.actionDone);
+          $("#blockStartForm").html(responseText + '<br><br>'+ response.payload.actionDone.transKey);
         });
 
     } else {
