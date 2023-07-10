@@ -693,7 +693,7 @@ function buildCancelForm (){
                 htmlForm = htmlForm +'<div class="summaryDiv"><div class="formSubTitles">'+window.translations.cancelSummaryRequestTitle+'</div><div>';
                         htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le souscripteur :</div><div class="formSubTitles">Answer</div></div>';
                         htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le contrat :</div><div class="formSubTitles">'+window.cigarId+'</div></div>';
-                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Votre demande de résiliation :</div><div class="formSubTitles" data-var="textResiliationRequest"></div></div>';
+                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Votre demande de résiliation :</div><div class="formSubTitles" data-var="textResiliationRequest">'+textResiliationRequestAtRenewal + window.endDateString+'</div></div>';
                         htmlForm = htmlForm +'<div class="summaryAnswers"><div>La raison :</div><div class="formSubTitles" data-var="textReasons">Answer</div></div>';
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm + '<input type="submit" onclick="getAllInputsChecked()" value="Je confirme la demande de résiliation" data-wait="Please wait..." class="buttonCancel">';
