@@ -288,6 +288,7 @@ function getNinjaData(cigarId, email) {
             }
         }
         console.log("cancelAtRenewalFlag", cancelAtRenewalFlag);
+        console.log("status", response.payload.status);
 
 
         if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && (!response.payload.versionInfo.cancelInformation && cancelAtRenewalFlag == false)) {
