@@ -863,6 +863,7 @@ function checkIfCancelButtonDisable(){
     var lname = document.getElementById("lname").value;
     var fname = document.getElementById("fname").value;
     var allReasonsArray = [];
+    var allReasonsEl = $("input[name='checkbox-reason']");
     for (i = 0; i < allReasonsEl.length; i++) {
         if(allReasonsEl[i].checked){
             allReasonsArray.push(allReasonsEl[i].value);
