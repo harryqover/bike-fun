@@ -250,18 +250,6 @@ function createPayload(variant, reason) {
         bikeValueCluser = "Other";
     }
 
-    dataLayer.push({
-      'event': 'nonInteractionEvent',
-      'eventCategory': 'shopping behavior - getDraft',
-      'eventAction': 'bike value',
-      'eventLabel': bikeValueCluser
-    });
-    dataLayer.push({
-      'event': 'nonInteractionEvent',
-      'eventCategory': 'shopping behavior - getDraft',
-      'eventAction': 'promocode',
-      'eventLabel': window.promocode
-    });
 
     getDraft(window.payload, reason);
 }
@@ -294,7 +282,7 @@ function getDraft(payload, reason) {
             } else if (reason == "save") {
                 sendEmail(window.draftid, window.payload.policyholder.email, "save");
             } else {
-
+                /* OLD GA UA
                 dataLayer.push({
                     'event': 'addToCartMain',
                     'ecommerce': {
@@ -308,7 +296,7 @@ function getDraft(payload, reason) {
                                 'name': response.terms.variant,
                                 'variant': response.risk.type,
                                 'category': 'bike_insurance',
-                                'brand': 'BE',
+                                'brand': payload.refs.country,
                                 'dimension1': 'Main',
                                 'price': response.totalCoverage.priceInfo.yearlyPremium.withTaxes / 100,
                                 'coupon': ''
@@ -316,6 +304,22 @@ function getDraft(payload, reason) {
                         }
                     }
                 });
+                */
+
+                //NEW GA4
+                gtag('event', 'add_to_cart', {
+                    currency: "EUR",
+                    value: response.totalCoverage.priceInfo.yearlyPremium.withTaxes / 100,
+                    items: [
+                         {
+                          item_id: response.terms.variant,
+                          item_name: response.terms.variant,
+                          item_brand: payload.refs.country,//country code
+                          price: response.totalCoverage.priceInfo.yearlyPremium.withTaxes / 100
+                        }
+                    ]
+                  });
+
                 document.cookie = "draftId=" + window.draftid + "; expires=" +now.toGMTString() + "; path=/; domain=.webflow.io";
                 document.cookie = "draftId=" + window.draftid + "; expires=" +now.toGMTString() + "; path=/; domain=.qoverme.com";
                 document.cookie = "draftId=" + window.draftid + "; expires=" +now.toGMTString() + "; path=/; domain=.qover.com";
@@ -330,12 +334,17 @@ function getDraft(payload, reason) {
             var response = JSON.parse(xhr.response);
             var responseStr = JSON.stringify(response);
             //console.warn("response 400 : ", response);
+            /*
             dataLayer.push({
                 'event': 'allTagsWithEvents',
                 'eventCategory': 'error',
                 'eventAction': 'getDraft',
                 'eventLabel': responseStr
-              });
+              });*/
+            gtag('event', 'allTagsWithEvents', {
+              'event_category': 'error - getPrice',
+              'event_label': responseStr
+            });
             
             var errorToShow = errorsDB[response.details[0].fields[0]];
 
@@ -361,12 +370,16 @@ function getPrice() {
     if (type == "SPEEDPEDELEC") {
         $(".error").text(window.text.pedelecError);
         $(".error").show();
-        dataLayer.push({
+        /*dataLayer.push({
             'event': 'allTagsWithEvents',
             'eventCategory': 'error',
             'eventAction': 'getPrice',
             'eventLabel': 'SPEEDPEDELEC'
-          });
+          });*/
+        gtag('event', 'allTagsWithEvents', {
+              'event_category': 'error - getPrice',
+              'event_label': 'SPEEDPEDELEC'
+            });
     } else {
         var urlGetPrice = 'https://app.qoverme.com/api/bike/v1/price-info?apikey=' + __QOVER_API_KEY__ + '&iecb=1592535798477&country=' + country + '&type=' + type + '&value=' + value + '&antiTheftMeasure=' + gpstracker + '&zip=' + zipcode + '&discountCodes=' + window.promocode;
         if(environement == "sbx"){
@@ -401,12 +414,16 @@ function getPrice() {
                 $(".error").show(250);
                 
                 //$(".error").show();
-                dataLayer.push({
-                'event': 'allTagsWithEvents',
-                'eventCategory': 'error',
-                'eventAction': 'getPrice',
-                'eventLabel': xhrPrice.status + ' url used: ' + urlGetPrice
-              });
+                /*dataLayer.push({
+                    'event': 'allTagsWithEvents',
+                    'eventCategory': 'error',
+                    'eventAction': 'getPrice',
+                    'eventLabel': xhrPrice.status + ' url used: ' + urlGetPrice
+                  });*/
+                gtag('event', 'allTagsWithEvents', {
+                  'event_category': 'error - getPrice',
+                  'event_label': xhrPrice.status + ' url used: ' + urlGetPrice
+                });
                 window.__QOVER_API_KEY__ = "pk_F2654BC3CEC684D9ED1E";
             } else { // show the result
                 console.warn(`Done, got ${xhrPrice.response.length} bytes`); // response is the server
@@ -463,12 +480,16 @@ function getPrice() {
                       $(".error").text(window.text.promocodeNotValid);
                     }
                     $(".error").show();
-                    dataLayer.push({
+                    /*dataLayer.push({
                         'event': 'allTagsWithEvents',
                         'eventCategory': 'error',
                         'eventAction': 'getPrice',
                         'eventLabel': 'promocode not valid '+window.promocode+ ' '+window.__QOVER_API_KEY__
-                      });
+                      });*/
+                    gtag('event', 'allTagsWithEvents', {
+                      'event_category': 'error - getPrice',
+                      'event_label': 'promocode not valid '+window.promocode+ ' '+window.__QOVER_API_KEY__
+                    });
                     $(".discount, .promo-label").hide(250);
                 } else {
                   $(".discount, .promo-label").hide(250);
@@ -497,25 +518,6 @@ function getPrice() {
                 } else {
                     bikeValueCluser = "Other";
                 }
-
-                dataLayer.push({
-                  'event': 'nonInteractionEvent',
-                  'eventCategory': 'shopping behavior - getPrice',
-                  'eventAction': 'bike value',
-                  'eventLabel': bikeValueCluser
-                });
-                dataLayer.push({
-                  'event': 'nonInteractionEvent',
-                  'eventCategory': 'shopping behavior - getPrice',
-                  'eventAction': 'promocode %',
-                  'eventLabel': percentdiscountVariant1
-                });
-                dataLayer.push({
-                  'event': 'nonInteractionEvent',
-                  'eventCategory': 'shopping behavior - getPrice',
-                  'eventAction': 'promocode',
-                  'eventLabel': window.promocode
-                });
 
                 if (damageDeductible == "DAMAGE_DEDUCTIBLE_ENGLISH_10PC" || damageDeductible == "DAMAGE_DEDUCTIBLE_STANDARD_10PC") {
                     var damageDeductibleAmount = $("#value").val() * 0.1;
@@ -555,7 +557,7 @@ function getPrice() {
                 $(".clickhere").hide();
 
                 //START CREATE PRODUCT ARRAY TO SEND TO TAG MANAGER
-                var productArray = [{
+                /*var productArray = [{
                                     'id': window.variants[0],
                                     'name': window.variants[0],
                                     'variant': type,
@@ -570,10 +572,10 @@ function getPrice() {
                   if (variants.length > 2) {
                     productArray.push({'id': window.variants[2],'name': window.variants[2],'variant': type,'category': 'bike_insurance','brand': window.country,'dimension1': 'Main','price': priceVariant3Yearly});
                   }
-                }
+                }*/
                 //END CREATE PRODUCT ARRAY TO SEND TO TAG MANAGER
                 //START SEND PRODUCT ARRAY TO TAG MANAGER
-                dataLayer.push({
+                /*dataLayer.push({
                     'event': 'productDetailView2', //The event name adapts to the number of plans proposed
                     'ecommerce': {
                         'currencyCode': 'EUR',
@@ -581,7 +583,18 @@ function getPrice() {
                             'products': productArray
                         }
                     }
-                });
+                });*/
+                var itemsArray = [{'item_id': window.variants[0],'item_name': window.variants[0],'item_brand': window.country,'price': priceVariant1Yearly}];
+                if (variants.length > 1) {
+                  itemsArray.push({'item_id': window.variants[1],'item_name': window.variants[1],'item_brand': window.country,'price': priceVariant2Yearly});
+                  if (variants.length > 2) {
+                    itemsArray.push({'item_id': window.variants[2],'item_name': window.variants[2],'item_brand': window.country,'price': priceVariant3Yearly});
+                    if (variants.length > 3) {
+                        itemsArray.push({'item_id': window.variants[3],'item_name': window.variants[3],'item_brand': window.country,'price': priceVariant4Yearly});
+                    }
+                  }
+                }
+                gtag('event', 'view_item', {'items': itemsArray});
                 //END SEND PRODUCT ARRAY TO TAG MANAGER
 
                 var elmnt = document.getElementById("quote-blocks");
