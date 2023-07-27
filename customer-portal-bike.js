@@ -596,7 +596,7 @@ function buildCancelForm (){
     cssForm = cssForm + '.advice{background-color: #f8f8f8; margin-bottom: 25px; padding: 10px 20px}';
     cssForm = cssForm + '.adviceText{max-width: 75ch; margin-top: 10px; margin-bottom: 10px}';
     cssForm = cssForm + '.summaryDiv{background-color: #fcfcfc; padding: 25px}';
-    cssForm = cssForm + '.summaryAnswers{grid-column-gap: 10px; grid-row-gap: 10px; align-items: center; margin-top: 10px; margin-bottom: 10px; display: flex; flex-direction: column;align-items: flex-start;}';
+    cssForm = cssForm + '.summaryAnswers{grid-column-gap: 10px; grid-row-gap: 10px; align-items: center; margin-top: 25px; margin-bottom: 10px; display: flex; flex-direction: column;align-items: flex-start;}';
     cssForm = cssForm + '.buttonCancel{transition: opacity 0.5s;text-align: center; background-color: #2f44dd; border:none; color: white; border-radius: 40px; margin-left: auto; margin-right: auto; padding: 12px 24px; display: block}';
     cssForm = cssForm + 'a:hover {text-decoration: none;}';
     cssForm = cssForm + '._1st {margin: 20px 0 12px 0;}';
@@ -604,6 +604,10 @@ function buildCancelForm (){
     cssForm = cssForm + 'span.w-form-label {padding-top: 1px;}';
     cssForm = cssForm + 'label.w-checkbox.checkbox-2 {display: flex;}';
     cssForm = cssForm + 'input {font-weight: normal;padding: 4px 8px;border-radius: 2px;border: 1px solid #333;}';
+    cssForm = cssForm + '@media only screen and (max-width: 400px) {.cancellationContainer {padding: 0 20px;}input {margin-top: 6px;}';
+        cssForm = cssForm + '.cancellationContainer {padding: 0 20px;}';
+        cssForm = cssForm + 'input {margin-top: 6px;}';
+    cssForm = cssForm + '}';
     cssForm = cssForm + '</style>';
 
     var htmlForm = '<section class="cancellationSection">';
@@ -710,10 +714,10 @@ function buildCancelForm (){
                     htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-6" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="other"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-6">autre</span></label>';
                 htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'<div class="summaryDiv"><div class="formSubTitles">'+window.translations.cancelSummaryRequestTitle+'</div><div>';
-                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le souscripteur :</div><div class="inputNames"><input type="text" id="fname" name="fname" placeholder="First name">&nbsp;&nbsp;<input type="text" id="lname" name="lname" placeholder="Last Name"></div></div>';
-                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le contrat :</div><div class="formSubTitles">'+window.cigarId+'</div></div>';
-                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Votre demande de résiliation :</div><div class="formSubTitles" data-var="textResiliationRequest">'+window.translations.textResiliationRequestAtRenewal + window.endDateString+'</div></div>';
-                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>La raison :</div><div class="formSubTitles" data-var="textReasons"></div></div>';
+                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le souscripteur :</div><div class="summaryInputs"><input type="text" id="fname" name="fname" placeholder="First name">&nbsp;&nbsp;<input type="text" id="lname" name="lname" placeholder="Last Name"></div></div>';
+                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le contrat :</div><div class="summaryInputs">'+window.cigarId+'</div></div>';
+                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Votre demande de résiliation :</div><div class="summaryInputs" data-var="textResiliationRequest">'+window.translations.textResiliationRequestAtRenewal + window.endDateString+'</div></div>';
+                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>La raison :</div><div class="summaryInputs" data-var="textReasons"></div></div>';
                     htmlForm = htmlForm +'</div>';
                     htmlForm = htmlForm + '<input type="submit" onclick="getAllInputsChecked()" value="Je confirme la demande de résiliation" data-wait="Please wait..." class="buttonCancel">';
                 htmlForm = htmlForm +'</div>';
