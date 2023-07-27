@@ -585,19 +585,25 @@ function buildCancelForm (){
     var formattedEndDate = endDateParts[2] + '-' + endDateParts[1] + '-' + endDateParts[0];
 
     var cssForm = '<style>';
-    cssForm = cssForm + '.cancellationSection{z-index: 10000; background-color: rgba(8,20,37,.5); position: fixed; top: 0%; bottom: 0%; left: 0%; right: 0%}';
+    cssForm = cssForm + '.cancellationSection{z-index: 10000; background-color: rgba(8,20,37,.5); position: fixed; top: 0%; bottom: 0%; left: 0%; right: 0%;display: flex;align-items: center;}';
     cssForm = cssForm + '.cancellationContainer{ max-height: 85vh; background-color: #fff; border-radius: 3px; padding: 0 40px 40px; position: relative; overflow: scroll; max-width: 728px; margin-left:auto; margin-right: auto;}';
     cssForm = cssForm + '.divCloseSection{ grid-column-gap: 6px; grid-row-gap: 6px; background-color: #fff; justify-content: flex-end; align-items: center; padding: 10px 0 10px 25px; display: flex; position: -webkit-sticky; position: sticky;top: 0;bottom: auto;left: auto;right: 0}';
     cssForm = cssForm + '.divClose{grid-column-gap: 8px; grid-row-gap: 8px; cursor: pointer; align-items: center; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; display: flex}';
     cssForm = cssForm + '.grey-block {background-color: #f8f8f8; padding: 20px 20px 10px}';
     cssForm = cssForm + '.fieldDate { width: 130px; height: 28px; border: 1px solid #081425; border-radius: 4px; margin-bottom: 6px; margin-left: 10px; padding: 0 10px;}';
     cssForm = cssForm + '.cancelFormQuestions{margin-top: 40px;}';
-    cssForm = cssForm + '.formSubTitles{font-weight: 600;}';
+    cssForm = cssForm + '.formSubTitles{font-weight: 600;margin: 20px 0 10px 0;}';
     cssForm = cssForm + '.advice{background-color: #f8f8f8; margin-bottom: 25px; padding: 10px 20px}';
     cssForm = cssForm + '.adviceText{max-width: 75ch; margin-top: 10px; margin-bottom: 10px}';
     cssForm = cssForm + '.summaryDiv{background-color: #fcfcfc; padding: 25px}';
-    cssForm = cssForm + '.summaryAnswers{grid-column-gap: 10px; grid-row-gap: 10px; align-items: center; margin-top: 10px; margin-bottom: 10px; display: flex}';
+    cssForm = cssForm + '.summaryAnswers{grid-column-gap: 10px; grid-row-gap: 10px; align-items: center; margin-top: 10px; margin-bottom: 10px; display: flex; flex-direction: column;align-items: flex-start;}';
     cssForm = cssForm + '.buttonCancel{transition: opacity 0.5s;text-align: center; background-color: #2f44dd; border:none; color: white; border-radius: 40px; margin-left: auto; margin-right: auto; padding: 12px 24px; display: block}';
+    cssForm = cssForm + 'a:hover {text-decoration: none;}';
+    cssForm = cssForm + '._1st {margin: 20px 0 12px 0;}';
+    cssForm = cssForm + 'label.w-checkbox {padding-top: 3px;padding-bottom: 3px;}';
+    cssForm = cssForm + 'span.w-form-label {padding-top: 1px;}';
+    cssForm = cssForm + 'label.w-checkbox.checkbox-2 {display: flex;}';
+    cssForm = cssForm + 'input {font-weight: normal;padding: 4px 8px;border-radius: 2px;border: 1px solid #333;}';
     cssForm = cssForm + '</style>';
 
     var htmlForm = '<section class="cancellationSection">';
@@ -704,7 +710,7 @@ function buildCancelForm (){
                     htmlForm = htmlForm +'<label class="w-checkbox checkbox-2"><input type="checkbox" id="chckbx-parking-6" name="checkbox-parking" data-name="Checkbox 11" class="w-checkbox-input checkbox-3" value="other"><span class="checkbox-label-3 w-form-label" for="chckbx-parking-6">autre</span></label>';
                 htmlForm = htmlForm +'</div>';
                 htmlForm = htmlForm +'<div class="summaryDiv"><div class="formSubTitles">'+window.translations.cancelSummaryRequestTitle+'</div><div>';
-                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le souscripteur :</div><div class="formSubTitles"><input type="text" id="fname" name="fname" placeholder="First name">&nbsp;&nbsp;<input type="text" id="lname" name="lname" placeholder="Last Name"></div></div>';
+                        htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le souscripteur :</div><div class="inputNames"><input type="text" id="fname" name="fname" placeholder="First name">&nbsp;&nbsp;<input type="text" id="lname" name="lname" placeholder="Last Name"></div></div>';
                         htmlForm = htmlForm +'<div class="summaryAnswers"><div>Le contrat :</div><div class="formSubTitles">'+window.cigarId+'</div></div>';
                         htmlForm = htmlForm +'<div class="summaryAnswers"><div>Votre demande de résiliation :</div><div class="formSubTitles" data-var="textResiliationRequest">'+window.translations.textResiliationRequestAtRenewal + window.endDateString+'</div></div>';
                         htmlForm = htmlForm +'<div class="summaryAnswers"><div>La raison :</div><div class="formSubTitles" data-var="textReasons"></div></div>';
