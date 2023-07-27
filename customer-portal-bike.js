@@ -612,7 +612,7 @@ function buildCancelForm (){
 
     var htmlForm = '<section class="cancellationSection">';
         htmlForm = htmlForm +'<div class="cancellationContainer">';
-            htmlForm = htmlForm +'<div class="divCloseSection" onclick="closeCancelSection()"><div class="divClose"><img src="https://assets.website-files.com/5e8d84b86a72718111ce868b/646dff6ba2da6a846106e659_cross%20grey.svg" loading="lazy" alt=""><div>Close</div></div></div>';
+            htmlForm = htmlForm +'<div class="divCloseSection" ><div class="divClose" onclick="closeCancelSection()"><img src="https://assets.website-files.com/5e8d84b86a72718111ce868b/646dff6ba2da6a846106e659_cross%20grey.svg" loading="lazy" alt=""><div>Close</div></div></div>';
             htmlForm = htmlForm +'<h2>'+window.translations.cancelTitle+'</h2>';
             htmlForm = htmlForm +'<div class="grey-block" id="blockStartForm"><p class="paragraph-73">'+window.translations.legalInfoTextOnHowToCancel+'</p></div>';
             htmlForm = htmlForm +'<div class="cancelFormQuestions">';
