@@ -30,11 +30,11 @@ var quoteInfo = {
 
 function clickToGetPrice(){
   console.log(quoteInfo);
-	getPrice(quoteInfo.truckAmount, quoteInfo.truckType, quoteInfo.dangerousGoodsTrucks, quoteInfo.leasedTrucks, quoteInfo.deductible_MTPL, quoteInfo.deductible_Casco, quoteInfo.country);
+	getPrice(quoteInfo.truckAmount, quoteInfo.truckPrice, quoteInfo.dangerousGoodsTrucks, quoteInfo.leasedTrucks, quoteInfo.deductible_MTPL, quoteInfo.deductible_Casco, quoteInfo.country);
 }
 
 
-function getPrice(truckAmount, truckType, dangerousGoodsTrucks, leasedTrucks, deductible_MTPL, deductible_Casco, country) {
+function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, deductible_MTPL, deductible_Casco, country) {
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxd7iLSKEWjn4Kjsh6SR4zVDZCz2HxnAXA1OHG_7pzBrE0VLi5ze-9DOV1Y7tpyr13d6Q/exec";
     //$(".amount").text("loading prices");
     var loadingPricesDiv = '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>';
@@ -49,7 +49,7 @@ function getPrice(truckAmount, truckType, dangerousGoodsTrucks, leasedTrucks, de
         },
         "data": JSON.stringify({
             "truckAmount": truckAmount,
-            "truckType": truckType,
+            "truckPrice": truckPrice,
             "dangerousGoodsTrucks": dangerousGoodsTrucks,
             "leasedTrucks": leasedTrucks,
             "deductible_MTPL": deductible_MTPL,
