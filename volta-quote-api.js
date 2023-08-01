@@ -77,6 +77,13 @@ clickToGetPrice();
 
 
 
+const priceInput = document.querySelector('#truckprice');
+priceInput.addEventListener('change', function() {
+  quoteInfo.truckPrice = $('#truckprice').val() ;
+  clickToGetPrice();
+})
+
+
 const checkboxLeasing = document.querySelector('#leasing');
 checkboxLeasing.addEventListener('change', function() {
   if (this.checked) {
