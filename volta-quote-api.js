@@ -1,3 +1,4 @@
+console.warn("updated 20230801 1101")
 //$(".ambient-vz, .img-ambient").show();
 //$(".refrigerated-vz, .img-refrigerated").hide();
 
