@@ -1,4 +1,4 @@
-console.warn("updated 20230801 1117")
+console.warn("updated 20230801 1134")
 //$(".ambient-vz, .img-ambient").show();
 //$(".refrigerated-vz, .img-refrigerated").hide();
 
@@ -63,12 +63,18 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
     $.ajax(settings).done(function(response) {
             console.log(response);
             window.payloadFromNinja = response;
-            var formattedTotalPrice1 = response.response.packs.pack1.toLocaleString("en-"+country, {style: "currency", currency: "EUR"});
-            var formattedTotalPrice2 = response.response.packs.pack2.toLocaleString("en-"+country, {style: "currency", currency: "EUR"});
-            var formattedTotalPrice3 = response.response.packs.pack3.toLocaleString("en-"+country, {style: "currency", currency: "EUR"});
-            $("[data-price='pack1'").text(formattedTotalPrice1);
-            $("[data-price='pack2'").text(formattedTotalPrice2);
-            $("[data-price='pack3'").text(formattedTotalPrice3);
+            if(response.response.errors.lengt > 0){
+              console.warn(response.response.errors);
+              alert("errors check logs");
+            } else {
+              var formattedTotalPrice1 = response.response.packs.pack1.toLocaleString("en-"+country, {style: "currency", currency: "EUR"});
+              var formattedTotalPrice2 = response.response.packs.pack2.toLocaleString("en-"+country, {style: "currency", currency: "EUR"});
+              var formattedTotalPrice3 = response.response.packs.pack3.toLocaleString("en-"+country, {style: "currency", currency: "EUR"});
+              $("[data-price='pack1'").text(formattedTotalPrice1);
+              $("[data-price='pack2'").text(formattedTotalPrice2);
+              $("[data-price='pack3'").text(formattedTotalPrice3);
+            }
+            
             //$("#form-quote > div.flex-v-25.margin-bottom-60 > div.price > div:nth-child(2)").text(formattedTotalPrice);
         }
     )
