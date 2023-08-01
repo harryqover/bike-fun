@@ -90,9 +90,10 @@ priceInput.addEventListener('change', function() {
 })
 
 const avgTruckPrice = {"DE":345000,"FR":345000};
-$("[data-click='avgprice']").click(
-   $('#truckprice').val(avgTruckPrice[configQuoteEngine.country]) 
-)
+$("[data-click='avgprice']").on( "click", function() {
+  $('#truckprice').val(avgTruckPrice[configQuoteEngine.country]) 
+} );
+
 
 
 const checkboxLeasing = document.querySelector('#leasing');
