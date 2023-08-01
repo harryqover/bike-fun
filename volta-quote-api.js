@@ -1,6 +1,7 @@
-$(".ambient-vz, .img-ambient").show();
-$(".refrigerated-vz, .img-refrigerated").hide();
+//$(".ambient-vz, .img-ambient").show();
+//$(".refrigerated-vz, .img-refrigerated").hide();
 
+/*
 var quoteInfo = {
     "truckAmount": 1,
     "truckType": "16tAmbient",
@@ -13,21 +14,27 @@ var quoteInfo = {
     "type" : "Ambient",
     "zone" : ""
 }
+*/
+
+var quoteInfo = {
+  "truckPrice": 400000,
+  "usage": "onlyGoods4Company",
+  "truckAmount": 1,
+  "truckType": "18tRefriBi",
+  "dangerousGoodsTrucks": false,
+  "leasedTrucks": false,
+  "deductible_MTPL": "10000EUR",
+  "deductible_Casco": "10000EUR",
+  "country": configQuoteEngine.country
+}
 
 function clickToGetPrice(){
-	/*var truckAmount = 1;
-	var truckType = "18tRefriBi";
-	var dangerousGoodsTrucks = true;
-	var leasedTrucks = true;
-	var deductible_MTPL = "2000EUR";
-	var deductible_PartialCasco = "2000EUR";
-	var deductible_CollisionCasco = "2000EUR";*/
-    console.log(quoteInfo);
-	getPrice(quoteInfo.truckAmount, quoteInfo.truckType, quoteInfo.dangerousGoodsTrucks, quoteInfo.leasedTrucks, quoteInfo.deductible_MTPL, quoteInfo.deductible_PartialCasco, quoteInfo.deductible_CollisionCasco);
+  console.log(quoteInfo);
+	getPrice(quoteInfo.truckAmount, quoteInfo.truckType, quoteInfo.dangerousGoodsTrucks, quoteInfo.leasedTrucks, quoteInfo.deductible_MTPL, quoteInfo.deductible_Casco, quoteInfo.country);
 }
 
 
-function getPrice(truckAmount, truckType, dangerousGoodsTrucks, leasedTrucks, deductible_MTPL, deductible_PartialCasco, deductible_CollisionCasco) {
+function getPrice(truckAmount, truckType, dangerousGoodsTrucks, leasedTrucks, deductible_MTPL, deductible_Casco, country) {
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxd7iLSKEWjn4Kjsh6SR4zVDZCz2HxnAXA1OHG_7pzBrE0VLi5ze-9DOV1Y7tpyr13d6Q/exec";
     //$(".amount").text("loading prices");
     var loadingPricesDiv = '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>';
@@ -46,16 +53,20 @@ function getPrice(truckAmount, truckType, dangerousGoodsTrucks, leasedTrucks, de
             "dangerousGoodsTrucks": dangerousGoodsTrucks,
             "leasedTrucks": leasedTrucks,
             "deductible_MTPL": deductible_MTPL,
-            "deductible_PartialCasco": deductible_PartialCasco,
-            "deductible_CollisionCasco": deductible_CollisionCasco,
+            "deductible_Casco": deductible_Casco,
+            "country": country,
         }),
     };
 
     $.ajax(settings).done(function(response) {
             console.log(response);
             window.payloadFromNinja = response;
-            var formattedTotalPrice = response.response.total.toLocaleString("en-BE", {style: "currency", currency: "EUR"});
-            $(".amount").text(formattedTotalPrice);
+            var formattedTotalPrice1 = response.response.packs.pack1.toLocaleString("en-"+country, {style: "currency", currency: "EUR"});
+            var formattedTotalPrice2 = response.response.packs.pack2.toLocaleString("en-"+country, {style: "currency", currency: "EUR"});
+            var formattedTotalPrice3 = response.response.packs.pack3.toLocaleString("en-"+country, {style: "currency", currency: "EUR"});
+            $("[data-price='pack1'").text(formattedTotalPrice1);
+            $("[data-price='pack2'").text(formattedTotalPrice2);
+            $("[data-price='pack3'").text(formattedTotalPrice3);
             //$("#form-quote > div.flex-v-25.margin-bottom-60 > div.price > div:nth-child(2)").text(formattedTotalPrice);
         }
     )
