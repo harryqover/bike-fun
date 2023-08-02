@@ -140,6 +140,17 @@ selectUsage.on("change", function() {
   clickToGetPrice();
 });
 
+var selectDeductibleMtpl = $("#deductible_MTPL");
+const deductMapping = {"0":"2000","2000":"2000","5000":"5000","10000":"10000"};
+selectDeductibleMtpl.on("change", function() {
+  var value = $(this).val();
+  quoteInfo.deductible_MTPL = value;
+  $("#deductible_Casco").val(deductMapping[value]);
+  quoteInfo.deductible_Casco = deductMapping[value];
+  clickToGetPrice();
+});
+
+
 
 // OLD CODE
 /*
