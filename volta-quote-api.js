@@ -63,7 +63,7 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
     $.ajax(settings).done(function(response) {
             console.log(response);
             window.payloadFromNinja = response;
-            if(response.response.errors.lengt > 0){
+            if(response.response.errors.length > 0){
               console.warn(response.response.errors);
               alert("errors check logs");
             } else {
