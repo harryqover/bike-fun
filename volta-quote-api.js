@@ -80,6 +80,10 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
               $("[data-price='pack2'").text(formattedTotalPrice2);
               $("[data-price='pack3'").text(formattedTotalPrice3);
 
+              $('[data-click="pack1"]').attr("data-quoteid",response.response.quoteId);
+              $('[data-click="pack2"]').attr("data-quoteid",response.response.quoteId);
+              $('[data-click="pack3"]').attr("data-quoteid",response.response.quoteId);
+
               /*
               var formattedTotalPrice1 = response.response.packs.pack1.toLocaleString("en-"+country, {style: "currency", currency: response.response.currency.currency});
               var formattedTotalPrice2 = response.response.packs.pack2.toLocaleString("en-"+country, {style: "currency", currency: response.response.currency.currency});
