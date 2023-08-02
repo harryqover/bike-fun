@@ -368,5 +368,5 @@ function sendQuote(payload){
 
   $.ajax(settings).done(function(response) {
         console.log(response);
-  }
+  })
 }
