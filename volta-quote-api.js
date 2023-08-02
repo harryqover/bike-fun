@@ -73,7 +73,7 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
               });
 
               var formattedTotalPrice1 = formatter.format(response.response.packs.pack1);
-              var formattedTotalPrice2 = formatter.format(response.response.packs.pack2-;
+              var formattedTotalPrice2 = formatter.format(response.response.packs.pack2);
               var formattedTotalPrice3 = formatter.format(response.response.packs.pack3);
 
               $("[data-price='pack1'").text(formattedTotalPrice1);
