@@ -67,9 +67,10 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
               console.warn(response.response.errors);
               alert("errors check logs");
             } else {
-              var formattedTotalPrice1 = response.response.packs.pack1.toLocaleString("en-"+country, {style: "currency", currency: "EUR"});
-              var formattedTotalPrice2 = response.response.packs.pack2.toLocaleString("en-"+country, {style: "currency", currency: "EUR"});
-              var formattedTotalPrice3 = response.response.packs.pack3.toLocaleString("en-"+country, {style: "currency", currency: "EUR"});
+
+              var formattedTotalPrice1 = response.response.packs.pack1.toLocaleString("en-"+country, {style: "currency", currency: response.response.currency.currency});
+              var formattedTotalPrice2 = response.response.packs.pack2.toLocaleString("en-"+country, {style: "currency", currency: response.response.currency.currency});
+              var formattedTotalPrice3 = response.response.packs.pack3.toLocaleString("en-"+country, {style: "currency", currency: response.response.currency.currency});
               $("[data-price='pack1'").text(formattedTotalPrice1);
               $("[data-price='pack2'").text(formattedTotalPrice2);
               $("[data-price='pack3'").text(formattedTotalPrice3);
