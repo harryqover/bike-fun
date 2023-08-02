@@ -150,7 +150,7 @@ checkboxLeasing.addEventListener('change', function() {
   }
   clickToGetPrice();
 });
-*/
+
 
 const checkboxDangerous = document.querySelector('#dangerous');
 checkboxDangerous.addEventListener('change', function() {
@@ -165,6 +165,7 @@ checkboxDangerous.addEventListener('change', function() {
   }
   clickToGetPrice();
 });
+*/
 
 const radioZone1 = document.querySelector('#zone1');
 radioZone1.click(); //select 16t by default
