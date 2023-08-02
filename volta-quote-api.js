@@ -1,4 +1,4 @@
-console.warn("updated 20230801 1149")
+console.warn("updated 20230802 1411")
 //$(".ambient-vz, .img-ambient").show();
 //$(".refrigerated-vz, .img-refrigerated").hide();
 
@@ -67,13 +67,28 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
               console.warn(response.response.errors);
               alert("errors check logs");
             } else {
+              const formatter = new Intl.NumberFormat('en-'+country, {
+                style: 'currency',
+                currency: response.response.currency.currency,
+              });
 
+              var formattedTotalPrice1 = formatter.format(response.response.packs.pack1);
+              var formattedTotalPrice2 = formatter.format(response.response.packs.pack2-;
+              var formattedTotalPrice3 = formatter.format(response.response.packs.pack3);
+
+              $("[data-price='pack1'").text(formattedTotalPrice1);
+              $("[data-price='pack2'").text(formattedTotalPrice2);
+              $("[data-price='pack3'").text(formattedTotalPrice3);
+
+              /*
               var formattedTotalPrice1 = response.response.packs.pack1.toLocaleString("en-"+country, {style: "currency", currency: response.response.currency.currency});
               var formattedTotalPrice2 = response.response.packs.pack2.toLocaleString("en-"+country, {style: "currency", currency: response.response.currency.currency});
               var formattedTotalPrice3 = response.response.packs.pack3.toLocaleString("en-"+country, {style: "currency", currency: response.response.currency.currency});
+
               $("[data-price='pack1'").text(response.response.currency.symbol + " " +formattedTotalPrice1);
-              $("[data-price='pack2'").text(formattedTotalPrice2);
-              $("[data-price='pack3'").text(formattedTotalPrice3);
+              $("[data-price='pack2'").text(response.response.currency.symbol + " " +formattedTotalPrice2);
+              $("[data-price='pack3'").text(response.response.currency.symbol + " " +formattedTotalPrice3);
+              */
             }
             
             //$("#form-quote > div.flex-v-25.margin-bottom-60 > div.price > div:nth-child(2)").text(formattedTotalPrice);
