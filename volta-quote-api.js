@@ -388,7 +388,7 @@ function openSaveQuoteModal(quoteId, pack){
     modal = modal + '<div class="flex-h"><div class="rightaligned">Company name</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-company" required=""></div>';
     modal = modal + '<input type="text" id="quoteId" value="'+quoteId+'" style="display:none">'
     modal = modal + '<input type="text" id="pack" value="'+pack+'" style="display:none">'
-    modal = modal + '<input type="submit" value="Submit" class="button-primary-2 grey center w-button" id="sendQuoteBtn"></form>';
+    modal = modal + '<a type="submit" value="Submit" class="button-primary-2 grey center w-button" id="sendQuoteBtn"></form>';
   modal = modal + '</div>';
   modal = modal + '<div class="div-close">';
   modal = modal + '<img src="https://assets.website-files.com/644911ac1572f72efba69772/644922a7462df727411a64b5_cross.svg" loading="lazy" alt="" class="close-icon"><div>Close</div></div></div></section>';
