@@ -361,7 +361,8 @@ function sendQuote(payload){
   })
 }
 
-$("#sendQuoteBtn").on( "click", function() {
+$("#sendQuoteBtn").on( "click", function(event) {
+  event.preventDefault();
   var vat = $("#getquote-vat").val();
   var email = $("#getquote-email").val();
   var tel = $("#getquote-tel").val();
