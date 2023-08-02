@@ -49,7 +49,7 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
             "Content-Type": "text/plain;charset=utf-8"
         },
         "data": JSON.stringify({
-            "request":"getQuote"
+            "request":"getQuote",
             "truckAmount": truckAmount,
             "truckPrice": truckPrice,
             "dangerousGoodsTrucks": dangerousGoodsTrucks,
