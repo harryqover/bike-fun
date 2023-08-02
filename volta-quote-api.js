@@ -367,8 +367,8 @@ $("#sendQuoteBtn").on( "click", function() {
   var tel = $("#getquote-tel").val();
   var address = $("#getquote-address").val();
   var company = $("#getquote-company").val();
-  var quoteId = $("#getquote-quoteId").val();
-  var pack = $("#getquote-pack").val();
+  var quoteId = $("#gquoteId").val();
+  var pack = $("#pack").val();
   var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company}, "quoteId": quoteId, "pack": pack};
   console.log(payload);
   sendQuote(payload);
