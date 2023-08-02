@@ -115,6 +115,17 @@ $("[data-click='avgprice']").on( "click", function() {
   clickToGetPrice();
 } );
 
+$("[data-quoteid]").on( "click", function() {
+  var quoteId = $(this).data('quoteid');
+  var pack = $(this).data('click');
+  console.log(pack);
+  if(quoteId != ''){
+    openSaveQuoteModal(quoteId, pack)
+  }
+} );
+
+
+
 const radioLeasingTrue = document.querySelector('#leasing-true');
 const radioLeasingFalse = document.querySelector('#leasing-false');
 radioLeasingFalse.click(); //select false by default
@@ -332,7 +343,7 @@ function actionOnErrors (errorsTriggered){
 function openSaveQuoteModal(quoteId, pack){
   console.log(quoteId, pack);
   var modal = '<section style="display: flex;" class="modal"><div data-w-id="395cefe5-e9fb-3b6d-d18c-16158910455b" class="div-block-320"></div><div style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); filter: blur(0px); transform-style: preserve-3d;" class="w-layout-blockcontainer address-modal w-container">';
-  modal = modal + '<h4 class="h4-modal">You have selected the #### plan</h4>';
+  modal = modal + '<h4 class="h4-modal">You have selected the '+pack+' plan</h4>';
   modal = modal + '<h2 class="h2-second">Get master policy sent to you</h2>';
   modal = modal + '<div class="w-form"><form id="getquote" class="flex-v for-modal">';
     modal = modal + '<div class="flex-h"><div class="rightaligned">VAT</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-vat" required=""></div>';
