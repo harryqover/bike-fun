@@ -133,6 +133,12 @@ radioDangerousgoodsFalse.addEventListener('change', function() {
   clickToGetPrice();
 });
 
+var selectUsage = $("#usage");
+selectUsage.on("change", function() {
+  var value = $(this).val();
+  quoteInfo.usage = value;
+  clickToGetPrice();
+});
 
 
 // OLD CODE
