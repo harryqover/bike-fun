@@ -96,8 +96,27 @@ $("[data-click='avgprice']").on( "click", function() {
   clickToGetPrice();
 } );
 
+const radioLeasingTrue = document.querySelector('#leasing-true');
+const radioLeasingFalse = document.querySelector('#leasing-false');
+radioLeasingFalse.click(); //select false by default
+
+radioLeasingTrue.addEventListener('change', function() {
+  if (this.checked) {
+    quoteInfo.leasedTrucks = true;
+  }
+  clickToGetPrice();
+});
+
+radioLeasingFalse.addEventListener('change', function() {
+  if (this.checked) {
+    quoteInfo.leasedTrucks = false;
+  }
+  clickToGetPrice();
+});
 
 
+// OLD CODE
+/*
 const checkboxLeasing = document.querySelector('#leasing');
 checkboxLeasing.addEventListener('change', function() {
   if (this.checked) {
@@ -111,6 +130,7 @@ checkboxLeasing.addEventListener('change', function() {
   }
   clickToGetPrice();
 });
+*/
 
 const checkboxDangerous = document.querySelector('#dangerous');
 checkboxDangerous.addEventListener('change', function() {
