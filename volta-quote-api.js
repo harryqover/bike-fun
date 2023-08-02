@@ -34,9 +34,9 @@ function clickToGetPrice(){
 	getPrice(quoteInfo.truckAmount, quoteInfo.truckPrice, quoteInfo.dangerousGoodsTrucks, quoteInfo.leasedTrucks, quoteInfo.deductible_MTPL, quoteInfo.deductible_Casco, quoteInfo.country, quoteInfo.usage);
 }
 
+const googleSheetUrl = "https://script.google.com/macros/s/AKfycbxd7iLSKEWjn4Kjsh6SR4zVDZCz2HxnAXA1OHG_7pzBrE0VLi5ze-9DOV1Y7tpyr13d6Q/exec";
 
-function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, deductible_MTPL, deductible_Casco, country, usage) {
-    var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxd7iLSKEWjn4Kjsh6SR4zVDZCz2HxnAXA1OHG_7pzBrE0VLi5ze-9DOV1Y7tpyr13d6Q/exec";
+function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, deductible_MTPL, deductible_Casco, country, usage) {    
     $("[data-price]").text('Loading new prices');
     var loadingPricesDiv = '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>';
     loadingPricesDiv = loadingPricesDiv + '<style>.lds-ellipsis {display: inline-block;position: relative;width: 80px;height: 80px;}.lds-ellipsis div {position: absolute;top: 33px;width: 13px;height: 13px;border-radius: 50%;background: #000;animation-timing-function: cubic-bezier(0, 1, 1, 0);}.lds-ellipsis div:nth-child(1) {left: 8px;animation: lds-ellipsis1 0.6s infinite;}.lds-ellipsis div:nth-child(2) {left: 8px;animation: lds-ellipsis2 0.6s infinite;}.lds-ellipsis div:nth-child(3) {left: 32px;animation: lds-ellipsis2 0.6s infinite;}.lds-ellipsis div:nth-child(4) {left: 56px;animation: lds-ellipsis3 0.6s infinite;}@keyframes lds-ellipsis1 {0% {transform: scale(0);}100% {transform: scale(1);}}@keyframes lds-ellipsis3 {0% {transform: scale(1);}100% {transform: scale(0);}}@keyframes lds-ellipsis2 {0% {transform: translate(0, 0);}100% {transform: translate(24px, 0);}}</style>'
@@ -49,6 +49,7 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
             "Content-Type": "text/plain;charset=utf-8"
         },
         "data": JSON.stringify({
+            "request":"getQuote"
             "truckAmount": truckAmount,
             "truckPrice": truckPrice,
             "dangerousGoodsTrucks": dangerousGoodsTrucks,
@@ -326,4 +327,45 @@ function actionOnErrors (errorsTriggered){
         alert("Unknown error: " + error);
     }
   });
+}
+
+function openSaveQuoteModal(quoteId, pack){
+  console.log(quoteId, pack);
+  var modal = '<section style="display: flex;" class="modal"><div data-w-id="395cefe5-e9fb-3b6d-d18c-16158910455b" class="div-block-320"></div><div style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); filter: blur(0px); transform-style: preserve-3d;" class="w-layout-blockcontainer address-modal w-container">';
+  modal = modal + '<h4 class="h4-modal">You have selected the #### plan</h4>';
+  modal = modal + '<h2 class="h2-second">Get master policy sent to you</h2>';
+  modal = modal + '<div class="w-form"><form id="getquote" class="flex-v for-modal">';
+    modal = modal + '<div class="flex-h"><div class="rightaligned">VAT</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-vat" required=""></div>';
+    modal = modal + '<div class="flex-h"><div class="rightaligned">Email</div><input type="email" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-email" required=""></div>';
+    modal = modal + '<div class="flex-h"><div class="rightaligned">Phone</div><input type="tel" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-tel" required=""></div>';
+    modal = modal + '<div class="flex-h"><div class="rightaligned">Address</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-address" required=""></div>';
+    modal = modal + '<div class="flex-h"><div class="rightaligned">Company name</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-company" required=""></div>';
+    modal = modal + '<input type="text" id="quoteId" value="'+quoteId+'" style="display:none">'
+    modal = modal + '<input type="text" id="pack" value="'+pack+'" style="display:none">'
+    modal = modal + '<input type="submit" value="Submit" class="button-primary-2 grey center w-button"></form>';
+  modal = modal + '</div>';
+  modal = modal + '<div class="div-close">';
+  modal = modal + '<img src="https://assets.website-files.com/644911ac1572f72efba69772/644922a7462df727411a64b5_cross.svg" loading="lazy" alt="" class="close-icon"><div>Close</div></div></div></section>';
+
+  $("body").append(modal);
+}
+
+function sendQuote(payload){
+  var settings = {
+    "url": googleSheetUrl,
+    "method": "POST",
+    "timeout": 0,
+    "headers": {
+        "Content-Type": "text/plain;charset=utf-8"
+    },
+    "data": JSON.stringify({
+        "request":"sendQuote",
+        "formData": payload.formData,
+        "quoteId": payload.quoteId,
+        "pack": payload.pack
+    }),
+};
+
+$.ajax(settings).done(function(response) {
+        console.log(response);
 }
