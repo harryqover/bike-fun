@@ -346,7 +346,7 @@ function openSaveQuoteModal(quoteId, pack){
   modal = modal + '</div>';
   modal = modal + '<div class="div-close">';
   modal = modal + '<img src="https://assets.website-files.com/644911ac1572f72efba69772/644922a7462df727411a64b5_cross.svg" loading="lazy" alt="" class="close-icon"><div>Close</div></div></div></section>';
-
+  var payload = {"formData": {"vat":"", "email": "", "phone":"", "address":"", "company":""}, "quoteId": quoteId, "pack": pack};
   $("body").append(modal);
 }
 
@@ -364,8 +364,9 @@ function sendQuote(payload){
         "quoteId": payload.quoteId,
         "pack": payload.pack
     }),
-};
+  };
 
-$.ajax(settings).done(function(response) {
+  $.ajax(settings).done(function(response) {
         console.log(response);
+  }
 }
