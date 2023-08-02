@@ -280,3 +280,21 @@ selectDeductible_CollisionCasco.addEventListener('change', function() {
   quoteInfo.deductible_CollisionCasco = selectedValue;
   clickToGetPrice();
 });
+
+function actionOnErrors (errorsTriggered){
+  $.each(errorsTriggered, function(index, error) {
+    switch (error) {
+      case "dangerousGoodsTrucksCantBeInsured":
+        alert("We can't insure dangerous good trucks.");
+        break;
+      case "truckPriceTooLow":
+        alert("Truck price is too low.");
+        break;
+      case "truckPriceTooHigh":
+        alert("Truck price is too high.");
+        break;
+      default:
+        alert("Unknown error: " + error);
+    }
+  });
+}
