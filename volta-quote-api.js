@@ -115,6 +115,26 @@ radioLeasingFalse.addEventListener('change', function() {
 });
 
 
+const radioDangerousgoodsTrue = document.querySelector('#dangerousgoods-true');
+const radioDangerousgoodsFalse = document.querySelector('#dangerousgoods-false');
+radioDangerousgoodsFalse.click(); //select false by default
+
+radioDangerousgoodsTrue.addEventListener('change', function() {
+  if (this.checked) {
+    quoteInfo.dangerousGoodsTrucks = true;
+  }
+  clickToGetPrice();
+});
+
+radioDangerousgoodsFalse.addEventListener('change', function() {
+  if (this.checked) {
+    quoteInfo.dangerousGoodsTrucks = false;
+  }
+  clickToGetPrice();
+});
+
+
+
 // OLD CODE
 /*
 const checkboxLeasing = document.querySelector('#leasing');
