@@ -132,7 +132,7 @@ radioLeasingTrue.addEventListener('change', function() {
   }
   clickToGetPrice();
   var nextStepPosition = $("#step-3").offset().top;
-  $("html, body").animate({scrollTop: nextStepPosition}, 500);
+  $("html, body").animate({scrollTop: nextStepPosition}, 800);
 });
 
 radioLeasingFalse.addEventListener('change', function() {
@@ -141,7 +141,7 @@ radioLeasingFalse.addEventListener('change', function() {
   }
   clickToGetPrice();
   var nextStepPosition = $("#step-3").offset().top;
-  $("html, body").animate({scrollTop: nextStepPosition}, 500);
+  $("html, body").animate({scrollTop: nextStepPosition}, 800);
 });
 
 
@@ -163,7 +163,7 @@ radioDangerousgoodsFalse.addEventListener('change', function() {
   }
   clickToGetPrice();
   var nextStepPosition = $("#step-5").offset().top;
-  $("html, body").animate({scrollTop: nextStepPosition}, 500);
+  $("html, body").animate({scrollTop: nextStepPosition}, 800);
 });
 
 var selectUsage = $("#usage");
@@ -172,7 +172,7 @@ selectUsage.on("change", function() {
   quoteInfo.usage = value;
   clickToGetPrice();
   var nextStepPosition = $("#step-4").offset().top;
-  $("html, body").animate({scrollTop: nextStepPosition}, 500);
+  $("html, body").animate({scrollTop: nextStepPosition}, 800);
 });
 
 var selectDeductibleMtpl = $("#deductible_MTPL");
@@ -335,21 +335,21 @@ function actionOnErrors (errorsTriggered){
         $("#truckprice").attr("style","border-color:red")
         $("#tooltipdangerousgoods").show();
         var nextStepPosition = $("#step-4").offset().top;
-        $("html, body").animate({scrollTop: nextStepPosition}, 500);
+        $("html, body").animate({scrollTop: nextStepPosition}, 800);
         break;
       case "truckPriceTooLow":
         //alert("Truck price is too low.");
         $("#truckprice").attr("style","border-color:#FFC1BC");
         $("<p style='color:#FFC1BC'>"+translations.truckPriceTooLow+"</p>").insertAfter("#priceelements");
         var nextStepPosition = $("#step-1").offset().top;
-        $("html, body").animate({scrollTop: nextStepPosition}, 500);
+        $("html, body").animate({scrollTop: nextStepPosition}, 800);
         break;
       case "truckPriceTooHigh":
         //alert("Truck price is too high.");
         $("#truckprice").attr("style","border-color:#FFC1BC");
         $("<p style='color:#FFC1BC'>"+translations.truckPriceTooHigh+"</p>").insertAfter("#priceelements");
         var nextStepPosition = $("#step-1").offset().top;
-        $("html, body").animate({scrollTop: nextStepPosition}, 500);
+        $("html, body").animate({scrollTop: nextStepPosition}, 800);
         break;
       default:
         alert("Unknown error: " + error);
