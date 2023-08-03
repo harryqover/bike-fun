@@ -51,7 +51,7 @@ function clickToGetPrice(){
 }
 
 const googleSheetUrl = "https://script.google.com/macros/s/AKfycbxd7iLSKEWjn4Kjsh6SR4zVDZCz2HxnAXA1OHG_7pzBrE0VLi5ze-9DOV1Y7tpyr13d6Q/exec";
-
+$("[data-price]").text("...");
 function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, deductible_MTPL, deductible_Casco, country, usage) {
   var textLoading = (typeof translations !== "undefined")? translations.loadingPrices: "Loading new prices";
   $("[data-price]").text(textLoading);
