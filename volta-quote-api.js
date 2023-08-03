@@ -1,4 +1,4 @@
-console.warn("updated 20230803 1013")
+console.warn("updated 20230803 1027")
 //$(".ambient-vz, .img-ambient").show();
 //$(".refrigerated-vz, .img-refrigerated").hide();
 
@@ -360,6 +360,7 @@ function sendQuote(payload){
 
   $.ajax(settings).done(function(response) {
         console.log(response);
+        $("#getquotediv").html('<div class="successMessageSendQuote">'+translator("sendQuoteModalSuccessMessage",{"email": response.payload.formData.email, "quoteId": response.payload.quoteId})+'.</div>')
   })
 }
 
@@ -381,7 +382,7 @@ function openSaveQuoteModal(quoteId, pack){
   console.log(quoteId, pack);
   var modal = '<section style="display: flex;" class="modal" id="modalgetquote"><div class="div-block-320"></div>';
   modal = modal + '<div style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); filter: blur(0px); transform-style: preserve-3d;" class="w-layout-blockcontainer address-modal w-container">';
-    modal = modal + '<div  id="getquotediv"><h4 class="h4-modal">'+translator("sendQuoteModalInfoText",{"pack": pack})+'You have selected the '+pack+' plan</h4>';
+    modal = modal + '<div  id="getquotediv"><h4 class="h4-modal">'+translator("sendQuoteModalInfoText",{"pack": pack})+'</h4>';
     modal = modal + '<h2 class="h2-second">'+translations.sendQuoteModalTitle+'</h2>';
     modal = modal + '<div class="w-form"><form id="getquote" class="flex-v for-modal">';
       modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputVAT+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-vat" required=""></div>';
@@ -417,7 +418,6 @@ function openSaveQuoteModal(quoteId, pack){
     var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company}, "quoteId": quoteId, "pack": pack};
     console.log(payload);
     sendQuote(payload);
-    $("#getquotediv").html('<div class="successMessageSendQuote">Thank you we will contact you soon with your master policy.</div>')
   });
 }
 
