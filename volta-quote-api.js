@@ -68,7 +68,7 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
               console.warn(response.response.errors);
               alert("errors check logs");
             } else {
-              const formatter = new Intl.NumberFormat('en-'+country, {
+              const formatter = new Intl.NumberFormat(configQuoteEngine.language+'-'+country, {
                 style: 'currency',
                 currency: response.response.currency.currency,
               });
@@ -83,15 +83,6 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
 
               $('[data-click="pack1"], [data-click="pack2"], [data-click="pack3"]').attr("data-quoteid",response.response.quoteId);
 
-              /*
-              var formattedTotalPrice1 = response.response.packs.pack1.toLocaleString("en-"+country, {style: "currency", currency: response.response.currency.currency});
-              var formattedTotalPrice2 = response.response.packs.pack2.toLocaleString("en-"+country, {style: "currency", currency: response.response.currency.currency});
-              var formattedTotalPrice3 = response.response.packs.pack3.toLocaleString("en-"+country, {style: "currency", currency: response.response.currency.currency});
-
-              $("[data-price='pack1'").text(response.response.currency.symbol + " " +formattedTotalPrice1);
-              $("[data-price='pack2'").text(response.response.currency.symbol + " " +formattedTotalPrice2);
-              $("[data-price='pack3'").text(response.response.currency.symbol + " " +formattedTotalPrice3);
-              */
             }
             
             //$("#form-quote > div.flex-v-25.margin-bottom-60 > div.price > div:nth-child(2)").text(formattedTotalPrice);
@@ -380,9 +371,10 @@ function translator(key, variables){
 
 function openSaveQuoteModal(quoteId, pack){
   console.log(quoteId, pack);
+  var packTranslations = translator("packNames"+pack);
   var modal = '<section style="display: flex;" class="modal" id="modalgetquote"><div class="div-block-320"></div>';
   modal = modal + '<div style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); filter: blur(0px); transform-style: preserve-3d;" class="w-layout-blockcontainer address-modal w-container">';
-    modal = modal + '<div  id="getquotediv"><h4 class="h4-modal">'+translator("sendQuoteModalInfoText",{"pack": pack})+'</h4>';
+    modal = modal + '<div  id="getquotediv"><h4 class="h4-modal">'+translator("sendQuoteModalInfoText",{"pack": packTranslations})+'</h4>';
     modal = modal + '<h2 class="h2-second">'+translations.sendQuoteModalTitle+'</h2>';
     modal = modal + '<div class="w-form"><form id="getquote" class="flex-v for-modal">';
       modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputVAT+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-vat" required=""></div>';
