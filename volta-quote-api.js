@@ -321,7 +321,8 @@ function actionOnErrors (errorsTriggered){
   $.each(errorsTriggered, function(index, error) {
     switch (error) {
       case "dangerousGoodsTrucksCantBeInsured":
-        alert("We can't insure dangerous good trucks.");
+        //alert("We can't insure dangerous good trucks.");
+        openSaveQuoteModal("n/a", "dangerousGoods")
         break;
       case "truckPriceTooLow":
         alert("Truck price is too low.");
@@ -370,6 +371,7 @@ function translator(key, variables){
 
   return translation
 }
+
 
 function openSaveQuoteModal(quoteId, pack){
   console.log(quoteId, pack);
