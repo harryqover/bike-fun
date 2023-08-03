@@ -1,4 +1,4 @@
-console.warn("updated 20230803 1036")
+console.warn("updated 20230803 1054")
 
 function translateAll() {
     var lang = configQuoteEngine.language;
