@@ -336,22 +336,22 @@ function actionOnErrors (errorsTriggered){
     switch (error) {
       case "dangerousGoodsTrucksCantBeInsured":
         //alert("We can't insure dangerous good trucks.");
-        $("#truckprice").attr("style","border-color:red")
+        $("#dangerousgoods-true").attr("style","accent-color:#DC3545")
         $("#tooltipdangerousgoods").show(500);
         var nextStepPosition = $("#step-4").offset().top;
         $("html, body").animate({scrollTop: nextStepPosition}, 800);
         break;
       case "truckPriceTooLow":
         //alert("Truck price is too low.");
-        $("#truckprice").attr("style","border-color:#FFC1BC");
-        $("<p style='color:#FFC1BC'>"+translations.truckPriceTooLow+"</p>").insertAfter("#priceelements");
+        $("#truckprice").attr("style","border-color:#DC3545");
+        $("<p style='color:#DC3545'>"+translations.truckPriceTooLow+"</p>").insertAfter("#priceelements");
         var nextStepPosition = $("#step-1").offset().top;
         $("html, body").animate({scrollTop: nextStepPosition}, 800);
         break;
       case "truckPriceTooHigh":
         //alert("Truck price is too high.");
-        $("#truckprice").attr("style","border-color:#FFC1BC");
-        $("<p style='color:#FFC1BC'>"+translations.truckPriceTooHigh+"</p>").insertAfter("#priceelements");
+        $("#truckprice").attr("style","border-color:#DC3545");
+        $("<p style='color:#DC3545'>"+translations.truckPriceTooHigh+"</p>").insertAfter("#priceelements");
         var nextStepPosition = $("#step-1").offset().top;
         $("html, body").animate({scrollTop: nextStepPosition}, 800);
         break;
