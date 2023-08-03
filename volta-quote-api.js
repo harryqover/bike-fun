@@ -214,7 +214,7 @@ checkboxDangerous.addEventListener('change', function() {
   }
   clickToGetPrice();
 });
-*/
+
 
 const radioZone1 = document.querySelector('#zone1');
 radioZone1.click(); //select 16t by default
@@ -323,7 +323,7 @@ selectDeductible_CollisionCasco.addEventListener('change', function() {
   quoteInfo.deductible_CollisionCasco = selectedValue;
   clickToGetPrice();
 });
-
+*/
 function actionOnErrors (errorsTriggered){
   $.each(errorsTriggered, function(index, error) {
     switch (error) {
