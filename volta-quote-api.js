@@ -378,7 +378,7 @@ $("#sendQuoteBtn").on( "click", function(event) {
 
 function openSaveQuoteModal(quoteId, pack){
   console.log(quoteId, pack);
-  var modal = '<section style="display: flex;" class="modal"><div class="div-block-320"></div>';
+  var modal = '<section style="display: flex;" class="modal" id="modalgetquote"><div class="div-block-320"></div>';
   modal = modal + '<div style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); filter: blur(0px); transform-style: preserve-3d;" class="w-layout-blockcontainer address-modal w-container" id="getquotediv">';
     modal = modal + '<h4 class="h4-modal">You have selected the '+pack+' plan</h4>';
     modal = modal + '<h2 class="h2-second">Get master policy sent to you</h2>';
@@ -392,9 +392,13 @@ function openSaveQuoteModal(quoteId, pack){
       modal = modal + '<input type="text" id="pack" value="'+pack+'" style="display:none">'
       modal = modal + '<a type="submit" class="button-primary-2 grey center w-button" id="sendQuoteBtn">submit</a></form>';
     modal = modal + '</div>';
-    modal = modal + '<div class="div-close">';
+    modal = modal + '<div class="div-close" id="closemodalgetquote">';
      modal = modal + '<img src="https://assets.website-files.com/644911ac1572f72efba69772/644922a7462df727411a64b5_cross.svg" loading="lazy" alt="" class="close-icon"><div>Close</div>';
     modal = modal + '</div>';
   modal = modal + '</div></section>';
   $("body").append(modal);
+
+  $("#closemodalgetquote").on( "click", function(event) {
+    $("#modalgetquote").remove()
+  }
 }
