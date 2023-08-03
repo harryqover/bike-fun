@@ -331,17 +331,22 @@ function actionOnErrors (errorsTriggered){
     switch (error) {
       case "dangerousGoodsTrucksCantBeInsured":
         //alert("We can't insure dangerous good trucks.");
+        $("#truckprice").attr("style","border-color:red")
         $("#tooltipdangerousgoods").show();
         var nextStepPosition = $("#step-4").offset().top;
         $("html, body").animate({scrollTop: nextStepPosition}, 500);
         break;
       case "truckPriceTooLow":
-        alert("Truck price is too low.");
+        //alert("Truck price is too low.");
+        $("#truckprice").attr("style","border-color:red");
+        $("<p style='color:red'>truckPriceTooLow</p>").insertAfter("#priceelements");
         var nextStepPosition = $("#step-1").offset().top;
         $("html, body").animate({scrollTop: nextStepPosition}, 500);
         break;
       case "truckPriceTooHigh":
-        alert("Truck price is too high.");
+        //alert("Truck price is too high.");
+        $("#truckprice").attr("style","border-color:red");
+        $("<p style='color:red'>truckPriceTooHigh</p>").insertAfter("#priceelements");
         var nextStepPosition = $("#step-1").offset().top;
         $("html, body").animate({scrollTop: nextStepPosition}, 500);
         break;
