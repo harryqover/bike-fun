@@ -370,19 +370,19 @@ function openSaveQuoteModal(quoteId, pack){
   var modal = '<section style="display: flex;" class="modal" id="modalgetquote"><div class="div-block-320"></div>';
   modal = modal + '<div style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); filter: blur(0px); transform-style: preserve-3d;" class="w-layout-blockcontainer address-modal w-container" id="getquotediv">';
     modal = modal + '<h4 class="h4-modal">You have selected the '+pack+' plan</h4>';
-    modal = modal + '<h2 class="h2-second">Get master policy sent to you</h2>';
+    modal = modal + '<h2 class="h2-second">'+translations.sendQuoteModalTitle+'</h2>';
     modal = modal + '<div class="w-form"><form id="getquote" class="flex-v for-modal">';
-      modal = modal + '<div class="flex-h"><div class="rightaligned">VAT</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-vat" required=""></div>';
-      modal = modal + '<div class="flex-h"><div class="rightaligned">Email</div><input type="email" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-email" required=""></div>';
-      modal = modal + '<div class="flex-h"><div class="rightaligned">Phone</div><input type="tel" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-tel" required=""></div>';
-      modal = modal + '<div class="flex-h"><div class="rightaligned">Address</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-address" required=""></div>';
-      modal = modal + '<div class="flex-h"><div class="rightaligned">Company name</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-company" required=""></div>';
+      modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputVAT+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-vat" required=""></div>';
+      modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputEmail+'</div><input type="email" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-email" required=""></div>';
+      modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputPhone+'</div><input type="tel" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-tel" required=""></div>';
+      modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputAddress+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-address" required=""></div>';
+      modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputCompanyName+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-company" required=""></div>';
       modal = modal + '<input type="text" id="quoteId" value="'+quoteId+'" style="display:none">'
       modal = modal + '<input type="text" id="pack" value="'+pack+'" style="display:none">'
-      modal = modal + '<a type="submit" class="button-primary-2 grey center w-button" id="sendQuoteBtn">submit</a></form>';
+      modal = modal + '<a type="submit" class="button-primary-2 grey center w-button" id="sendQuoteBtn">'+translations.sendQuoteModalSubmit+'</a></form>';
     modal = modal + '</div>';
     modal = modal + '<div class="div-close" id="closemodalgetquote">';
-     modal = modal + '<img src="https://assets.website-files.com/644911ac1572f72efba69772/644922a7462df727411a64b5_cross.svg" loading="lazy" alt="" class="close-icon"><div>Close</div>';
+     modal = modal + '<img src="https://assets.website-files.com/644911ac1572f72efba69772/644922a7462df727411a64b5_cross.svg" loading="lazy" alt="" class="close-icon"><div>'+translations.sendQuoteModalClose+'</div>';
     modal = modal + '</div>';
   modal = modal + '</div></section>';
   $("body").append(modal);
@@ -406,3 +406,28 @@ function openSaveQuoteModal(quoteId, pack){
     $("#getquotediv").html('<div class="successMessageSendQuote">Thank you we will contact you soon with your master policy.</div>')
   });
 }
+
+function translateAll() {
+    var lang = configQuoteEngine.language;
+    let xhrLocales = new XMLHttpRequest();
+    var content = "";
+    xhrLocales.open("get", "https://api.prd.qover.io/i18n/v1/projects/webflow-volta/" + lang + ".json?refresh=007", true);
+    xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
+
+    xhrLocales.onreadystatechange = function() {
+        if (xhrLocales.readyState == 4) {
+            if (xhrLocales.status >= 200 && xhrLocales.status < 300 || xhrLocales.status == 304) {
+                content = JSON.parse(xhrLocales.responseText);
+                window.translations = content;
+                console.log(window.translations);
+                //translate all data attributes that contains data-translation
+                $("[data-translation]").each(function(index) {
+                    $(this).html(content[$(this).data("translation")]);
+                    var text = $(this).html();
+                });
+            }
+        }
+    };
+    xhrLocales.send();
+}
+translateAll();
