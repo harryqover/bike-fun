@@ -340,14 +340,14 @@ function actionOnErrors (errorsTriggered){
       case "truckPriceTooLow":
         //alert("Truck price is too low.");
         $("#truckprice").attr("style","border-color:#FFC1BC");
-        $("<p style='color:#FFC1BC'>"+translation.truckPriceTooLow+"</p>").insertAfter("#priceelements");
+        $("<p style='color:#FFC1BC'>"+translations.truckPriceTooLow+"</p>").insertAfter("#priceelements");
         var nextStepPosition = $("#step-1").offset().top;
         $("html, body").animate({scrollTop: nextStepPosition}, 500);
         break;
       case "truckPriceTooHigh":
         //alert("Truck price is too high.");
         $("#truckprice").attr("style","border-color:#FFC1BC");
-        $("<p style='color:#FFC1BC'>"+translation.truckPriceTooHigh+"</p>").insertAfter("#priceelements");
+        $("<p style='color:#FFC1BC'>"+translations.truckPriceTooHigh+"</p>").insertAfter("#priceelements");
         var nextStepPosition = $("#step-1").offset().top;
         $("html, body").animate({scrollTop: nextStepPosition}, 500);
         break;
