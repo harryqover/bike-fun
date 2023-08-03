@@ -106,7 +106,7 @@ $('#tooltipavgprice').hide();
 const avgTruckPrice = {"DE":345000,"FR":345000};
 $("[data-click='avgprice']").on( "click", function() {
   $('#truckprice').val(avgTruckPrice[configQuoteEngine.country]);
-  $('#tooltipavgprice').show();
+  $('#tooltipavgprice').show(500);
   quoteInfo.truckPrice = $('#truckprice').val() ;
   clickToGetPrice();
 } );
@@ -166,6 +166,7 @@ radioDangerousgoodsFalse.addEventListener('change', function() {
     clickToGetPrice();
     var nextStepPosition = $("#step-5").offset().top;
     $("html, body").animate({scrollTop: nextStepPosition}, 800);
+    $("#tooltipdangerousgoods").hide(500);
   }
 });
 
@@ -336,7 +337,7 @@ function actionOnErrors (errorsTriggered){
       case "dangerousGoodsTrucksCantBeInsured":
         //alert("We can't insure dangerous good trucks.");
         $("#truckprice").attr("style","border-color:red")
-        $("#tooltipdangerousgoods").show();
+        $("#tooltipdangerousgoods").show(500);
         var nextStepPosition = $("#step-4").offset().top;
         $("html, body").animate({scrollTop: nextStepPosition}, 800);
         break;
