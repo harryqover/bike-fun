@@ -410,7 +410,7 @@ function openSaveQuoteModal(quoteId, pack){
     var tel = $("#getquote-tel").val();
     var address = $("#getquote-address").val();
     var company = $("#getquote-company").val();
-    var quoteId = $("#gquoteId").val();
+    var quoteId = $("#quoteId").val();
     var pack = $("#pack").val();
     var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company}, "quoteId": quoteId, "pack": pack};
     console.log(payload);
