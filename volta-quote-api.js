@@ -361,20 +361,7 @@ function sendQuote(payload){
   })
 }
 
-$("#sendQuoteBtn").on( "click", function(event) {
-  event.preventDefault();
-  var vat = $("#getquote-vat").val();
-  var email = $("#getquote-email").val();
-  var tel = $("#getquote-tel").val();
-  var address = $("#getquote-address").val();
-  var company = $("#getquote-company").val();
-  var quoteId = $("#gquoteId").val();
-  var pack = $("#pack").val();
-  var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company}, "quoteId": quoteId, "pack": pack};
-  console.log(payload);
-  sendQuote(payload);
-  $("#getquotediv").html('<div>Thank you we will contact you soon with your master policy.</div>')
-});
+
 
 function openSaveQuoteModal(quoteId, pack){
   console.log(quoteId, pack);
@@ -401,4 +388,19 @@ function openSaveQuoteModal(quoteId, pack){
   $("#closemodalgetquote").on( "click", function(event) {
     $("#modalgetquote").remove()
   })
+  
+  $("#sendQuoteBtn").on( "click", function(event) {
+    event.preventDefault();
+    var vat = $("#getquote-vat").val();
+    var email = $("#getquote-email").val();
+    var tel = $("#getquote-tel").val();
+    var address = $("#getquote-address").val();
+    var company = $("#getquote-company").val();
+    var quoteId = $("#gquoteId").val();
+    var pack = $("#pack").val();
+    var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company}, "quoteId": quoteId, "pack": pack};
+    console.log(payload);
+    sendQuote(payload);
+    $("#getquotediv").html('<div class="successMessageSendQuote">Thank you we will contact you soon with your master policy.</div>')
+  });
 }
