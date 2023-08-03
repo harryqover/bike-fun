@@ -388,7 +388,7 @@ function openSaveQuoteModal(quoteId, pack){
   $("#closemodalgetquote").on( "click", function(event) {
     $("#modalgetquote").remove()
   })
-  
+
   $("#sendQuoteBtn").on( "click", function(event) {
     event.preventDefault();
     var vat = $("#getquote-vat").val();
