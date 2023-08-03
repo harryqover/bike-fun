@@ -400,5 +400,5 @@ function openSaveQuoteModal(quoteId, pack){
 
   $("#closemodalgetquote").on( "click", function(event) {
     $("#modalgetquote").remove()
-  }
+  })
 }
