@@ -412,5 +412,7 @@ function openSaveQuoteModal(quoteId, pack){
     var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company}, "quoteId": quoteId, "pack": pack};
     console.log(payload);
     sendQuote(payload);
+    $("#sendQuoteBtn").attr("style","opacity:0.25");
+    $("#sendQuoteBtn").text(translations.sending);
   });
 }
