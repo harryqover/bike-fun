@@ -1,21 +1,29 @@
 console.warn("updated 20230803 1036")
-//$(".ambient-vz, .img-ambient").show();
-//$(".refrigerated-vz, .img-refrigerated").hide();
 
-/*
-var quoteInfo = {
-    "truckAmount": 1,
-    "truckType": "16tAmbient",
-    "dangerousGoodsTrucks": false,
-    "leasedTrucks": false,
-    "deductible_MTPL": "2000EUR",
-    "deductible_PartialCasco": "2000EUR",
-    "deductible_CollisionCasco": "2000EUR",
-    "tons" : "16t",
-    "type" : "Ambient",
-    "zone" : ""
+function translateAll() {
+    var lang = configQuoteEngine.language;
+    let xhrLocales = new XMLHttpRequest();
+    var content = "";
+    xhrLocales.open("get", "https://api.prd.qover.io/i18n/v1/projects/webflow-volta/" + lang + ".json?refresh=007", true);
+    xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
+
+    xhrLocales.onreadystatechange = function() {
+        if (xhrLocales.readyState == 4) {
+            if (xhrLocales.status >= 200 && xhrLocales.status < 300 || xhrLocales.status == 304) {
+                content = JSON.parse(xhrLocales.responseText);
+                window.translations = content;
+                console.log(window.translations);
+                //translate all data attributes that contains data-translation
+                $("[data-translation]").each(function(index) {
+                    $(this).html(content[$(this).data("translation")]);
+                    var text = $(this).html();
+                });
+            }
+        }
+    };
+    xhrLocales.send();
 }
-*/
+translateAll();
 
 var quoteInfo = {
   "truckPrice": 400000,
@@ -412,28 +420,3 @@ function openSaveQuoteModal(quoteId, pack){
     sendQuote(payload);
   });
 }
-
-function translateAll() {
-    var lang = configQuoteEngine.language;
-    let xhrLocales = new XMLHttpRequest();
-    var content = "";
-    xhrLocales.open("get", "https://api.prd.qover.io/i18n/v1/projects/webflow-volta/" + lang + ".json?refresh=007", true);
-    xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
-
-    xhrLocales.onreadystatechange = function() {
-        if (xhrLocales.readyState == 4) {
-            if (xhrLocales.status >= 200 && xhrLocales.status < 300 || xhrLocales.status == 304) {
-                content = JSON.parse(xhrLocales.responseText);
-                window.translations = content;
-                console.log(window.translations);
-                //translate all data attributes that contains data-translation
-                $("[data-translation]").each(function(index) {
-                    $(this).html(content[$(this).data("translation")]);
-                    var text = $(this).html();
-                });
-            }
-        }
-    };
-    xhrLocales.send();
-}
-translateAll();
