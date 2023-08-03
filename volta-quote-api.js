@@ -153,17 +153,20 @@ const radioDangerousgoodsFalse = document.querySelector('#dangerousgoods-false')
 radioDangerousgoodsTrue.addEventListener('change', function() {
   if (this.checked) {
     quoteInfo.dangerousGoodsTrucks = true;
+    clickToGetPrice();
+    var nextStepPosition = $("#step-5").offset().top;
+    $("html, body").animate({scrollTop: nextStepPosition}, 800);
   }
-  clickToGetPrice();
+
 });
 
 radioDangerousgoodsFalse.addEventListener('change', function() {
   if (this.checked) {
     quoteInfo.dangerousGoodsTrucks = false;
+    clickToGetPrice();
+    var nextStepPosition = $("#step-5").offset().top;
+    $("html, body").animate({scrollTop: nextStepPosition}, 800);
   }
-  clickToGetPrice();
-  var nextStepPosition = $("#step-5").offset().top;
-  $("html, body").animate({scrollTop: nextStepPosition}, 800);
 });
 
 var selectUsage = $("#usage");
