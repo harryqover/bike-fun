@@ -1,4 +1,4 @@
-console.warn("updated 20230803 1027")
+console.warn("updated 20230803 1036")
 //$(".ambient-vz, .img-ambient").show();
 //$(".refrigerated-vz, .img-refrigerated").hide();
 
