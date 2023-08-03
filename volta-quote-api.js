@@ -1,5 +1,13 @@
 console.warn("updated 20230803 1133")
 
+let ipAddress = "";
+$(document).ready(function() {
+    $.getJSON("https://api.ipify.org?format=json", function(data) {
+        ipAddress = data.ip;
+    });
+});
+
+
 function translateAll() {
     var lang = configQuoteEngine.language;
     let xhrLocales = new XMLHttpRequest();
@@ -67,6 +75,7 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
           "deductible_Casco": deductible_Casco,
           "country": country,
           "usage": usage,
+          "ipAddress": ipAddress
       }),
   };
 
@@ -373,7 +382,8 @@ function sendQuote(payload){
         "request":"sendQuote",
         "formData": payload.formData,
         "quoteId": payload.quoteId,
-        "pack": payload.pack
+        "pack": payload.pack,
+        "ipAddress": ipAddress
     }),
   };
 
