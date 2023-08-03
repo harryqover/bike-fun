@@ -367,6 +367,13 @@ function sendQuote(payload){
 function translator(key, variables){
   var translation = translations[key];
 
+  for (const key in variables) {
+    translation = translation.replace(
+      `{{${key}}}`,
+      variables[key]
+    );
+  }
+
   return translation
 }
 
