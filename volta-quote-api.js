@@ -130,6 +130,8 @@ radioLeasingTrue.addEventListener('change', function() {
     quoteInfo.leasedTrucks = true;
   }
   clickToGetPrice();
+  var nextStepPosition = $("#step-3").offset().top;
+  $("html, body").animate({scrollTop: nextStepPosition}, 500);
 });
 
 radioLeasingFalse.addEventListener('change', function() {
@@ -137,9 +139,12 @@ radioLeasingFalse.addEventListener('change', function() {
     quoteInfo.leasedTrucks = false;
   }
   clickToGetPrice();
+  var nextStepPosition = $("#step-3").offset().top;
+  $("html, body").animate({scrollTop: nextStepPosition}, 500);
 });
 
 
+$("#tooltipdangerousgoods").hide();
 const radioDangerousgoodsTrue = document.querySelector('#dangerousgoods-true');
 const radioDangerousgoodsFalse = document.querySelector('#dangerousgoods-false');
 radioDangerousgoodsFalse.click(); //select false by default
@@ -156,6 +161,8 @@ radioDangerousgoodsFalse.addEventListener('change', function() {
     quoteInfo.dangerousGoodsTrucks = false;
   }
   clickToGetPrice();
+  var nextStepPosition = $("#step-5").offset().top;
+  $("html, body").animate({scrollTop: nextStepPosition}, 500);
 });
 
 var selectUsage = $("#usage");
@@ -163,6 +170,8 @@ selectUsage.on("change", function() {
   var value = $(this).val();
   quoteInfo.usage = value;
   clickToGetPrice();
+  var nextStepPosition = $("#step-4").offset().top;
+  $("html, body").animate({scrollTop: nextStepPosition}, 500);
 });
 
 var selectDeductibleMtpl = $("#deductible_MTPL");
@@ -322,13 +331,19 @@ function actionOnErrors (errorsTriggered){
     switch (error) {
       case "dangerousGoodsTrucksCantBeInsured":
         //alert("We can't insure dangerous good trucks.");
-        openSaveQuoteModal("n/a", "dangerousGoods")
+        $("#tooltipdangerousgoods").show();
+        var nextStepPosition = $("#step-4").offset().top;
+        $("html, body").animate({scrollTop: nextStepPosition}, 500);
         break;
       case "truckPriceTooLow":
         alert("Truck price is too low.");
+        var nextStepPosition = $("#step-1").offset().top;
+        $("html, body").animate({scrollTop: nextStepPosition}, 500);
         break;
       case "truckPriceTooHigh":
         alert("Truck price is too high.");
+        var nextStepPosition = $("#step-1").offset().top;
+        $("html, body").animate({scrollTop: nextStepPosition}, 500);
         break;
       default:
         alert("Unknown error: " + error);
