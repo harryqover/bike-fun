@@ -75,7 +75,8 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
     window.payloadFromNinja = response;
     if(response.response.errors.length > 0){
       console.warn(response.response.errors);
-      alert("errors check logs");
+      //alert("errors check logs");
+      actionOnErrors (response.response.errors);
     } else {
       const formatter = new Intl.NumberFormat(configQuoteEngine.language+'-'+country, {
         style: 'currency',
