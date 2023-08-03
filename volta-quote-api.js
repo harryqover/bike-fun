@@ -44,58 +44,53 @@ function clickToGetPrice(){
 
 const googleSheetUrl = "https://script.google.com/macros/s/AKfycbxd7iLSKEWjn4Kjsh6SR4zVDZCz2HxnAXA1OHG_7pzBrE0VLi5ze-9DOV1Y7tpyr13d6Q/exec";
 
-function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, deductible_MTPL, deductible_Casco, country, usage) {    
-    $("[data-price]").text(translations.loadingPrices);
-    var loadingPricesDiv = '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>';
-    loadingPricesDiv = loadingPricesDiv + '<style>.lds-ellipsis {display: inline-block;position: relative;width: 80px;height: 80px;}.lds-ellipsis div {position: absolute;top: 33px;width: 13px;height: 13px;border-radius: 50%;background: #000;animation-timing-function: cubic-bezier(0, 1, 1, 0);}.lds-ellipsis div:nth-child(1) {left: 8px;animation: lds-ellipsis1 0.6s infinite;}.lds-ellipsis div:nth-child(2) {left: 8px;animation: lds-ellipsis2 0.6s infinite;}.lds-ellipsis div:nth-child(3) {left: 32px;animation: lds-ellipsis2 0.6s infinite;}.lds-ellipsis div:nth-child(4) {left: 56px;animation: lds-ellipsis3 0.6s infinite;}@keyframes lds-ellipsis1 {0% {transform: scale(0);}100% {transform: scale(1);}}@keyframes lds-ellipsis3 {0% {transform: scale(1);}100% {transform: scale(0);}}@keyframes lds-ellipsis2 {0% {transform: translate(0, 0);}100% {transform: translate(24px, 0);}}</style>'
-    //$(".amount").innerhtml(loadingPricesDiv);
-    var settings = {
-        "url": googleSheetUrl,
-        "method": "POST",
-        "timeout": 0,
-        "headers": {
-            "Content-Type": "text/plain;charset=utf-8"
-        },
-        "data": JSON.stringify({
-            "request":"getQuote",
-            "truckAmount": truckAmount,
-            "truckPrice": truckPrice,
-            "dangerousGoodsTrucks": dangerousGoodsTrucks,
-            "leasedTrucks": leasedTrucks,
-            "deductible_MTPL": deductible_MTPL,
-            "deductible_Casco": deductible_Casco,
-            "country": country,
-            "usage": usage,
-        }),
-    };
+function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, deductible_MTPL, deductible_Casco, country, usage) {
+  var textLoading = (translations)? translations.loadingPrices: "Loading new prices";
+  $("[data-price]").text(textLoading);
+  var loadingPricesDiv = '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>';
+  loadingPricesDiv = loadingPricesDiv + '<style>.lds-ellipsis {display: inline-block;position: relative;width: 80px;height: 80px;}.lds-ellipsis div {position: absolute;top: 33px;width: 13px;height: 13px;border-radius: 50%;background: #000;animation-timing-function: cubic-bezier(0, 1, 1, 0);}.lds-ellipsis div:nth-child(1) {left: 8px;animation: lds-ellipsis1 0.6s infinite;}.lds-ellipsis div:nth-child(2) {left: 8px;animation: lds-ellipsis2 0.6s infinite;}.lds-ellipsis div:nth-child(3) {left: 32px;animation: lds-ellipsis2 0.6s infinite;}.lds-ellipsis div:nth-child(4) {left: 56px;animation: lds-ellipsis3 0.6s infinite;}@keyframes lds-ellipsis1 {0% {transform: scale(0);}100% {transform: scale(1);}}@keyframes lds-ellipsis3 {0% {transform: scale(1);}100% {transform: scale(0);}}@keyframes lds-ellipsis2 {0% {transform: translate(0, 0);}100% {transform: translate(24px, 0);}}</style>'
+  //$(".amount").innerhtml(loadingPricesDiv);
+  var settings = {
+      "url": googleSheetUrl,
+      "method": "POST",
+      "timeout": 0,
+      "headers": {
+          "Content-Type": "text/plain;charset=utf-8"
+      },
+      "data": JSON.stringify({
+          "request":"getQuote",
+          "truckAmount": truckAmount,
+          "truckPrice": truckPrice,
+          "dangerousGoodsTrucks": dangerousGoodsTrucks,
+          "leasedTrucks": leasedTrucks,
+          "deductible_MTPL": deductible_MTPL,
+          "deductible_Casco": deductible_Casco,
+          "country": country,
+          "usage": usage,
+      }),
+  };
 
-    $.ajax(settings).done(function(response) {
-            console.log(response);
-            window.payloadFromNinja = response;
-            if(response.response.errors.length > 0){
-              console.warn(response.response.errors);
-              alert("errors check logs");
-            } else {
-              const formatter = new Intl.NumberFormat(configQuoteEngine.language+'-'+country, {
-                style: 'currency',
-                currency: response.response.currency.currency,
-              });
-
-              var formattedTotalPrice1 = formatter.format(response.response.packs.pack1);
-              var formattedTotalPrice2 = formatter.format(response.response.packs.pack2);
-              var formattedTotalPrice3 = formatter.format(response.response.packs.pack3);
-
-              $("[data-price='pack1']").text(formattedTotalPrice1);
-              $("[data-price='pack2']").text(formattedTotalPrice2);
-              $("[data-price='pack3']").text(formattedTotalPrice3);
-
-              $('[data-click="pack1"], [data-click="pack2"], [data-click="pack3"]').attr("data-quoteid",response.response.quoteId);
-
-            }
-            
-            //$("#form-quote > div.flex-v-25.margin-bottom-60 > div.price > div:nth-child(2)").text(formattedTotalPrice);
-        }
-    )
+  $.ajax(settings).done(function(response) {
+    console.log(response);
+    window.payloadFromNinja = response;
+    if(response.response.errors.length > 0){
+      console.warn(response.response.errors);
+      alert("errors check logs");
+    } else {
+      const formatter = new Intl.NumberFormat(configQuoteEngine.language+'-'+country, {
+        style: 'currency',
+        currency: response.response.currency.currency,
+      });
+      var formattedTotalPrice1 = formatter.format(response.response.packs.pack1);
+      var formattedTotalPrice2 = formatter.format(response.response.packs.pack2);
+      var formattedTotalPrice3 = formatter.format(response.response.packs.pack3);
+      $("[data-price='pack1']").text(formattedTotalPrice1);
+      $("[data-price='pack2']").text(formattedTotalPrice2);
+      $("[data-price='pack3']").text(formattedTotalPrice3);
+      $('[data-click="pack1"], [data-click="pack2"], [data-click="pack3"]').attr("data-quoteid",response.response.quoteId);
+      }
+    }
+  )
 }
 clickToGetPrice();
 
