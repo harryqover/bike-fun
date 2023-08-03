@@ -373,24 +373,28 @@ $("#sendQuoteBtn").on( "click", function(event) {
   var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company}, "quoteId": quoteId, "pack": pack};
   console.log(payload);
   sendQuote(payload);
+  $("#getquotediv").html('<div>Thank you we will contact you soon with your master policy.</div>')
 });
 
 function openSaveQuoteModal(quoteId, pack){
   console.log(quoteId, pack);
-  var modal = '<section style="display: flex;" class="modal"><div data-w-id="395cefe5-e9fb-3b6d-d18c-16158910455b" class="div-block-320"></div><div style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); filter: blur(0px); transform-style: preserve-3d;" class="w-layout-blockcontainer address-modal w-container">';
-  modal = modal + '<h4 class="h4-modal">You have selected the '+pack+' plan</h4>';
-  modal = modal + '<h2 class="h2-second">Get master policy sent to you</h2>';
-  modal = modal + '<div class="w-form"><form id="getquote" class="flex-v for-modal">';
-    modal = modal + '<div class="flex-h"><div class="rightaligned">VAT</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-vat" required=""></div>';
-    modal = modal + '<div class="flex-h"><div class="rightaligned">Email</div><input type="email" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-email" required=""></div>';
-    modal = modal + '<div class="flex-h"><div class="rightaligned">Phone</div><input type="tel" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-tel" required=""></div>';
-    modal = modal + '<div class="flex-h"><div class="rightaligned">Address</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-address" required=""></div>';
-    modal = modal + '<div class="flex-h"><div class="rightaligned">Company name</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-company" required=""></div>';
-    modal = modal + '<input type="text" id="quoteId" value="'+quoteId+'" style="display:none">'
-    modal = modal + '<input type="text" id="pack" value="'+pack+'" style="display:none">'
-    modal = modal + '<a type="submit" class="button-primary-2 grey center w-button" id="sendQuoteBtn">submit</a></form>';
-  modal = modal + '</div>';
-  modal = modal + '<div class="div-close">';
-  modal = modal + '<img src="https://assets.website-files.com/644911ac1572f72efba69772/644922a7462df727411a64b5_cross.svg" loading="lazy" alt="" class="close-icon"><div>Close</div></div></div></section>';
+  var modal = '<section style="display: flex;" class="modal"><div class="div-block-320"></div>';
+  modal = modal + '<div style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); filter: blur(0px); transform-style: preserve-3d;" class="w-layout-blockcontainer address-modal w-container" id="getquotediv">';
+    modal = modal + '<h4 class="h4-modal">You have selected the '+pack+' plan</h4>';
+    modal = modal + '<h2 class="h2-second">Get master policy sent to you</h2>';
+    modal = modal + '<div class="w-form"><form id="getquote" class="flex-v for-modal">';
+      modal = modal + '<div class="flex-h"><div class="rightaligned">VAT</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-vat" required=""></div>';
+      modal = modal + '<div class="flex-h"><div class="rightaligned">Email</div><input type="email" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-email" required=""></div>';
+      modal = modal + '<div class="flex-h"><div class="rightaligned">Phone</div><input type="tel" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-tel" required=""></div>';
+      modal = modal + '<div class="flex-h"><div class="rightaligned">Address</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-address" required=""></div>';
+      modal = modal + '<div class="flex-h"><div class="rightaligned">Company name</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-company" required=""></div>';
+      modal = modal + '<input type="text" id="quoteId" value="'+quoteId+'" style="display:none">'
+      modal = modal + '<input type="text" id="pack" value="'+pack+'" style="display:none">'
+      modal = modal + '<a type="submit" class="button-primary-2 grey center w-button" id="sendQuoteBtn">submit</a></form>';
+    modal = modal + '</div>';
+    modal = modal + '<div class="div-close">';
+     modal = modal + '<img src="https://assets.website-files.com/644911ac1572f72efba69772/644922a7462df727411a64b5_cross.svg" loading="lazy" alt="" class="close-icon"><div>Close</div>';
+    modal = modal + '</div>';
+  modal = modal + '</div></section>';
   $("body").append(modal);
 }
