@@ -89,8 +89,7 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
       $("[data-price='pack3']").text(formattedTotalPrice3);
       $('[data-click="pack1"], [data-click="pack2"], [data-click="pack3"]').attr("data-quoteid",response.response.quoteId);
       }
-    }
-  )
+  })
 }
 clickToGetPrice();
 
