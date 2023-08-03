@@ -91,7 +91,7 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
       }
   })
 }
-clickToGetPrice();
+//clickToGetPrice();
 
 
 
@@ -123,7 +123,7 @@ $("[data-quoteid]").on( "click", function() {
 
 const radioLeasingTrue = document.querySelector('#leasing-true');
 const radioLeasingFalse = document.querySelector('#leasing-false');
-radioLeasingFalse.click(); //select false by default
+//radioLeasingFalse.click(); //select false by default
 
 radioLeasingTrue.addEventListener('change', function() {
   if (this.checked) {
@@ -147,7 +147,7 @@ radioLeasingFalse.addEventListener('change', function() {
 $("#tooltipdangerousgoods").hide();
 const radioDangerousgoodsTrue = document.querySelector('#dangerousgoods-true');
 const radioDangerousgoodsFalse = document.querySelector('#dangerousgoods-false');
-radioDangerousgoodsFalse.click(); //select false by default
+//radioDangerousgoodsFalse.click(); //select false by default
 
 radioDangerousgoodsTrue.addEventListener('change', function() {
   if (this.checked) {
