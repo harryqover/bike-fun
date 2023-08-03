@@ -108,9 +108,11 @@ priceInput.addEventListener('change', function() {
   clickToGetPrice();
 })
 
+$('#tooltipavgprice').hide();
 const avgTruckPrice = {"DE":345000,"FR":345000};
 $("[data-click='avgprice']").on( "click", function() {
   $('#truckprice').val(avgTruckPrice[configQuoteEngine.country]);
+  $('#tooltipavgprice').show();
   quoteInfo.truckPrice = $('#truckprice').val() ;
   clickToGetPrice();
 } );
