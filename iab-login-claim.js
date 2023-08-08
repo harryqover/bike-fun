@@ -41,15 +41,19 @@ function clickToLogin() {
     		getNinjaData(cigarId, email);
     	} else {
     		//not valid email
-    		alert("Email format is not valid");
+    		//alert("Email format is not valid");
             $("#disconnected").show();
             $(".loading").hide();
+            $('<style>p.error {color: #DC3545;margin-top: 10px;}</style>').insertAfter("#btnToPaperform");
+            $("<p class='error'>Email format is not valid</p>").insertAfter("#btnToPaperform");
    		 }
     } else {
     	//not valid cigar id
         $("#disconnected").show();
         $(".loading").hide();
-    	alert("Contract reference is not valid");
+    	//alert("Contract reference is not valid");
+        $('<style>p.error {color: #DC3545;margin-top: 10px;}</style>').insertAfter("#btnToPaperform");
+        $("<p class='error'>Contract reference is not valid</p>").insertAfter("#btnToPaperform");
     }
 }
 
