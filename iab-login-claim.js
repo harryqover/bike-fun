@@ -80,7 +80,11 @@ function getNinjaData(cigarId, email) {
         window.payloadFromNinja = response;
         if(response.payload == "error"){
             console.warn("error while trying to connect");
-            alert("Make sure you connect with the email and contract reference from your contract");
+            //alert("Make sure you connect with the email and contract reference from your contract");
+            $('<style>p.error {color: #DC3545;margin-top: 10px;}</style>').insertAfter("#btnToPaperform");
+            $("<p class='error'>Make sure you connect with the email and contract reference from your contract</p>").insertAfter("#btnToPaperform");
+            $("#disconnected").show();
+            $(".loading").hide();
         } else {
         	var lang = response.payload.language;
         	var registrationPlate = response.payload.risk.registrationPlate;
