@@ -318,7 +318,7 @@ function openSaveQuoteModal(quoteId, pack){
       $("#sendQuoteBtn").attr("style","opacity:0.25");
       $("#sendQuoteBtn").text(translations.sending);
     } else {
-      $("<p style='color:#DC3545'>"+translations.truckPriceTooLow+"</p>").insertAfter("#sendQuoteBtn");
+      $("<p style='color:#DC3545'>"+translations.errorMissingFields+"</p>").insertAfter("#sendQuoteBtn");
     }
     
   });
