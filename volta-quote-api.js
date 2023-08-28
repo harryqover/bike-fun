@@ -1,4 +1,4 @@
-console.warn("updated 20230828 1736")
+console.warn("updated 20230828 1739")
 
 let ipAddress = "";
 $(document).ready(function() {
