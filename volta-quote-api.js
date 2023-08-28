@@ -199,147 +199,6 @@ selectDeductibleMtpl.on("change", function() {
 });
 
 
-
-// OLD CODE
-/*
-const checkboxLeasing = document.querySelector('#leasing');
-checkboxLeasing.addEventListener('change', function() {
-  if (this.checked) {
-    console.log('The checkboxLeasing is toggled on');
-    quoteInfo.leasedTrucks = true;
-    // Perform additional actions when the checkbox is toggled on
-  } else {
-    console.log('The checkboxLeasing is toggled off');
-    quoteInfo.leasedTrucks = false;
-    // Perform additional actions when the checkbox is toggled off
-  }
-  clickToGetPrice();
-});
-
-
-const checkboxDangerous = document.querySelector('#dangerous');
-checkboxDangerous.addEventListener('change', function() {
-  if (this.checked) {
-    console.log('The checkboxDangerous is toggled on');
-    quoteInfo.dangerousGoodsTrucks = true;
-    // Perform additional actions when the checkbox is toggled on
-  } else {
-    console.log('The checkboxDangerous is toggled off');
-    quoteInfo.dangerousGoodsTrucks = false;
-    // Perform additional actions when the checkbox is toggled off
-  }
-  clickToGetPrice();
-});
-
-
-const radioZone1 = document.querySelector('#zone1');
-radioZone1.click(); //select 16t by default
-const radioZone2 = document.querySelector('#zone2');
-
-radioZone1.addEventListener('change', function() {
-  if (this.checked) {
-    console.log('radioZone1 is selected');
-    quoteInfo.zone = "Mono";
-    quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
-    // Perform additional actions when 16T is selected
-  }
-  clickToGetPrice();
-});
-radioZone2.addEventListener('change', function() {
-  if (this.checked) {
-    console.log('radioZone2 is selected');
-    quoteInfo.zone = "Bi";
-    quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
-    // Perform additional actions when 16T is selected
-  }
-  clickToGetPrice();
-});
-
-
-
-const checkboxRefrigerated = document.querySelector('#refrigerated');
-checkboxRefrigerated.addEventListener('change', function() {
-  if (this.checked) {
-    console.log('The checkboxRefrigerated is toggled on');
-    // Perform additional actions when the checkbox is toggled on
-    $(".ambient-vz, .img-ambient").hide();
-    $(".refrigerated-vz, .img-refrigerated, .zoneblock").show();
-    quoteInfo.type = "Refri";
-    quoteInfo.zone = "Mono";
-    quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
-  } else {
-    console.log('The checkboxRefrigerated is toggled off');
-    // Perform additional actions when the checkbox is toggled off
-    $(".ambient-vz, .img-ambient").show();
-    $(".refrigerated-vz, .img-refrigerated, .zoneblock").hide();
-    quoteInfo.type = "Ambient";
-    quoteInfo.zone = "";
-    quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
-  }
-  clickToGetPrice();
-});
-
-
-const radio16T = document.querySelector('#tons16');
-radio16T.click(); //select 16t by default
-const radio18T = document.querySelector('#tons18');
-
-radio16T.addEventListener('change', function() {
-  if (this.checked) {
-    console.log('16T is selected');
-    quoteInfo.tons = "16t";
-    quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
-    // Perform additional actions when 16T is selected
-  }
-  clickToGetPrice();
-});
-
-radio18T.addEventListener('change', function() {
-  if (this.checked) {
-    console.log('18T is selected');
-    quoteInfo.tons = "18t";
-    quoteInfo.truckType = quoteInfo.tons + quoteInfo.type + quoteInfo.zone;
-    // Perform additional actions when 18T is selected
-  }
-  clickToGetPrice();
-});
-
-
-
-const trucksAmount = document.querySelector('#trucksamount');
-$("#trucksamount").val(1);
-
-trucksAmount.addEventListener('input', function() {
-  const value = parseFloat(this.value);
-  quoteInfo.truckAmount = value;
-  $("[data-var=truckamount]").text(value);
-  // Perform additional actions with the updated value
-  clickToGetPrice();
-});
-
-const selectDeductible_MTPL = document.querySelector('#deductible_MTPL');
-selectDeductible_MTPL.addEventListener('change', function() {
-  const selectedValue = this.value;
-  quoteInfo.deductible_MTPL = selectedValue;
-  clickToGetPrice();
-});
-
-
-const selectDeductible_PartialCasco = document.querySelector('#deductible_PartialCasco');
-selectDeductible_PartialCasco.addEventListener('change', function() {
-  const selectedValue = this.value;
-  quoteInfo.deductible_PartialCasco = selectedValue;
-  clickToGetPrice();
-});
-
-
-const selectDeductible_CollisionCasco = document.querySelector('#deductible_CollisionCasco');
-selectDeductible_CollisionCasco.addEventListener('change', function() {
-  const selectedValue = this.value;
-  quoteInfo.deductible_CollisionCasco = selectedValue;
-  clickToGetPrice();
-});
-*/
 function actionOnErrors (errorsTriggered){
   $.each(errorsTriggered, function(index, error) {
     switch (error) {
@@ -427,7 +286,7 @@ function openSaveQuoteModal(quoteId, pack){
       modal = modal + '<div class="small-explanation center">'+translator("voltaNecessaryToReadTandC",{"ipid": ipidlink, "tandc": tandclink})+'</div>';
       modal = modal + '<input type="text" id="quoteId" value="'+quoteId+'" style="display:none">';
       modal = modal + '<input type="text" id="pack" value="'+pack+'" style="display:none">';
-      modal = modal + '<a type="submit" class="button-primary-2 grey center w-button" id="sendQuoteBtn">'+translations.sendQuoteModalSubmit+'</a></form>';
+      modal = modal + '<a class="button-primary-2 grey center w-button" id="sendQuoteBtn">'+translations.sendQuoteModalSubmit+'</a></form>';
     modal = modal + '</div></div>';
     modal = modal + '<div class="div-close" id="closemodalgetquote">';
      modal = modal + '<img src="https://assets.website-files.com/644911ac1572f72efba69772/644922a7462df727411a64b5_cross.svg" loading="lazy" alt="" class="close-icon"><div>'+translations.sendQuoteModalClose+'</div>';
@@ -451,10 +310,16 @@ function openSaveQuoteModal(quoteId, pack){
     var company = $("#getquote-company").val();
     var quoteId = $("#quoteId").val();
     var pack = $("#pack").val();
-    var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company}, "quoteId": quoteId, "pack": pack};
-    console.log(payload);
-    sendQuote(payload);
-    $("#sendQuoteBtn").attr("style","opacity:0.25");
-    $("#sendQuoteBtn").text(translations.sending);
+    var checked = $("#getquote-checktandc").is(":checked");
+    if(checked && email != "" && email != "" && vat != "" && tel != "" && address != "" && company != ""){
+      var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company}, "quoteId": quoteId, "pack": pack};
+      console.log(payload);
+      sendQuote(payload);
+      $("#sendQuoteBtn").attr("style","opacity:0.25");
+      $("#sendQuoteBtn").text(translations.sending);
+    } else {
+      $("<p style='color:#DC3545'>"+translations.truckPriceTooLow+"</p>").insertAfter("#sendQuoteBtn");
+    }
+    
   });
 }
