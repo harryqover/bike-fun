@@ -410,6 +410,8 @@ function translator(key, variables){
 
 function openSaveQuoteModal(quoteId, pack){
   console.log(quoteId, pack);
+  var tandclink = "https://www.qover.com/?tandclink";
+  var ipidlink = "https://www.qover.com/?ipidlink";
   var packTranslations = translator("packNames"+pack);
   var modal = '<section style="display: flex;" class="modal" id="modalgetquote"><div class="div-block-320"></div>';
   modal = modal + '<div style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); filter: blur(0px); transform-style: preserve-3d;" class="w-layout-blockcontainer address-modal w-container">';
@@ -421,6 +423,7 @@ function openSaveQuoteModal(quoteId, pack){
       modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputPhone+'</div><input type="tel" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-tel" required=""></div>';
       modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputAddress+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-address" required=""></div>';
       modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputCompanyName+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-company" required=""></div>';
+      modal = modal + '<div class="small-explanation center">'+translator("voltaNecessaryToReadTandC",{"ipid": ipidlink, "tandc": tandclink})+'</div>';
       modal = modal + '<input type="text" id="quoteId" value="'+quoteId+'" style="display:none">'
       modal = modal + '<input type="text" id="pack" value="'+pack+'" style="display:none">'
       modal = modal + '<a type="submit" class="button-primary-2 grey center w-button" id="sendQuoteBtn">'+translations.sendQuoteModalSubmit+'</a></form>';
