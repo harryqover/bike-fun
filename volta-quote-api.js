@@ -283,6 +283,7 @@ function openSaveQuoteModal(quoteId, pack){
       modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputPhone+'</div><input type="tel" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-tel" required=""></div>';
       modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputAddress+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-address" required=""></div>';
       modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputCompanyName+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-company" required=""></div>';
+      modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputIban+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-iban" required=""></div>';
       modal = modal + '<div class="flex-h"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checktandc" required=""> '+translator("voltaNecessaryToReadTandC",{"ipid": ipidlink, "tandc": tandclink})+'</div>';
       //modal = modal + '<div class="small-explanation center">'+translator("voltaNecessaryToReadTandC",{"ipid": ipidlink, "tandc": tandclink})+'</div>';
       modal = modal + '<input type="text" id="quoteId" value="'+quoteId+'" style="display:none">';
@@ -309,11 +310,12 @@ function openSaveQuoteModal(quoteId, pack){
     var tel = $("#getquote-tel").val();
     var address = $("#getquote-address").val();
     var company = $("#getquote-company").val();
+    var iban = $("#getquote-iban").val();
     var quoteId = $("#quoteId").val();
     var pack = $("#pack").val();
     var checked = $("#getquote-checktandc").is(":checked");
     if(checked && email != "" && email != "" && vat != "" && tel != "" && address != "" && company != ""){
-      var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company}, "quoteId": quoteId, "pack": pack, "country": configQuoteEngine.country};
+      var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company, "iban": iban}, "quoteId": quoteId, "pack": pack, "country": configQuoteEngine.country};
       console.log(payload);
       sendQuote(payload);
       $("#sendQuoteBtn").attr("style","opacity:0.25");
