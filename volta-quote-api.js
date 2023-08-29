@@ -312,7 +312,7 @@ function openSaveQuoteModal(quoteId, pack){
     var pack = $("#pack").val();
     var checked = $("#getquote-checktandc").is(":checked");
     if(checked && email != "" && email != "" && vat != "" && tel != "" && address != "" && company != ""){
-      var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company}, "quoteId": quoteId, "pack": pack};
+      var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company}, "quoteId": quoteId, "pack": pack, "country": configQuoteEngine.country};
       console.log(payload);
       sendQuote(payload);
       $("#sendQuoteBtn").attr("style","opacity:0.25");
