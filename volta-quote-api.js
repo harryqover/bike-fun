@@ -284,6 +284,7 @@ function openSaveQuoteModal(quoteId, pack){
       modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputCompanyName+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-company" required=""></div>';
       modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputVAT+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-vat" required=""></div>';      
       if(configQuoteEngine.country == "FR"){
+        modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputSIREN+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-SIREN" required=""></div>';      
         modal = modal + '<div class="flex-h"><img src="https://assets.website-files.com/644911ac1572f72efba69772/64cb602fa1c7d74e79e5ff52_i.svg" loading="lazy" width="39" alt="" title="'+translator("ibanExplanation")+'" class="itooltipiban"><div class="rightaligned">'+translations.sendQuoteModalInputRIB+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-iban" required=""></div>';
       } else {
         modal = modal + '<div class="flex-h"><img src="https://assets.website-files.com/644911ac1572f72efba69772/64cb602fa1c7d74e79e5ff52_i.svg" loading="lazy" width="39" alt="" title="'+translator("ibanExplanation")+'" class="itooltipiban"><div class="rightaligned">'+translations.sendQuoteModalInputIban+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-iban" required=""></div>';
@@ -319,6 +320,7 @@ function openSaveQuoteModal(quoteId, pack){
   $("#sendQuoteBtn").on( "click", function(event) {
     event.preventDefault();
     var vat = $("#getquote-vat").val();
+    var siren = $("#getquote-SIREN").val();
     var email = $("#getquote-email").val();
     var tel = $("#getquote-tel").val();
     var address = $("#getquote-address").val();
@@ -334,7 +336,7 @@ function openSaveQuoteModal(quoteId, pack){
     var checkbox4 = $("#getquote-checkbox4").is(":checked");
     var checkbox5 = $("#getquote-checkbox5").is(":checked");
     if(checked && email != "" && email != "" && vat != "" && tel != "" && address != "" && company != ""){
-      var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company, "iban": iban}, "quoteId": quoteId, "pack": pack, "country": configQuoteEngine.country, "papercopyrqst": papercopyrqst};
+      var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company, "iban": iban, "siren": siren}, "quoteId": quoteId, "pack": pack, "country": configQuoteEngine.country, "papercopyrqst": papercopyrqst};
       console.log(payload);
       sendQuote(payload);
       $("#sendQuoteBtn").attr("style","opacity:0.25");
