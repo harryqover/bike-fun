@@ -282,9 +282,15 @@ function openSaveQuoteModal(quoteId, pack){
       modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputPhone+'</div><input type="tel" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-tel" required=""></div>';
       modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputAddress+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-address" required=""></div>';
       modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputCompanyName+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-company" required=""></div>';
-      modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputVAT+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-vat" required=""></div>';
-      modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputIban+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-iban" required=""></div>';
-      modal = modal + '<div class="flex-h"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checktandc" required=""> '+translator("voltaNecessaryToReadTandC",{"ipid": ipidlink, "tandc": tandclink})+'</div>';
+      modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputVAT+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-vat" required=""></div>';      
+      if(configQuoteEngine.country == "FR"){
+        modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputRIB+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-iban" required=""></div>';
+      } else {
+        modal = modal + '<div class="flex-h"><div class="rightaligned">'+translations.sendQuoteModalInputIban+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-iban" required=""></div>';
+      }
+      modal = modal + '<div id="tooltipavgprice" class="info" style=""><img src="https://assets.website-files.com/644911ac1572f72efba69772/64cb602fa1c7d74e79e5ff52_i.svg" loading="lazy" width="39" alt=""><div>'+translator("ibanExplanation")+'</div></div>'
+      modal = modal + '<div class="checkboVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checktandc" required=""> '+translator("voltaNecessaryToReadTandC",{"ipid": ipidlink, "tandc": tandclink})+'</div>';
+      modal = modal + '<div class="checkboVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-papercopyrqst" required=""> '+translator("paperCopyRequest")+'</div>';
       //modal = modal + '<div class="small-explanation center">'+translator("voltaNecessaryToReadTandC",{"ipid": ipidlink, "tandc": tandclink})+'</div>';
       modal = modal + '<input type="text" id="quoteId" value="'+quoteId+'" style="display:none">';
       modal = modal + '<input type="text" id="pack" value="'+pack+'" style="display:none">';
@@ -297,6 +303,7 @@ function openSaveQuoteModal(quoteId, pack){
   modal = modal + '<style>.successMessageSendQuote {font-size: 16px;width: 100%;padding: 120px 40px 20px 40px;text-align: center;border-radius: 4px;background-image: url("https://uploads-ssl.webflow.com/644911ac1572f72efba69772/64cb5ca3f4fd1a21b4c82ad6_v.svg");background-position: center top;background-repeat: no-repeat;margin: 80px 0 40px 0;}';
   modal = modal + 'h4.h4-modal {display: flex;align-items: center;background: #fff no-repeat url("https://uploads-ssl.webflow.com/644911ac1572f72efba69772/64cb602fa1c7d74e79e5ff52_i.svg");background-position: 20px;padding: 20px 20px 20px 80px;border: 1px solid rgba(147, 166, 185, 0.06);border-radius: 6px;box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.03);background-size: 5%;';
   modal = modal +'.address-modal {display: block !important;}';
+  modal = modal + '.checkboVlta {font-size: 11px;max-width: 600px;margin: 0 auto;}'
   modal = modal + '@media (max-width: 480px) {h4.h4-modal {background-size: 15%;text-align: left;}}</style>'
   $("body").append(modal);
 
@@ -315,8 +322,9 @@ function openSaveQuoteModal(quoteId, pack){
     var quoteId = $("#quoteId").val();
     var pack = $("#pack").val();
     var checked = $("#getquote-checktandc").is(":checked");
+    var papercopyrqst = $("#getquote-papercopyrqst").is(":checked");
     if(checked && email != "" && email != "" && vat != "" && tel != "" && address != "" && company != ""){
-      var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company, "iban": iban}, "quoteId": quoteId, "pack": pack, "country": configQuoteEngine.country};
+      var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company, "iban": iban}, "quoteId": quoteId, "pack": pack, "country": configQuoteEngine.country, "papercopyrqst": papercopyrqst};
       console.log(payload);
       sendQuote(payload);
       $("#sendQuoteBtn").attr("style","opacity:0.25");
