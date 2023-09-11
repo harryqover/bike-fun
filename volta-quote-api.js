@@ -288,6 +288,11 @@ function openSaveQuoteModal(quoteId, pack){
       } else {
         modal = modal + '<div class="flex-h"><img src="https://assets.website-files.com/644911ac1572f72efba69772/64cb602fa1c7d74e79e5ff52_i.svg" loading="lazy" width="39" alt="" title="'+translator("ibanExplanation")+'" class="itooltipiban"><div class="rightaligned">'+translations.sendQuoteModalInputIban+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-iban" required=""></div>';
       }
+      modal = modal + '<div class="checkboxVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox1" required=""> '+translator("checkbox1")+'</div>';
+      modal = modal + '<div class="checkboxVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox2" required=""> '+translator("checkbox2")+'</div>';
+      modal = modal + '<div class="checkboxVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox3" required=""> '+translator("checkbox3")+'</div>';
+      modal = modal + '<div class="checkboxVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox4" required=""> '+translator("checkbox4")+'</div>';
+      modal = modal + '<div class="checkboxVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox5" required=""> '+translator("checkbox5")+'</div>';
       modal = modal + '<div class="checkboxVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checktandc" required=""> '+translator("voltaNecessaryToReadTandC",{"ipid": ipidlink, "tandc": tandclink})+'</div>';
       modal = modal + '<div class="checkboxVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-papercopyrqst" required=""> '+translator("paperCopyRequest")+'</div>';
       //modal = modal + '<div class="small-explanation center">'+translator("voltaNecessaryToReadTandC",{"ipid": ipidlink, "tandc": tandclink})+'</div>';
@@ -323,6 +328,11 @@ function openSaveQuoteModal(quoteId, pack){
     var pack = $("#pack").val();
     var checked = $("#getquote-checktandc").is(":checked");
     var papercopyrqst = $("#getquote-papercopyrqst").is(":checked");
+    var checkbox1 = $("#getquote-checkbox1").is(":checked");
+    var checkbox2 = $("#getquote-checkbox2").is(":checked");
+    var checkbox3 = $("#getquote-checkbox3").is(":checked");
+    var checkbox4 = $("#getquote-checkbox4").is(":checked");
+    var checkbox5 = $("#getquote-checkbox5").is(":checked");
     if(checked && email != "" && email != "" && vat != "" && tel != "" && address != "" && company != ""){
       var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company, "iban": iban}, "quoteId": quoteId, "pack": pack, "country": configQuoteEngine.country, "papercopyrqst": papercopyrqst};
       console.log(payload);
