@@ -163,6 +163,8 @@ if(quoteInfo.truckAmount === 1){
 
 $("a[href$='#step-3']").on( "click", function(e) {
   e.preventDefault();
+  console.log("click on button");
+  console.log(quoteInfo.truckAmount);
   if(quoteInfo.truckAmount === 1){
     var nextStepPosition = $("#step-4").offset().top;
   } else {
