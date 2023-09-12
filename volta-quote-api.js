@@ -147,13 +147,19 @@ $('#truckAmount').val(1);//set default to 1
 const truckAmountInput = document.querySelector('#truckAmount');
 truckAmountInput.addEventListener('change', function() {
   quoteInfo.truckAmount = Number($('#truckAmount').val()) ;
-  if(quoteInfo.truckAmount == 1){
+  if(quoteInfo.truckAmount === 1){
     $("#step-3").hide();
   } else {
     $("#step-3").show();
   }
   clickToGetPrice();
 })
+if(quoteInfo.truckAmount === 1){
+  $("#step-3").hide();
+} else {
+  $("#step-3").show();
+}
+
 
 $("a[href$='#step-3']").on( "click", function() {
   e.preventDefault();
@@ -168,10 +174,11 @@ $("a[href$='#step-3']").on( "click", function() {
 
 const radioOnePriceTrue = document.querySelector('#onePrice-true');
 const radioOnePriceFalse = document.querySelector('#onePrice-false');
-
+$("#tooltipsameprice").hide();
 radioOnePriceTrue.addEventListener('change', function() {
   if (this.checked) {
     quoteInfo.samePrice = true;
+    $("#tooltipsameprice").show();
   }
   clickToGetPrice();
   var nextStepPosition = $("#step-4").offset().top;
@@ -181,6 +188,7 @@ radioOnePriceTrue.addEventListener('change', function() {
 radioOnePriceFalse.addEventListener('change', function() {
   if (this.checked) {
     quoteInfo.samePrice = false;
+    $("#tooltipsameprice").hide();
   }
   clickToGetPrice();
   var nextStepPosition = $("#step-4").offset().top;
