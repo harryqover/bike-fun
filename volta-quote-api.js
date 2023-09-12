@@ -42,7 +42,8 @@ var quoteInfo = {
   "leasedTrucks": false,
   "deductible_MTPL": "10000",
   "deductible_Casco": "10000",
-  "country": configQuoteEngine.country
+  "country": configQuoteEngine.country,
+  "samePrice": true
 }
 
 function clickToGetPrice(){
@@ -140,6 +141,35 @@ dangerous STEP-6
 price STEP-7
 
 */
+
+$('#truckAmount').val(1);//set default to 1
+const truckAmountInput = document.querySelector('#truckAmount');
+truckAmountInput.addEventListener('change', function() {
+  quoteInfo.truckAmount = $('#truckAmount').val() ;
+  clickToGetPrice();
+})
+
+const radioOnePriceTrue = document.querySelector('#onePrice-true');
+const radioOnePriceFalse = document.querySelector('#onePrice-false');
+
+radioOnePriceTrue.addEventListener('change', function() {
+  if (this.checked) {
+    quoteInfo.samePrice = true;
+  }
+  clickToGetPrice();
+  var nextStepPosition = $("#step-4").offset().top;
+  $("html, body").animate({scrollTop: nextStepPosition}, 800);
+});
+
+radioOnePriceFalse.addEventListener('change', function() {
+  if (this.checked) {
+    quoteInfo.samePrice = false;
+  }
+  clickToGetPrice();
+  var nextStepPosition = $("#step-4").offset().top;
+  $("html, body").animate({scrollTop: nextStepPosition}, 800);
+});
+
 
 const radioLeasingTrue = document.querySelector('#leasing-true');
 const radioLeasingFalse = document.querySelector('#leasing-false');
