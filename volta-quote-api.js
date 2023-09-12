@@ -306,6 +306,7 @@ function openSaveQuoteModal(quoteId, pack){
     modal = modal + '</div>';
   modal = modal + '</div></section>';
   modal = modal + '<style>.successMessageSendQuote {font-size: 16px;width: 100%;padding: 120px 40px 20px 40px;text-align: center;border-radius: 4px;background-image: url("https://uploads-ssl.webflow.com/644911ac1572f72efba69772/64cb5ca3f4fd1a21b4c82ad6_v.svg");background-position: center top;background-repeat: no-repeat;margin: 80px 0 40px 0;}';
+  modal = modal + 'h4.h4-modal {padding-left: 100px;}img.itooltipiban {position: absolute;left: 0;}.rightaligned {position: relative;display: flex;flex-direction: row-reverse;}';
   modal = modal + 'h4.h4-modal {display: flex;align-items: center;background: #fff no-repeat url("https://uploads-ssl.webflow.com/644911ac1572f72efba69772/64cb602fa1c7d74e79e5ff52_i.svg");background-position: 20px;padding: 20px 20px 20px 80px;border: 1px solid rgba(147, 166, 185, 0.06);border-radius: 6px;box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.03);background-size: 5%;';
   modal = modal + '.address-modal {display: block !important;}';
   modal = modal + '.checkboxVlta {font-size: 11px !important;max-width: 600px !important;margin: 0 auto !important;}';
