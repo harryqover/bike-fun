@@ -156,7 +156,8 @@ truckAmountInput.addEventListener('change', function() {
 })
 
 $("a[href$='#step-3']").on( "click", function() {
-  if(quoteInfo.truckAmount == 1){
+  e.preventDefault();
+  if(quoteInfo.truckAmount === 1){
     var nextStepPosition = $("#step-4").offset().top;
   } else {
     var nextStepPosition = $("#step-3").offset().top;
