@@ -129,7 +129,17 @@ $("[data-quoteid]").on( "click", function() {
   }
 } );
 
+/*
+STEPS
+price STEP-1
+truckAmount STEP-2
+onePrice-true STEP-3
+leasing STEP-4
+usage STEP-5
+dangerous STEP-6
+price STEP-7
 
+*/
 
 const radioLeasingTrue = document.querySelector('#leasing-true');
 const radioLeasingFalse = document.querySelector('#leasing-false');
@@ -140,7 +150,7 @@ radioLeasingTrue.addEventListener('change', function() {
     quoteInfo.leasedTrucks = true;
   }
   clickToGetPrice();
-  var nextStepPosition = $("#step-3").offset().top;
+  var nextStepPosition = $("#step-5").offset().top;
   $("html, body").animate({scrollTop: nextStepPosition}, 800);
 });
 
@@ -149,7 +159,7 @@ radioLeasingFalse.addEventListener('change', function() {
     quoteInfo.leasedTrucks = false;
   }
   clickToGetPrice();
-  var nextStepPosition = $("#step-3").offset().top;
+  var nextStepPosition = $("#step-5").offset().top;
   $("html, body").animate({scrollTop: nextStepPosition}, 800);
 });
 
@@ -163,7 +173,7 @@ radioDangerousgoodsTrue.addEventListener('change', function() {
   if (this.checked) {
     quoteInfo.dangerousGoodsTrucks = true;
     clickToGetPrice();
-    var nextStepPosition = $("#step-5").offset().top;
+    var nextStepPosition = $("#step-7").offset().top;
     $("html, body").animate({scrollTop: nextStepPosition}, 800);
   }
 
@@ -173,7 +183,7 @@ radioDangerousgoodsFalse.addEventListener('change', function() {
   if (this.checked) {
     quoteInfo.dangerousGoodsTrucks = false;
     clickToGetPrice();
-    var nextStepPosition = $("#step-5").offset().top;
+    var nextStepPosition = $("#step-7").offset().top;
     $("html, body").animate({scrollTop: nextStepPosition}, 800);
     $("#tooltipdangerousgoods").hide(500);
   }
@@ -184,7 +194,7 @@ selectUsage.on("change", function() {
   var value = $(this).val();
   quoteInfo.usage = value;
   clickToGetPrice();
-  var nextStepPosition = $("#step-4").offset().top;
+  var nextStepPosition = $("#step-6").offset().top;
   $("html, body").animate({scrollTop: nextStepPosition}, 800);
 });
 
