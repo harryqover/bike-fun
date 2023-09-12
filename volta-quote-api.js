@@ -179,7 +179,7 @@ $("#tooltipsameprice").hide();
 radioOnePriceTrue.addEventListener('change', function() {
   if (this.checked) {
     quoteInfo.samePrice = true;
-    $("#tooltipsameprice").show();
+    $("#tooltipsameprice").hide();
   }
   clickToGetPrice();
   var nextStepPosition = $("#step-4").offset().top;
@@ -189,7 +189,7 @@ radioOnePriceTrue.addEventListener('change', function() {
 radioOnePriceFalse.addEventListener('change', function() {
   if (this.checked) {
     quoteInfo.samePrice = false;
-    $("#tooltipsameprice").hide();
+    $("#tooltipsameprice").show();
   }
   clickToGetPrice();
   var nextStepPosition = $("#step-4").offset().top;
