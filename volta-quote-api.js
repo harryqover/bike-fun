@@ -355,13 +355,13 @@ function openSaveQuoteModal(quoteId, pack){
       } else {
         modal = modal + '<div class="flex-h"><div class="rightaligned"><img src="https://uploads-ssl.webflow.com/644911ac1572f72efba69772/64ed9b2329f3b2cfe8815217_icon%20i.svg" loading="lazy" width="39" alt="" title="'+translator("ibanExplanation")+'" class="itooltipiban">'+translations.sendQuoteModalInputIban+'</div><input type="text" class="input nomarginbottom w-input" maxlength="256" name="field-3" placeholder="" id="getquote-iban" required=""></div>';
       }
-      modal = modal + '<div class="checkboxVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox1" required=""> '+translator("checkbox1")+'</div>';
-      modal = modal + '<div class="checkboxVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox2" required=""> '+translator("checkbox2")+'</div>';
-      modal = modal + '<div class="checkboxVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox3" required=""> '+translator("checkbox3")+'</div>';
-      modal = modal + '<div class="checkboxVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox4" required=""> '+translator("checkbox4")+'</div>';
-      modal = modal + '<div class="checkboxVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox5" required=""> '+translator("checkbox5")+'</div>';
-      modal = modal + '<div class="checkboxVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checktandc" required=""> '+translator("voltaNecessaryToReadTandC",{"ipid": ipidlink, "tandc": tandclink})+'</div>';
-      modal = modal + '<div class="checkboxVlta"><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-papercopyrqst" required=""> '+translator("paperCopyRequest")+'</div>';
+      modal = modal + '<div class="checkboxVlta"><label><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox1" required=""> '+translator("checkbox1")+'</label></div>';
+      modal = modal + '<div class="checkboxVlta"><label><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox2" required=""> '+translator("checkbox2")+'</label></div>';
+      modal = modal + '<div class="checkboxVlta"><label><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox3" required=""> '+translator("checkbox3")+'</label></div>';
+      modal = modal + '<div class="checkboxVlta"><label><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox4" required=""> '+translator("checkbox4")+'</label></div>';
+      modal = modal + '<div class="checkboxVlta"><label><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox5" required=""> '+translator("checkbox5")+'</label></div>';
+      modal = modal + '<div class="checkboxVlta"><label><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checktandc" required=""> '+translator("voltaNecessaryToReadTandC",{"ipid": ipidlink, "tandc": tandclink})+'</div>';
+      modal = modal + '<div class="checkboxVlta"><label><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-papercopyrqst" required=""> '+translator("paperCopyRequest")+'</div>';
       //modal = modal + '<div class="small-explanation center">'+translator("voltaNecessaryToReadTandC",{"ipid": ipidlink, "tandc": tandclink})+'</div>';
       modal = modal + '<input type="text" id="quoteId" value="'+quoteId+'" style="display:none">';
       modal = modal + '<input type="text" id="pack" value="'+pack+'" style="display:none">';
@@ -376,7 +376,7 @@ function openSaveQuoteModal(quoteId, pack){
   modal = modal + 'h4.h4-modal {display: flex;align-items: center;background: #fff no-repeat url("https://uploads-ssl.webflow.com/644911ac1572f72efba69772/64cb602fa1c7d74e79e5ff52_i.svg");background-position: 20px;padding: 20px 20px 20px 80px;border: 1px solid rgba(147, 166, 185, 0.06);border-radius: 6px;box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.03);background-size: 5%;}';
   modal = modal + '.address-modal {display: block !important;}';
   modal = modal + '.checkboxVlta {font-size: 11px !important;max-width: 600px !important;margin: 0 auto !important;}';
-  //modal = modal + 'img.itooltipiban {left: 100px;position: relative;}';
+  modal = modal + 'div.checkboxVlta>label {background: none;border: none;}';
   modal = modal + '@media (max-width: 480px) {h4.h4-modal {background-size: 15%;text-align: left;}}</style>';
   $("body").append(modal);
 
