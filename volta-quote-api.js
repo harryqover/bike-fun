@@ -146,9 +146,24 @@ price STEP-7
 $('#truckAmount').val(1);//set default to 1
 const truckAmountInput = document.querySelector('#truckAmount');
 truckAmountInput.addEventListener('change', function() {
-  quoteInfo.truckAmount = $('#truckAmount').val() ;
+  quoteInfo.truckAmount = Number($('#truckAmount').val()) ;
+  if(quoteInfo.truckAmount == 1){
+    $("#step-3").hide();
+  } else {
+    $("#step-3").show();
+  }
   clickToGetPrice();
 })
+
+$("a[href$='#step-3']").on( "click", function() {
+  if(quoteInfo.truckAmount == 1){
+    var nextStepPosition = $("#step-4").offset().top;
+  } else {
+    var nextStepPosition = $("#step-3").offset().top;
+  }
+  $("html, body").animate({scrollTop: nextStepPosition}, 800);
+} );
+
 
 const radioOnePriceTrue = document.querySelector('#onePrice-true');
 const radioOnePriceFalse = document.querySelector('#onePrice-false');
