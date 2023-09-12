@@ -272,7 +272,7 @@ function actionOnErrors (errorsTriggered){
         //alert("We can't insure dangerous good trucks.");
         $("#dangerousgoods-true").attr("style","accent-color:#DC3545")
         $("#tooltipdangerousgoods").show(500);
-        var nextStepPosition = $("#step-4").offset().top;
+        var nextStepPosition = $("#step-6").offset().top;
         $("html, body").animate({scrollTop: nextStepPosition}, 800);
         break;
       case "truckPriceTooLow":
