@@ -376,7 +376,7 @@ function openSaveQuoteModal(quoteId, pack){
   modal = modal + 'h4.h4-modal {display: flex;align-items: center;background: #fff no-repeat url("https://uploads-ssl.webflow.com/644911ac1572f72efba69772/64cb602fa1c7d74e79e5ff52_i.svg");background-position: 20px;padding: 20px 20px 20px 80px;border: 1px solid rgba(147, 166, 185, 0.06);border-radius: 6px;box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.03);background-size: 5%;}';
   modal = modal + '.address-modal {display: block !important;}';
   modal = modal + '.checkboxVlta {font-size: 11px !important;max-width: 600px !important;margin: 0 auto !important;}';
-  modal = modal + 'div.checkboxVlta>label {background: none;border: none;}';
+  modal = modal + 'div.checkboxVlta>label {background: none;border: none;font-size: 11px !important;max-width: 600px !important;margin: 0 auto !important;}';
   modal = modal + '@media (max-width: 480px) {h4.h4-modal {background-size: 15%;text-align: left;}}</style>';
   $("body").append(modal);
 
