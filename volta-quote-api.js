@@ -377,6 +377,7 @@ function openSaveQuoteModal(quoteId, pack){
   modal = modal + '.address-modal {display: block !important;}';
   modal = modal + '.checkboxVlta {font-size: 11px !important;max-width: 600px !important;margin: 0 auto !important;}';
   modal = modal + 'div.checkboxVlta>label {background: none;border: none;font-size: 11px !important;max-width: 600px !important;margin: 0 auto !important;}';
+  modal = modal + 'img.itooltipiban {width: 24px;height: 24px;}.moreinfo {display: none;position: absolute;top:-120px;left:-80px;background: #E7ECEF;border-radius: 4px;border: 1px solid #D4DCE3;font-size:12px;text-align: left;line-height: 1.25em;padding: 10px;}.container-info:hover .moreinfo {display: block;}.checkboxVlta {line-height: 1.35em;padding: 8px 0;width: 100%;}';
   modal = modal + '@media (max-width: 480px) {h4.h4-modal {background-size: 15%;text-align: left;}}</style>';
   $("body").append(modal);
 
