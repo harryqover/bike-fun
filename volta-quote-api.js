@@ -161,7 +161,7 @@ if(quoteInfo.truckAmount === 1){
 }
 
 
-$("a[href$='#step-3']").on( "click", function() {
+$("a[href$='#step-3']").on( "click", function(e) {
   e.preventDefault();
   if(quoteInfo.truckAmount === 1){
     var nextStepPosition = $("#step-4").offset().top;
