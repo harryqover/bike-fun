@@ -20,7 +20,7 @@ function translateAll() {
             if (xhrLocales.status >= 200 && xhrLocales.status < 300 || xhrLocales.status == 304) {
                 content = JSON.parse(xhrLocales.responseText);
                 window.translations = content;
-                console.log(window.translations);
+               //console.log(window.translations);
                 //translate all data attributes that contains data-translation
                 $("[data-translation]").each(function(index) {
                     $(this).html(content[$(this).data("translation")]);
@@ -47,7 +47,7 @@ var quoteInfo = {
 }
 
 function clickToGetPrice(){
-  console.log(quoteInfo);
+  //console.log(quoteInfo);
 	getPrice(quoteInfo.truckAmount, quoteInfo.truckPrice, quoteInfo.dangerousGoodsTrucks, quoteInfo.leasedTrucks, quoteInfo.deductible_MTPL, quoteInfo.deductible_Casco, quoteInfo.country, quoteInfo.usage, quoteInfo.samePrice);
 }
 
@@ -82,7 +82,7 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
   };
 
   $.ajax(settings).done(function(response) {
-    console.log(response);
+    //console.log(response);
     window.payloadFromNinja = response;
     if(response.response.errors.length > 0){
       console.warn(response.response.errors);
@@ -128,7 +128,7 @@ $("[data-click='avgprice']").on( "click", function() {
 $("[data-quoteid]").on( "click", function() {
   var quoteId = $(this).data('quoteid');
   var pack = $(this).data('click');
-  console.log(pack);
+  //console.log(pack);
   if(quoteId != ''){
     openSaveQuoteModal(quoteId, pack)
   }
@@ -165,8 +165,8 @@ if(quoteInfo.truckAmount === 1){
 
 
 $("#ctatruckamt").on( "click", function(e) {
-  console.log(e);
-  console.log(quoteInfo.truckAmount);
+  //console.log(e);
+  //console.log(quoteInfo.truckAmount);
   if(quoteInfo.truckAmount === 1){
     var nextStepPosition = $("#step-4").offset().top;
   } else {
@@ -307,18 +307,18 @@ function sendQuote(payload){
         "Content-Type": "text/plain;charset=utf-8"
     },
     "data": JSON.stringify({
-        "request":"sendQuote",
-        "formData": payload.formData,
-        "quoteId": payload.quoteId,
-        "pack": payload.pack,
-        "ipAddress": ipAddress,
-        "country": payload.country
+      "request":"sendQuote",
+      "formData": payload.formData,
+      "quoteId": payload.quoteId,
+      "pack": payload.pack,
+      "ipAddress": ipAddress,
+      "country": payload.country
     }),
   };
 
   $.ajax(settings).done(function(response) {
-        console.log(response);
-        $("#getquotediv").html('<div class="successMessageSendQuote">'+translator("sendQuoteModalSuccessMessage",{"email": response.payload.formData.email, "quoteId": response.payload.quoteId})+'.</div>')
+    //console.log(response);
+    $("#getquotediv").html('<div class="successMessageSendQuote">'+translator("sendQuoteModalSuccessMessage",{"email": response.payload.formData.email, "quoteId": response.payload.quoteId})+'.</div>')
   })
 }
 
@@ -338,7 +338,7 @@ function translator(key, variables){
 
 
 function openSaveQuoteModal(quoteId, pack){
-  console.log(quoteId, pack);
+  //console.log(quoteId, pack);
   var langDocuments = {"FR": "fr", "DE": "de"};
   var tandclink = "https://storage.googleapis.com/qover-assets/pdf-api/volta/generalConditions-"+langDocuments[configQuoteEngine.country]+"-"+configQuoteEngine.country+".pdf";
   var ipidlink = "https://storage.googleapis.com/qover-assets/pdf-api/volta/IPID-"+langDocuments[configQuoteEngine.country]+"-"+configQuoteEngine.country+".pdf";
@@ -430,7 +430,7 @@ function openSaveQuoteModal(quoteId, pack){
 
     if(checksMandatory && email != "" && email != "" && vat != "" && tel != "" && address != "" && company != ""){
       var payload = {"formData": {"vat":vat, "email": email, "phone":tel, "address":address, "company":company, "iban": iban, "siren": siren}, "quoteId": quoteId, "pack": pack, "country": configQuoteEngine.country, "papercopyrqst": papercopyrqst};
-      console.log(payload);
+      //console.log(payload);
       sendQuote(payload);
       $("#sendQuoteBtn").attr("style","opacity:0.25");
       $("#sendQuoteBtn").text(translations.sending);
