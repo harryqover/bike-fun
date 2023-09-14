@@ -336,8 +336,11 @@ function translator(key, variables){
 
 function openSaveQuoteModal(quoteId, pack){
   console.log(quoteId, pack);
-  var tandclink = "https://www.qover.com/?tandclink";
-  var ipidlink = "https://www.qover.com/?ipidlink";
+  var tandclink = "https://storage.googleapis.com/qover-assets/pdf-api/volta/generalConditions-"+configQuoteEngine.language+"-"+configQuoteEngine.country+".pdf";
+  var ipidlink = "https://storage.googleapis.com/qover-assets/pdf-api/volta/IPID-"+configQuoteEngine.language+"-"+configQuoteEngine.country+".pdf";
+
+  https://storage.googleapis.com/qover-assets/pdf-api/IPID-Volta-FR-FR.pdf
+
   var packTranslations = translator("packNames"+pack);
   var modal = '<section style="display: flex;" class="modal" id="modalgetquote"><div class="div-block-320"></div>';
   modal = modal + '<div style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); filter: blur(0px); transform-style: preserve-3d;" class="w-layout-blockcontainer address-modal w-container">';
