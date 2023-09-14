@@ -48,7 +48,7 @@ var quoteInfo = {
 
 function clickToGetPrice(){
   console.log(quoteInfo);
-	getPrice(quoteInfo.truckAmount, quoteInfo.truckPrice, quoteInfo.dangerousGoodsTrucks, quoteInfo.leasedTrucks, quoteInfo.deductible_MTPL, quoteInfo.deductible_Casco, quoteInfo.country, quoteInfo.usage, quote.samePrice);
+	getPrice(quoteInfo.truckAmount, quoteInfo.truckPrice, quoteInfo.dangerousGoodsTrucks, quoteInfo.leasedTrucks, quoteInfo.deductible_MTPL, quoteInfo.deductible_Casco, quoteInfo.country, quoteInfo.usage, quoteInfo.samePrice);
 }
 
 const googleSheetUrl = "https://script.google.com/macros/s/AKfycbxd7iLSKEWjn4Kjsh6SR4zVDZCz2HxnAXA1OHG_7pzBrE0VLi5ze-9DOV1Y7tpyr13d6Q/exec";
