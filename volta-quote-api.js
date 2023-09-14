@@ -50,7 +50,7 @@ function clickToGetPrice(){
   console.log(quoteInfo);
 	getPrice(quoteInfo.truckAmount, quoteInfo.truckPrice, quoteInfo.dangerousGoodsTrucks, quoteInfo.leasedTrucks, quoteInfo.deductible_MTPL, quoteInfo.deductible_Casco, quoteInfo.country, quoteInfo.usage, quoteInfo.samePrice);
 }
-
+https://script.google.com/macros/s/AKfycbxd7iLSKEWjn4Kjsh6SR4zVDZCz2HxnAXA1OHG_7pzBrE0VLi5ze-9DOV1Y7tpyr13d6Q/exec
 const googleSheetUrl = "https://script.google.com/macros/s/AKfycbxd7iLSKEWjn4Kjsh6SR4zVDZCz2HxnAXA1OHG_7pzBrE0VLi5ze-9DOV1Y7tpyr13d6Q/exec";
 $("[data-price]").text("...");
 function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, deductible_MTPL, deductible_Casco, country, usage, samePrice) {
@@ -151,9 +151,9 @@ const truckAmountInput = document.querySelector('#truckAmount');
 truckAmountInput.addEventListener('change', function() {
   quoteInfo.truckAmount = Number($('#truckAmount').val()) ;
   if(quoteInfo.truckAmount === 1){
-    $("#step-3").hide();
+    $("#step-3, .priceforonevehicleinfo").hide();
   } else {
-    $("#step-3").show();
+    $("#step-3, .priceforonevehicleinfo").show();
   }
   clickToGetPrice();
 })
