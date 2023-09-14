@@ -339,8 +339,9 @@ function translator(key, variables){
 
 function openSaveQuoteModal(quoteId, pack){
   console.log(quoteId, pack);
-  var tandclink = "https://storage.googleapis.com/qover-assets/pdf-api/volta/generalConditions-"+configQuoteEngine.language+"-"+configQuoteEngine.country+".pdf";
-  var ipidlink = "https://storage.googleapis.com/qover-assets/pdf-api/volta/IPID-"+configQuoteEngine.language+"-"+configQuoteEngine.country+".pdf";
+  var langDocuments = {"FR": "fr", "DE": "de"};
+  var tandclink = "https://storage.googleapis.com/qover-assets/pdf-api/volta/generalConditions-"+langDocuments[configQuoteEngine.country]+"-"+configQuoteEngine.country+".pdf";
+  var ipidlink = "https://storage.googleapis.com/qover-assets/pdf-api/volta/IPID-"+langDocuments[configQuoteEngine.country]+"-"+configQuoteEngine.country+".pdf";
 
   https://storage.googleapis.com/qover-assets/pdf-api/IPID-Volta-FR-FR.pdf
 
