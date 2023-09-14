@@ -1,4 +1,4 @@
-console.warn("updated 20230912 1310")
+console.warn("updated 20230914 1246")
 
 let ipAddress = "";
 $(document).ready(function() {
@@ -116,10 +116,13 @@ priceInput.addEventListener('change', function() {
 $('#tooltipavgprice').hide();
 const avgTruckPrice = {"DE":345000,"FR":345000};
 $("[data-click='avgprice']").on( "click", function() {
-  $('#truckprice').val(avgTruckPrice[configQuoteEngine.country]);
-  $('#tooltipavgprice').show(500);
-  quoteInfo.truckPrice = $('#truckprice').val() ;
+  //$('#truckprice').val(avgTruckPrice[configQuoteEngine.country]);
+  $('#truckprice').val("");
+  //$('#tooltipavgprice').show(500);
+  quoteInfo.truckPrice = avgTruckPrice[configQuoteEngine.country] ;
   clickToGetPrice();
+  var nextStepPosition = $("#step-2").offset().top;
+  $("html, body").animate({scrollTop: nextStepPosition}, 800);
 } );
 
 $("[data-quoteid]").on( "click", function() {
