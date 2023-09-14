@@ -373,6 +373,7 @@ function openSaveQuoteModal(quoteId, pack){
       if(configQuoteEngine.country == "DE"){
         modal = modal + '<div class="checkboxVlta"><label><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox4" required=""> '+translator("checkbox4")+'</label></div>';
         modal = modal + '<div class="checkboxVlta"><label><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox5" required=""> '+translator("checkbox5")+'</label></div>';
+        modal = modal + '<div class="checkboxVlta"><label><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-checkbox6" required=""> '+translator("checkbox6")+'</label></div>';
       }
       modal = modal + '<div class="checkboxVlta"><label><input type="checkbox" class="checkboxTandC" maxlength="256" name="field-3" placeholder="" id="getquote-papercopyrqst" required=""> '+translator("paperCopyRequest")+'</div>';
       //modal = modal + '<div class="small-explanation center">'+translator("voltaNecessaryToReadTandC",{"ipid": ipidlink, "tandc": tandclink})+'</div>';
@@ -416,12 +417,13 @@ function openSaveQuoteModal(quoteId, pack){
     var checkbox3 = $("#getquote-checkbox3").is(":checked");
     var checkbox4 = $("#getquote-checkbox4").is(":checked");
     var checkbox5 = $("#getquote-checkbox5").is(":checked");
+    var checkbox6 = $("#getquote-checkbox6").is(":checked");
 
     var checksMandatory = false;
     if(configQuoteEngine.country == "FR" && checked && checkbox1 && checkbox2 && checkbox3 ){
       checksMandatory = true;
     }
-    if(configQuoteEngine.country == "DE" && checked && checkbox1 && checkbox4 && checkbox5 ){
+    if(configQuoteEngine.country == "DE" && checked && checkbox1 && checkbox4 && checkbox5 && checkbox6 ){
       checksMandatory = true;
     }
 
