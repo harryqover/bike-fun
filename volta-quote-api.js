@@ -40,8 +40,8 @@ var quoteInfo = {
   "truckType": "18tRefriBi",
   "dangerousGoodsTrucks": false,
   "leasedTrucks": false,
-  "deductible_MTPL": "10000",
-  "deductible_Casco": "10000",
+  "deductible_MTPL": "0",
+  "deductible_Casco": "2000",
   "country": configQuoteEngine.country,
   "samePrice": true
 }
