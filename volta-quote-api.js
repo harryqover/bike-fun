@@ -158,10 +158,10 @@ truckAmountInput.addEventListener('change', function() {
   clickToGetPrice();
 })
 if(quoteInfo.truckAmount === 1){
-  $("#step-3").hide();
-} else {
-  $("#step-3").show();
-}
+    $("#step-3, .priceforonevehicleinfo").hide();
+  } else {
+    $("#step-3, .priceforonevehicleinfo").show();
+  }
 
 
 $("#ctatruckamt").on( "click", function(e) {
