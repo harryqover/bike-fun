@@ -89,6 +89,7 @@ function getPrice(truckAmount, truckPrice, dangerousGoodsTrucks, leasedTrucks, d
       //alert("errors check logs");
       actionOnErrors (response.response.errors);
     } else {
+      $(".errorPrice").hide(500);
       const formatter = new Intl.NumberFormat(configQuoteEngine.language+'-'+country, {
         style: 'currency',
         currency: response.response.currency.currency,
@@ -269,6 +270,7 @@ selectDeductibleMtpl.on("change", function() {
 
 
 function actionOnErrors (errorsTriggered){
+  $(".errorPrice").hide(500);
   $.each(errorsTriggered, function(index, error) {
     switch (error) {
       case "dangerousGoodsTrucksCantBeInsured":
@@ -281,14 +283,14 @@ function actionOnErrors (errorsTriggered){
       case "truckPriceTooLow":
         //alert("Truck price is too low.");
         $("#truckprice").attr("style","border-color:#DC3545");
-        $("<p style='color:#DC3545'>"+translations.truckPriceTooLow+"</p>").insertAfter("#priceelements");
+        $("<p style='color:#DC3545' class='errorPrice'>"+translations.truckPriceTooLow+"</p>").insertAfter("#priceelements");
         var nextStepPosition = $("#step-1").offset().top;
         $("html, body").animate({scrollTop: nextStepPosition}, 800);
         break;
       case "truckPriceTooHigh":
         //alert("Truck price is too high.");
         $("#truckprice").attr("style","border-color:#DC3545");
-        $("<p style='color:#DC3545'>"+translations.truckPriceTooHigh+"</p>").insertAfter("#priceelements");
+        $("<p style='color:#DC3545' class='errorPrice'>"+translations.truckPriceTooHigh+"</p>").insertAfter("#priceelements");
         var nextStepPosition = $("#step-1").offset().top;
         $("html, body").animate({scrollTop: nextStepPosition}, 800);
         break;
