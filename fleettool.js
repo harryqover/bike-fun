@@ -207,8 +207,9 @@ $(document).on('click', '.actionmenu', function() {
        	status = "Not active"
         parking = false
     }
-    
-   var actionmenu = '<div class="div-block-52 right"><a class="cta-small secondary small w-inline-block actionmenu" action="details" vid="'+value.id+'"><div class="font-awesome small btn"></div><div class="subheading smallbtn">Details</div></a><a class="cta-small secondary small w-inline-block actionmenu" action="gc" vid="'+value.id+'"><div class="font-awesome small btn"></div><div class="subheading smallbtn">Green card</div></a><a class="cta-small secondary small w-inline-block actionmenu" target="_blank" href="https://forms.qover.com/232502256015040?name=xxx&policy=&plate='+ value.subject.vrn +'&vin='+ value.subject.vin +'"><div class="font-awesome small btn"></div><div class="subheading smallbtn">Defleet</div></a></div>'
+    var fleetName = getCookie("fleetName");
+    var contractref = getCookie("contractref");
+    var actionmenu = '<div class="div-block-52 right"><a class="cta-small secondary small w-inline-block actionmenu" action="details" vid="'+value.id+'"><div class="font-awesome small btn"></div><div class="subheading smallbtn">Details</div></a><a class="cta-small secondary small w-inline-block actionmenu" action="gc" vid="'+value.id+'"><div class="font-awesome small btn"></div><div class="subheading smallbtn">Green card</div></a><a class="cta-small secondary small w-inline-block actionmenu" target="_blank" href="https://forms.qover.com/232502256015040?name='+fleetName+'&policy='+contractref+'&plate='+ value.subject.vrn +'&vin='+ value.subject.vin +'"><div class="font-awesome small btn"></div><div class="subheading smallbtn">Defleet</div></a></div>'
     var htmlBloc = '<div class="table-line" carID="'+value.id+'"><div class="div-block-52"><div class="text-block-80">'+ value.subject.vrn +'</div><div class="text-block-80">'+ value.subject.vin +' </div></div><div class="div-block-52"><div class="text-block-80">'+value.subject.make+'</div><div class="text-block-80">'+ value.subject.model +'</div></div><div class="div-block-52"><div class="statusactive" style="background-color:'+(parking?"grey":"green")+'"><div class="text-block-80 status">'+status+'</div></div><div class="text-block-80">'+ (value.termPeriod?value.termPeriod.startDate:"N.A") + (endDate?" - "+value.termPeriod.endDate:"") +'</div></div>'
     htmlBloc += actionmenu
     if($("#searchbox").val() != "" ){
@@ -282,8 +283,7 @@ $(document).on('click', '.actionmenu', function() {
 })
 
 
-var apikey = getCookie("apikey")
-var fleetID = getCookie("fleetId")
+
 var baseURL = "https://api.prd.qover.io/policies/v1/master-policies/"
 
 $(document).on('click', '.actionmenu', function() {
@@ -293,24 +293,25 @@ $(document).on('click', '.actionmenu', function() {
   })
 
 function getGC(carID){
-        var URL = baseURL+fleetID+"/risk-items/"+carID+'/green-card?apikey='+apikey 
-          $.ajax({
-            url: URL,
-            type: 'get',
-            dataType: 'json',
-            success: function (data) {
-             console.log(data)
-             var response = data
-             try{
-            
-             window.open(response._links.pdf.href, '_blank');
-             console.log(response._links.pdf.href);
-            } catch(e) {
-            $("#greencard").html("<b> Green card could not be retrieved </b>")
-            }
-           
-           }     
-            
-        });
-        
-     }
+  var apikey = getCookie("apikey")
+  var fleetID = getCookie("fleetId")
+  var URL = baseURL+fleetID+"/risk-items/"+carID+'/green-card?apikey='+apikey 
+    $.ajax({
+      url: URL,
+      type: 'get',
+      dataType: 'json',
+      success: function (data) {
+       console.log(data)
+       var response = data
+       try{
+      
+       window.open(response._links.pdf.href, '_blank');
+       console.log(response._links.pdf.href);
+      } catch(e) {
+      $("#greencard").html("<b> Green card could not be retrieved </b>")
+      }
+     
+     }     
+      
+  });
+}
