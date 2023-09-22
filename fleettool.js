@@ -289,16 +289,17 @@ $(document).on('click', '.actionmenu', function() {
 
 var baseURL = "https://api.prd.qover.io/policies/v1/master-policies/"
 
-$(document).on('click', '.actionmenu', function() {
+/*$(document).on('click', '.actionmenu', function() {
     event.preventDefault();
      selected = $(this).attr("action");
      
   })
-
+*/
 function getGC(carID){
   var apikey = getCookie("apikey")
   var fleetID = getCookie("fleetId")
-  var URL = baseURL+fleetID+"/risk-items/"+carID+'/green-card?apikey='+apikey 
+  var URL = baseURL+fleetID+"/risk-items/"+carID+'/green-card?apikey='+apikey;
+  
     $.ajax({
       url: URL,
       type: 'get',
@@ -318,3 +319,10 @@ function getGC(carID){
       
   });
 }
+
+$(document).on('click', '#allgreencards', function() {
+    event.preventDefault();
+    window.vehicleIds.forEach(function(carID) {
+      getGC(carID);
+    });
+})
