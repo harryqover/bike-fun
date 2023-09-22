@@ -177,7 +177,7 @@ $(document).on('click', '.actionmenu', function() {
   	xhr.setRequestHeader("Content-Type", "application/json");
   	xhr.send();
 	}
-  var window.vehicleIds = [];
+  window.vehicleIds = [];
   function processVehicles(vehicles){
     window.vehicleIds = [];
    	var allVehicles = vehicles
