@@ -280,3 +280,37 @@ $(document).on('click', '.actionmenu', function() {
   	xhr.send(JSON.stringify(data));
 	}
 })
+
+
+var apikey = getCookie("apikey")
+var fleetID = getCookie("fleetId")
+var baseURL = "https://api.prd.qover.io/policies/v1/master-policies/"
+
+$(document).on('click', '.actionmenu', function() {
+    event.preventDefault();
+     selected = $(this).attr("action");
+     
+  })
+
+function getGC(carID){
+        var URL = baseURL+fleetID+"/risk-items/"+carID+'/green-card?apikey='+apikey 
+          $.ajax({
+            url: URL,
+            type: 'get',
+            dataType: 'json',
+            success: function (data) {
+             console.log(data)
+             var response = data
+             try{
+            
+             window.open(response._links.pdf.href, '_blank');
+             console.log(response._links.pdf.href);
+            } catch(e) {
+            $("#greencard").html("<b> Green card could not be retrieved </b>")
+            }
+           
+           }     
+            
+        });
+        
+     }
