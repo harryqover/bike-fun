@@ -177,14 +177,16 @@ $(document).on('click', '.actionmenu', function() {
   	xhr.setRequestHeader("Content-Type", "application/json");
   	xhr.send();
 	}
- 
+  var window.vehicleIds = [];
   function processVehicles(vehicles){
+    window.vehicleIds = [];
    	var allVehicles = vehicles
   	allVehicles.forEach(createVehicle)
+    console.log("vehicleIds", vehicleIds)
  	}
   
   function createVehicle(value, index, array) {
-  
+    window.vehicleIds.push(value.id);
 		var active = true
     if(value.termPeriod){
     if(value.termPeriod.endDate) {
