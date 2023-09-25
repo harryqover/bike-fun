@@ -23,14 +23,19 @@ $( document ).ready(function() {
  		}
  		return $("#"+fieldName).val() ;
 	}
-  
+
+  function refreshClaimAttest(){
+    $("#ctaclaimsattest").attr("href","https://forms.qover.com/232641450200339?name="+getCookie("fleetName")+"&policy="+getCookie("contractref"))
+  }
+
   if(getCookie("fleetId")){
   	getAll(100,1,getCookie("fleetId"), getCookie("apikey"));
     getPolicy(getCookie("fleetId"), getCookie("apikey"));
     $("#textdropdown").html(getCookie("fleetName"))
     $("#addcarfleetname").html(getCookie("fleetName"));
     $("#policynumber").html(getCookie("contractref"));
-    $("#ctaclaimsattest").attr("href","https://forms.qover.com/232641450200339?name="+getCookie("fleetName")+"&policy="+getCookie("contractref"))
+    refreshClaimAttest();
+    //$("#ctaclaimsattest").attr("href","https://forms.qover.com/232641450200339?name="+getCookie("fleetName")+"&policy="+getCookie("contractref"))
   }
  
   $(document).on('click', '.fleetselect', function(){
@@ -47,6 +52,7 @@ $( document ).ready(function() {
     $("#textdropdown").html(fleetName)
 		getAll(100,1,fleetId, apikey);
     getPolicy(fleetId, apikey);
+    refreshClaimAttest();
 	});
   
   $("#make").change(function() {
