@@ -15,9 +15,9 @@ $( document ).ready(function() {
 		const d = new Date();
 		let text = d.toUTCString();
  		document.cookie = fieldName + "=" + $("#"+fieldName).val() ;
-		console.log(fieldName + "=" + $("#"+fieldName).val());
+		//console.log(fieldName + "=" + $("#"+fieldName).val());
  		if($("#"+fieldName).val() == ""){
- 			console.log(fieldName);
+ 			//console.log(fieldName);
  			$("#"+fieldName).css("border-color","red");
  		}else{
   		$("#"+fieldName).css("border-color","#e2e6e9");
@@ -67,7 +67,7 @@ $( document ).ready(function() {
   
    $("#model").change(function() {
     	var element = $(this).find('option:selected');
-      console.log(element.attr("type"));
+      //console.log(element.attr("type"));
       $("#type").find('option').attr("selected",false) ;
       
       
@@ -122,10 +122,10 @@ $(document).on('click', '.actionmenu', function() {
 		const d = new Date();
 		let text = d.toUTCString();
  		document.cookie = fieldName + "=" + $("#"+fieldName).val() ;
-		console.log(fieldName + "=" + $("#"+fieldName).val());
+		//console.log(fieldName + "=" + $("#"+fieldName).val());
  		
     if($("#"+fieldName).val() == "" && check){
- 			console.log(fieldName);
+ 			//console.log(fieldName);
  			$("#"+fieldName).css("border-color","red");
  		}else{
   		$("#"+fieldName).css("border-color","#e2e6e9");
@@ -189,7 +189,7 @@ $(document).on('click', '.actionmenu', function() {
     window.vehicleIds = [];
    	var allVehicles = vehicles
   	allVehicles.forEach(createVehicle)
-    console.log("vehicleIds", vehicleIds)
+    //console.log("vehicleIds", vehicleIds)
  	}
   
   function createVehicle(value, index, array) {
@@ -229,7 +229,7 @@ $(document).on('click', '.actionmenu', function() {
  		}
 	}
   function getPolicy(fleetID, apikey){
-    console.log("get policy");
+    //console.log("get policy");
 		var api_url = baseURL+fleetID+"?apikey="+apikey
 		var xhr = new XMLHttpRequest();
   	xhr.withCredentials = true;
@@ -312,12 +312,12 @@ function getGC(carID){
       type: 'get',
       dataType: 'json',
       success: function (data) {
-       console.log(data)
+       //console.log(data)
        var response = data
        try{
       
        window.open(response._links.pdf.href, '_blank');
-       console.log(response._links.pdf.href);
+       //console.log(response._links.pdf.href);
       } catch(e) {
       $("#greencard").html("<b> Green card could not be retrieved </b>")
       }
