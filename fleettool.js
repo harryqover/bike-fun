@@ -195,7 +195,7 @@ $(document).on('click', '.actionmenu', function() {
   function createVehicle(value, index, array) {
     console.warn("what's in value");
     console.log(value);
-    window.vehicleIds.push(value.id);
+    
 		var active = true
     if(value.termPeriod){
       if(value.termPeriod.endDate) {
@@ -215,9 +215,12 @@ $(document).on('click', '.actionmenu', function() {
        	status = ""
       	parking = true
    		}
-   	}else{
+   	} else {
        	status = "Not active"
         parking = false
+    }
+    if(status == "Active"){
+      window.vehicleIds.push(value.id);  
     }
     var fleetName = getCookie("fleetName");
     var contractref = getCookie("contractref");
