@@ -193,14 +193,16 @@ $(document).on('click', '.actionmenu', function() {
  	}
   
   function createVehicle(value, index, array) {
+    console.warn("what's in value");
+    console.log(value);
     window.vehicleIds.push(value.id);
 		var active = true
     if(value.termPeriod){
-    if(value.termPeriod.endDate) {
-      var  endDate = new Date(value.termPeriod.endDate)
-      active = endDate > new Date();
-    }
-    }else{
+      if(value.termPeriod.endDate) {
+        var  endDate = new Date(value.termPeriod.endDate)
+        active = endDate > new Date();
+      }
+    } else {
      active = false;
     }
     var parking = true
