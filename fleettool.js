@@ -321,27 +321,10 @@ function getGC(carID){
        var response = data
        try{
       
-       //window.open(response._links.pdf.href, '_blank');
+       window.open(response._links.pdf.href, '_blank');
        //console.log(response._links.pdf.href);
 
-       // Create a hidden anchor element
-        var downloadLink = document.createElement('a');
-        downloadLink.style.display = 'none';
-
-        // Set the href attribute to the PDF file's URL
-        downloadLink.href = response._links.pdf.href;
-
-        // Specify the download attribute to suggest a filename for the downloaded file
-        downloadLink.setAttribute('download', 'your-file-name.pdf');
-
-        // Append the anchor element to the document
-        document.body.appendChild(downloadLink);
-
-        // Trigger a click event on the anchor element to start the download
-        downloadLink.click();
-
-        // Clean up by removing the anchor element from the document
-        document.body.removeChild(downloadLink);
+       
 
       } catch(e) {
       $("#greencard").html("<b> Green card could not be retrieved </b>")
