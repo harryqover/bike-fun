@@ -320,16 +320,11 @@ function getGC(carID){
        //console.log(data)
        var response = data
        try{
-      
-       window.open(response._links.pdf.href, '_blank');
-       //console.log(response._links.pdf.href);
-
-       
-
-      } catch(e) {
-      $("#greencard").html("<b> Green card could not be retrieved </b>")
-      }
-     
+          window.open(response._links.pdf.href, '_blank');
+          //console.log(response._links.pdf.href);
+        } catch(e) {
+          $("#greencard").html("<b> Green card could not be retrieved </b>")
+        }
      }     
       
   });
