@@ -1,4 +1,4 @@
-console.warn("20230925 09:30")
+console.warn("20230928 10:12")
 $( document ).ready(function() {
 	var baseURL = "https://api.prd.qover.io/policies/v1/master-policies/"
   $("#carlist").fadeOut();
