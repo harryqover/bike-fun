@@ -193,8 +193,8 @@ $(document).on('click', '.actionmenu', function() {
  	}
   
   function createVehicle(value, index, array) {
-    console.warn("what's in value");
-    console.log(value);
+    //console.warn("what's in value");
+    //console.log(value);
     
 		var active = true
     if(value.termPeriod){
@@ -216,8 +216,8 @@ $(document).on('click', '.actionmenu', function() {
       	parking = true
    		}
    	} else {
-       	status = "Not active"
-        parking = false
+     	status = "Not active"
+      parking = false
     }
     if(status == "Active"){
       window.vehicleIds.push(value.id);  
