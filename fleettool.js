@@ -265,7 +265,7 @@ $(document).on('click', '.actionmenu', function() {
     	"vrn":  getCookie("plate"),
     	"make":  getCookie("make"),
    		"model":  getCookie("model"),
-   		//"ev": (getCookie("type")=="electric"),
+   		"ev": (getCookie("type")=="electric"),
     	"value": parseInt(getCookie("value"))
   		}
 		}
