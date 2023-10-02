@@ -85,7 +85,7 @@
 			xhr.onreadystatechange = function() {
 				if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
 					console.log(this.responseText);
-
+					var ref = ((cigarId)?cigarId:zendeskId);
 				    if (rating > minPublicRating) {
 				    	var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://g.page/r/CeJV3VPdzwkCEAI/review"];//mix
 				    	//var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://www.trustpilot.com/evaluate/qover.com"];//full trustpilot
@@ -103,7 +103,6 @@
 						window.location.replace(urlToRedirect);
 					  	//window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
 					} else {
-						var ref = ((cigarId)?cigarId:zendeskId);
 						var urlToRedirect = "https://forms.qover.com/221674111787054?contractReference="+ref+"&language="+lang+"&source="+source;
 						if(source == "emailClaimNPS"){
 							urlToRedirect = "https://forms.qover.com/232471409583055?contractReference="+ref+"&language="+lang+"&source="+source;	
