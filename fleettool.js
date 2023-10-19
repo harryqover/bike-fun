@@ -262,14 +262,25 @@ $(document).on('click', '.actionmenu', function() {
     	"country": "BE",
     	"package": { "name": "STANDARD"},
    		"subject":{
-    	"vin": getCookie("vin"),
-    	"vrn":  getCookie("plate"),
-    	"make":  getCookie("make"),
-   		"model":  getCookie("model"),
-   		"ev": (getCookie("type")=="electric"),
-    	"value": parseInt(getCookie("value"))
+      	"vin": getCookie("vin"),
+      	"vrn":  getCookie("plate"),
+      	"make":  getCookie("make"),
+     		"model":  getCookie("model"),
+     		"ev": (getCookie("type")=="electric"),
+      	"value": parseInt(getCookie("value"))
   		}
 		}
+    var sheetObj = {
+        "client": getCookie("fleetName"),
+        "make": data.subject.make,
+        "model": data.subject.model,
+        "value": data.subject.value,
+        "vin": data.subject.vin,
+        "plate": getCookie("plate"),
+        "startDate": data.contractPeriod.startDate,
+        "type": data.subject.ev
+    }
+    addNewCarToSheet(sheetObj);
     
     if(getCookie("leaseplannumber") && getCookie("leaseplannumber") != "") data.subject.leasePlanNumber = getCookie("leaseplannumber")
 	  //DO NOT ALLOW TO SPECIFY END DATE
@@ -296,6 +307,32 @@ $(document).on('click', '.actionmenu', function() {
   	xhr.setRequestHeader("Content-Type", "application/json");
   	xhr.send(JSON.stringify(data));
 	}
+
+  function addNewCarToSheet(data){
+    var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxov97Py6_t9fxHyrLnfmY-v22KZmAO8Hc6hWmonqXKgafjMugpioUZ0KzOnGsazEnyTg/exec";
+    var settings = {
+        "url": googleSheetUrl,
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
+        "data": JSON.stringify({
+            "client": data.client,
+            "make": data.make,
+            "model": data.model,
+            "value": data.value,
+            "vin": data.vin,
+            "plate": data.plate,
+            "startDate": data.startDate,
+            "type": data.type
+        }),
+    };
+
+    $.ajax(settings).done(function(response) {
+        console.log(response);
+    });
+  }
 })
 
 
