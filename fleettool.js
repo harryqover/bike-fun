@@ -4,11 +4,12 @@ $( document ).ready(function() {
   $("#carlist").fadeOut();
 
   var vars = getUrlVars();
- if(vars["admin"] == "qover" || getCookie("admin") == "qover"){
-  document.cookie ="admin=qover"
-  $("#addbutton").show();
-  }else{
-  $("#addbutton").hide();
+  if(vars["admin"] == "qover" || getCookie("admin") == "qover"){
+    document.cookie ="admin=qover"
+    $("#addbutton").show();
+  } else {
+    //$("#addbutton").hide();
+    $("#addbutton").show(); //showing add button to bene
   }
 
   function createCookie(fieldName){
