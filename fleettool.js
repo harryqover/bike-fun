@@ -166,7 +166,7 @@ $(document).on('click', '.actionmenu', function() {
       
     	response.riskItems = unique;
       
-      $("#numbercars").html(unique.length);
+      $("#numbercars").html(vehicleIds.length + "/"+ unique.length);
  
       var pages = response.total / response.pageSize +1
       $( ".page" ).each(function( index ) {
