@@ -166,7 +166,7 @@ $(document).on('click', '.actionmenu', function() {
       
     	response.riskItems = unique;
       
-      $("#numbercars").html(vehicleIds.length + "/"+ unique.length);
+      
  
       var pages = response.total / response.pageSize +1
       $( ".page" ).each(function( index ) {
@@ -178,6 +178,8 @@ $(document).on('click', '.actionmenu', function() {
 			});
     	$("#table").html("");
       processVehicles(unique);
+      
+      $("#numbercars").html(vehicleIds.length + "/"+ unique.length);
  		} 
   	});
   	xhr.open("GET", api_url);
