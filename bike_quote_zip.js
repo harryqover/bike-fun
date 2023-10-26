@@ -245,9 +245,9 @@ function getPrice() {
         $(".error").text(errorTextDB);
         $(".error").show();
         gtag('event', 'allTagsWithEvents', {
-              'event_category': 'error - getPrice',
-              'event_label': type
-            });
+          'event_category': 'error - getPrice',
+          'event_label': type
+        });
     } else {
         var urlGetPrice = 'https://app.qover.com/api/bike/v1/price-info?apikey=' + __QOVER_API_KEY__ + '&iecb=1592535798477&country=' + country + '&type=' + type + '&value=' + value + '&antiTheftMeasure=' + gpstracker + '&zip=' + zipcode + '&discountCodes=' + window.promocode;
         if(environement == "sbx"){
