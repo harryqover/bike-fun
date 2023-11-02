@@ -61,7 +61,8 @@ $( document ).ready(function() {
     $("#model").html("");
   	$('#model').append("<option value='other'> Please Select a model </option>")
   	for (let i = 0; i < models[$(this).val()].length; i++) {
-     	var html = '<option type="'+models[$(this).val()][i].type+'"  catalogue_value="'+models[$(this).val()][i].value+'" value="'+models[$(this).val()][i].name+'">'+models[$(this).val()][i].name+'</option>'
+     	//var html = '<option type="'+models[$(this).val()][i].type+'"  catalogue_value="'+models[$(this).val()][i].value+'" value="'+models[$(this).val()][i].name+'">'+models[$(this).val()][i].name+'</option>'
+      var html = '<option type="'+models[$(this).val()][i].type+'"  catalogue_value="'+models[$(this).val()][i].value+'" value="">'+models[$(this).val()][i].name+'</option>'
 			$('#model').append(html)
     }
 	});
