@@ -160,6 +160,13 @@ function getNinjaData(cigarId, email) {
             }
             //STOP create var for zendesk lang based on zendesk locales availabilities
 
+            if(country == "NL"){
+                $("[data-var='transferclaimfreeyears']").show();
+                $("[data-var='transferclaimfreeyears']").attr("href", "https://forms.qover.com/233023321061033?contract="+contract+"&email="+email);
+            } else {
+                $("[data-var='transferclaimfreeyears']").hide();
+            }
+
             //START adding dynamic info from ninja on page
             $("[data-var='brand']").text(makeTranslation[response.payload.risk.make]);
             $("[data-var='model']").text(modelTranslation[response.payload.risk.model]);
