@@ -162,7 +162,7 @@ function getNinjaData(cigarId, email) {
 
             if(country == "NL"){
                 $("[data-var='transferclaimfreeyears']").show();
-                $("[data-var='transferclaimfreeyears']").attr("href", "https://forms.qover.com/233023321061033?contract="+contract+"&email="+email);
+                $("[data-var='transferclaimfreeyears']").attr("href", "https://forms.qover.com/233023321061033?contract="+response.payload.cigarId+"&email="+email);
             } else {
                 $("[data-var='transferclaimfreeyears']").hide();
             }
