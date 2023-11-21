@@ -86,7 +86,7 @@ function goLogin(cigarId, email) {
     $("#connected").hide();
     $("#disconnected").hide();
     $("#bikedata").hide();
-    console.log("loading should be visible")
+    console.log("loading should be visible");
 
     var data = JSON.stringify({
         "cigarId": cigarId,
@@ -195,11 +195,6 @@ function goLogin(cigarId, email) {
             } else if (lang == "nl") {
                 zendeskLang = "nl-be";
             }
-
-            
-
-
-            
             
             $("[data-var='cancel']").attr("href", "https://forms.qover.com/230021764194349?language="+lang+"&cigarid=" + cigarId + "&email=" + email);
             if(devTest == "cancelPopup"){
@@ -232,12 +227,14 @@ function goLogin(cigarId, email) {
             logout();
             console.log(this.status);
             var obj = JSON.parse(this.responseText);
-            alert(obj.message);
+            //alert(obj.message);
+            alert("Email must be linked to the contract and is case-sensitive. Check for typos and ensure it matches the associated email.");
         } else if (this.readyState === 4 && this.status === 404) {
             logout();
             console.log(this.status);
             var obj = JSON.parse(this.responseText);
-            alert(obj.message);
+            //alert(obj.message);
+            alert("Email must be linked to the contract and is case-sensitive. Check for typos and ensure it matches the associated email.");
         } else if (this.readyState === 4) {
             logout();
             console.log(this.status);
