@@ -29,20 +29,27 @@ const qoverPhone = {
 };
 
 const makeTranslation = {
-    "MAKE_TESLA": "Tesla"
+    "MAKE_TESLA": "Tesla",
+    "MAKE_PORSCHE": "Porsche"
 };
 const modelTranslation = {
     "MODEL_S": "Model S",
     "MODEL_3": "Model 3",
     "MODEL_X": "Model X",
-    "MODEL_Y": "Model Y"
+    "MODEL_Y": "Model Y";
+    "MODEL_911": "911",
+    "MODEL_TAYCAN": "Taycan",
+    "MODEL_MACAN": "Macan"
 };
 
 const modelPic = {
     "MODEL_S": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/6333002f43ba3deb577247df_Model%20S%402x.png",
     "MODEL_3": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/6333002f43ba3d1c337247e3_Model%203%402x.png",
     "MODEL_X": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/6333002f43ba3d0df37247dd_Model%20X%402x.png",
-    "MODEL_Y": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/6333002f43ba3de2607247e1_Model%20Y%402x.png"
+    "MODEL_Y": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/6333002f43ba3de2607247e1_Model%20Y%402x.png",
+    "MODEL_911": "https://storage.googleapis.com/qover-assets/salesflow/PORSCHE/911GRAND.png",
+    "MODEL_TAYCAN": "https://storage.googleapis.com/qover-assets/salesflow/PORSCHE/TAYCANGRAND.png",
+    "MODEL_MACAN": "https://storage.googleapis.com/qover-assets/salesflow/PORSCHE/MAYCANGRAND.png"
 };
 
 const mileageTranslation = {
@@ -103,7 +110,6 @@ function goLogin(cigarId, email) {
 }
 
 function getNinjaData(cigarId, email) {
-    //var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxw_NiE8wEmOykXDcnaM6vzVfS6bYdv-Ne6bQmo-IBi0IvlKpSUW-6IAVxq5AwqrGasoQ/exec";
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbzFVIZtsmQg24Jr0j0jl5TqSEf68Y3b97L7DbVn_A-xnHTh7JXA3dJ-O62zgdKKAyDt/exec";
     const statusContract = {
         "STATUS_OPEN": translations['active'],
