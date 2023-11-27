@@ -1,4 +1,4 @@
-console.warn("v20230406 168");
+console.warn("v20231127 0917");
 
 const variants = {
     "VARIANT_SILVER": "Preferred",
@@ -103,7 +103,8 @@ function goLogin(cigarId, email) {
 }
 
 function getNinjaData(cigarId, email) {
-    var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxw_NiE8wEmOykXDcnaM6vzVfS6bYdv-Ne6bQmo-IBi0IvlKpSUW-6IAVxq5AwqrGasoQ/exec";
+    //var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxw_NiE8wEmOykXDcnaM6vzVfS6bYdv-Ne6bQmo-IBi0IvlKpSUW-6IAVxq5AwqrGasoQ/exec";
+    var googleSheetUrl = "https://script.google.com/macros/s/AKfycbzFVIZtsmQg24Jr0j0jl5TqSEf68Y3b97L7DbVn_A-xnHTh7JXA3dJ-O62zgdKKAyDt/exec";
     const statusContract = {
         "STATUS_OPEN": translations['active'],
         "STATUS_CLOSED": translations['closed'],
