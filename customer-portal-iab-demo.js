@@ -36,7 +36,7 @@ const modelTranslation = {
     "MODEL_S": "Model S",
     "MODEL_3": "Model 3",
     "MODEL_X": "Model X",
-    "MODEL_Y": "Model Y";
+    "MODEL_Y": "Model Y",
     "MODEL_911": "911",
     "MODEL_TAYCAN": "Taycan",
     "MODEL_MACAN": "Macan"
