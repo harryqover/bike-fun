@@ -335,6 +335,11 @@ function getstatistics(start, end) {
         //console.log(data.kpi.kpis.EUR);
         //console.log(data.graph.data.EUR);
 
+        //HARRY LAST EDIT 20231128
+         if (data == "not authorized") {
+                logout();
+            }
+
 
         if (data.graph.data && data.graph.data.EUR) {
             var graph = JSON.parse(data.graph.data.EUR);
