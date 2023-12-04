@@ -1,3 +1,5 @@
+console.warn("update 14:50");
+
 function getCookie(cname) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
@@ -21,7 +23,7 @@ function getParameterByName(name) {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " ")); 
 } 
 
-var authConnected = getParameterByName(auth);
+var authConnected = getParameterByName("auth");
 
 if(authConnected != ""){
     lastContractCreated();
