@@ -1,4 +1,5 @@
-console.warn("update 15:38");
+console.warn("update 16:25");
+
 
 function getCookie(cname) {
     var name = cname + "=";
@@ -24,6 +25,15 @@ function getParameterByName(name) {
 } 
 
 var authConnected = getParameterByName("auth");
+
+if(authConnected != ""){
+    $(".loading").show();
+    $("#connected").hide();
+    $("#disconnected").hide();
+    $("#bikedata").hide();
+    $(".head-cp-connected").hide();
+    $("[data-translation='logout']").show();
+}
 
 
 function lastContractCreated(){
