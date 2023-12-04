@@ -21,6 +21,247 @@ function getParameterByName(name) {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " ")); 
 } 
 
+var authConnected = getParameterByName(auth);
+
+if(authConnected != ""){
+    lastContractCreated();
+}
+
+function lastContractCreated(){
+    var googleSheetUrl = "https://script.google.com/macros/s/AKfycbzFVIZtsmQg24Jr0j0jl5TqSEf68Y3b97L7DbVn_A-xnHTh7JXA3dJ-O62zgdKKAyDt/exec";
+    const statusContract = {
+        "STATUS_OPEN": translations['active'],
+        "STATUS_CLOSED": translations['closed'],
+        "STATUS_PENDING": translations['notactive'],
+        "STATUS_INCOMPLETE": translations['missingdata']
+    }
+
+    var settings = {
+        "url": googleSheetUrl,
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
+        "data": JSON.stringify({
+            "action": "getContractDataAuth"
+        }),
+    };
+
+    $.ajax(settings).done(function(response) {
+        console.log(response);
+        window.payloadFromNinja = response;
+        if(response.payload == "error"){
+            console.warn("error while trying to connect");
+            $(".loading").hide();
+            $("#connected").hide();
+            $(".head-cp-connected").hide();
+            $("#disconnected").show();
+            $("[data-translation='logout']").hide();
+            $("[data-var='assistance-icon']").hide();
+        } else {
+            const currency = response.payload.currency;
+            const lang = $('#langinput').find(":selected").val();
+            const country = response.payload.refs.country;
+
+            //START create var for zendesk lang based on zendesk locales availabilities
+            var zendeskLang = lang+"-"+country.toLowerCase();
+            if (country == "NL"){
+                zendeskLang = (lang == "nl") ? "nl":"en-"+country.toLowerCase();
+            } else if (country == "FR"){
+                zendeskLang = "fr";
+            } else if (country == "DE"){
+                zendeskLang = "de";
+            } else if (country == "ES"){
+                zendeskLang = "es";
+            } else if (country == "PT"){
+                zendeskLang = "pt";
+            } else if (country == "DK"){
+                zendeskLang = "da-dk";
+            } else if (country == "AT"){
+                zendeskLang = (lang == "de") ? "de-at":"en-at";
+            }
+            //STOP create var for zendesk lang based on zendesk locales availabilities
+
+            if(country == "NL"){
+                $("[data-var='transferclaimfreeyears']").show();
+                $("[data-var='transferclaimfreeyears']").attr("href", "https://forms.qover.com/233023321061033?contract="+response.payload.cigarId+"&email="+email);
+            } else {
+                $("[data-var='transferclaimfreeyears']").hide();
+            }
+
+            //START adding dynamic info from ninja on page
+            $("[data-var='brand']").text(makeTranslation[response.payload.risk.make]);
+            $("[data-var='model']").text(modelTranslation[response.payload.risk.model]);
+            $("[data-var='mileage']").text(mileageTranslation[response.payload.risk.yearMileageKm]+translations['peryear']);
+            $("[data-var='seconddriver']").text(translations[response.payload.risk.hasSecondDriver]);
+            $("[data-var='registrationPlate']").text(response.payload.risk.registrationPlate);
+            $("[data-var='vin']").text(response.payload.risk.vin);
+            $("[data-var='status']").text(statusContract[response.payload.status]);
+            $("[data-var='product']").text(variants[response.payload.terms.variant]);
+            $("[data-var='cigarid']").text(response.payload.cigarId);
+            var start = new Date(response.payload.start);
+            var end = new Date(response.payload.end);
+            $("[data-var='start']").text(start.toLocaleDateString());
+            $("[data-var='end']").text(end.toLocaleDateString());
+            $("[data-var='phone']").text(qoverPhone[response.payload.refs.country]);
+            $("[data-var='teslamodelimg']").attr("src",modelPic[response.payload.risk.model]);
+            $("[data-var='teslamodelimg']").attr("srcset",modelPic[response.payload.risk.model]);
+            $("[data-var='value']").text(currency+ " " + response.payload.risk.originalValue / 100);
+            //STOP adding dynamic info from ninja on page
+
+            //START adding interactions
+            //$('[data-var="greencardbypost"]').attr('href','https://forms.qover.com/230804510892049?contractReference='+response.payload.cigarId);
+            $('[data-var="greencardbypost"]').attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
+            $("[data-var='resendcontract']").click(function() {
+              reSendEmail();
+            });
+            $("[data-var='requeststatementofinformation']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
+            $("[data-var='amendlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_4414496783761=iab_amend&tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
+            $("[data-var='contracttandlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang);
+            //$("[data-var='cancel']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
+            $("[data-var='cancel']").attr("href", "https://forms.qover.com/231272799262059?partner=tesla&language="+lang+"&email=" + email+"&contract=" + response.payload.cigarId);
+            $("[data-var='contact']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
+            $("[data-var='makeaclaim']").attr("href", "https://insuremytesla.qover.com/claims?language="+lang);
+            //STOP adding interactions 
+
+            //START RENEWAL BLOCK
+            if(response.payload.nextVersion){
+               $("[data-var='mileagerenewal']").text(mileageTranslation[response.payload.nextVersion.risk.yearMileageKm]+translations['peryear']);
+               $("[data-var='seconddriverrenewal']").text(translations[response.payload.nextVersion.risk.hasSecondDriver]);
+               //var lang = $('#langinput').find(":selected").val()
+               var startRenew = new Date(response.payload.nextVersion.start);
+               $("[data-var='startrenewal']").text(startRenew.toLocaleDateString());
+               $("[data-var='linkrenewal']").attr("href","https://app.qover.com/iab/contracts/"+response.payload.contractId+"/renewal?key="+response.payload.pkey+"&locale="+response.payload.language+"-"+response.payload.refs.country)
+               $("[data-var='renewalblock']").show();
+            } else {
+                $("[data-var='renewalblock']").hide();
+            }
+            //STOP RENEWAL BLOCK
+
+            //START show incomplete banner if STATUS_INCOMPLETE
+            if(response.payload.status == "STATUS_INCOMPLETE" && allowedLinkIncomplete.includes(response.payload.refs.country)){
+                $("[data-var='incompleteblock']").show();
+                $("[data-var='linkincomplete']").attr('href','https://app.qover.com/iab/contracts/'+response.payload.contractId+'/missing-data?key='+response.payload.pkey+'&locale='+response.payload.language+'-'+response.payload.refs.country)
+            } else {
+                $("[data-var='incompleteblock']").hide();
+            }
+            //STOP show incomplete banner if STATUS_INCOMPLETE
+
+            //START action to display/hide block to request Qover to cancel old contract cfr Loi Hamon in France
+            //We want to show this block only within the first 2 months after purchase date
+            var purchaseDate = new Date(response.payload.purchaseDate);
+            var today = new Date();
+            var diffInMonths = (today.getFullYear() - purchaseDate.getFullYear()) * 12 + (today.getMonth() - purchaseDate.getMonth());
+
+            if(response.payload.refs.country == "FR" && diffInMonths <= 2){
+                $("[data-var='requestcanceloldcontract']").show();
+                $("[data-var='requestcanceloldcontract']").attr('href','https://forms.qover.com/230812152139044?contractReference='+response.payload.cigarId+'&registrationPlate='+response.payload.risk.registrationPlate)
+            } else {
+                $("[data-var='requestcanceloldcontract']").hide();
+            }
+            //END action to display/hide block to request Qover to cancel old contract cfr Loi Hamon in France
+
+            //START show button to request invoice for companies
+            if(response.payload.entityType == "ENTITY_TYPE_COMPANY"){
+                 $("[data-var='requestinvoice']").show();
+                 //$("[data-var='requestinvoice']").attr('onclick','alert("we still need to implement this")');
+                 $("[data-var='requestinvoice']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
+            } else {
+                $("[data-var='requestinvoice']").hide();
+            }
+            //END show button to request invoice for companies
+
+            //START hide stuff not available for pending contracts
+            if(response.payload.status == "STATUS_PENDING"){
+                
+            }
+            //END hide stuff not available for pending contracts
+            
+            //START show prices information
+            if(response.payload.paymentMethod != "PAYMENT_METHOD_SEPADD"){
+                //showing only price per year
+                $(".permonth").hide();
+                $("[data-var='price']").text(currency+ " " + formatPrice(response.payload.price));
+                if(response.payload.nextVersion){
+                    $("[data-var='pricerenewal']").text(currency+ " " + formatPrice(response.payload.nextVersion.price));
+                }
+            } else {
+                //showing only price per month
+                $(".peryear").hide();
+                $("[data-var='pricepermonth']").text(currency+ " " + formatPrice(response.payload.price/12));
+                if(response.payload.nextVersion){
+                    $("[data-var='pricepermonthrenewal']").text(currency+ " " + formatPrice(response.payload.nextVersion.price/12));
+                }
+            }
+            //STOP show prices information
+            
+            //START show correct renewal status and color
+            if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && !response.payload.versionInfo.cancelInformation) {
+                console.log("full active")
+                $("[data-var='renewal']").text(translations['renewed']);
+                $(".statusdiv").css("background-color", "#80cc7a")
+            } else if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == true) {
+                console.log("active but cancel at renewal")
+                $(".statusdiv").css("background-color", "#FFC1BC");
+                $("[data-var='renewal']").text(translations['cancelled']);
+            } else if (response.payload.status == "STATUS_CLOSED") {
+                console.log("closed");
+                var cancelDate = new Date(response.payload.versionInfo.effectiveDate);
+                $(".statusdiv").css("background-color", "#FFC1BC")
+                $("[data-var='renewal']").text(translations['cancelledon']+ " " + cancelDate.toLocaleDateString());
+                $("[data-var='cancel']").hide();
+                $("[data-var='greencardbypost']").hide();
+            } else if (response.payload.status == "STATUS_PENDING") {
+                $(".statusdiv").css("background-color", "#FFC1BC");
+                $("[data-var='makeaclaim']").hide();
+                $("[data-var='greencardbypost']").hide();
+                $("[data-var='requeststatementofinformation']").hide();
+                $("[data-var='start']").text(translations['notavailable']);
+                $("[data-var='end']").text(translations['notavailable']);
+                $("[data-translation='requestresendcontractgreencard'").text(translations['resendemailpending']);
+                if(!response.payload.risk.registrationPlate){
+                    $("[data-var='registrationPlate']").text(translations['missing']);
+                }            
+                if(!response.payload.risk.vin){
+                    $("[data-var='vin']").text(translations['missing']);
+                }
+            } else {
+                console.log("something else: " + response.payload.status + " - " + response.payload.versionInfo);
+            }
+            //STOP show correct renewal status and color
+
+            //START hide incomplete status for DE
+            if (response.payload.status == "STATUS_INCOMPLETE" && (response.payload.refs.country == "DE"||response.payload.refs.country == "NL")) {
+                $(".statusdiv").hide();
+            }
+            //STOP hide incomplete status for DE
+
+            //START show assistance block if SILVER or GOLD
+            if(response.payload.terms.variant == "VARIANT_SILVER" || response.payload.terms.variant == "VARIANT_GOLD"){
+                $("[data-var='phoneassistance']").text(assistancePhone[response.payload.refs.country]);
+                $("[data-var='assistance-icon']").show();
+            } else {
+                $("[data-var='phoneassistance']").text("not available");    
+                $("[data-var='assistance-icon']").hide();
+            }
+            //STOP show assistance block if SILVER or GOLD
+
+            
+            //SHOWING BACK ALL BLOCKS AFTER COMPUTING EVERYTHING
+            $("#bikedata").show();
+            $("#connected").show();
+            $(".loading-resend-email").hide();
+            $("#disconnected").hide();
+            $(".loading").hide();
+            $(".head-cp-connected").show();
+            getBanners("IAB", lang);
+
+        } 
+    });
+}
+
+
 
 console.warn("v20231127 0917");
 
