@@ -25,9 +25,12 @@ function getParameterByName(name) {
 
 var authConnected = getParameterByName("auth");
 
-if(authConnected != ""){
-    lastContractCreated();
-}
+setTimeout(function() {
+    if(authConnected != ""){
+        lastContractCreated();
+    }
+}, 1000);
+
 
 function lastContractCreated(){
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbzFVIZtsmQg24Jr0j0jl5TqSEf68Y3b97L7DbVn_A-xnHTh7JXA3dJ-O62zgdKKAyDt/exec";
