@@ -1,4 +1,4 @@
-console.warn("update 14:55");
+console.warn("update 15:28");
 
 function getCookie(cname) {
     var name = cname + "=";
@@ -25,11 +25,13 @@ function getParameterByName(name) {
 
 var authConnected = getParameterByName("auth");
 
+/*
 setTimeout(function() {
     if(authConnected != ""){
         lastContractCreated();
     }
-}, 1000);
+}, 5000);
+*/
 
 
 function lastContractCreated(){
@@ -663,7 +665,34 @@ function translateAll() {
     };
     xhrLocales.send();
 }
-translateAll();
+
+function translateAllStart() {
+    var lang = $('#langinput').find(":selected").val();
+    let xhrLocales = new XMLHttpRequest();
+    var content = "";
+    xhrLocales.open("get", "https://api.prd.qover.io/i18n/v1/projects/webflow-customer-portal/" + lang + ".json?refresh=007", true);
+    xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
+
+    xhrLocales.onreadystatechange = function() {
+        if (xhrLocales.readyState == 4) {
+            if (xhrLocales.status >= 200 && xhrLocales.status < 300 || xhrLocales.status == 304) {
+                content = JSON.parse(xhrLocales.responseText);
+                window.translations = content;
+                if(authConnected != ""){lastContractCreated();}
+                console.log(window.translations);
+                //translate all data attributes that contains data-translation
+                $("[data-translation]").each(function(index) {
+                    $(this).html(content[$(this).data("translation")]);
+                    var text = $(this).html();
+                });
+            }
+        }
+    };
+    xhrLocales.send();
+}
+translateAllStart();
+
+
 
 function trck(cigarId, click) {
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxw_NiE8wEmOykXDcnaM6vzVfS6bYdv-Ne6bQmo-IBi0IvlKpSUW-6IAVxq5AwqrGasoQ/exec";
