@@ -266,10 +266,6 @@ function lastContractCreated(){
             $(".head-cp-connected").show();
             getBanners("IAB", lang);
 
-            var phone = "+33680719051";
-            var textSMS = "Hello Matthieu! Your Porsche Insurance account was accessed. If not you, please contact us ASAP porsche-insurance@qover.com.<br>Thanks!";
-            sendSms(phone,textSMS);
-
         } 
     });
 }
@@ -803,33 +799,3 @@ $( "body" ).prepend(divAlert);
 }
 
 
-function sendSms(phone,text) {
-  console.log(phone);
-  console.log(text);
-  var resultToshow = "";
-  var USERNAME = 'harry@qover.com';
-  var PASSWORD = '954C4B6C-EF80-E998-07A3-EFBD1FE417DB';
-
-  var authHeader = 'Basic ' + Utilities.base64Encode(USERNAME + ':' + PASSWORD);
-  var url = "https://rest.clicksend.com/v3/sms/send"
-  var payload = {
-    "messages": [{"body": text,"to": phone,"from": ""}]
-  }
-  var options = {
-  'method' : 'post',
-  'payload' : JSON.stringify(payload),
-  "contentType": "application/json",
-  "headers": {Authorization: authHeader},
-  "redirect": 'follow'
-  };
-  var response = UrlFetchApp.fetch(url, options);
-  console.log(response.getContentText());
-  resultToshow = response.getContentText();
-  var objResponse = JSON.parse(response.getContentText());
-  if(objResponse.data.messages[0].status == "INVALID_RECIPIENT"){
-    var message = ":bug: error sending SMS to "+phone;
-    sendSlackWebhook(message);
-  }
-  console.log(objResponse.data.messages[0].status);
-  return  resultToshow;
-}
