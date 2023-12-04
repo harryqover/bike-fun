@@ -1,4 +1,4 @@
-console.warn("update 15:28");
+console.warn("update 15:38");
 
 function getCookie(cname) {
     var name = cname + "=";
@@ -24,14 +24,6 @@ function getParameterByName(name) {
 } 
 
 var authConnected = getParameterByName("auth");
-
-/*
-setTimeout(function() {
-    if(authConnected != ""){
-        lastContractCreated();
-    }
-}, 5000);
-*/
 
 
 function lastContractCreated(){
@@ -678,7 +670,15 @@ function translateAllStart() {
             if (xhrLocales.status >= 200 && xhrLocales.status < 300 || xhrLocales.status == 304) {
                 content = JSON.parse(xhrLocales.responseText);
                 window.translations = content;
-                if(authConnected != ""){lastContractCreated();}
+                if(authConnected != ""){
+                    $(".loading").show();
+                    $("#connected").hide();
+                    $("#disconnected").hide();
+                    $("#bikedata").hide();
+                    $(".head-cp-connected").hide();
+                    lastContractCreated();
+                    $("[data-translation='logout']").show();
+                }
                 console.log(window.translations);
                 //translate all data attributes that contains data-translation
                 $("[data-translation]").each(function(index) {
