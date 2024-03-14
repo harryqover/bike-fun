@@ -207,7 +207,10 @@ function createPayload(variant, reason) {
     if(utmMediumFromCookie != ""){
       window.payload.publicMetadata.push({"key": "utm_medium","value": utmMediumFromCookie});
     }
-    window.payload.discountCodes.push({"name": window.promocode});
+    //HARRY TRYING TO FIX UNDEFINED DISCOUNT
+    if(window.promocode != ""){
+        window.payload.discountCodes.push({"name": window.promocode});
+    }
     window.payload.terms.variant = variant;
     window.payload.risk.originalValue = $("#value").val() * 100;
     window.payload.risk.antiTheftMeasure = $("#bike-gpstracker").val();
@@ -401,7 +404,6 @@ function getPrice() {
                 percentdiscountVariant1 = percentdiscountVariant1.toFixed(0);
                 var discountsOnVariant = [];
                 if(percentdiscountVariant1>0){discountsOnVariant.push("v1")}
-                //console.log("percentdiscountVariant1 ", percentdiscountVariant1);
 
                 if (variants.length > 1) {
                     var priceVariant2 = responseGetPrice.priceInfo[0].coverages.find(el => el.coverageName === variants[1]);
@@ -428,7 +430,6 @@ function getPrice() {
                         if(percentdiscountVariant3>0){discountsOnVariant.push("v3")}
                     }
                 }
-                //||
                 if (discountsOnVariant.length > 0) {
                     if(discountsOnVariant.includes("v1")){
                         $("#percentdiscountVariant1").text(percentdiscountVariant1);    
