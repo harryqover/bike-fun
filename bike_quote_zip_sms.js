@@ -249,8 +249,6 @@ function createPayload(variant, reason) {
     } else {
         bikeValueCluser = "Other";
     }
-
-
     getDraft(window.payload, reason);
 }
 //CREATE PAYLOAD END
@@ -282,30 +280,6 @@ function getDraft(payload, reason) {
             } else if (reason == "save") {
                 sendEmail(window.draftid, window.payload.policyholder.email, "save");
             } else {
-                /* OLD GA UA
-                dataLayer.push({
-                    'event': 'addToCartMain',
-                    'ecommerce': {
-                        'currencyCode': 'EUR',
-                        'add': {
-                            'actionField': {
-                                'list': 'landing|update'
-                            },
-                            'products': [{
-                                'id': response.terms.variant,
-                                'name': response.terms.variant,
-                                'variant': response.risk.type,
-                                'category': 'bike_insurance',
-                                'brand': payload.refs.country,
-                                'dimension1': 'Main',
-                                'price': response.totalCoverage.priceInfo.yearlyPremium.withTaxes / 100,
-                                'coupon': ''
-                            }]
-                        }
-                    }
-                });
-                */
-
                 //NEW GA4
                 gtag('event', 'add_to_cart', {
                     currency: "EUR",
@@ -407,14 +381,6 @@ function getPrice() {
                 //$(".error").text(response.details[0].message);
                 $(".error").text(errorToShow);
                 $(".error").show(250);
-                
-                //$(".error").show();
-                /*dataLayer.push({
-                    'event': 'allTagsWithEvents',
-                    'eventCategory': 'error',
-                    'eventAction': 'getPrice',
-                    'eventLabel': xhrPrice.status + ' url used: ' + urlGetPrice
-                  });*/
                 gtag('event', 'allTagsWithEvents', {
                   'event_category': 'error - getPrice',
                   'event_label': xhrPrice.status + ' url used: ' + urlGetPrice
@@ -433,6 +399,8 @@ function getPrice() {
                 var basePriceVariant1Yearly = basePriceVariant1.yearlyPremium.withTaxes / 100;
                 var percentdiscountVariant1 = ((basePriceVariant1Yearly - priceVariant1Yearly) / basePriceVariant1Yearly) * 100;
                 percentdiscountVariant1 = percentdiscountVariant1.toFixed(0);
+                var discountsOnVariant = [];
+                if(percentdiscountVariant1>0){discountsOnVariant.push("v1")}
                 //console.log("percentdiscountVariant1 ", percentdiscountVariant1);
 
                 if (variants.length > 1) {
@@ -445,6 +413,7 @@ function getPrice() {
                     var basePriceVariant2Yearly = basePriceVariant2.yearlyPremium.withTaxes / 100;
                     var percentdiscountVariant2 = ((basePriceVariant2Yearly - priceVariant2Yearly) / basePriceVariant2Yearly) * 100;
                     percentdiscountVariant2 = percentdiscountVariant2.toFixed(0);
+                    if(percentdiscountVariant2>0){discountsOnVariant.push("v2")}
 
                     if (variants.length > 2) {
                         var priceVariant3 = responseGetPrice.priceInfo[0].coverages.find(el => el.coverageName === variants[2]);
@@ -456,15 +425,19 @@ function getPrice() {
                         var basePriceVariant3Yearly = basePriceVariant3.yearlyPremium.withTaxes / 100;
                         var percentdiscountVariant3 = ((basePriceVariant3Yearly - priceVariant3Yearly) / basePriceVariant3Yearly) * 100;
                         percentdiscountVariant3 = percentdiscountVariant3.toFixed(0);
+                        if(percentdiscountVariant3>0){discountsOnVariant.push("v3")}
                     }
                 }
-                if (percentdiscountVariant1 > 0) {
-                    $("#percentdiscountVariant1").text(percentdiscountVariant1);
-                    if (variants.length > 1) {
-                        $("#percentdiscountVariant2").text(percentdiscountVariant2);
-                        if (variants.length > 1) {
-                            $("#percentdiscountVariant3").text(percentdiscountVariant3);
-                        }
+                //||
+                if (discountsOnVariant.length > 0) {
+                    if(discountsOnVariant.includes("v1")){
+                        $("#percentdiscountVariant1").text(percentdiscountVariant1);    
+                    }
+                    if(discountsOnVariant.includes("v2")){
+                        $("#percentdiscountVariant2").text(percentdiscountVariant2);    
+                    }
+                    if(discountsOnVariant.includes("v3")){
+                        $("#percentdiscountVariant3").text(percentdiscountVariant3);    
                     }
                     $(".discount, .promo-label").show(250);
                 } else if (window.promocode != "") {
@@ -475,12 +448,7 @@ function getPrice() {
                       $(".error").text(window.text.promocodeNotValid);
                     }
                     $(".error").show();
-                    /*dataLayer.push({
-                        'event': 'allTagsWithEvents',
-                        'eventCategory': 'error',
-                        'eventAction': 'getPrice',
-                        'eventLabel': 'promocode not valid '+window.promocode+ ' '+window.__QOVER_API_KEY__
-                      });*/
+
                     gtag('event', 'allTagsWithEvents', {
                       'event_category': 'error - getPrice',
                       'event_label': 'promocode not valid '+window.promocode+ ' '+window.__QOVER_API_KEY__
@@ -551,34 +519,6 @@ function getPrice() {
                 $('.div-block-184').removeAttr('onclick');
                 $(".clickhere").hide();
 
-                //START CREATE PRODUCT ARRAY TO SEND TO TAG MANAGER
-                /*var productArray = [{
-                                    'id': window.variants[0],
-                                    'name': window.variants[0],
-                                    'variant': type,
-                                    'category': 'bike_insurance',
-                                    'brand': window.country,
-                                    'dimension1': 'Main',
-                                    'price': priceVariant1Yearly
-                                }
-                            ];
-                if (variants.length > 1) {
-                  productArray.push({'id': window.variants[1],'name': window.variants[1],'variant': type,'category': 'bike_insurance','brand': window.country,'dimension1': 'Main','price': priceVariant2Yearly});
-                  if (variants.length > 2) {
-                    productArray.push({'id': window.variants[2],'name': window.variants[2],'variant': type,'category': 'bike_insurance','brand': window.country,'dimension1': 'Main','price': priceVariant3Yearly});
-                  }
-                }*/
-                //END CREATE PRODUCT ARRAY TO SEND TO TAG MANAGER
-                //START SEND PRODUCT ARRAY TO TAG MANAGER
-                /*dataLayer.push({
-                    'event': 'productDetailView2', //The event name adapts to the number of plans proposed
-                    'ecommerce': {
-                        'currencyCode': 'EUR',
-                        'detail': {
-                            'products': productArray
-                        }
-                    }
-                });*/
                 var itemsArray = [{'item_id': window.variants[0],'item_name': window.variants[0],'item_brand': window.country,'price': priceVariant1Yearly}];
                 if (variants.length > 1) {
                   itemsArray.push({'item_id': window.variants[1],'item_name': window.variants[1],'item_brand': window.country,'price': priceVariant2Yearly});
