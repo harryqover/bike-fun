@@ -430,16 +430,23 @@ function getPrice() {
                     }
                 }
                 if (discountsOnVariant.length > 0) {
+                    $(".discount, .promo-label").show(250);
                     if(discountsOnVariant.includes("v1")){
-                        $("#percentdiscountVariant1").text(percentdiscountVariant1);    
+                        $("#percentdiscountVariant1").text(percentdiscountVariant1);
+                    } else {
+                        $("#percentdiscountVariant1").text("0");
                     }
                     if(discountsOnVariant.includes("v2")){
                         $("#percentdiscountVariant2").text(percentdiscountVariant2);    
+                    } else {
+                        $("#percentdiscountVariant2").text("0");
                     }
                     if(discountsOnVariant.includes("v3")){
                         $("#percentdiscountVariant3").text(percentdiscountVariant3);    
+                    } else {
+                        $("#percentdiscountVariant3").text("0");
                     }
-                    $(".discount, .promo-label").show(250);
+                    
                 } else if (window.promocode != "") {
                     if(window.promocode.substring(0,5) == "GIANT"){
                       window.location.href = "https://app.qover.com/bike/quote?locale=fr-FR&key=pk_29D66CCD9AE08A1B59C9&promocode="+window.promocode;
