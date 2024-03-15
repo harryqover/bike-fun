@@ -71,7 +71,11 @@ function createPayload(variant, reason) {
     if(utmMediumFromCookie != ""){
       window.payload.publicMetadata.push({"key": "utm_medium","value": utmMediumFromCookie});
     }
-    window.payload.discountCodes.push({"name": window.promocode});
+    //window.payload.discountCodes.push({"name": window.promocode});
+    //HARRY TRYING TO FIX UNDEFINED DISCOUNT
+    if(window.promocode != ""){
+        window.payload.discountCodes.push({"name": window.promocode});
+    }
     window.payload.terms.variant = variant;
     window.payload.risk.originalValue = $("#value").val() * 100;
     window.payload.risk.antiTheftMeasure = $("#bike-gpstracker").val();
