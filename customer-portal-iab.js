@@ -193,7 +193,10 @@ function getNinjaData(cigarId, email) {
             $("[data-var='resendcontract']").click(function() {
               reSendEmail();
             });
-            $("[data-var='requeststatementofinformation']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
+            //$("[data-var='requeststatementofinformation']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
+            $("[data-var='requeststatementofinformation']").click(function() {
+              sendClaimsAttestation();
+            });
             $("[data-var='amendlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_4414496783761=iab_amend&tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
             $("[data-var='contracttandlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang);
             //$("[data-var='cancel']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
@@ -443,6 +446,32 @@ function reSendEmail(){
         $(".loading-resend-email").hide();
         $("[data-translation='requestresendcontractgreencard']").text(translations['emailsent']);
         $("[data-translation='requestresendcontractgreencard']").show();
+    });
+}
+
+function sendClaimsAttestation(){
+    $("[data-translation='requeststatementofinformation']").text(translations['waitwhilesending']);
+    var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
+
+    var settings = {
+        "url": googleSheetUrl,
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
+        "data": JSON.stringify({
+            "contractId": window.payloadFromNinja.payload.contractId,
+            "request": "claimsAttestation",
+            "product": "IAB",
+            "versionNumber": window.payloadFromNinja.payload.versionInfo.versionNumber
+        }),
+    };
+    $.ajax(settings).done(function(response) {
+        console.log(response);
+        $(".loading-resend-email").hide();
+        $("[data-translation='requeststatementofinformation']").text(translations['emailsent']);
+        $("[data-translation='requeststatementofinformation']").show();
     });
 }
 
