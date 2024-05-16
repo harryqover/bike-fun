@@ -1,91 +1,3 @@
-let ipAddress = "";
-$(document).ready(function() {
-    $.getJSON("https://api.ipify.org?format=json", function(data) {
-        ipAddress = data.ip;
-    });
-});
-
-function sendIban(){
-	console.log("GET FORM DATA");
-		var lang = $('input[name="name"]').val();
-		var cigardid = $('#cigardid').val();
-		var email = $('#email').val();
-		var iban = $('#iban').val();
-		var bicswift = $('#bicswift').val();
-
-	console.log("CHECK VALIDITY NUMBER");
-	var validityError = 0;
-	if(!isValidEmail(email)){
-		validityError++
-	}
-	if(basicCreditCardCheck(iban)){
-		validityError++
-	}
-	if(!IBAN.isValid(iban)){
-		validityError++
-	}
-	if(validityError === 0){
-		iban = IBAN.printFormat(iban);
-		var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxy9Mhdj_sXeOHse9SWTKOHSO1KYxQOYeFND9m9QC_hl0zTcK6oelysAdlg0QZxBWY3ZQ/exec";
-		var settings = {
-	        "url": googleSheetUrl,
-	        "method": "POST",
-	        "timeout": 0,
-	        "headers": {
-	            "Content-Type": "text/plain;charset=utf-8"
-	        },
-	        "data": JSON.stringify({
-			    "email": email,
-			    "contract": cigardid,
-			    "iban": iban,
-			    "bic": bicswift,
-			    "ip": ipAddress
-			}),
-	    };
-
-	    $.ajax(settings).done(function(response) {
-	        console.log(response);
-	    });
-	} else {
-		console.warn("errors detected ", validityError);
-	}
-}
-
-/*
-curl --location 'https://script.google.com/macros/s/AKfycbxy9Mhdj_sXeOHse9SWTKOHSO1KYxQOYeFND9m9QC_hl0zTcK6oelysAdlg0QZxBWY3ZQ/exec' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "email": "harry@qover.com",
-    "contract": "BE1012345678",
-    "iban": "BE79750665443933",
-    "bic": "BEBRU",
-    "ip": "123456.23456.98765.876"
-}'
-*/
-
-function isValidEmail(email) {
-  const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return regex.test(email);
-}
-
-function basicCreditCardCheck(cardNumber) {
-  // Regular expressions for common card prefixes
-  const visaRegEx = /^4[0-9]{12}(?:[0-9]{3})?$/;
-  const mastercardRegEx = /^5[1-5][0-9]{14}$/;
-  const amexRegEx = /^3[47][0-9]{13}$/;
-  const discoverRegEx = /^(6011|65[0-9]{2})[0-9]{12}$/;
-
-  // Check length and starting digits against patterns
-  if (cardNumber.length === 16 && (visaRegEx.test(cardNumber) || mastercardRegEx.test(cardNumber))) {
-    return true;
-  } else if (cardNumber.length === 15 && (amexRegEx.test(cardNumber) || discoverRegEx.test(cardNumber))) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
@@ -523,6 +435,94 @@ function basicCreditCardCheck(cardNumber) {
     exports.countries = countries;
 
 }));
+
+
+let ipAddress = "";
+$(document).ready(function() {
+    $.getJSON("https://api.ipify.org?format=json", function(data) {
+        ipAddress = data.ip;
+    });
+});
+
+function sendIban(){
+	console.log("GET FORM DATA");
+		var lang = $('input[name="name"]').val();
+		var cigardid = $('#cigardid').val();
+		var email = $('#email').val();
+		var iban = $('#iban').val();
+		var bicswift = $('#bicswift').val();
+
+	console.log("CHECK VALIDITY NUMBER");
+	var validityError = 0;
+	if(!isValidEmail(email)){
+		validityError++
+	}
+	if(basicCreditCardCheck(iban)){
+		validityError++
+	}
+	if(!IBAN.isValid(iban)){
+		validityError++
+	}
+	if(validityError === 0){
+		iban = IBAN.printFormat(iban);
+		var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxy9Mhdj_sXeOHse9SWTKOHSO1KYxQOYeFND9m9QC_hl0zTcK6oelysAdlg0QZxBWY3ZQ/exec";
+		var settings = {
+	        "url": googleSheetUrl,
+	        "method": "POST",
+	        "timeout": 0,
+	        "headers": {
+	            "Content-Type": "text/plain;charset=utf-8"
+	        },
+	        "data": JSON.stringify({
+			    "email": email,
+			    "contract": cigardid,
+			    "iban": iban,
+			    "bic": bicswift,
+			    "ip": ipAddress
+			}),
+	    };
+
+	    $.ajax(settings).done(function(response) {
+	        console.log(response);
+	    });
+	} else {
+		console.warn("errors detected ", validityError);
+	}
+}
+
+/*
+curl --location 'https://script.google.com/macros/s/AKfycbxy9Mhdj_sXeOHse9SWTKOHSO1KYxQOYeFND9m9QC_hl0zTcK6oelysAdlg0QZxBWY3ZQ/exec' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "harry@qover.com",
+    "contract": "BE1012345678",
+    "iban": "BE79750665443933",
+    "bic": "BEBRU",
+    "ip": "123456.23456.98765.876"
+}'
+*/
+
+function isValidEmail(email) {
+  const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return regex.test(email);
+}
+
+function basicCreditCardCheck(cardNumber) {
+  // Regular expressions for common card prefixes
+  const visaRegEx = /^4[0-9]{12}(?:[0-9]{3})?$/;
+  const mastercardRegEx = /^5[1-5][0-9]{14}$/;
+  const amexRegEx = /^3[47][0-9]{13}$/;
+  const discoverRegEx = /^(6011|65[0-9]{2})[0-9]{12}$/;
+
+  // Check length and starting digits against patterns
+  if (cardNumber.length === 16 && (visaRegEx.test(cardNumber) || mastercardRegEx.test(cardNumber))) {
+    return true;
+  } else if (cardNumber.length === 15 && (amexRegEx.test(cardNumber) || discoverRegEx.test(cardNumber))) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 function isValidEmail(email) {
   const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
