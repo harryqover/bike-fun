@@ -445,6 +445,8 @@ $.getJSON("https://api.ipify.org?format=json", function(data) {
 
 function sendIban(){
 	$("#processingMessage").remove();
+	$("div.html-embed-2.w-embed").hide(500);
+	$("#btnToPaperform").hide(500);
 	$("#btnToPaperform").after('<div class="body-small margin-b_40" id="processingMessage">We are checking your data.</div>');
 	console.log("GET FORM DATA");
 		var lang = $('input[name="name"]').val();
@@ -492,6 +494,8 @@ function sendIban(){
 	} else {
 		console.warn("errors detected ", validityError);
 		$("#processingMessage").text('There is an error with your information please validate.');
+		$("div.html-embed-2.w-embed").show(250);
+		$("#btnToPaperform").show(250);
 	}
 }
 
