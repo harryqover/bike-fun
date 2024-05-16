@@ -537,3 +537,28 @@ function isValidEmail(email) {
   const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return regex.test(email);
 }
+
+
+function translateAll() {
+    var lang = $('#langinput').find(":selected").val();
+    let xhrLocales = new XMLHttpRequest();
+    var content = "";
+    xhrLocales.open("get", "https://api.prd.qover.io/i18n/v1/projects/webflow-qover/" + lang + ".json?refresh=007", true);
+    xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
+
+    xhrLocales.onreadystatechange = function() {
+        if (xhrLocales.readyState == 4) {
+            if (xhrLocales.status >= 200 && xhrLocales.status < 300 || xhrLocales.status == 304) {
+                content = JSON.parse(xhrLocales.responseText);
+                window.translations = content;
+                console.log(window.translations);
+                $("[data-translation]").each(function(index) {
+                    $(this).html(content[$(this).data("translation")]);
+                    var text = $(this).html();
+                });
+            }
+        }
+    };
+    xhrLocales.send();
+}
+translateAll();
