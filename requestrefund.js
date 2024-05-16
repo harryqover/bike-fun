@@ -444,6 +444,7 @@ $.getJSON("https://api.ipify.org?format=json", function(data) {
 
 
 function sendIban(){
+	$("#processingMessage").remove();
 	$("#btnToPaperform").after('<div class="body-small margin-b_40" id="processingMessage">We are checking your data.</div>');
 	console.log("GET FORM DATA");
 		var lang = $('input[name="name"]').val();
