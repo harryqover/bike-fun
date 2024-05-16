@@ -444,13 +444,14 @@ $.getJSON("https://api.ipify.org?format=json", function(data) {
 
 
 function sendIban(){
+	$("#btnToPaperform").after('<div class="body-small margin-b_40" id="processingMessage">We are checking your data.</div>');
 	console.log("GET FORM DATA");
 		var lang = $('input[name="name"]').val();
 		var cigardid = $('#cigardid').val();
 		var email = $('#email').val();
 		var iban = $('#iban').val();
 		var bicswift = $('#bicswift').val();
-		
+
 
 	console.log("CHECK VALIDITY NUMBER");
 	var validityError = 0;
@@ -464,6 +465,7 @@ function sendIban(){
 		validityError++
 	}
 	if(validityError === 0){
+		$("#processingMessage").text('We are sending your request for refund to our finance department.');
 		iban = IBAN.printFormat(iban);
 		var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxy9Mhdj_sXeOHse9SWTKOHSO1KYxQOYeFND9m9QC_hl0zTcK6oelysAdlg0QZxBWY3ZQ/exec";
 		var settings = {
@@ -484,9 +486,11 @@ function sendIban(){
 
 	    $.ajax(settings).done(function(response) {
 	        console.log(response);
+	        $("#processingMessage").text('We received your request, if your request is validated you ll receive the money within 2 weeks.');
 	    });
 	} else {
 		console.warn("errors detected ", validityError);
+		$("#processingMessage").text('There is an error with your information please validate.');
 	}
 }
 
