@@ -436,11 +436,8 @@
 
 }));
 
-var ipAddress = "";
-$.getJSON("https://api.ipify.org?format=json", function(data) {
-    ipAddress = data.ip;
-    console.log(ipAddress)
-});
+
+
 
 
 function sendIban(){
@@ -454,6 +451,11 @@ function sendIban(){
 		var email = $('#email').val();
 		var iban = $('#iban').val();
 		var bicswift = $('#bicswift').val();
+		var ipAddress = "";
+		$.getJSON("https://api.ipify.org?format=json", function(data) {
+		    ipAddress = data.ip;
+		    console.log(ipAddress)
+		});
 
 
 	console.log("CHECK VALIDITY NUMBER");
