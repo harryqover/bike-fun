@@ -541,8 +541,9 @@ function isValidEmail(email) {
 }
 
 
-function translateAll() {
-    var lang = $('#langinput').find(":selected").val();
+function translate2() {
+    //var lang = $('#langinput').find(":selected").val();
+    var lang = $('#state').find(":selected").val();
     let xhrLocales = new XMLHttpRequest();
     var content = "";
     xhrLocales.open("get", "https://api.prd.qover.io/i18n/v1/projects/webflow-qover/" + lang + ".json?refresh=007", true);
@@ -563,4 +564,5 @@ function translateAll() {
     };
     xhrLocales.send();
 }
-translateAll();
+//translateAll();
+translate2();
