@@ -546,6 +546,7 @@ function translate2() {
     var lang = $('#state').find(":selected").val();
     let xhrLocales = new XMLHttpRequest();
     var content = "";
+    const transKeyElements = document.querySelectorAll('[trans-key]');
     xhrLocales.open("get", "https://api.prd.qover.io/i18n/v1/projects/webflow-qover/" + lang + ".json?refresh=007", true);
     xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
 
@@ -555,10 +556,26 @@ function translate2() {
                 content = JSON.parse(xhrLocales.responseText);
                 window.translations = content;
                 console.log(window.translations);
+
+                // Loop through each element
+                transKeyElements.forEach((element) => {
+                  const key = element.getAttribute('trans-key');
+                  const translation = translations[key];
+
+                  // Check if a translation exists for the key
+                  if (translation) {
+                    // Update the element's text content with the translated text
+                    element.textContent = translation;
+                  }
+                });
+
+
+                /*
                 $("[data-translation]").each(function(index) {
                     $(this).html(content[$(this).data("translation")]);
                     var text = $(this).html();
                 });
+                */
             }
         }
     };
