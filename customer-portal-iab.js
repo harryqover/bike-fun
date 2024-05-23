@@ -194,9 +194,15 @@ function getNinjaData(cigarId, email) {
               reSendEmail();
             });
             //$("[data-var='requeststatementofinformation']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email=" + email);
-            $("[data-var='requeststatementofinformation']").click(function() {
-              sendClaimsAttestation();
-            });
+            //to remove for DK and NL
+            if(response.payload.refs.country == "DK" || response.payload.refs.country == "NL"){
+                $("[data-var='requeststatementofinformation']").hide();
+            } else {
+                $("[data-var='requeststatementofinformation']").click(function() {
+                  sendClaimsAttestation();
+                });
+            }
+            
             $("[data-var='amendlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_4414496783761=iab_amend&tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
             $("[data-var='contracttandlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang);
             //$("[data-var='cancel']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
