@@ -499,7 +499,7 @@ function sendIban(){
 	    });
 	} else {
 		console.warn("errors detected ", validityError);
-		$("#processingMessage").text(translations.[errorMessage]);
+		$("#processingMessage").text(translations[errorMessage]);
 		$("div.html-embed-2.w-embed").show(250);
 		$("#btnToPaperform").show(250);
 	}
