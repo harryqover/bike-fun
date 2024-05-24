@@ -498,9 +498,13 @@ function sendIban(){
             if(response.error == "" && response.amount > 0){
                 $("#processingMessage").text(translations.processingRequestReceivedMoney2weeks);
             } else if(response.error != "") {
-                $("#processingMessage").text(translations[response.error]);    
+                $("#processingMessage").text(translations[response.error]);
+                $("div.html-embed-2.w-embed").show(250);
+                $("#btnToPaperform").show(250);
             } else if(response.amount < 1) {
-                $("#processingMessage").text(translations.errorNothingToRefund);    
+                $("#processingMessage").text(translations.errorNothingToRefund);
+                $("div.html-embed-2.w-embed").show(250);
+                $("#btnToPaperform").show(250);   
             }
 	        
 	    });
