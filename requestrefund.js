@@ -460,17 +460,21 @@ function sendIban(){
 
 	console.log("CHECK VALIDITY NUMBER");
 	var validityError = 0;
+    var errorMessage = "";
 	if(!isValidEmail(email)){
 		validityError++
+        errorMessage = "errorEmailNotValid";
 	}
 	if(basicCreditCardCheck(iban)){
 		validityError++
+        errorMessage = "errorFormatCreditCard";
 	}
 	if(!IBAN.isValid(iban)){
 		validityError++
+        errorMessage = "errorFormatIBAN";
 	}
 	if(validityError === 0){
-		$("#processingMessage").text('We are sending your request for refund to our finance department.');
+		$("#processingMessage").text(translations.processingSendingToFinance);
 		iban = IBAN.printFormat(iban);
 		var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxy9Mhdj_sXeOHse9SWTKOHSO1KYxQOYeFND9m9QC_hl0zTcK6oelysAdlg0QZxBWY3ZQ/exec";
 		var settings = {
@@ -482,20 +486,20 @@ function sendIban(){
 	        },
 	        "data": JSON.stringify({
 			    "email": email,
-			    "contract": cigardid,
+			    "contract": cigardid.toUpperCase(),
 			    "iban": iban,
-			    "bic": bicswift,
+			    "bic": bicswift.toUpperCase(),
 			    "ip": ipAddress
 			}),
 	    };
 
 	    $.ajax(settings).done(function(response) {
 	        console.log(response);
-	        $("#processingMessage").text('We received your request, if your request is validated you ll receive the money within 2 weeks.');
+	        $("#processingMessage").text(translations.processingRequestReceivedMoney2weeks);
 	    });
 	} else {
 		console.warn("errors detected ", validityError);
-		$("#processingMessage").text('There is an error with your information please validate.');
+		$("#processingMessage").text(translations.[errorMessage]);
 		$("div.html-embed-2.w-embed").show(250);
 		$("#btnToPaperform").show(250);
 	}
@@ -581,5 +585,7 @@ function translate2() {
     };
     xhrLocales.send();
 }
-//translateAll();
-translate2();
+
+setTimeout( function(){
+    translate2();
+}, 5000);
