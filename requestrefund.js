@@ -599,4 +599,7 @@ function translate2() {
 
 setTimeout( function(){
     translate2();
-}, 5000);
+    $('#cigardid').val(getParameterByName("contract"));
+    $('#email').val(getParameterByName("email"));
+    $('#iban').val(getParameterByName("iban"));    
+}, 3000);
