@@ -495,7 +495,14 @@ function sendIban(){
 
 	    $.ajax(settings).done(function(response) {
 	        console.log(response);
-	        $("#processingMessage").text(translations.processingRequestReceivedMoney2weeks);
+            if(response.error == "" && response.amount > 0){
+                $("#processingMessage").text(translations.processingRequestReceivedMoney2weeks);
+            } else if(response.error != "") {
+                $("#processingMessage").text(translations[response.error]);    
+            } else if(response.amount < 1) {
+                $("#processingMessage").text(translations.errorNothingToRefund);    
+            }
+	        
 	    });
 	} else {
 		console.warn("errors detected ", validityError);
