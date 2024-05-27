@@ -474,7 +474,7 @@ function sendIban(){
         errorMessage = "errorFormatIBAN";
 	}
 	if(validityError === 0){
-		$("#processingMessage").text(translations.processingSendingToFinance);
+		$("#processingMessage").text(translations.refundSendingrequesttofinance);
 		iban = IBAN.printFormat(iban);
 		var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxy9Mhdj_sXeOHse9SWTKOHSO1KYxQOYeFND9m9QC_hl0zTcK6oelysAdlg0QZxBWY3ZQ/exec";
 		var settings = {
