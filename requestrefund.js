@@ -469,10 +469,14 @@ function sendIban(){
 		validityError++
         errorMessage = "errorFormatCreditCard";
 	}
-	if(!IBAN.isValid(iban)){
+	if(!IBAN.isValid(bicswift)){
 		validityError++
         errorMessage = "errorFormatIBAN";
 	}
+    if(!validateBIC(bic)){
+        validityError++
+        errorMessage = "errorFormatBIC";
+    }
 	if(validityError === 0){
 		$("#processingMessage").text(translations.refundSendingrequesttofinance);
 		iban = IBAN.printFormat(iban);
@@ -527,6 +531,11 @@ curl --location 'https://script.google.com/macros/s/AKfycbxy9Mhdj_sXeOHse9SWTKOH
     "ip": "123456.23456.98765.876"
 }'
 */
+
+function validateBIC(bic) {
+  const regex = /^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/;
+  return regex.test(bic.toUpperCase());
+}
 
 function isValidEmail(email) {
   const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
