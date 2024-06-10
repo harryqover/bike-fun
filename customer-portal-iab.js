@@ -263,9 +263,10 @@ function getNinjaData(cigarId, email) {
                 
             }
             //END hide stuff not available for pending contracts
+
             
             //START show prices information
-            if(response.payload.paymentMethod != "PAYMENT_METHOD_SEPADD"){
+            if(response.payload.paymentMethod != "PAYMENT_METHOD_SEPADD" && response.payload.paymentInterval != "PAYMENT_INTERVAL_MONTH"){
                 //showing only price per year
                 $(".permonth").hide();
                 $("[data-var='price']").text(currency+ " " + formatPrice(response.payload.price));
@@ -281,6 +282,28 @@ function getNinjaData(cigarId, email) {
                 }
             }
             //STOP show prices information
+
+
+            //START show update card for credit card monthly
+            if(response.payload.paymentMethod == "PAYMENT_METHOD_CREDITCARD" && response.payload.paymentInterval == "PAYMENT_INTERVAL_MONTH"){
+                console.log("we should show update payment");
+
+                var hmtlPaymentMethod = '<div class="paymentMethod">';
+                var hmtlPaymentMethod = hmtlPaymentMethod+ '<div data-var="paymentMethod" class="paymentMethod" data-translation="paidBy'+response.payload.paymentMethod+'">'+translations['paidBy_'+response.payload.paymentMethod]+'</div>';
+                var hmtlPaymentMethod = hmtlPaymentMethod+ '<div  class="paymentMethodUpdate">';
+                var hmtlPaymentMethod = hmtlPaymentMethod+ '<a href="" style="color: grey;text-decoration: underline;" data-var="ctaUpdateCreditCard" data-translation="ctaUpdateCreditCard">'+translations['ctaUpdateCreditCard']+'</a>';
+                var hmtlPaymentMethod = hmtlPaymentMethod+ '</div>';
+                var hmtlPaymentMethod = hmtlPaymentMethod+ '</div>';
+                console.log(hmtlPaymentMethod);
+
+                $("[data-var='ctaUpdateCreditCard']").click(function() {
+                  updatePaymentMethod();
+                });
+                
+
+            }
+            //STOP show update card for credit card monthly
+
             
             //START show correct renewal status and color
             if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && !response.payload.versionInfo.cancelInformation) {
@@ -478,6 +501,32 @@ function sendClaimsAttestation(){
         $(".loading-resend-email").hide();
         $("[data-translation='requeststatementofinformation']").text(translations['emailsent']);
         $("[data-translation='requeststatementofinformation']").show();
+    });
+}
+
+function updatePaymentMethod(){
+    $("[data-translation='ctaUpdateCreditCard']").text(translations['waitwhilesending']);
+    var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
+
+    var settings = {
+        "url": googleSheetUrl,
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
+        "data": JSON.stringify({
+            "contractId": window.payloadFromNinja.payload.contractId,
+            "request": "paymentMethodUpdate",
+            "product": "IAB",
+            "versionNumber": window.payloadFromNinja.payload.versionInfo.versionNumber
+        }),
+    };
+    $.ajax(settings).done(function(response) {
+        console.log(response);
+        $(".loading-resend-email").hide();
+        $("[data-translation='ctaUpdateCreditCard']").text(translations['emailsent']);
+        $("[data-translation='ctaUpdateCreditCard']").show();
     });
 }
 
