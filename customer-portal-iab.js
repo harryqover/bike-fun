@@ -1,4 +1,4 @@
-console.warn("v20240430 0928");
+console.warn("v20240610 1534");
 
 const variants = {
     "VARIANT_SILVER": "Preferred",
@@ -291,7 +291,7 @@ function getNinjaData(cigarId, email) {
                 var hmtlPaymentMethod = '<div class="paymentMethod">';
                 var hmtlPaymentMethod = hmtlPaymentMethod+ '<div data-var="paymentMethod" class="paymentMethod" data-translation="paidBy'+response.payload.paymentMethod+'">'+translations['paidBy_'+response.payload.paymentMethod]+'</div>';
                 var hmtlPaymentMethod = hmtlPaymentMethod+ '<div  class="paymentMethodUpdate">';
-                var hmtlPaymentMethod = hmtlPaymentMethod+ '<a href="" style="color: grey;text-decoration: underline;" data-var="ctaUpdateCreditCard" data-translation="ctaUpdateCreditCard">'+translations['ctaUpdateCreditCard']+'</a>';
+                var hmtlPaymentMethod = hmtlPaymentMethod+ '<a style="color: grey;text-decoration: underline;" data-var="ctaUpdateCreditCard" data-translation="ctaUpdateCreditCard">'+translations['ctaUpdateCreditCard']+'</a>';
                 var hmtlPaymentMethod = hmtlPaymentMethod+ '</div>';
                 var hmtlPaymentMethod = hmtlPaymentMethod+ '</div>';
                 console.log(hmtlPaymentMethod);
