@@ -295,6 +295,7 @@ function getNinjaData(cigarId, email) {
                 var hmtlPaymentMethod = hmtlPaymentMethod+ '</div>';
                 var hmtlPaymentMethod = hmtlPaymentMethod+ '</div>';
                 console.log(hmtlPaymentMethod);
+                $(".permonth").after( hmtlPaymentMethod );
 
                 $("[data-var='ctaUpdateCreditCard']").click(function() {
                   updatePaymentMethod();
