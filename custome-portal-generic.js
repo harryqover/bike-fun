@@ -6,17 +6,6 @@ const variants = {
     "VARIANT_BRONZE": "Essential"
 }
 
-const assistancePhone = {
-    "BE" : "+32 2 320 39 75",
-    "ES" : "+34 900 431 710",
-    "AT" : "+43 800 007 018",
-    "FR" : "+33 9 71 07 28 38",
-    "DE" : "+49 800 000 96 19",
-    "NL" : "+31 800 020 03 62",
-    "PT" : "+351 800 181 521",
-    "DK" : "+45 89 87 06 42"
-};
-
 const qoverPhone = {
     "BE" : "+32 2 588 25 50",
     "FR" : "+33 9 74 99 61 71",
@@ -28,31 +17,6 @@ const qoverPhone = {
     "DK" : "+45 89 87 06 42"
 };
 
-const makeTranslation = {
-    "MAKE_TESLA": "Tesla"
-};
-const modelTranslation = {
-    "MODEL_S": "Model S",
-    "MODEL_3": "Model 3",
-    "MODEL_X": "Model X",
-    "MODEL_Y": "Model Y"
-};
-
-const modelPic = {
-    "MODEL_S": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/6333002f43ba3deb577247df_Model%20S%402x.png",
-    "MODEL_3": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/6333002f43ba3d1c337247e3_Model%203%402x.png",
-    "MODEL_X": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/6333002f43ba3d0df37247dd_Model%20X%402x.png",
-    "MODEL_Y": "https://uploads-ssl.webflow.com/60a4c929fe1abc532b620edf/6333002f43ba3de2607247e1_Model%20Y%402x.png"
-};
-
-const mileageTranslation = {
-    "MILEAGE_0TO9999": "0 - 9.999 km",
-    "MILEAGE_10000TO14999": "10.000 - 14.999 km",
-    "MILEAGE_15000TO19999": "15.000 - 19.999 km",
-    "MILEAGE_20000TO24999": "20.000 - 24.999 km",
-    "MILEAGE_25000TO29999": "25.000 - 29.999 km",
-    "MILEAGE_OVER30000": ">30.000 km"
-};
 
 const allowedLinkIncomplete = ["AT", "FR"]
 
@@ -70,11 +34,7 @@ $("[data-var='assistance-icon']").hide();
 
 var login = getCookie("login");
 var cigarId = getCookie("cigarId");
-/*
-if (login && cigarId) {
-    goLogin(cigarId, login);
-}
-*/
+
 
 setTimeout(function() {
     $("#email").val(getParameterByName("email"));
@@ -168,22 +128,17 @@ function getNinjaData(cigarId, email) {
             }
 
             //START adding dynamic info from ninja on page
-            $("[data-var='brand']").text(makeTranslation[response.payload.risk.make]);
-            $("[data-var='model']").text(modelTranslation[response.payload.risk.model]);
-            $("[data-var='mileage']").text(mileageTranslation[response.payload.risk.yearMileageKm]+translations['peryear']);
-            $("[data-var='seconddriver']").text(translations[response.payload.risk.hasSecondDriver]);
-            $("[data-var='registrationPlate']").text(response.payload.risk.registrationPlate);
-            $("[data-var='vin']").text(response.payload.risk.vin);
+            $("[data-var='riskDecription']").text(response.payload.risk.description);
+            $("[data-var='riskType']").text(response.payload.risk.type);
+            $("[data-var='id']").text(response.payload.risk.id);
             $("[data-var='status']").text(statusContract[response.payload.status]);
-            $("[data-var='product']").text(variants[response.payload.terms.variant]);
+            $("[data-var='product']").text(response.payload.terms.variant);
             $("[data-var='cigarid']").text(response.payload.cigarId);
             var start = new Date(response.payload.start);
             var end = new Date(response.payload.end);
             $("[data-var='start']").text(start.toLocaleDateString());
             $("[data-var='end']").text(end.toLocaleDateString());
             $("[data-var='phone']").text(qoverPhone[response.payload.refs.country]);
-            $("[data-var='teslamodelimg']").attr("src",modelPic[response.payload.risk.model]);
-            $("[data-var='teslamodelimg']").attr("srcset",modelPic[response.payload.risk.model]);
             $("[data-var='value']").text(currency+ " " + response.payload.risk.originalValue / 100);
             //STOP adding dynamic info from ninja on page
 
@@ -213,9 +168,6 @@ function getNinjaData(cigarId, email) {
 
             //START RENEWAL BLOCK
             if(response.payload.nextVersion){
-               $("[data-var='mileagerenewal']").text(mileageTranslation[response.payload.nextVersion.risk.yearMileageKm]+translations['peryear']);
-               $("[data-var='seconddriverrenewal']").text(translations[response.payload.nextVersion.risk.hasSecondDriver]);
-               //var lang = $('#langinput').find(":selected").val()
                var startRenew = new Date(response.payload.nextVersion.start);
                $("[data-var='startrenewal']").text(startRenew.toLocaleDateString());
                $("[data-var='linkrenewal']").attr("href","https://app.qover.com/iab/contracts/"+response.payload.contractId+"/renewal?key="+response.payload.pkey+"&locale="+response.payload.language+"-"+response.payload.refs.country)
@@ -347,15 +299,7 @@ function getNinjaData(cigarId, email) {
             }
             //STOP hide incomplete status for DE
 
-            //START show assistance block if SILVER or GOLD
-            if(response.payload.terms.variant == "VARIANT_SILVER" || response.payload.terms.variant == "VARIANT_GOLD"){
-                $("[data-var='phoneassistance']").text(assistancePhone[response.payload.refs.country]);
-                $("[data-var='assistance-icon']").show();
-            } else {
-                $("[data-var='phoneassistance']").text("not available");    
-                $("[data-var='assistance-icon']").hide();
-            }
-            //STOP show assistance block if SILVER or GOLD
+            
 
             
             //SHOWING BACK ALL BLOCKS AFTER COMPUTING EVERYTHING
