@@ -29,7 +29,7 @@ $(".loading").hide();
 $("#connected").hide();
 $(".head-cp-connected").hide();
 $("#disconnected").show();
-$("[data-translation='logout']").hide();
+$("[data-trans='logout']").hide();
 $("[data-var='assistance-icon']").hide();
 
 var login = getCookie("login");
@@ -59,7 +59,7 @@ function goLogin(cigarId, email) {
     $("#bikedata").hide();
     $(".head-cp-connected").hide();
     getNinjaData(cigarId, email);
-    $("[data-translation='logout']").show();
+    $("[data-trans='logout']").show();
 }
 
 function getNinjaData(cigarId, email) {
@@ -94,7 +94,7 @@ function getNinjaData(cigarId, email) {
             $("#connected").hide();
             $(".head-cp-connected").hide();
             $("#disconnected").show();
-            $("[data-translation='logout']").hide();
+            $("[data-trans='logout']").hide();
             $("[data-var='assistance-icon']").hide();
         } else {
             const currency = response.payload.currency;
@@ -241,9 +241,9 @@ function getNinjaData(cigarId, email) {
                 console.log("we should show update payment");
 
                 var hmtlPaymentMethod = '<div class="paymentMethod">';
-                var hmtlPaymentMethod = hmtlPaymentMethod+ '<div data-var="paymentMethod" class="paymentMethod" data-translation="paidBy'+response.payload.paymentMethod+'">'+translations['paidBy_'+response.payload.paymentMethod]+'</div>';
+                var hmtlPaymentMethod = hmtlPaymentMethod+ '<div data-var="paymentMethod" class="paymentMethod" data-trans="paidBy'+response.payload.paymentMethod+'">'+translations['paidBy_'+response.payload.paymentMethod]+'</div>';
                 var hmtlPaymentMethod = hmtlPaymentMethod+ '<div  class="paymentMethodUpdate">';
-                var hmtlPaymentMethod = hmtlPaymentMethod+ '<a style="color: grey;text-decoration: underline;" data-var="ctaUpdateCreditCard" data-translation="ctaUpdateCreditCard">'+translations['ctaUpdateCreditCard']+'</a>';
+                var hmtlPaymentMethod = hmtlPaymentMethod+ '<a style="color: grey;text-decoration: underline;" data-var="ctaUpdateCreditCard" data-trans="ctaUpdateCreditCard">'+translations['ctaUpdateCreditCard']+'</a>';
                 var hmtlPaymentMethod = hmtlPaymentMethod+ '</div>';
                 var hmtlPaymentMethod = hmtlPaymentMethod+ '</div>';
                 console.log(hmtlPaymentMethod);
@@ -281,7 +281,7 @@ function getNinjaData(cigarId, email) {
                 $("[data-var='requeststatementofinformation']").hide();
                 $("[data-var='start']").text(translations['notavailable']);
                 $("[data-var='end']").text(translations['notavailable']);
-                $("[data-translation='requestresendcontractgreencard'").text(translations['resendemailpending']);
+                $("[data-trans='requestresendcontractgreencard'").text(translations['resendemailpending']);
                 if(!response.payload.risk.registrationPlate){
                     $("[data-var='registrationPlate']").text(translations['missing']);
                 }            
@@ -337,7 +337,7 @@ function logout() {
 
     $(".loading").hide();
     $("#disconnected").show();
-    $("[data-translation='logout']").hide();
+    $("[data-trans='logout']").hide();
 }
 
 function translateAll() {
@@ -353,8 +353,8 @@ function translateAll() {
                 content = JSON.parse(xhrLocales.responseText);
                 window.translations = content;
                 console.log(window.translations);
-                //translate all data attributes that contains data-translation
-                $("[data-translation]").each(function(index) {
+                //translate all data attributes that contains data-trans
+                $("[data-trans]").each(function(index) {
                     $(this).html(content[$(this).data("translation")]);
                     var text = $(this).html();
                 });
@@ -397,7 +397,7 @@ $(function(){
 
 
 function reSendEmail(){
-    $("[data-translation='requestresendcontractgreencard']").text(translations['waitwhilesending']);
+    $("[data-trans='requestresendcontractgreencard']").text(translations['waitwhilesending']);
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
 
     var settings = {
@@ -418,13 +418,13 @@ function reSendEmail(){
     $.ajax(settings).done(function(response) {
         console.log(response);
         $(".loading-resend-email").hide();
-        $("[data-translation='requestresendcontractgreencard']").text(translations['emailsent']);
-        $("[data-translation='requestresendcontractgreencard']").show();
+        $("[data-trans='requestresendcontractgreencard']").text(translations['emailsent']);
+        $("[data-trans='requestresendcontractgreencard']").show();
     });
 }
 
 function sendClaimsAttestation(){
-    $("[data-translation='requeststatementofinformation']").text(translations['waitwhilesending']);
+    $("[data-trans='requeststatementofinformation']").text(translations['waitwhilesending']);
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
 
     var settings = {
@@ -444,13 +444,13 @@ function sendClaimsAttestation(){
     $.ajax(settings).done(function(response) {
         console.log(response);
         $(".loading-resend-email").hide();
-        $("[data-translation='requeststatementofinformation']").text(translations['emailsent']);
-        $("[data-translation='requeststatementofinformation']").show();
+        $("[data-trans='requeststatementofinformation']").text(translations['emailsent']);
+        $("[data-trans='requeststatementofinformation']").show();
     });
 }
 
 function updatePaymentMethod(){
-    $("[data-translation='ctaUpdateCreditCard']").text(translations['waitwhilesending']);
+    $("[data-trans='ctaUpdateCreditCard']").text(translations['waitwhilesending']);
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
 
     var settings = {
@@ -470,8 +470,8 @@ function updatePaymentMethod(){
     $.ajax(settings).done(function(response) {
         console.log(response);
         $(".loading-resend-email").hide();
-        $("[data-translation='ctaUpdateCreditCard']").text(translations['emailsent']);
-        $("[data-translation='ctaUpdateCreditCard']").show();
+        $("[data-trans='ctaUpdateCreditCard']").text(translations['emailsent']);
+        $("[data-trans='ctaUpdateCreditCard']").show();
     });
 }
 
