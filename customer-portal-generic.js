@@ -130,7 +130,7 @@ function getNinjaData(cigarId, email) {
             //START adding dynamic info from ninja on page
             $("[data-var='riskDescription']").text(response.payload.risk.description);
             $("[data-var='riskType']").text(response.payload.risk.type);
-            $("[data-var='id']").text(response.payload.risk.id);
+            $("[data-var='riskId']").text(response.payload.risk.id);
             $("[data-var='status']").text(statusContract[response.payload.status]);
             $("[data-var='product']").text(response.payload.terms.variant);
             $("[data-var='cigarid']").text(response.payload.cigarId);
