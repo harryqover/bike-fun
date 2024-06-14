@@ -469,11 +469,11 @@ function sendIban(){
 		validityError++
         errorMessage = "errorFormatCreditCard";
 	}
-	if(!IBAN.isValid(bicswift)){
+	if(!IBAN.isValid(iban)){
 		validityError++
         errorMessage = "errorFormatIBAN";
 	}
-    if(!validateBIC(bic)){
+    if(!validateBIC(bicswift)){
         validityError++
         errorMessage = "errorFormatBIC";
     }
