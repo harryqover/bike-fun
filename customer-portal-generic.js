@@ -136,25 +136,25 @@ function getNinjaData(cigarId, email) {
             if(response.payload.risk.description == ""){
                 $("#riskDescription-block").hide();
             } else {
-                $("#riskDescription-block > div.label").text("risk 1 name");
+                $("#riskDescription-block > div.label").text(translations['riskDescription_'+response.payload.refs.product]);
                 $("[data-var='riskDescription']").text(response.payload.risk.description);
             }
             if(response.payload.risk.type == ""){
                 $("#riskType-block").hide();
             } else {
-                $("#riskType-block > div.label").text("risk 2 name");
+                $("#riskType-block > div.label").text(translations['riskType_'+response.payload.refs.product]);
                 $("[data-var='riskType']").text(response.payload.risk.type);
             }
             if(response.payload.risk.purchaseDate == ""){
                 $("#riskPurchaseDate-block").hide();
             } else {
-                $("#riskPurchaseDate-block > div.label").text("risk 3 name");
+                $("#riskPurchaseDate-block > div.label").text(translations['riskPurchaseDate_'+response.payload.refs.product]);
                 $("[data-var='riskPurchaseDate']").text(response.payload.risk.purchaseDate);
             }
             if(response.payload.risk.id == ""){
                 $("#riskId-block").hide();
             } else {
-                $("#riskId-block > div.label").text("risk 4 name");
+                $("#riskId-block > div.label").text(translations['riskId_'+response.payload.refs.product]);
                 $("[data-var='riskId']").text(response.payload.risk.id);
             }
             
