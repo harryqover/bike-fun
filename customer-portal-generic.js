@@ -102,6 +102,7 @@ function getNinjaData(cigarId, email) {
             const currency = response.payload.currency;
             const lang = $('#langinput').find(":selected").val();
             const country = response.payload.refs.country;
+            const product = response.payload.refs.product;
 
             //START create var for zendesk lang based on zendesk locales availabilities
             var zendeskLang = lang+"-"+country.toLowerCase();
@@ -120,6 +121,18 @@ function getNinjaData(cigarId, email) {
             } else if (country == "AT"){
                 zendeskLang = (lang == "de") ? "de-at":"en-at";
             }
+            var zendeskSubDomain = "qover";
+            if(product == "IAB"){
+                zendeskSubDomain = (partnerId == "6569f1426a95fa27a3fd6302")?"helvetia-asg":zendeskSubDomain;
+                zendeskSubDomain = (partnerId == "61001af3ededf75733d1c157")?"insuremytesla":zendeskSubDomain;
+                zendeskSubDomain = (partnerId == "63cfa5a0f6e5d3d875610048")?"insuremytesla":zendeskSubDomain;
+                zendeskSubDomain = (partnerId == "656857420de6ea64bb52529d")?"insuremytesla":zendeskSubDomain;
+            }
+            if(product == "BIKE"){
+                zendeskSubDomain = "qoverme";
+            }
+
+            
             //STOP create var for zendesk lang based on zendesk locales availabilities
 
             if(country == "NL"){
@@ -136,25 +149,25 @@ function getNinjaData(cigarId, email) {
             if(response.payload.risk.description == ""){
                 $("#riskDescription-block").hide();
             } else {
-                $("#riskDescription-block > div.label").text(translations['riskDescription_'+response.payload.refs.product]);
+                $("#riskDescription-block > div.label").text(translations['riskDescription_'+product]);
                 $("[data-var='riskDescription']").text(response.payload.risk.description);
             }
             if(response.payload.risk.type == ""){
                 $("#riskType-block").hide();
             } else {
-                $("#riskType-block > div.label").text(translations['riskType_'+response.payload.refs.product]);
+                $("#riskType-block > div.label").text(translations['riskType_'+product]);
                 $("[data-var='riskType']").text(response.payload.risk.type);
             }
             if(response.payload.risk.purchaseDate == ""){
                 $("#riskPurchaseDate-block").hide();
             } else {
-                $("#riskPurchaseDate-block > div.label").text(translations['riskPurchaseDate_'+response.payload.refs.product]);
+                $("#riskPurchaseDate-block > div.label").text(translations['riskPurchaseDate_'+product]);
                 $("[data-var='riskPurchaseDate']").text(response.payload.risk.purchaseDate);
             }
             if(response.payload.risk.id == ""){
                 $("#riskId-block").hide();
             } else {
-                $("#riskId-block > div.label").text(translations['riskId_'+response.payload.refs.product]);
+                $("#riskId-block > div.label").text(translations['riskId_'+product]);
                 $("[data-var='riskId']").text(response.payload.risk.id);
             }
             
@@ -176,19 +189,24 @@ function getNinjaData(cigarId, email) {
             //START adding interactions
 
             
-            if(response.payload.refs.product == "IAB"){
+            if(product == "IAB"){
                 if(["BE","FR","GB","ES","DE","AT"].includes(response.payload.refs.country)){
                     $("#action-menu-list").append('<a onclick="sendClaimsAttestation" class="dropdown-link w-dropdown-link" tabindex="0">claims attestation</a>');
                 }
-                $("#action-menu-list").append('<a href="https://insuremytesla.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[greencardbypost]+'</a>');
-                $("#action-menu-list").append('<a href="https://insuremytesla.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_4414496783761=iab_amend&tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[requestamend]+'</a>');
+                $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[greencardbypost]+'</a>');
+                $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[requestamend]+'</a>');
                 $("#action-menu-list").append('<a href="https://forms.qover.com/231272799262059?language='+lang+'&email='+email+'&contract='+response.payload.cigarId+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[cancelcontract]+'</a>');
             }
             $("#action-menu-list").append('<a onclick="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[requestresendcontract]+'</a>');
+            $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[contact]+'</a>');
+            $("#action-menu-list").append('<a href="https://www.qover.com/claims?contract='+cigarId+'&email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[makeaclaim]+'</a>');
+            $("[data-var='requestamend']").attr("href","https://"+zendeskSubDomain+".zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email="+email);
+            $("[data-var='makeaclaim']").attr("href","https://www.qover.com/claims?contract="+cigarId+"&email="+ email);
+            
 
-
-            $("[data-var='contact']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
-            $("[data-var='makeaclaim']").attr("href", "https://insuremytesla.qover.com/claims?language="+lang);
+            if(response.payload.entityType == "ENTITY_TYPE_COMPANY"){
+                $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+response.payload.cigarId+'&tf_anonymous_requester_email='+email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[requestinvoice]+'</a>');
+            }
             //STOP adding interactions 
 
             //START RENEWAL BLOCK
@@ -225,15 +243,7 @@ function getNinjaData(cigarId, email) {
             }
             //END action to display/hide block to request Qover to cancel old contract cfr Loi Hamon in France
 
-            //START show button to request invoice for companies
-            if(response.payload.entityType == "ENTITY_TYPE_COMPANY"){
-                 $("[data-var='requestinvoice']").show();
-                 //$("[data-var='requestinvoice']").attr('onclick','alert("we still need to implement this")');
-                 $("[data-var='requestinvoice']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
-            } else {
-                $("[data-var='requestinvoice']").hide();
-            }
-            //END show button to request invoice for companies
+           
 
             //START hide stuff not available for pending contracts
             if(response.payload.status == "STATUS_PENDING"){
