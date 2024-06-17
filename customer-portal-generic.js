@@ -254,18 +254,19 @@ function getNinjaData(cigarId, email) {
 
             
             //START show prices information
-            $("#premium-block").append();
-            $("#premium-block").append();
-
-            
-
             if(response.payload.paymentMethod != "PAYMENT_METHOD_SEPADD" && response.payload.paymentInterval != "PAYMENT_INTERVAL_MONTH"){
                 var totalPriceBlock = '<div class="medium"><span data-var="price">'+currency+ " " + formatPrice(response.payload.price/12)+'</span> '+translations["peryear"]+'</div>';
+                $("#premium-block").append(totalPriceBlock);
                 $("[data-var='price']").text(currency+ " " + formatPrice(response.payload.price/12)+ " "+translations["peryear"]);
             } else {
                 var totalPriceBlock = '<div class="medium"><span data-var="price">'+currency+ " " + formatPrice(response.payload.price/12)+'</span> '+translations["permonth"]+'</div>';
-                var updateCardBlock = '<a href="#" class="medium external">Update credit card</a>';
+                var updateCardBlock = '<a class="medium external" data-var="ctaUpdateCreditCard">'+translations['ctaUpdateCreditCard']+'</a>';
+                ("#premium-block").append(totalPriceBlock);
+                ("#premium-block").append(updateCardBlock);
                 $("[data-var='price']").text(currency+ " " + formatPrice(response.payload.price/12)+ " "+translations["permonth"]);
+                $("[data-var='ctaUpdateCreditCard']").click(function() {
+                  updatePaymentMethod();
+                });
             }
             //STOP show prices information
 
@@ -283,9 +284,7 @@ function getNinjaData(cigarId, email) {
                 console.log(hmtlPaymentMethod);
                 $(".permonth").after( hmtlPaymentMethod );
 
-                $("[data-var='ctaUpdateCreditCard']").click(function() {
-                  updatePaymentMethod();
-                });
+                
                 
 
             }
