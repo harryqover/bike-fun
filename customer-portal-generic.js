@@ -267,8 +267,8 @@ function getNinjaData(cigarId, email) {
                 console.log(response.payload.paymentMethod.paymentInterval);
                 var totalPriceBlock = '<div class="medium"><span data-var="price">'+currency+ " " + formatPrice(response.payload.price/12)+'</span> '+translations["permonth"]+'</div>';
                 var updateCardBlock = '<a class="medium external" data-var="ctaUpdateCreditCard">'+translations['ctaUpdateCreditCard']+'</a>';
-                ("#premium-block").append(totalPriceBlock);
-                ("#premium-block").append(updateCardBlock);
+                $("#premium-block").append(totalPriceBlock);
+                $("#premium-block").append(updateCardBlock);
                 $("[data-var='price']").text(currency+ " " + formatPrice(response.payload.price/12)+ " "+translations["permonth"]);
                 $("[data-var='ctaUpdateCreditCard']").click(function() {
                   updatePaymentMethod();
