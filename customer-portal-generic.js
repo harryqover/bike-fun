@@ -133,10 +133,34 @@ function getNinjaData(cigarId, email) {
 
 
             //START adding dynamic info from ninja on page
-            $("[data-var='riskDescription']").text(response.payload.risk.description);
-            $("[data-var='riskType']").text(response.payload.risk.type);
-            $("[data-var='riskPurchaseDate']").text(response.payload.risk.purchaseDate);
-            $("[data-var='riskId']").text(response.payload.risk.id);
+            if(response.payload.risk.description == ""){
+                $("#riskDescription-block").hide();
+            } else {
+                $("#riskDescription-block > div.label").text("risk 1 name");
+                $("[data-var='riskDescription']").text(response.payload.risk.description);
+            }
+            if(response.payload.risk.type == ""){
+                $("#riskType-block").hide();
+            } else {
+                $("#riskType-block > div.label").text("risk 2 name");
+                $("[data-var='riskType']").text(response.payload.risk.type);
+            }
+            if(response.payload.risk.purchaseDate == ""){
+                $("#riskPurchaseDate-block").hide();
+            } else {
+                $("#riskPurchaseDate-block > div.label").text("risk 3 name");
+                $("[data-var='riskPurchaseDate']").text(response.payload.risk.purchaseDate);
+            }
+            if(response.payload.risk.id == ""){
+                $("#riskId-block").hide();
+            } else {
+                $("#riskId-block > div.label").text("risk 4 name");
+                $("[data-var='riskId']").text(response.payload.risk.id);
+            }
+            
+            
+            
+            
             $("[data-var='status']").text(statusContract[response.payload.status]);
             $("[data-var='product']").text(response.payload.terms.variant);
             $("[data-var='cigarid']").text(response.payload.cigarId);
