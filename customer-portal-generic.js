@@ -250,14 +250,14 @@ function getNinjaData(cigarId, email) {
                 console.warn("yearly");
                 console.log(response.payload.paymentMethod.type);
                 console.log(response.payload.paymentMethod.paymentInterval);
-                var totalPriceBlock = '<div class="medium"><span data-var="price">'+currency+ " " + formatPrice(response.payload.price)+'</span> '+translations["peryear"]+'</div>';
+                var totalPriceBlock = '<div class="medium"><span>'+currency+ " " + formatPrice(response.payload.price)+'</span> '+translations["peryear"]+'</div>';
                 $("#premium-block").append(totalPriceBlock);
                 $("[data-var='price']").text(currency+ " " + formatPrice(response.payload.price)+ " "+translations["peryear"]);
             } else {
                 console.warn("monthly");
                 console.log(response.payload.paymentMethod.type);
                 console.log(response.payload.paymentMethod.paymentInterval);
-                var totalPriceBlock = '<div class="medium"><span data-var="price">'+currency+ " " + formatPrice(response.payload.price/12)+'</span> '+translations["permonth"]+'</div>';
+                var totalPriceBlock = '<div class="medium"><span>'+currency+ " " + formatPrice(response.payload.price/12)+'</span> '+translations["permonth"]+'</div>';
                 var updateCardBlock = '<a class="medium external" data-var="ctaUpdateCreditCard" style="cursor:pointer">'+translations['ctaUpdateCreditCard']+'</a>';
                 $("#premium-block").append(totalPriceBlock);
                 $("#premium-block").append(updateCardBlock);
