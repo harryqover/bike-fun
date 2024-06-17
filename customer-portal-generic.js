@@ -194,19 +194,19 @@ function getNinjaData(cigarId, email) {
                 if(["BE","FR","GB","ES","DE","AT"].includes(response.payload.refs.country)){
                     $("#action-menu-list").append('<a onclick="sendClaimsAttestation" class="dropdown-link w-dropdown-link" tabindex="0">claims attestation</a>');
                 }
-                $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[greencardbypost]+'</a>');
-                $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[requestamend]+'</a>');
+                $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["greencardbypost"]+'</a>');
+                $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestamend"]+'</a>');
                 $("#action-menu-list").append('<a href="https://forms.qover.com/231272799262059?language='+lang+'&email='+email+'&contract='+response.payload.cigarId+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[cancelcontract]+'</a>');
             }
             $("#action-menu-list").append('<a onclick="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[requestresendcontract]+'</a>');
-            $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[contact]+'</a>');
+            $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["contact"]+'</a>');
             $("#action-menu-list").append('<a href="https://www.qover.com/claims?contract='+cigarId+'&email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[makeaclaim]+'</a>');
             $("[data-var='requestamend']").attr("href","https://"+zendeskSubDomain+".zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email="+email);
             $("[data-var='makeaclaim']").attr("href","https://www.qover.com/claims?contract="+cigarId+"&email="+ email);
             
 
             if(response.payload.entityType == "ENTITY_TYPE_COMPANY"){
-                $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+response.payload.cigarId+'&tf_anonymous_requester_email='+email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations[requestinvoice]+'</a>');
+                $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+response.payload.cigarId+'&tf_anonymous_requester_email='+email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestinvoice"]+'</a>');
             }
             //STOP adding interactions 
 
