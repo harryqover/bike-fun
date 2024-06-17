@@ -32,8 +32,9 @@ $(".disconnected").show();
 $("[data-trans='logout']").hide();
 $("[data-var='assistance-icon']").hide();
 
-var login = getCookie("login");
-var cigarId = getCookie("cigarId");
+
+//var login = getCookie("login");
+//var cigarId = getCookie("cigarId");
 
 
 setTimeout(function() {
