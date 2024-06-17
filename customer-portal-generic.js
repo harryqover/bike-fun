@@ -132,9 +132,13 @@ function getNinjaData(cigarId, email) {
             if(product == "BIKE"){
                 zendeskSubDomain = "qoverme";
             }
-
-            
             //STOP create var for zendesk lang based on zendesk locales availabilities
+
+            var variantKey = response.payload.terms.variant+"_"+product;
+            if(partnerId == "6569f1426a95fa27a3fd6302"){
+                variantKey = response.payload.terms.variant+"_"+product+"_ASG"  
+            }
+            console.log(variantKey);
 
             if(country == "NL"){
                 $("[data-var='transferclaimfreeyears']").show();
@@ -171,8 +175,6 @@ function getNinjaData(cigarId, email) {
                 $("#riskId-block > div.label").text(translations['riskId_'+product]);
                 $("[data-var='riskId']").text(response.payload.risk.id);
             }
-            
-            
             
             
             $("[data-var='status']").text(statusContract[response.payload.status]);
