@@ -380,7 +380,7 @@ function translateAll() {
                 console.log(window.translations);
                 //translate all data attributes that contains data-trans
                 $("[data-trans]").each(function(index) {
-                    $(this).html(content[$(this).data("translation")]);
+                    $(this).html(content[$(this).data("trans")]);
                     var text = $(this).html();
                 });
             }
