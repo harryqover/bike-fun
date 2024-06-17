@@ -39,6 +39,7 @@ var cigarId = getCookie("cigarId");
 setTimeout(function() {
     $("#email").val(getParameterByName("email"));
     $("#cigardid").val(getParameterByName("contract"));
+    $(".loading").hide();
     //getTranslation();
 }, 1500);
 
