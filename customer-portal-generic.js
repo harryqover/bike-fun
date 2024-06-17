@@ -154,7 +154,7 @@ function getNinjaData(cigarId, email) {
                 if(["BE","FR","GB","ES","DE","AT"].includes(response.payload.refs.country)){
                     $("#action-menu-list").append('<a onclick="sendClaimsAttestation" class="dropdown-link w-dropdown-link" tabindex="0">claims attestation</a>');
                 }
-                $("#action-menu-list").append('<a href="https://insuremytesla.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email'" class="dropdown-link w-dropdown-link" tabindex="0">green card by post</a>');
+                $("#action-menu-list").append('<a href="https://insuremytesla.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">green card by post</a>');
                 $("#action-menu-list").append('<a href="https://insuremytesla.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_4414496783761=iab_amend&tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">amend contract</a>');
                 $("#action-menu-list").append('<a href="https://forms.qover.com/231272799262059?language='+lang+'&email='+email+'&contract='+response.payload.cigarId+'" class="dropdown-link w-dropdown-link" tabindex="0">cancel contract</a>');
             }
