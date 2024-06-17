@@ -255,10 +255,16 @@ function getNinjaData(cigarId, email) {
             
             //START show prices information
             if(response.payload.paymentMethod != "PAYMENT_METHOD_SEPADD" && response.payload.paymentInterval != "PAYMENT_INTERVAL_MONTH"){
+                console.warn("yearly");
+                console.log(response.payload.paymentMethod);
+                console.log(response.payload.paymentInterval);
                 var totalPriceBlock = '<div class="medium"><span data-var="price">'+currency+ " " + formatPrice(response.payload.price)+'</span> '+translations["peryear"]+'</div>';
                 $("#premium-block").append(totalPriceBlock);
                 $("[data-var='price']").text(currency+ " " + formatPrice(response.payload.price)+ " "+translations["peryear"]);
             } else {
+                console.warn("monthly");
+                console.log(response.payload.paymentMethod);
+                console.log(response.payload.paymentInterval);
                 var totalPriceBlock = '<div class="medium"><span data-var="price">'+currency+ " " + formatPrice(response.payload.price/12)+'</span> '+translations["permonth"]+'</div>';
                 var updateCardBlock = '<a class="medium external" data-var="ctaUpdateCreditCard">'+translations['ctaUpdateCreditCard']+'</a>';
                 ("#premium-block").append(totalPriceBlock);
