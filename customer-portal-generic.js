@@ -244,14 +244,6 @@ function getNinjaData(cigarId, email) {
             }
             //END action to display/hide block to request Qover to cancel old contract cfr Loi Hamon in France
 
-           
-
-            //START hide stuff not available for pending contracts
-            if(response.payload.status == "STATUS_PENDING"){
-                
-            }
-            //END hide stuff not available for pending contracts
-
             
             //START show prices information
             if(response.payload.paymentMethod.type != "PAYMENT_METHOD_SEPADD" && response.payload.paymentMethod.paymentInterval != "PAYMENT_INTERVAL_MONTH"){
@@ -266,7 +258,7 @@ function getNinjaData(cigarId, email) {
                 console.log(response.payload.paymentMethod.type);
                 console.log(response.payload.paymentMethod.paymentInterval);
                 var totalPriceBlock = '<div class="medium"><span data-var="price">'+currency+ " " + formatPrice(response.payload.price/12)+'</span> '+translations["permonth"]+'</div>';
-                var updateCardBlock = '<a class="medium external" data-var="ctaUpdateCreditCard">'+translations['ctaUpdateCreditCard']+'</a>';
+                var updateCardBlock = '<a class="medium external" data-var="ctaUpdateCreditCard" style="cursor:pointer">'+translations['ctaUpdateCreditCard']+'</a>';
                 $("#premium-block").append(totalPriceBlock);
                 $("#premium-block").append(updateCardBlock);
                 $("[data-var='price']").text(currency+ " " + formatPrice(response.payload.price/12)+ " "+translations["permonth"]);
