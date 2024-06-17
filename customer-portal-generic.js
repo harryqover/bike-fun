@@ -151,7 +151,6 @@ function getNinjaData(cigarId, email) {
 
             
             if(response.payload.refs.product == "IAB"){
-
                 if(["BE","FR","GB","ES","DE","AT"].includes(response.payload.refs.country)){
                     $("#action-menu-list").append('<a onclick="sendClaimsAttestation" class="dropdown-link w-dropdown-link" tabindex="0">claims attestation</a>');
                 }
