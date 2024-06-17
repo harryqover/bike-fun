@@ -26,9 +26,9 @@ var refundTheft = 0;
 var damageDeductibleAmount = 0;
 
 $(".loading").hide();
-$("#connected").hide();
+$(".connected").hide();
 $(".head-cp-connected").hide();
-$("#disconnected").show();
+$(".disconnected").show();
 $("[data-trans='logout']").hide();
 $("[data-var='assistance-icon']").hide();
 
@@ -54,8 +54,8 @@ function goLogin(cigarId, email) {
 
     //HIDING EVERYHTING BEHIND LOADING ICON
     $(".loading").show();
-    $("#connected").hide();
-    $("#disconnected").hide();
+    $(".connected").hide();
+    $(".disconnected").hide();
     $("#bikedata").hide();
     $(".head-cp-connected").hide();
     getNinjaData(cigarId, email);
@@ -91,9 +91,9 @@ function getNinjaData(cigarId, email) {
         if(response.payload == "error"){
             console.warn("error while trying to connect");
             $(".loading").hide();
-            $("#connected").hide();
+            $(".connected").hide();
             $(".head-cp-connected").hide();
-            $("#disconnected").show();
+            $(".disconnected").show();
             $("[data-trans='logout']").hide();
             $("[data-var='assistance-icon']").hide();
         } else {
@@ -304,9 +304,9 @@ function getNinjaData(cigarId, email) {
             
             //SHOWING BACK ALL BLOCKS AFTER COMPUTING EVERYTHING
             $("#bikedata").show();
-            $("#connected").show();
+            $(".connected").show();
             $(".loading-resend-email").hide();
-            $("#disconnected").hide();
+            $(".disconnected").hide();
             $(".loading").hide();
             $(".head-cp-connected").show();
             //getBanners("IAB", lang);
@@ -321,8 +321,8 @@ function getNinjaData(cigarId, email) {
 
 function logout() {
     $(".loading").show();
-    $("#connected").hide();
-    $("#disconnected").hide();
+    $(".connected").hide();
+    $(".disconnected").hide();
     $(".alert-banner").remove();
 
     var timeToAdd = 1000 * 60 * 60 * 24 * -1 * 1 * 1;
@@ -336,7 +336,7 @@ function logout() {
     $("#cigardid,#email").val('');
 
     $(".loading").hide();
-    $("#disconnected").show();
+    $(".disconnected").show();
     $("[data-trans='logout']").hide();
 }
 
