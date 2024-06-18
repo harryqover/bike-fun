@@ -174,7 +174,7 @@ function getNinjaData(cigarId, email) {
                 const addons = response.payload.terms.addons;
                 for (const addonName in addons) {
                   const addonValue = addons[addonName];
-                  const addonHtml = '<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+addonName+'</span>'+addonValue+'</p>';
+                  const addonHtml = '<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[addonName]+'</span>'+translations[addonValue+'_emoji']+'</p>';
                   $("a[data-var='product']").after(addonHtml);
                   //const addonElement = createAddonElement(addonName, addonValue);
                   //addonsContainer.appendChild(addonElement);
