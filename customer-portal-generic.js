@@ -32,11 +32,6 @@ $(".disconnected").show();
 $("[data-trans='logout']").hide();
 $("[data-var='assistance-icon']").hide();
 
-
-//var login = getCookie("login");
-//var cigarId = getCookie("cigarId");
-
-
 setTimeout(function() {
     $("#email").val(getParameterByName("email"));
     $("#cigardid").val(getParameterByName("contract"));
@@ -430,6 +425,8 @@ $(function(){
 
 
 function reSendEmail(){
+    console.warn("reSendEmail() - DISABLED");
+    /*
     $("[data-trans='requestresendcontractgreencard']").text(translations['waitwhilesending']);
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
 
@@ -454,9 +451,12 @@ function reSendEmail(){
         $("[data-trans='requestresendcontractgreencard']").text(translations['emailsent']);
         $("[data-trans='requestresendcontractgreencard']").show();
     });
+    */
 }
 
 function sendClaimsAttestation(){
+    console.warn("sendClaimsAttestation() - DISABLED");
+    /*
     $("[data-trans='requeststatementofinformation']").text(translations['waitwhilesending']);
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
 
@@ -480,9 +480,12 @@ function sendClaimsAttestation(){
         $("[data-trans='requeststatementofinformation']").text(translations['emailsent']);
         $("[data-trans='requeststatementofinformation']").show();
     });
+    */
 }
 
 function updatePaymentMethod(){
+    console.warn("updatePaymentMethod() - DISABLED");
+    /*
     $("[data-trans='ctaUpdateCreditCard']").text(translations['waitwhilesending']);
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
 
@@ -506,6 +509,7 @@ function updatePaymentMethod(){
         $("[data-trans='ctaUpdateCreditCard']").text(translations['emailsent']);
         $("[data-trans='ctaUpdateCreditCard']").show();
     });
+    */
 }
 
 function formatPrice(amount){
