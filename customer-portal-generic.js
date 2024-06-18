@@ -300,11 +300,11 @@ function getNinjaData(cigarId, email) {
             }
             //STOP show update card for credit card monthly
 
-            console.log("status check HEEEEERRRREEEE");
+            console.warning("status check HEEEEERRRREEEE");
             //START show correct renewal status and color
             if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && (!response.payload.versionInfo.cancelInformation || response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == false)) {
                 console.log("full active")
-                $("[data-var='renewal']").text(translations['renewed']);
+                $("[data-var='renewal']").text(translations['renewaldate']);
                 $(".statusdiv").css("background-color", "#80cc7a")
             } else if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == true) {
                 console.log("active but cancel at renewal")
