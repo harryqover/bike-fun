@@ -322,6 +322,7 @@ function getNinjaData(cigarId, email) {
                 $("[data-var='makeaclaim']").hide();
                 $("[data-var='greencardbypost']").hide();
                 $("[data-var='requeststatementofinformation']").hide();
+                $("[data-var='renewal']").text(translations['renewaldate']);
                 $("[data-var='start']").text(translations['notavailable']);
                 $("[data-var='end']").text(translations['notavailable']);
                 $("[data-trans='requestresendcontractgreencard'").text(translations['resendemailpending']);
