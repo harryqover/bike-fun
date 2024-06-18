@@ -176,8 +176,6 @@ function getNinjaData(cigarId, email) {
                   const addonValue = addons[addonName];
                   const addonHtml = '<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[addonName]+'</span>'+translations[addonValue+'_emoji']+'</p>';
                   $("a[data-var='product']").after(addonHtml);
-                  //const addonElement = createAddonElement(addonName, addonValue);
-                  //addonsContainer.appendChild(addonElement);
                 }
 
             }
@@ -206,6 +204,7 @@ function getNinjaData(cigarId, email) {
                 }
                 $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["greencardbypost"]+'</a>');
                 $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestamend"]+'</a>');
+                $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["updatepaymentinfo"]+'</a>');
                 $("#action-menu-list").append('<a href="https://forms.qover.com/231272799262059?language='+lang+'&email='+email+'&contract='+response.payload.cigarId+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["cancelcontract"]+'</a>');
                 
                 productLink = (partnerId == "6569f1426a95fa27a3fd6302")?"https://www.asgcare.dk/faq#coverage_helvetia":"https://insuremytesla.qover.com";
