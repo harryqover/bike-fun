@@ -200,7 +200,7 @@ function getNinjaData(cigarId, email) {
             
             if(product == "IAB"){
                 if(["BE","FR","GB","ES","DE","AT"].includes(response.payload.refs.country)){
-                    $("#action-menu-list").append('<a onclick="sendClaimsAttestation" class="dropdown-link w-dropdown-link" tabindex="0">claims attestation</a>');
+                    $("#action-menu-list").append('<a onclick="sendClaimsAttestation" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requeststatementofinformation"]+'</a>');
                 }
                 $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["greencardbypost"]+'</a>');
                 $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestamend"]+'</a>');
