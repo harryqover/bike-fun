@@ -186,6 +186,8 @@ function getNinjaData(cigarId, email) {
 
             //START adding interactions
 
+            var productLink = "https://www.qover.com";
+
             
             if(product == "IAB"){
                 if(["BE","FR","GB","ES","DE","AT"].includes(response.payload.refs.country)){
@@ -194,6 +196,9 @@ function getNinjaData(cigarId, email) {
                 $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["greencardbypost"]+'</a>');
                 $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestamend"]+'</a>');
                 $("#action-menu-list").append('<a href="https://forms.qover.com/231272799262059?language='+lang+'&email='+email+'&contract='+response.payload.cigarId+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["cancelcontract"]+'</a>');
+                
+                productLink = (partnerId == "6569f1426a95fa27a3fd6302")?"https://www.asgcare.dk/faq#coverage_helvetia":"https://insuremytesla.qover.com";
+                $("a[data-var='product']").attr("href",productLink);
             }
             $("#action-menu-list").append('<a onclick="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestresendcontract"]+'</a>');
             //$("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["contact"]+'</a>');
