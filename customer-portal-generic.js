@@ -149,16 +149,14 @@ function getNinjaData(cigarId, email) {
             if(response.payload.risk.description == ""){
                 $("#riskDescription-block").hide();
             } else {
-                var description = translations['riskDescription_'+product];
-                description = description.replace("MAKE_", "");
-                $("#riskDescription-block > div.label").text(description);
-                $("[data-var='riskDescription']").text(response.payload.risk.description);
+                $("#riskDescription-block > div.label").text(translations['riskDescription_'+product]);
+                $("[data-var='riskDescription']").text(response.payload.risk.description.replace("MAKE_", ""));
             }
             if(response.payload.risk.type == ""){
                 $("#riskType-block").hide();
             } else {
-                $("#riskType-block > div.label").text(translations['riskType_'+product].replace("MODEL_", ""));
-                $("[data-var='riskType']").text(response.payload.risk.type);
+                $("#riskType-block > div.label").text(translations['riskType_'+product]);
+                $("[data-var='riskType']").text(response.payload.risk.type.replace("MODEL_", ""));
             }
             if(response.payload.risk.purchaseDate == ""){
                 $("#riskPurchaseDate-block").hide();
