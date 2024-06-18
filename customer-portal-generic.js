@@ -300,7 +300,7 @@ function getNinjaData(cigarId, email) {
             }
             //STOP show update card for credit card monthly
 
-            console.warning("status check HEEEEERRRREEEE");
+            console.warn("status check HEEEEERRRREEEE");
             //START show correct renewal status and color
             if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && (!response.payload.versionInfo.cancelInformation || response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == false)) {
                 console.log("full active")
