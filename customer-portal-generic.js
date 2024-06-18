@@ -149,7 +149,9 @@ function getNinjaData(cigarId, email) {
             if(response.payload.risk.description == ""){
                 $("#riskDescription-block").hide();
             } else {
-                $("#riskDescription-block > div.label").text(translations['riskDescription_'+product].replace("MAKE_", ""));
+                var description = translations['riskDescription_'+product];
+                description = description.replace("MAKE_", "");
+                $("#riskDescription-block > div.label").text(description);
                 $("[data-var='riskDescription']").text(response.payload.risk.description);
             }
             if(response.payload.risk.type == ""){
