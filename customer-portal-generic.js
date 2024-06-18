@@ -1,4 +1,4 @@
-console.warn("v20240618 1037");
+console.warn("v20240618 1040");
 
 const variants = {
     "VARIANT_SILVER": "Preferred",
