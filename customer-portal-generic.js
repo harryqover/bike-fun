@@ -170,6 +170,17 @@ function getNinjaData(cigarId, email) {
                 $("#riskId-block > div.label").text(translations['riskId_'+product]);
                 $("[data-var='riskId']").text(response.payload.risk.id);
             }
+            if(response.payload.terms.addons){
+                const addons = response.payload.terms.addons;
+                for (const addonName in addons) {
+                  const addonValue = addons[addonName];
+                  const addonHtml = '<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+addonName+'</span>'+addonValue+'</p>';
+                  $("a[data-var='product']").after(addonHtml);
+                  //const addonElement = createAddonElement(addonName, addonValue);
+                  //addonsContainer.appendChild(addonElement);
+                }
+
+            }
             
             
             $("[data-var='status']").text(statusContract[response.payload.status]);
