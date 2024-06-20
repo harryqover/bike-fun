@@ -200,7 +200,7 @@ function getNinjaData(cigarId, email) {
             
             if(product == "IAB"){
                 if(["BE","FR","GB","ES","DE","AT"].includes(response.payload.refs.country)){
-                    $("#action-menu-list").append('<a onclick="sendClaimsAttestation" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requeststatementofinformation"]+'</a>');
+                    $("#action-menu-list").append('<a onclick="sendClaimsAttestation" data-var="sendClaimsAttestation" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requeststatementofinformation"]+'</a>');
                 }
                 $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestamend"]+'</a>');
                 $("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["updatepaymentinfo"]+'</a>');
@@ -209,7 +209,7 @@ function getNinjaData(cigarId, email) {
                 productLink = (partnerId == "6569f1426a95fa27a3fd6302")?"https://www.asgcare.dk/faq#coverage_helvetia":"https://insuremytesla.qover.com";
                 $("a[data-var='product']").attr("href",productLink);
             }
-            $("#action-menu-list").append('<a onclick="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestresendcontract"]+'</a>');
+            $("#action-menu-list").append('<a onclick="reSendEmail" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestresendcontract"]+'</a>');
             //$("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["contact"]+'</a>');
             $("#action-menu-list").append('<a href="https://www.qover.com/claims?contract='+cigarId+'&email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["makeaclaim"]+'</a>');
             $("[data-var='requestamend']").attr("href","https://"+zendeskSubDomain+".zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email="+email);
@@ -293,9 +293,6 @@ function getNinjaData(cigarId, email) {
                 console.log(hmtlPaymentMethod);
                 $(".permonth").after( hmtlPaymentMethod );
 
-                
-                
-
             }
             //STOP show update card for credit card monthly
 
@@ -342,9 +339,6 @@ function getNinjaData(cigarId, email) {
             }
             //STOP hide incomplete status for DE
 
-            
-
-            
             //SHOWING BACK ALL BLOCKS AFTER COMPUTING EVERYTHING
             $("#bikedata").show();
             $(".connected").show();
@@ -356,18 +350,10 @@ function getNinjaData(cigarId, email) {
 
         }
 
-        
-        
-        
     });
 }
 
 function logout() {
-    $(".loading").show();
-    $(".connected").hide();
-    $(".disconnected").hide();
-    $(".alert-banner").remove();
-
     var timeToAdd = 1000 * 60 * 60 * 24 * -1 * 1 * 1;
     var date = new Date();
     var expiryTime = parseInt(date.getTime()) + timeToAdd;
@@ -376,11 +362,7 @@ function logout() {
 
     document.cookie = "login=; expires=" + utcTime + ";";
     document.cookie = "cigarId=; expires=" + utcTime + ";";
-    $("#cigardid,#email").val('');
-
-    $(".loading").hide();
-    $(".disconnected").show();
-    $("[data-trans='logout']").hide();
+    location.reload()
 }
 
 function translateAll() {
@@ -409,6 +391,7 @@ function translateAll() {
 translateAll();
 
 function trck(cigarId, click) {
+    sendSlackWebhook("track click for "+cigarId+" "+click, "success");
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbz_c5JuP0Z5nLgd-Kge_ybU6kebIl4gmoSDEAJjNW-xCcCvWOGSfItOtGn7QsiYm1dZ/exec";
 
     var settings = {
@@ -440,9 +423,8 @@ $(function(){
 
 
 function reSendEmail(){
-    console.warn("reSendEmail() - DISABLED");
-    /*
-    $("[data-trans='requestresendcontractgreencard']").text(translations['waitwhilesending']);
+    sendSlackWebhook("reSendEmail - https://docs.google.com/spreadsheets/d/1TKdZvDqOIdEqLwrDDb5Sldl7Eqe8RDIItP6oLN6ZKYw/edit#gid=0", "success");
+    $("[data-var='reSendEmail']").text(translations['waitwhilesending']);
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
 
     var settings = {
@@ -462,17 +444,13 @@ function reSendEmail(){
 
     $.ajax(settings).done(function(response) {
         console.log(response);
-        $(".loading-resend-email").hide();
-        $("[data-trans='requestresendcontractgreencard']").text(translations['emailsent']);
-        $("[data-trans='requestresendcontractgreencard']").show();
+        $("[data-var='reSendEmail']").text(translations['emailsent']);
     });
-    */
 }
 
 function sendClaimsAttestation(){
-    console.warn("sendClaimsAttestation() - DISABLED");
-    /*
-    $("[data-trans='requeststatementofinformation']").text(translations['waitwhilesending']);
+    sendSlackWebhook("sendClaimsAttestation - https://docs.google.com/spreadsheets/d/1TKdZvDqOIdEqLwrDDb5Sldl7Eqe8RDIItP6oLN6ZKYw/edit#gid=0", "success");
+    $("[data-var='sendClaimsAttestation']").text(translations['waitwhilesending']);
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
 
     var settings = {
@@ -491,17 +469,13 @@ function sendClaimsAttestation(){
     };
     $.ajax(settings).done(function(response) {
         console.log(response);
-        $(".loading-resend-email").hide();
-        $("[data-trans='requeststatementofinformation']").text(translations['emailsent']);
-        $("[data-trans='requeststatementofinformation']").show();
+        $("[data-var='sendClaimsAttestation']").text(translations['emailsent']);
     });
-    */
 }
 
 function updatePaymentMethod(){
-    console.warn("updatePaymentMethod() - DISABLED");
-    /*
-    $("[data-trans='ctaUpdateCreditCard']").text(translations['waitwhilesending']);
+    sendSlackWebhook("updatePaymentMethod - https://docs.google.com/spreadsheets/d/1TKdZvDqOIdEqLwrDDb5Sldl7Eqe8RDIItP6oLN6ZKYw/edit#gid=0", "success");
+    $("[data-var='ctaUpdateCreditCard']").text(translations['waitwhilesending']);
     var googleSheetUrl = "https://script.google.com/macros/s/AKfycbxeGtXJNhmovLSnsMqB7OALejUUqEeLEFS3vLetKRyujIkERQH-VmVy9gAXOqNX5j6zeQ/exec";
 
     var settings = {
@@ -520,11 +494,8 @@ function updatePaymentMethod(){
     };
     $.ajax(settings).done(function(response) {
         console.log(response);
-        $(".loading-resend-email").hide();
-        $("[data-trans='ctaUpdateCreditCard']").text(translations['emailsent']);
-        $("[data-trans='ctaUpdateCreditCard']").show();
+        $("[data-var='ctaUpdateCreditCard']").text(translations['emailsent']);
     });
-    */
 }
 
 function formatPrice(amount){
@@ -564,3 +535,31 @@ $( "body" ).prepend(divAlert);
 }
 
 
+
+function sendSlackWebhook(message, status) {
+  var postUrl = "https://hooks.slack.com/services/T2Y8Q2KGD/";
+  if (status === "error") {
+    postUrl += "B05QR12345V/wmViJFYEIAIVX6sQblJaC4aK";
+  } else {
+    postUrl += "B05R5H0GPB4/8KJL2bKPEyZOKeDikEYYqyvC";
+  }
+
+  var payload = {
+    text: "<https://docs.google.com/spreadsheets/d/1xUkZ3E12bHuKwEgAXd0ncZR6vqyK_aoTXY6SCWS9bhw/edit#gid=0|Gsheet> <@UPM4RJFA4> check generic portal - " + message,
+  };
+
+  $.ajax({
+    url: postUrl,
+    method: "POST",
+    dataType: "json", // Assuming response is JSON
+    contentType: "application/json",
+    data: JSON.stringify(payload),
+    success: function(response) {
+      // Handle successful response (optional)
+      console.log("Message sent to Slack!");
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      console.error("Error sending message:", textStatus, errorThrown);
+    }
+  });
+}
