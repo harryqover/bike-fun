@@ -209,6 +209,10 @@ function getNinjaData(cigarId, email) {
                 productLink = (partnerId == "6569f1426a95fa27a3fd6302")?"https://www.asgcare.dk/faq#coverage_helvetia":"https://insuremytesla.qover.com";
                 $("a[data-var='product']").attr("href",productLink);
             }
+            if(product =="PLEV"){
+                $("#action-menu-list").append('<a href="https://carrefour-assurance.qover.com/" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["makeaclaim"]+'</a>');
+                $("#action-menu-list").append('<a onclick="reSendEmail" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestresendcontractgreencard"]+'</a>');
+            }
             $("#action-menu-list").append('<a onclick="reSendEmail" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestresendcontract"]+'</a>');
             //$("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["contact"]+'</a>');
             $("#action-menu-list").append('<a href="https://www.qover.com/claims?contract='+cigarId+'&email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["makeaclaim"]+'</a>');
