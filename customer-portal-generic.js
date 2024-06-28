@@ -162,7 +162,8 @@ function getNinjaData(cigarId, email) {
                 $("#riskPurchaseDate-block").hide();
             } else {
                 $("#riskPurchaseDate-block > div.label").text(translations['riskPurchaseDate_'+product]);
-                $("[data-var='riskPurchaseDate']").text(response.payload.risk.purchaseDate.toLocaleDateString());
+                var purchaseDate = new Date(response.payload.risk.purchaseDate)
+                $("[data-var='riskPurchaseDate']").text(purchaseDate.toLocaleDateString());
             }
             if(response.payload.risk.id == ""){
                 $("#riskId-block").hide();
