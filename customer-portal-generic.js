@@ -214,6 +214,9 @@ function getNinjaData(cigarId, email) {
                 $("#action-menu-list").append('<a onclick="reSendEmail" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestresendcontractgreencard"]+'</a>');
                 $("#action-menu-list").append('<a href="https://carrefour-assurance.qover.com/resilier-votre-contrat" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["cancelcontract"]+'</a>');
             }
+            if(product == "TENANT"){
+                $("#action-menu-list").append('<a href="https://forms.qover.com/231143826155048" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["cancelcontract"]+'</a>');
+            }
             $("#action-menu-list").append('<a onclick="reSendEmail" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestresendcontract"]+'</a>');
             //$("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["contact"]+'</a>');
             $("#action-menu-list").append('<a href="https://www.qover.com/claims?contract='+cigarId+'&email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["makeaclaim"]+'</a>');
