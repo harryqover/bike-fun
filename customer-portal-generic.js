@@ -1,4 +1,4 @@
-console.warn("v20240628 1355");
+console.warn("v20240628 1410");
 
 const variants = {
     "VARIANT_SILVER": "Preferred",
@@ -184,6 +184,16 @@ function getNinjaData(cigarId, email) {
                 $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[legalProtectionFire]+'</span>'+translations[response.payload.terms.legalProtectionFire+'_emoji']+'</p>');
                 $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[contentTheft]+'</span>'+translations[response.payload.terms.contentTheft+'_emoji']+'</p>');
                 $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[contentDamage]+'</span>'+translations[response.payload.terms.contentDamage+'_emoji']+'</p>');
+            }
+            if(product=="HOMEOWNER"){
+                $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[building]+'</span>'+translations[response.payload.terms.building+'_emoji']+'</p>');
+                $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[contentDamage]+'</span>'+translations[response.payload.terms.contentDamage+'_emoji']+'</p>');
+                $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[contentTheft]+'</span>'+translations[response.payload.terms.contentTheft+'_emoji']+'</p>');
+                $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[civilLiability]+'</span>'+translations[response.payload.terms.civilLiability+'_emoji']+'</p>');
+                $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[legalProtectionFamily]+'</span>'+translations[response.payload.terms.legalProtectionFamily+'_emoji']+'</p>');
+                $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[legalProtectionFire]+'</span>'+translations[response.payload.terms.legalProtectionFire+'_emoji']+'</p>');
+                $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[surroundingPackage]+'</span>'+translations[response.payload.terms.surroundingPackage+'_emoji']+'</p>');
+                $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[embellishments]+'</span>'+translations[response.payload.terms.embellishments+'_emoji']+'</p>');
             }
             
             
