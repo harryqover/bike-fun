@@ -177,7 +177,13 @@ function getNinjaData(cigarId, email) {
                   const addonHtml = '<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[addonName]+'</span>'+translations[addonValue+'_emoji']+'</p>';
                   $("a[data-var='product']").after(addonHtml);
                 }
-
+            }
+            if(product=="PLEV"){
+                $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[civilLiability]+'</span>'+translations[response.payload.terms.civilLiability+'_emoji']+'</p>');
+                $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[legalProtectionFamily]+'</span>'+translations[response.payload.terms.legalProtectionFamily+'_emoji']+'</p>');
+                $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[legalProtectionFire]+'</span>'+translations[response.payload.terms.legalProtectionFire+'_emoji']+'</p>');
+                $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[contentTheft]+'</span>'+translations[response.payload.terms.contentTheft+'_emoji']+'</p>');
+                $("a[data-var='product']").after('<p class="medium"><span class="addon" style="margin-right: 5px; margin-bottom:0px;">'+translations[contentDamage]+'</span>'+translations[response.payload.terms.contentDamage+'_emoji']+'</p>');
             }
             
             
