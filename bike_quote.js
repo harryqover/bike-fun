@@ -225,6 +225,8 @@ function getPrice() {
                 var percentdiscountVariant1 = ((basePriceVariant1Yearly - priceVariant1Yearly) / basePriceVariant1Yearly) * 100;
                 percentdiscountVariant1 = percentdiscountVariant1.toFixed(0);
                 //console.log("percentdiscountVariant1 ", percentdiscountVariant1);
+                var discountsOnVariant = [];
+                if(percentdiscountVariant1>0){discountsOnVariant.push("v1")}
 
                 if (variants.length > 1) {
                     var priceVariant2 = responseGetPrice.priceInfo[0].coverages.find(el => el.coverageName === variants[1]);
@@ -236,6 +238,7 @@ function getPrice() {
                     var basePriceVariant2Yearly = basePriceVariant2.yearlyPremium.withTaxes / 100;
                     var percentdiscountVariant2 = ((basePriceVariant2Yearly - priceVariant2Yearly) / basePriceVariant2Yearly) * 100;
                     percentdiscountVariant2 = percentdiscountVariant2.toFixed(0);
+                    if(percentdiscountVariant2>0){discountsOnVariant.push("v2")}
 
                     if (variants.length > 2) {
                         var priceVariant3 = responseGetPrice.priceInfo[0].coverages.find(el => el.coverageName === variants[2]);
@@ -247,17 +250,27 @@ function getPrice() {
                         var basePriceVariant3Yearly = basePriceVariant3.yearlyPremium.withTaxes / 100;
                         var percentdiscountVariant3 = ((basePriceVariant3Yearly - priceVariant3Yearly) / basePriceVariant3Yearly) * 100;
                         percentdiscountVariant3 = percentdiscountVariant3.toFixed(0);
+                        if(percentdiscountVariant3>0){discountsOnVariant.push("v3")}
                     }
                 }
-                if (percentdiscountVariant1 > 0 && window.promocode != "") {
-                    $("#percentdiscountVariant1").text(percentdiscountVariant1);
-                    if (variants.length > 1) {
-                        $("#percentdiscountVariant2").text(percentdiscountVariant2);
-                        if (variants.length > 1) {
-                            $("#percentdiscountVariant3").text(percentdiscountVariant3);
-                        }
+                if (discountsOnVariant.length > 0) {
+                    $(".discount, .promo-label").show(250);
+                    if(discountsOnVariant.includes("v1")){
+                        $("#percentdiscountVariant1").text(percentdiscountVariant1);
+                    } else {
+                        $("#percentdiscountVariant1").text("0");
                     }
-                    $(".discount").show(250);
+                    if(discountsOnVariant.includes("v2")){
+                        $("#percentdiscountVariant2").text(percentdiscountVariant2);    
+                    } else {
+                        $("#percentdiscountVariant2").text("0");
+                    }
+                    if(discountsOnVariant.includes("v3")){
+                        $("#percentdiscountVariant3").text(percentdiscountVariant3);    
+                    } else {
+                        $("#percentdiscountVariant3").text("0");
+                    }
+                    
                 } else if (window.promocode != "") {
                     if(window.promocode.substring(0,5) == "GIANT"){
                       window.location.href = "https://app.qover.com/bike/quote?locale=fr-FR&key=pk_29D66CCD9AE08A1B59C9&promocode="+window.promocode;
