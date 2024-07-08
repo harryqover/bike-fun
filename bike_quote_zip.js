@@ -1,5 +1,5 @@
 /*V202203090705*/
-console.warn("20231026 0933");
+console.warn("20240708 1301");
 
 var payload = "";
 
@@ -71,6 +71,7 @@ function createPayload(variant, reason) {
     if(utmMediumFromCookie != ""){
       window.payload.publicMetadata.push({"key": "utm_medium","value": utmMediumFromCookie});
     }
+    console.log("dbg 1:", window.payload);
     //window.payload.discountCodes.push({"name": window.promocode});
     //HARRY TRYING TO FIX UNDEFINED DISCOUNT
     if(window.promocode != ""){
@@ -276,6 +277,7 @@ function getPrice() {
             } else { // show the result
                 console.warn(`Done, got ${xhrPrice.response.length} bytes`); // response is the server
                 var responseGetPrice = JSON.parse(xhrPrice.response);
+                console.log("dbg 2:", responseGetPrice);
 
                 var priceVariant1 = responseGetPrice.priceInfo[0].coverages.find(el => el.coverageName === variants[0]);
                 var priceVariant1Yearly = priceVariant1.yearlyPremium.withTaxes / 100;
@@ -287,6 +289,8 @@ function getPrice() {
                 var percentdiscountVariant1 = ((basePriceVariant1Yearly - priceVariant1Yearly) / basePriceVariant1Yearly) * 100;
                 percentdiscountVariant1 = percentdiscountVariant1.toFixed(0);
                 //console.log("percentdiscountVariant1 ", percentdiscountVariant1);
+                var discountsOnVariant = [];
+                if(percentdiscountVariant1>0){discountsOnVariant.push("v1")}
 
                 if (variants.length > 1) {
                     var priceVariant2 = responseGetPrice.priceInfo[0].coverages.find(el => el.coverageName === variants[1]);
@@ -298,6 +302,7 @@ function getPrice() {
                     var basePriceVariant2Yearly = basePriceVariant2.yearlyPremium.withTaxes / 100;
                     var percentdiscountVariant2 = ((basePriceVariant2Yearly - priceVariant2Yearly) / basePriceVariant2Yearly) * 100;
                     percentdiscountVariant2 = percentdiscountVariant2.toFixed(0);
+                    if(percentdiscountVariant2>0){discountsOnVariant.push("v2")}
 
                     if (variants.length > 2) {
                         var priceVariant3 = responseGetPrice.priceInfo[0].coverages.find(el => el.coverageName === variants[2]);
@@ -309,17 +314,27 @@ function getPrice() {
                         var basePriceVariant3Yearly = basePriceVariant3.yearlyPremium.withTaxes / 100;
                         var percentdiscountVariant3 = ((basePriceVariant3Yearly - priceVariant3Yearly) / basePriceVariant3Yearly) * 100;
                         percentdiscountVariant3 = percentdiscountVariant3.toFixed(0);
+                        if(percentdiscountVariant3>0){discountsOnVariant.push("v3")}
                     }
                 }
-                if (percentdiscountVariant1 > 0) {
-                    $("#percentdiscountVariant1").text(percentdiscountVariant1);
-                    if (variants.length > 1) {
-                        $("#percentdiscountVariant2").text(percentdiscountVariant2);
-                        if (variants.length > 1) {
-                            $("#percentdiscountVariant3").text(percentdiscountVariant3);
-                        }
+                if (discountsOnVariant.length > 0) {
+                    $(".discount, .promo-label").show(250);
+                    if(discountsOnVariant.includes("v1")){
+                        $("#percentdiscountVariant1").text(percentdiscountVariant1);
+                    } else {
+                        $("#percentdiscountVariant1").text("0");
                     }
-                    $(".discount").show(250);
+                    if(discountsOnVariant.includes("v2")){
+                        $("#percentdiscountVariant2").text(percentdiscountVariant2);    
+                    } else {
+                        $("#percentdiscountVariant2").text("0");
+                    }
+                    if(discountsOnVariant.includes("v3")){
+                        $("#percentdiscountVariant3").text(percentdiscountVariant3);    
+                    } else {
+                        $("#percentdiscountVariant3").text("0");
+                    }
+                    
                 } else if (window.promocode != "") {
                     if(window.promocode.substring(0,5) == "GIANT"){
                       window.location.href = "https://app.qover.com/bike/quote?locale=fr-FR&key=pk_29D66CCD9AE08A1B59C9&promocode="+window.promocode;
