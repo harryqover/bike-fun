@@ -238,7 +238,9 @@ function getNinjaData(cigarId, email) {
             //$("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["contact"]+'</a>');
             $("#action-menu-list").append('<a href="https://www.qover.com/claims?contract='+cigarId+'&email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["makeaclaim"]+'</a>');
             $("[data-var='requestamend']").attr("href","https://"+zendeskSubDomain+".zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email="+email);
-            $("[data-var='makeaclaim']").attr("href","https://www.qover.com/claims?contract="+cigarId+"&email="+ email);
+            if(product !="PLEV"){
+                $("[data-var='makeaclaim']").attr("href","https://www.qover.com/claims?contract="+cigarId+"&email="+ email);
+            }
             
 
             if(response.payload.entityType == "ENTITY_TYPE_COMPANY"){
