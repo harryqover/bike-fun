@@ -236,6 +236,9 @@ function getNinjaData(cigarId, email) {
                 $("#action-menu-list").append('<a href="https://forms.qover.com/231143826155048" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["cancelcontract"]+'</a>');
                 $("a[data-var='product']").attr("href","https://protect.immoweb.be");
             }
+            if(product == "HOMEOWNER"){
+                $("a[data-var='product']").attr("href","https://protect.immoweb.be");
+            }
             $("#action-menu-list").append('<a onclick="reSendEmail" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestresendcontract"]+'</a>');
             //$("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["contact"]+'</a>');
             $("#action-menu-list").append('<a href="https://www.qover.com/claims?contract='+cigarId+'&email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["makeaclaim"]+'</a>');
