@@ -230,9 +230,11 @@ function getNinjaData(cigarId, email) {
                 $("#action-menu-list").append('<a href="https://carrefour-assurance.qover.com/" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["makeaclaim"]+'</a>');
                 $("#action-menu-list").append('<a onclick="reSendEmail" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestresendcontractgreencard"]+'</a>');
                 $("#action-menu-list").append('<a href="https://carrefour-assurance.qover.com/resilier-votre-contrat" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["cancelcontract"]+'</a>');
+                $("a[data-var='product']").attr("href","https://assurance.carrefour.fr/assurance-trottinette-electrique-nvei");
             }
             if(product == "TENANT"){
                 $("#action-menu-list").append('<a href="https://forms.qover.com/231143826155048" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["cancelcontract"]+'</a>');
+                $("a[data-var='product']").attr("href","https://protect.immoweb.be");
             }
             $("#action-menu-list").append('<a onclick="reSendEmail" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestresendcontract"]+'</a>');
             //$("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["contact"]+'</a>');
