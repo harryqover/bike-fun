@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Model Search</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Basic styles for the dropdown */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 100%;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content div {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+        }
+
+        .dropdown-content div:hover {
+            background-color: #f1f1f1;
+        }
+
+        .show {
+            display: block;
+        }
+
+        #selectedId {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dropdown">
+        <input type="text" id="modelSearch" placeholder="Search for a car model...">
+        <div id="dropdownList" class="dropdown-content"></div>
+    </div>
+
+    <!-- Display the selected model ID -->
+    <div id="selectedId"></div>
+
+    
+
+
+<script>
+    // JavaScript/jQuery code in script.js
+
+// Array of car models with name and id
+const models = [
+    {"name":"XC90 T8 Recharge PHEV 455hp AT8 Core","id":"AAA"}, 
+    {"name":"XC90 T8 AWD Plug-in hybrid electric/petrol Plus Dark","id":"BBB"}, 
+    {"name":"XC90 T8 AWD  Plug-in hybrid electric/petrol Ultra Bright","id":"CCC"}, 
+    {"name":"XC60 T6 AWD Plug-in hybrid electric/petrol Plus Bright","id":"DDD"}, 
+    {"name":"XC60 T6 Recharge PHEV 350hp AT8 Ultimate (bright theme)","id":"EEE"}, 
+    {"name":"XC60 T6 Recharge PHEV 350hp AT8 Ultimate (dark theme)","id":"FFF"}
+];
+
+$(document).ready(function() {
+    // Event listener for input
+    $('#modelSearch').on('keyup', function() {
+        let input = $(this).val().toLowerCase();  // Get the input value in lowercase
+        let filteredModels = models.filter(function(model) {
+            return model.name.toLowerCase().includes(input);  // Filter the array based on input
+        });
+        
+        // Populate the dropdown with the filtered models
+        let dropdown = $('#dropdownList');
+        dropdown.empty();  // Clear the dropdown
+
+        if (filteredModels.length > 0 && input.length > 0) {
+            dropdown.addClass('show');  // Show the dropdown
+            filteredModels.forEach(function(model) {
+                dropdown.append('<div data-id="' + model.id + '">' + model.name + '</div>');  // Add matching models to dropdown with data-id
+            });
+        } else {
+            dropdown.removeClass('show');  // Hide the dropdown if no results or no input
+        }
+    });
+
+    // Handle the click event on dropdown items
+    $(document).on('click', '#dropdownList div', function() {
+        let selectedModel = $(this).text();  // Get the selected model's name
+        let selectedId = $(this).attr('data-id');  // Get the selected model's id
+
+        $('#modelSearch').val(selectedModel);  // Set the input value to the selected model
+        $('#selectedId').text('Selected Model ID: ' + selectedId);  // Display the selected model's id
+
+        $('#dropdownList').removeClass('show');  // Hide the dropdown
+    });
+
+    // Hide dropdown if clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.dropdown').length) {
+            $('#dropdownList').removeClass('show');
+        }
+    });
+});
+
+</script>
+</body>
+</html>
