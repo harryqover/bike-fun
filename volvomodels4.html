@@ -31,10 +31,10 @@
         .filters {
             display: flex;
             gap: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
-        #vehicle-search, #year-filter {
+        #year-filter, #vehicle-search {
             flex: 1;
             padding: 12px 16px;
             font-size: 16px;
@@ -45,7 +45,7 @@
             transition: border 0.3s ease;
         }
 
-        #vehicle-search:focus, #year-filter:focus {
+        #year-filter:focus, #vehicle-search:focus {
             border-color: #0057b7;
         }
 
@@ -116,11 +116,10 @@
     <div class="container">
         <h1>Find Your Volvo</h1>
         <div class="filters">
-            <input type="text" id="vehicle-search" placeholder="Type to search for a model...">
             <select id="year-filter">
-                <option value="">Year of Manufacture</option>
-                <!-- Populate with year options dynamically -->
+                <option value="">Select Year</option>
             </select>
+            <input type="text" id="vehicle-search" placeholder="Type to search for a model...">
         </div>
         <div id="vehicle-list"></div>
         
@@ -141,24 +140,41 @@
     <script>
         $(document).ready(function() {
             let vehicles = [];
+            let selectedYear = '';
 
             // Load JSON data from GitHub-hosted JSON
             $.getJSON('https://harryqover.github.io/bike-fun/volvo_car_data.json', function(data) {
                 vehicles = data;
                 console.log('Vehicles data loaded:', vehicles);
-                
-                // Populate year options based on the vehicles' years
-                const years = [...new Set(vehicles.map(vehicle => vehicle.yearFrom))].sort((a, b) => a - b);
-                const yearFilter = $('#year-filter');
-                years.forEach(year => {
-                    yearFilter.append(`<option value="${year}">${year}</option>`);
+
+                // Populate year filter with unique years
+                const years = new Set();
+                vehicles.forEach(vehicle => {
+                    years.add(vehicle.yearFrom);
+                    if (vehicle.yearTo && vehicle.yearTo !== 0) {
+                        years.add(vehicle.yearTo);
+                    }
+                });
+
+                const sortedYears = Array.from(years).sort((a, b) => b - a);
+                sortedYears.forEach(year => {
+                    $('#year-filter').append(`<option value="${year}">${year}</option>`);
                 });
             });
 
-            // Function to filter vehicles based on search and year
+            // Update selected year
+            $('#year-filter').on('change', function() {
+                selectedYear = $(this).val();
+                filterVehicles();
+            });
+
+            // Show suggestions as user types
+            $('#vehicle-search').on('input', function() {
+                filterVehicles();
+            });
+
             function filterVehicles() {
                 const query = $('#vehicle-search').val().toLowerCase();
-                const selectedYear = parseInt($('#year-filter').val());
                 $('#vehicle-list').empty();
 
                 if (query.length > 0 || selectedYear) {
@@ -166,10 +182,20 @@
                     const keywords = query.split(' ');
 
                     // Filter vehicles where all keywords match part of the 'full' description
-                    const filteredVehicles = vehicles.filter(vehicle => 
-                        keywords.every(keyword => vehicle.full.toLowerCase().includes(keyword)) &&
-                        (!selectedYear || vehicle.yearFrom >= selectedYear)
-                    );
+                    // and the vehicle is produced in the selected year.
+                    const filteredVehicles = vehicles.filter(vehicle => {
+                        const matchesKeywords = keywords.every(keyword =>
+                            vehicle.full.toLowerCase().includes(keyword)
+                        );
+                        const yearFrom = parseInt(vehicle.yearFrom, 10);
+                        const yearTo = vehicle.yearTo ? parseInt(vehicle.yearTo, 10) : new Date().getFullYear();
+                        const selectedYearNum = parseInt(selectedYear, 10);
+
+                        const matchesYear = !selectedYear || 
+                            (selectedYearNum >= yearFrom && (vehicle.yearTo === 0 || selectedYearNum <= yearTo));
+                        
+                        return matchesKeywords && matchesYear;
+                    });
 
                     // Populate the suggestion list
                     filteredVehicles.forEach(vehicle => {
@@ -183,10 +209,6 @@
                     $('#vehicle-list').hide();
                 }
             }
-
-            // Trigger filtering on input change and year selection
-            $('#vehicle-search').on('input', filterVehicles);
-            $('#year-filter').on('change', filterVehicles);
 
             // Handle item selection from the dropdown
             $(document).on('click', '.vehicle-item', function() {
@@ -213,7 +235,7 @@
 
             // Hide suggestions when clicking outside
             $(document).click(function(event) {
-                if (!$(event.target).closest('#vehicle-search, #vehicle-list').length) {
+                if (!$(event.target).closest('#vehicle-search, #vehicle-list, #year-filter').length) {
                     $('#vehicle-list').hide();
                 }
             });
