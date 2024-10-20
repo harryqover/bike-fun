@@ -14,22 +14,61 @@
             padding: 0;
         }
 
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background-image: url('https://www.volvocars.com/images/v/-/media/project/contentplatform/data/media/my23/hero-images/xc90-my23_hero_v2.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5); /* Adds a dark overlay */
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-top: 10px;
+            font-weight: 300;
+        }
+
         .container {
             max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            margin: 20px auto;
+            padding: 0 20px;
         }
 
-        h1 {
-            font-size: 28px;
-            font-weight: 500;
-            color: #333;
-            text-align: center;
-            margin-bottom: 20px;
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        #vehicle-search {
-            width: 100%;
+        #vehicle-search, #year-filter {
+            flex: 1;
             padding: 12px 16px;
             font-size: 16px;
             border: 1px solid #ccc;
@@ -39,7 +78,7 @@
             transition: border 0.3s ease;
         }
 
-        #vehicle-search:focus {
+        #vehicle-search:focus, #year-filter:focus {
             border-color: #0057b7;
         }
 
@@ -94,10 +133,13 @@
         }
 
         @media (max-width: 600px) {
-            h1 {
-                font-size: 22px;
+            .hero h1 {
+                font-size: 32px;
             }
-            #vehicle-search {
+            .hero p {
+                font-size: 16px;
+            }
+            #vehicle-search, #year-filter {
                 font-size: 14px;
             }
             th, td {
@@ -107,9 +149,21 @@
     </style>
 </head>
 <body>
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Discover Your Next Volvo</h1>
+            <p>Find the perfect match from our range of Volvo vehicles.</p>
+        </div>
+    </div>
+
     <div class="container">
-        <h1>Find Your Volvo</h1>
-        <input type="text" id="vehicle-search" placeholder="Type to search for a model...">
+        <div class="filters">
+            <input type="text" id="vehicle-search" placeholder="Type to search for a model...">
+            <select id="year-filter">
+                <option value="">Year of Manufacture</option>
+                <!-- Populate with year options dynamically -->
+            </select>
+        </div>
         <div id="vehicle-list"></div>
         
         <h2>Vehicle Details</h2>
@@ -128,29 +182,34 @@
 
     <script>
         $(document).ready(function() {
-            let vehicles = []; // This will hold the JSON data
+            let vehicles = [];
 
-            // Load JSON data
+            // Load JSON data from GitHub-hosted JSON
             $.getJSON('https://harryqover.github.io/bike-fun/volvo_car_data.json', function(data) {
                 vehicles = data;
-                console.log("vehicles");
-                console.log(vehicles);
+                console.log('Vehicles data loaded:', vehicles);
+                
+                // Populate year options based on the vehicles' years
+                const years = [...new Set(vehicles.map(vehicle => vehicle.yearFrom))].sort((a, b) => a - b);
+                const yearFilter = $('#year-filter');
+                years.forEach(year => {
+                    yearFilter.append(`<option value="${year}">${year}</option>`);
+                });
             });
 
-            // Show suggestions as user types
-            /*
-            $('#vehicle-search').on('input', function() {
-                const query = $(this).val().toLowerCase();
-                console.log('User input:', query); // Debugging line
-
+            // Function to filter vehicles based on search and year
+            function filterVehicles() {
+                const query = $('#vehicle-search').val().toLowerCase();
+                const selectedYear = parseInt($('#year-filter').val());
                 $('#vehicle-list').empty();
 
-                if (query.length > 0) {
-                    const filteredVehicles = vehicles.filter(vehicle => 
-                        vehicle.full.toLowerCase().includes(query)
-                    );
-                    console.log('Filtered results:', filteredVehicles); // Debugging line
+                if (query.length > 0 || selectedYear) {
+                    const keywords = query.split(' ');
 
+                    const filteredVehicles = vehicles.filter(vehicle => 
+                        keywords.every(keyword => vehicle.full.toLowerCase().includes(keyword)) &&
+                        (!selectedYear || vehicle.yearFrom >= selectedYear)
+                    );
 
                     filteredVehicles.forEach(vehicle => {
                         $('#vehicle-list').append(
@@ -162,42 +221,15 @@
                 } else {
                     $('#vehicle-list').hide();
                 }
-            });
-            */
-            $('#vehicle-search').on('input', function() {
-            const query = $(this).val().toLowerCase();
-            $('#vehicle-list').empty();
-
-            if (query.length > 0) {
-                // Split the user's query into individual keywords
-                const keywords = query.split(' ');
-
-                // Filter vehicles where all keywords match part of the 'full' description
-                const filteredVehicles = vehicles.filter(vehicle => 
-                    keywords.every(keyword => vehicle.full.toLowerCase().includes(keyword))
-                );
-                console.log('Filtered results:', filteredVehicles); // Debugging line
-
-                // Populate the suggestion list
-                filteredVehicles.forEach(vehicle => {
-                    $('#vehicle-list').append(
-                        `<div class="vehicle-item" data-id="${vehicle.full}">${vehicle.full}</div>`
-                    );
-                });
-
-                $('#vehicle-list').show();
-            } else {
-                $('#vehicle-list').hide();
             }
-        });
 
+            $('#vehicle-search').on('input', filterVehicles);
+            $('#year-filter').on('change', filterVehicles);
 
-            // Handle item selection from the dropdown
             $(document).on('click', '.vehicle-item', function() {
                 const selectedFull = $(this).data('id');
                 const selectedVehicle = vehicles.find(vehicle => vehicle.full === selectedFull);
 
-                // Populate the details table
                 const detailsTableBody = $('#vehicle-details tbody');
                 detailsTableBody.empty();
                 
@@ -210,12 +242,10 @@
                     `);
                 });
 
-                // Hide the suggestions list and clear the input
                 $('#vehicle-list').hide();
                 $('#vehicle-search').val(selectedFull);
             });
 
-            // Hide suggestions when clicking outside
             $(document).click(function(event) {
                 if (!$(event.target).closest('#vehicle-search, #vehicle-list').length) {
                     $('#vehicle-list').hide();
