@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volvo Car Search</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 500;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        #vehicle-search, #year-filter {
+            flex: 1;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            outline: none;
+            transition: border 0.3s ease;
+        }
+
+        #vehicle-search:focus, #year-filter:focus {
+            border-color: #0057b7;
+        }
+
+        #vehicle-list {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #fff;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            position: absolute;
+            width: calc(100% - 40px);
+            margin-top: 8px;
+            z-index: 1000;
+        }
+
+        .vehicle-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .vehicle-item:hover {
+            background-color: #f0f8ff;
+        }
+
+        table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f7f7f7;
+            font-weight: 500;
+        }
+
+        td {
+            background-color: #fff;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 22px;
+            }
+            #vehicle-search, #year-filter {
+                font-size: 14px;
+            }
+            th, td {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Find Your Volvo</h1>
+        <div class="filters">
+            <input type="text" id="vehicle-search" placeholder="Type to search for a model...">
+            <select id="year-filter">
+                <option value="">Year of Manufacture</option>
+                <!-- Populate with year options dynamically -->
+            </select>
+        </div>
+        <div id="vehicle-list"></div>
+        
+        <h2>Vehicle Details</h2>
+        <table id="vehicle-details">
+            <thead>
+                <tr>
+                    <th>Characteristic</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Details will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            let vehicles = [];
+
+            // Load JSON data from GitHub-hosted JSON
+            $.getJSON('https://harryqover.github.io/bike-fun/volvo_car_data.json', function(data) {
+                vehicles = data;
+                console.log('Vehicles data loaded:', vehicles);
+                
+                // Populate year options based on the vehicles' years
+                const years = [...new Set(vehicles.map(vehicle => vehicle.yearFrom))].sort((a, b) => a - b);
+                const yearFilter = $('#year-filter');
+                years.forEach(year => {
+                    yearFilter.append(`<option value="${year}">${year}</option>`);
+                });
+            });
+
+            // Function to filter vehicles based on search and year
+            function filterVehicles() {
+                const query = $('#vehicle-search').val().toLowerCase();
+                const selectedYear = parseInt($('#year-filter').val());
+                $('#vehicle-list').empty();
+
+                if (query.length > 0 || selectedYear) {
+                    // Split the user's query into individual keywords
+                    const keywords = query.split(' ');
+
+                    // Filter vehicles where all keywords match part of the 'full' description
+                    const filteredVehicles = vehicles.filter(vehicle => 
+                        keywords.every(keyword => vehicle.full.toLowerCase().includes(keyword)) &&
+                        (!selectedYear || vehicle.yearFrom >= selectedYear)
+                    );
+
+                    // Populate the suggestion list
+                    filteredVehicles.forEach(vehicle => {
+                        $('#vehicle-list').append(
+                            `<div class="vehicle-item" data-id="${vehicle.full}">${vehicle.full}</div>`
+                        );
+                    });
+
+                    $('#vehicle-list').show();
+                } else {
+                    $('#vehicle-list').hide();
+                }
+            }
+
+            // Trigger filtering on input change and year selection
+            $('#vehicle-search').on('input', filterVehicles);
+            $('#year-filter').on('change', filterVehicles);
+
+            // Handle item selection from the dropdown
+            $(document).on('click', '.vehicle-item', function() {
+                const selectedFull = $(this).data('id');
+                const selectedVehicle = vehicles.find(vehicle => vehicle.full === selectedFull);
+
+                // Populate the details table
+                const detailsTableBody = $('#vehicle-details tbody');
+                detailsTableBody.empty();
+                
+                Object.entries(selectedVehicle).forEach(([key, value]) => {
+                    detailsTableBody.append(`
+                        <tr>
+                            <td>${key}</td>
+                            <td>${value || 'N/A'}</td>
+                        </tr>
+                    `);
+                });
+
+                // Hide the suggestions list and clear the input
+                $('#vehicle-list').hide();
+                $('#vehicle-search').val(selectedFull);
+            });
+
+            // Hide suggestions when clicking outside
+            $(document).click(function(event) {
+                if (!$(event.target).closest('#vehicle-search, #vehicle-list').length) {
+                    $('#vehicle-list').hide();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
