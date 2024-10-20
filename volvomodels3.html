@@ -64,6 +64,7 @@
             });
 
             // Show suggestions as user types
+            /*
             $('#vehicle-search').on('input', function() {
                 const query = $(this).val().toLowerCase();
                 console.log('User input:', query); // Debugging line
@@ -88,6 +89,34 @@
                     $('#vehicle-list').hide();
                 }
             });
+            */
+            $('#vehicle-search').on('input', function() {
+            const query = $(this).val().toLowerCase();
+            $('#vehicle-list').empty();
+
+            if (query.length > 0) {
+                // Split the user's query into individual keywords
+                const keywords = query.split(' ');
+
+                // Filter vehicles where all keywords match part of the 'full' description
+                const filteredVehicles = vehicles.filter(vehicle => 
+                    keywords.every(keyword => vehicle.full.toLowerCase().includes(keyword))
+                );
+                console.log('Filtered results:', filteredVehicles); // Debugging line
+
+                // Populate the suggestion list
+                filteredVehicles.forEach(vehicle => {
+                    $('#vehicle-list').append(
+                        `<div class="vehicle-item" data-id="${vehicle.full}">${vehicle.full}</div>`
+                    );
+                });
+
+                $('#vehicle-list').show();
+            } else {
+                $('#vehicle-list').hide();
+            }
+        });
+
 
             // Handle item selection from the dropdown
             $(document).on('click', '.vehicle-item', function() {
