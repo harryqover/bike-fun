@@ -99,10 +99,10 @@ setTimeout(function() {
 
 
 function signUp(){
-	var volvoModel = $("#vehicle-search").val();;
-	var email = $("#email").val();;
-	var volvoABI = "XXX";
-	var date = "10/01/2025";
+	var volvoModel = $("#vehicle-search").val();
+	var email = $("#email").val();
+	var volvoABI = $("#vehicle-search").val();
+	var date = $("#Date").val();
 
 	var settings = {
         "url": webhookEmailSignup,
