@@ -1,4 +1,4 @@
-console.warn("1103")
+console.warn("1113")
 const webhookEmailSignup = "https://script.google.com/macros/s/AKfycbwM6BWIdthN5E-ov5HTjKnIl9m54ns0Y5FJMj0Svv6lKM-JbfyLjeE-W5PoARkt8w4Few/exec";
 
 setTimeout(function() {
@@ -84,10 +84,12 @@ setTimeout(function() {
                 $('#vehicle-list').hide();
             }
         });
-
+        
+        $("#signupbtn").preventDefault();
         $("#signupbtn").click(function(event) {
         	signUp()
         });
+
 
           // Close the modal when clicking on the "X" or the close button
 		  $(".close, #closeModal").on("click", function () {
@@ -106,7 +108,7 @@ setTimeout(function() {
 function signUp(){
 	var volvoModel = $("#vehicle-search").val();
 	var email = $("#email").val();
-	var volvoABI = $("#vehicle-search").val();
+	var volvoABI = $("#abi").val();
 	var date = $("#Date").val();
 
 	var settings = {
