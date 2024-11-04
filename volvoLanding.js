@@ -99,8 +99,8 @@ setTimeout(function() {
 
 
 function signUp(){
-	var volvoModel = $("#vehicle-search");
-	var email = $("#email");
+	var volvoModel = $("#vehicle-search").val();;
+	var email = $("#email").val();;
 	var volvoABI = "XXX";
 	var date = "10/01/2025";
 
