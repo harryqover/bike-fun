@@ -79,6 +79,18 @@ setTimeout(function() {
                 $('#vehicle-list').hide();
             }
         });
+
+          // Close the modal when clicking on the "X" or the close button
+		  $(".close, #closeModal").on("click", function () {
+		    $("#confirmationModal").fadeOut();
+		  });
+
+		  // Optionally, close the modal when clicking outside the modal content
+		  $(window).on("click", function (event) {
+		    if ($(event.target).is("#confirmationModal")) {
+		      $("#confirmationModal").fadeOut();
+		    }
+		  });
 }, 2000);
 
 
@@ -100,5 +112,6 @@ function signUp(){
 
     $.ajax(settings).done(function(response) {
     	console.log(response);
+    	$("#confirmationModal").fadeIn();
     })
 }
