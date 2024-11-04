@@ -79,3 +79,25 @@ setTimeout(function() {
             }
         });
 }, 2000);
+
+
+function signUp(){
+	var settings = {
+        "url": webhookEmailSignup,
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
+        "data": JSON.stringify({
+            "volvoModel": "XC90",
+            "email": "harry@qover.com",
+            "date": "10/01/2025",
+            "volvoABI": "XXX",
+        }),
+    };
+
+    $.ajax(settings).done(function(response) {
+    	console.log(response);
+    }
+}
