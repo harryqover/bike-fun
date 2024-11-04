@@ -114,7 +114,7 @@ setTimeout(function() {
 function signUp(){
 	var volvoModel = $("#vehicle-search").val();
 	var email = $("#email").val();
-	var volvoABI = $("#abi").val();
+	var volvoABI = $("#ABI").val();
 	var date = $("#Date").val();
 
 	var settings = {
