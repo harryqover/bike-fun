@@ -85,7 +85,9 @@ setTimeout(function() {
             }
         });
         
-        $("#signupbtn").preventDefault();
+        $("#signupbtn").submit(function(e){
+            return false;
+        });
         $("#signupbtn").click(function(event) {
         	signUp()
         });
