@@ -85,8 +85,12 @@ setTimeout(function() {
             }
         });
         
-        $("#signupbtn").submit(function(e){
-            return false;
+        // Gets a reference to the form element
+        var form = document.getElementById('email-form');
+
+        // Adds a listener for the "submit" event.
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
         });
         $("#signupbtn").click(function(event) {
         	signUp()
