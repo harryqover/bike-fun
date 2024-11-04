@@ -1,4 +1,4 @@
-console.warn("0638")
+console.warn("1103")
 const webhookEmailSignup = "https://script.google.com/macros/s/AKfycbwM6BWIdthN5E-ov5HTjKnIl9m54ns0Y5FJMj0Svv6lKM-JbfyLjeE-W5PoARkt8w4Few/exec";
 
 setTimeout(function() {
@@ -67,7 +67,12 @@ setTimeout(function() {
                         <td>${value || 'N/A'}</td>
                     </tr>
                 `);
-            }                    
+            }      
+            if(key == "ABI"){
+                detailsTableBody.append(`
+                    <input id="ABI" value="${value || 'N/A'}">
+                `);
+            } 
             });
 
             $('#vehicle-list').hide();
