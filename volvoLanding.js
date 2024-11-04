@@ -1,4 +1,4 @@
-console.warn("0614")
+console.warn("0635")
 const webhookEmailSignup = "https://script.google.com/macros/s/AKfycbwM6BWIdthN5E-ov5HTjKnIl9m54ns0Y5FJMj0Svv6lKM-JbfyLjeE-W5PoARkt8w4Few/exec";
 
 setTimeout(function() {
@@ -99,6 +99,11 @@ setTimeout(function() {
 
 
 function signUp(){
+	var volvoModel = $("#vehicle-search");
+	var email = $("#email");
+	var volvoABI = "XXX";
+	var date = "10/01/2025";
+
 	var settings = {
         "url": webhookEmailSignup,
         "method": "POST",
@@ -107,10 +112,10 @@ function signUp(){
             "Content-Type": "text/plain;charset=utf-8"
         },
         "data": JSON.stringify({
-            "volvoModel": "XC90",
-            "email": "harry@qover.com",
-            "date": "10/01/2025",
-            "volvoABI": "XXX",
+            "volvoModel": volvoModel,
+            "email": email,
+            "date": date,
+            "volvoABI": volvoABI,
         }),
     };
 
