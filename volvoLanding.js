@@ -73,7 +73,7 @@ setTimeout(function() {
                     return matchesKeywords && isYearInRange;
                 });
 
-                $("#vehicle-details").show(500);
+                //$("#vehicle-details").show(500);
 
                 filteredVehicles.forEach(vehicle => {
                     $('#vehicle-list').append(
@@ -102,6 +102,7 @@ setTimeout(function() {
             
             Object.entries(selectedVehicle).forEach(([key, value]) => {
             if(showKeys.includes(key)){
+                console.log(key+" - "+value);
             	detailsTableBody.append(`
                     <tr>
                         <td>${key}</td>
