@@ -13,7 +13,7 @@ setTimeout(function() {
             console.log('Vehicles data loaded:', vehicles);
             
             // Populate year options based on the vehicles' years
-            const years = [...new Set(vehicles.map(vehicle => vehicle.yearFrom))].sort((a, b) => a - b);
+            const years = [...new Set(vehicles.map(vehicle => vehicle.yearFrom))].sort((a, b) => b - a);
             const yearFilter = $('#year-filter');
             years.forEach(year => {
                 yearFilter.append(`<option value="${year}">${year}</option>`);
