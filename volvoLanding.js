@@ -21,7 +21,7 @@ setTimeout(function() {
         });
 
         // Function to filter vehicles based on search and year
-        function filterVehicles() {
+        function filterVehiclesOld() {
             const query = $('#vehicle-search').val().toLowerCase();
             const selectedYear = parseInt($('#year-filter').val());
             $('#vehicle-list').empty();
@@ -46,6 +46,38 @@ setTimeout(function() {
                 $('#vehicle-list').hide();
             }
         }
+        function filterVehicles() {
+            const query = $('#vehicle-search').val().toLowerCase();
+            const selectedYear = parseInt($('#year-filter').val());
+            $('#vehicle-list').empty();
+
+            if (query.length > 0 || selectedYear) {
+                const keywords = query.split(' ');
+
+                const filteredVehicles = vehicles.filter(vehicle => {
+                    const matchesKeywords = keywords.every(keyword => vehicle.full.toLowerCase().includes(keyword));
+                    const isYearInRange = !selectedYear || (
+                        selectedYear >= vehicle.yearFrom && 
+                        (vehicle.yearTo === 0 || selectedYear <= vehicle.yearTo)
+                    );
+
+                    return matchesKeywords && isYearInRange;
+                });
+
+                $("#vehicle-details").show(500);
+
+                filteredVehicles.forEach(vehicle => {
+                    $('#vehicle-list').append(
+                        `<div class="vehicle-item" data-id="${vehicle.full}">${vehicle.full}</div>`
+                    );
+                });
+
+                $('#vehicle-list').show();
+            } else {
+                $('#vehicle-list').hide();
+            }
+        }
+
 
         $('#vehicle-search').on('input', filterVehicles);
         $('#year-filter').on('change', filterVehicles);
