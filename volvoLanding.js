@@ -23,10 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 setTimeout(function() {
 	$("#vehicle-details").hide(500);
-
-
-        
-
         // Load JSON data from GitHub-hosted JSON
         $.getJSON('https://harryqover.github.io/bike-fun/volvo_car_data.json', function(data) {
             vehicles = data;
@@ -50,31 +46,7 @@ setTimeout(function() {
         });
 
         // Function to filter vehicles based on search and year
-        function filterVehiclesOld() {
-            const query = $('#vehicle-search').val().toLowerCase();
-            const selectedYear = parseInt($('#year-filter').val());
-            $('#vehicle-list').empty();
-
-            if (query.length > 0 || selectedYear) {
-                const keywords = query.split(' ');
-
-                const filteredVehicles = vehicles.filter(vehicle => 
-                    keywords.every(keyword => vehicle.full.toLowerCase().includes(keyword)) &&
-                    (!selectedYear || vehicle.yearFrom >= selectedYear)
-                );
-                $("#vehicle-details").show(500);
-
-                filteredVehicles.forEach(vehicle => {
-                    $('#vehicle-list').append(
-                        `<div class="vehicle-item" data-id="${vehicle.full}">${vehicle.full}</div>`
-                    );
-                });
-
-                $('#vehicle-list').show();
-            } else {
-                $('#vehicle-list').hide();
-            }
-        }
+  
         /* OLD CODE
         function filterVehicles() {
             const query = $('#vehicle-search').val().toLowerCase();
