@@ -33,12 +33,21 @@ setTimeout(function() {
             return selectedYear >= yearFrom && selectedYear <= yearTo;
         });
 
-        // Populate model options
+        // Get unique models
         const models = [...new Set(filteredVehicles.map(vehicle => vehicle.model))].sort();
-        const modelOptions = $('#model-options');
-        modelOptions.empty();
-        models.forEach(model => {
-            modelOptions.append(`<option value="${model}">${model}</option>`);
+
+        // Initialize autocomplete for model-filter
+        $("#model-filter").autocomplete({
+            source: models,
+            minLength: 0,
+            select: function(event, ui) {
+                $(this).val(ui.item.value);
+                $('#model-filter').trigger('selected');
+                return false;
+            }
+        }).focus(function(){
+            // Show all options when the input is focused
+            $(this).autocomplete("search", "");
         });
 
         // Reset fields
@@ -49,7 +58,7 @@ setTimeout(function() {
     });
 
     // Event listener for model selection
-    $('#model-filter').on('input', function() {
+    $('#model-filter').on('selected', function() {
         const selectedModel = $(this).val();
         const availableModels = [...new Set(filteredVehicles.map(vehicle => vehicle.model))];
 
@@ -87,19 +96,22 @@ setTimeout(function() {
         // Filter vehicles based on selected model and fuel type
         const variantVehicles = filteredVehicles.filter(vehicle => vehicle.model === selectedModel && vehicle.fuelType === selectedFuelType);
 
-        // Populate variant options
-        if ($('#variant-options').length === 0) {
-            $('#vehicle-search').after('<datalist id="variant-options"></datalist>');
-        } else {
-            $('#variant-options').empty();
-        }
+        // Get unique variants
+        const variants = [...new Set(variantVehicles.map(vehicle => vehicle.full))].sort();
 
-        variantVehicles.forEach(vehicle => {
-            $('#variant-options').append(`<option value="${vehicle.full}">${vehicle.full}</option>`);
+        // Initialize autocomplete for vehicle-search
+        $("#vehicle-search").autocomplete({
+            source: variants,
+            minLength: 0,
+            select: function(event, ui) {
+                $(this).val(ui.item.value);
+                $('#vehicle-search').trigger('selected');
+                return false;
+            }
+        }).focus(function(){
+            // Show all options when the input is focused
+            $(this).autocomplete("search", "");
         });
-
-        // Attach datalist to input
-        $('#vehicle-search').attr('list', 'variant-options');
 
         // Reset fields
         $('#vehicle-search').val('');
@@ -107,21 +119,13 @@ setTimeout(function() {
     });
 
     // Event listener for variant selection
-    $('#vehicle-search').on('input', function() {
+    $('#vehicle-search').on('selected', function() {
         const selectedVariant = $(this).val();
         const selectedModel = $('#model-filter').val();
         const selectedFuelType = $('#fuel-filter').val();
 
-        // Get available variants
+        // Filter vehicles based on selected model, fuel type, and variant
         const variantVehicles = filteredVehicles.filter(vehicle => vehicle.model === selectedModel && vehicle.fuelType === selectedFuelType);
-        const availableVariants = variantVehicles.map(vehicle => vehicle.full);
-
-        if (!availableVariants.includes(selectedVariant)) {
-            // Invalid variant
-            $('#vehicle-details tbody').empty();
-            return;
-        }
-
         const selectedVehicle = variantVehicles.find(vehicle => vehicle.full === selectedVariant);
 
         if (selectedVehicle) {
@@ -131,7 +135,36 @@ setTimeout(function() {
             for (const [key, value] of Object.entries(selectedVehicle)) {
                 tbody.append(`<tr><td>${key}</td><td>${value}</td></tr>`);
             }
+        } else {
+            // Invalid variant
+            $('#vehicle-details tbody').empty();
         }
+    });
+
+    // Dynamic filtering for model input
+    $('#model-filter').on('input', function() {
+        const inputVal = $(this).val();
+        const models = [...new Set(filteredVehicles.map(vehicle => vehicle.model))].sort();
+
+        const filteredModels = models.filter(model => model.toLowerCase().includes(inputVal.toLowerCase()));
+
+        $("#model-filter").autocomplete("option", "source", filteredModels);
+    });
+
+    // Dynamic filtering for variant input
+    $('#vehicle-search').on('input', function() {
+        const inputVal = $(this).val();
+        const selectedModel = $('#model-filter').val();
+        const selectedFuelType = $('#fuel-filter').val();
+
+        // Filter vehicles based on selected model and fuel type
+        const variantVehicles = filteredVehicles.filter(vehicle => vehicle.model === selectedModel && vehicle.fuelType === selectedFuelType);
+
+        const variants = [...new Set(variantVehicles.map(vehicle => vehicle.full))].sort();
+
+        const filteredVariants = variants.filter(variant => variant.toLowerCase().includes(inputVal.toLowerCase()));
+
+        $("#vehicle-search").autocomplete("option", "source", filteredVariants);
     });
 
 }, 2000);
