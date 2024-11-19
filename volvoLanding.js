@@ -5,18 +5,9 @@ let vehicles = []; // Your array of vehicle data
 //NEW BELOW
 let filteredVehicles = [];
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("inside event listener")
-    // Fetch or define your vehicle data
-    // vehicles = [ { year: 2020, model: 'XC90', fuelType: 'Petrol', ... }, ... ];
 
-    
-});
 
-document.getElementById('year-filter').addEventListener('change', function() {
-    filterVehicles();
-    updateModelFilterOptions();
-});
+
 
 //NEW ABOVE
 
@@ -30,28 +21,28 @@ setTimeout(function() {
     document.getElementById('year-filter').addEventListener('change', filterVehicles);
     document.getElementById('model-filter').addEventListener('input', filterVehicles);
     document.getElementById('fuel-filter').addEventListener('change', filterVehicles);
-    
-        // Load JSON data from GitHub-hosted JSON
-        $.getJSON('https://harryqover.github.io/bike-fun/volvo_car_data.json', function(data) {
-            vehicles = data;
-            console.log('Vehicles data loaded:', vehicles);
-            
-            // Populate year options based on the vehicles' years
-            //const years = [...new Set(vehicles.map(vehicle => vehicle.yearFrom))].sort((a, b) => b - a);
-            const years = [
-              "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", 
-              "2015", "2014", "2013", "2012", "2011", "2010", "2009", "2008", "2007", "2006", 
-              "2005", "2004", "2003", "2002", "2001", "2000", "1999", "1998", "1997", "1996", 
-              "1995", "1994", "1993", "1992", "1991", "1990", "1989", "1988", "1987", "1986", 
-              "1985", "1984", "1983", "1982", "1981", "1980", "1979", "1978", "1977", "1976", 
-              "1975", "1974", "1973", "1972", "1971", "1970"
-            ];
 
-            const yearFilter = $('#year-filter');
-            years.forEach(year => {
-                yearFilter.append(`<option value="${year}">${year}</option>`);
-            });
+    // Load JSON data from GitHub-hosted JSON
+    $.getJSON('https://harryqover.github.io/bike-fun/volvo_car_data.json', function(data) {
+        vehicles = data;
+        console.log('Vehicles data loaded:', vehicles);
+        
+        // Populate year options based on the vehicles' years
+        //const years = [...new Set(vehicles.map(vehicle => vehicle.yearFrom))].sort((a, b) => b - a);
+        const years = [
+          "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", 
+          "2015", "2014", "2013", "2012", "2011", "2010", "2009", "2008", "2007", "2006", 
+          "2005", "2004", "2003", "2002", "2001", "2000", "1999", "1998", "1997", "1996", 
+          "1995", "1994", "1993", "1992", "1991", "1990", "1989", "1988", "1987", "1986", 
+          "1985", "1984", "1983", "1982", "1981", "1980", "1979", "1978", "1977", "1976", 
+          "1975", "1974", "1973", "1972", "1971", "1970"
+        ];
+
+        const yearFilter = $('#year-filter');
+        years.forEach(year => {
+            yearFilter.append(`<option value="${year}">${year}</option>`);
         });
+    });
 
         // Function to filter vehicles based on search and year
   
@@ -133,26 +124,26 @@ setTimeout(function() {
         // Gets a reference to the form element
         var form = document.getElementById('email-form');
 
-        // Adds a listener for the "submit" event.
-        form.addEventListener('submit', function(e) {
-          e.preventDefault();
-        });
-        $("#signupbtn").click(function(event) {
-        	signUp()
-        });
+    // Adds a listener for the "submit" event.
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+    });
+    $("#signupbtn").click(function(event) {
+    	signUp()
+    });
 
 
-          // Close the modal when clicking on the "X" or the close button
-		  $(".close, #closeModal").on("click", function () {
-		    $("#confirmationModal").fadeOut();
-		  });
+  // Close the modal when clicking on the "X" or the close button
+  $(".close, #closeModal").on("click", function () {
+    $("#confirmationModal").fadeOut();
+  });
 
-		  // Optionally, close the modal when clicking outside the modal content
-		  $(window).on("click", function (event) {
-		    if ($(event.target).is("#confirmationModal")) {
-		      $("#confirmationModal").fadeOut();
-		    }
-		  });
+  // Optionally, close the modal when clicking outside the modal content
+  $(window).on("click", function (event) {
+    if ($(event.target).is("#confirmationModal")) {
+      $("#confirmationModal").fadeOut();
+    }
+  });
 }, 2000);
 
 
@@ -221,6 +212,7 @@ function populateFuelFilter() {
 
 
 function filterVehicles() {
+    console.log("filterVehicles");
     const selectedYear = document.getElementById('year-filter').value;
     const selectedModel = document.getElementById('model-filter').value.toLowerCase();
     const selectedFuel = document.getElementById('fuel-filter').value;
