@@ -216,6 +216,9 @@ function filterVehicles() {
     const selectedYear = document.getElementById('year-filter').value;
     const selectedModel = document.getElementById('model-filter').value.toLowerCase();
     const selectedFuel = document.getElementById('fuel-filter').value;
+    console.log(selectedYear);
+    console.log(selectedModel);
+    console.log(selectedModel);
 
     filteredVehicles = vehicles.filter(vehicle => {
         const matchesYear = selectedYear ? vehicle.year == selectedYear : true;
@@ -223,6 +226,7 @@ function filterVehicles() {
         const matchesFuel = selectedFuel ? vehicle.fuelType == selectedFuel : true;
         return matchesYear && matchesModel && matchesFuel;
     });
+    console.log(filteredVehicles);
 
     updateVehicleList();
     updateModelFilterOptions();
