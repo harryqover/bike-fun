@@ -1,29 +1,31 @@
-console.warn("1911 1705")
+console.warn("1911 1719")
 const webhookEmailSignup = "https://script.google.com/macros/s/AKfycbwM6BWIdthN5E-ov5HTjKnIl9m54ns0Y5FJMj0Svv6lKM-JbfyLjeE-W5PoARkt8w4Few/exec";
+let vehicles = []; // Your array of vehicle data
+
+//NEW BELOW
+let filteredVehicles = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("inside event listener")
+    // Fetch or define your vehicle data
+    // vehicles = [ { year: 2020, model: 'XC90', fuelType: 'Petrol', ... }, ... ];
+
+    populateYearFilter();
+    populateModelFilter();
+    populateFuelFilter();
+
+    // Event listeners
+    document.getElementById('year-filter').addEventListener('change', filterVehicles);
+    document.getElementById('model-filter').addEventListener('input', filterVehicles);
+    document.getElementById('fuel-filter').addEventListener('change', filterVehicles);
+});
+//NEW ABOVE
 
 setTimeout(function() {
 	$("#vehicle-details").hide(500);
 
 
-        let vehicles = []; // Your array of vehicle data
-
-        //NEW BELOW
-        let filteredVehicles = [];
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Fetch or define your vehicle data
-            // vehicles = [ { year: 2020, model: 'XC90', fuelType: 'Petrol', ... }, ... ];
-
-            populateYearFilter();
-            populateModelFilter();
-            populateFuelFilter();
-
-            // Event listeners
-            document.getElementById('year-filter').addEventListener('change', filterVehicles);
-            document.getElementById('model-filter').addEventListener('input', filterVehicles);
-            document.getElementById('fuel-filter').addEventListener('change', filterVehicles);
-        });
-        //NEW ABOVE
+        
 
         // Load JSON data from GitHub-hosted JSON
         $.getJSON('https://harryqover.github.io/bike-fun/volvo_car_data.json', function(data) {
