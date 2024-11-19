@@ -18,9 +18,22 @@ setTimeout(function() {
     populateFuelFilter();
 
     // Event listeners
-    document.getElementById('year-filter').addEventListener('change', filterVehicles);
-    document.getElementById('model-filter').addEventListener('input', filterVehicles);
-    document.getElementById('fuel-filter').addEventListener('change', filterVehicles);
+    document.getElementById('year-filter').addEventListener('change', function() {
+        updateModelFilterOptions();
+        updateFuelFilterOptions();
+        filterVehicles();
+    });
+
+    document.getElementById('model-filter').addEventListener('input', function() {
+        updateFuelFilterOptions();
+        filterVehicles();
+    });
+
+    document.getElementById('fuel-filter').addEventListener('change', function() {
+        updateModelFilterOptions();
+        filterVehicles();
+    });
+
 
     // Load JSON data from GitHub-hosted JSON
     $.getJSON('https://harryqover.github.io/bike-fun/volvo_car_data.json', function(data) {
@@ -245,10 +258,24 @@ function updateVehicleList() {
 }
 
 function updateModelFilterOptions() {
-    console.log("updateModelFilterOptions");
     const modelOptions = document.getElementById('model-options');
     modelOptions.innerHTML = ''; // Clear existing options
-    const models = [...new Set(filteredVehicles.map(v => v.model))].sort();
+
+    const selectedYear = document.getElementById('year-filter').value;
+    const selectedFuel = document.getElementById('fuel-filter').value;
+
+    let vehiclesForModels = vehicles.slice(); // Start with all vehicles
+
+    if (selectedYear) {
+        vehiclesForModels = vehiclesForModels.filter(vehicle => vehicle.year === parseInt(selectedYear));
+    }
+
+    if (selectedFuel) {
+        vehiclesForModels = vehiclesForModels.filter(vehicle => vehicle.fuelType === selectedFuel);
+    }
+
+    const models = [...new Set(vehiclesForModels.map(v => v.model))].sort();
+
     models.forEach(model => {
         const option = document.createElement('option');
         option.value = model;
@@ -256,11 +283,26 @@ function updateModelFilterOptions() {
     });
 }
 
+
 function updateFuelFilterOptions() {
-    console.log("updateFuelFilterOptions");
     const fuelFilter = document.getElementById('fuel-filter');
     fuelFilter.innerHTML = '<option value="">Fuel Type</option>'; // Reset options
-    const fuelTypes = [...new Set(filteredVehicles.map(v => v.fuelType))].sort();
+
+    const selectedYear = document.getElementById('year-filter').value;
+    const selectedModel = document.getElementById('model-filter').value.toLowerCase();
+
+    let vehiclesForFuelTypes = vehicles.slice(); // Start with all vehicles
+
+    if (selectedYear) {
+        vehiclesForFuelTypes = vehiclesForFuelTypes.filter(vehicle => vehicle.year === parseInt(selectedYear));
+    }
+
+    if (selectedModel) {
+        vehiclesForFuelTypes = vehiclesForFuelTypes.filter(vehicle => vehicle.model.toLowerCase().includes(selectedModel));
+    }
+
+    const fuelTypes = [...new Set(vehiclesForFuelTypes.map(v => v.fuelType))].sort();
+
     fuelTypes.forEach(fuel => {
         const option = document.createElement('option');
         option.value = fuel;
@@ -268,4 +310,5 @@ function updateFuelFilterOptions() {
         fuelFilter.appendChild(option);
     });
 }
+
 //NEW ABOVE
