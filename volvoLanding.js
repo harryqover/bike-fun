@@ -38,6 +38,7 @@ setTimeout(function() {
     // Load JSON data from GitHub-hosted JSON
     $.getJSON('https://harryqover.github.io/bike-fun/volvo_car_data.json', function(data) {
         vehicles = data;
+        filteredVehicles = data;
         console.log('Vehicles data loaded:', vehicles);
         
         // Populate year options based on the vehicles' years
