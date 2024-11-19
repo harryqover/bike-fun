@@ -1,4 +1,4 @@
-console.warn("1911 1719")
+console.warn("1911 1930")
 const webhookEmailSignup = "https://script.google.com/macros/s/AKfycbwM6BWIdthN5E-ov5HTjKnIl9m54ns0Y5FJMj0Svv6lKM-JbfyLjeE-W5PoARkt8w4Few/exec";
 let vehicles = []; // Your array of vehicle data
 
@@ -229,6 +229,7 @@ function filterVehicles() {
     updateFuelFilterOptions();
 }
 function updateVehicleList() {
+    console.log("updateVehicleList");
     const vehicleList = document.getElementById('vehicle-list');
     vehicleList.innerHTML = ''; // Clear existing list
 
@@ -240,6 +241,7 @@ function updateVehicleList() {
 }
 
 function updateModelFilterOptions() {
+    console.log("updateModelFilterOptions");
     const modelOptions = document.getElementById('model-options');
     modelOptions.innerHTML = ''; // Clear existing options
     const models = [...new Set(filteredVehicles.map(v => v.model))].sort();
@@ -251,6 +253,7 @@ function updateModelFilterOptions() {
 }
 
 function updateFuelFilterOptions() {
+    console.log("updateFuelFilterOptions");
     const fuelFilter = document.getElementById('fuel-filter');
     fuelFilter.innerHTML = '<option value="">Fuel Type</option>'; // Reset options
     const fuelTypes = [...new Set(filteredVehicles.map(v => v.fuelType))].sort();
