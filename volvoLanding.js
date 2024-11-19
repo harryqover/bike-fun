@@ -1,41 +1,4 @@
-console.warn("1911 1941")
-const webhookEmailSignup = "https://script.google.com/macros/s/AKfycbwM6BWIdthN5E-ov5HTjKnIl9m54ns0Y5FJMj0Svv6lKM-JbfyLjeE-W5PoARkt8w4Few/exec";
-let vehicles = []; // Your array of vehicle data
-
-//NEW BELOW
-let filteredVehicles = [];
-
-
-
-
-
-//NEW ABOVE
-
 setTimeout(function() {
-	$("#vehicle-details").hide(500);
-    populateYearFilter();
-    populateModelFilter();
-    populateFuelFilter();
-
-    // Event listeners
-    document.getElementById('year-filter').addEventListener('change', function() {
-        updateModelFilterOptions();
-        updateFuelFilterOptions();
-        filterVehicles();
-    });
-
-    document.getElementById('model-filter').addEventListener('input', function() {
-        updateFuelFilterOptions();
-        filterVehicles();
-    });
-
-    document.getElementById('fuel-filter').addEventListener('change', function() {
-        updateModelFilterOptions();
-        filterVehicles();
-    });
-
-
-    // Load JSON data from GitHub-hosted JSON
     $.getJSON('https://harryqover.github.io/bike-fun/volvo_car_data.json', function(data) {
         vehicles = data;
         filteredVehicles = data;
@@ -57,207 +20,40 @@ setTimeout(function() {
             yearFilter.append(`<option value="${year}">${year}</option>`);
         });
     });
+// Event Listeners
+document.getElementById('year-filter').addEventListener('change', function() {
+    updateModelFilterOptions();
+    updateFuelFilterOptions();
+    filterVehicles();
+});
 
-        // Function to filter vehicles based on search and year
-  
-        /* OLD CODE
-        function filterVehicles() {
-            const query = $('#vehicle-search').val().toLowerCase();
-            const selectedYear = parseInt($('#year-filter').val());
-            $('#vehicle-list').empty();
+document.getElementById('model-filter').addEventListener('input', function() {
+    updateFuelFilterOptions();
+    filterVehicles();
+});
 
-            if (query.length > 0 || selectedYear) {
-                const keywords = query.split(' ');
+document.getElementById('fuel-filter').addEventListener('change', function() {
+    updateModelFilterOptions();
+    filterVehicles();
+});
 
-                const filteredVehicles = vehicles.filter(vehicle => {
-                    const matchesKeywords = keywords.every(keyword => vehicle.full.toLowerCase().includes(keyword));
-                    const isYearInRange = !selectedYear || (
-                        selectedYear >= vehicle.yearFrom && 
-                        (vehicle.yearTo === 0 || selectedYear <= vehicle.yearTo)
-                    );
-
-                    return matchesKeywords && isYearInRange;
-                });
-
-                //$("#vehicle-details").show(500);
-
-                filteredVehicles.forEach(vehicle => {
-                    $('#vehicle-list').append(
-                        `<div class="vehicle-item" data-id="${vehicle.full}">${vehicle.full}</div>`
-                    );
-                });
-
-                $('#vehicle-list').show();
-            } else {
-                $('#vehicle-list').hide();
-            }
-        }
-        */
-        
-
-
-        $('#vehicle-search').on('input', filterVehicles);
-        $('#year-filter').on('change', filterVehicles);
-        
-        var showKeys = ["make", "model", "cylinderCapacity", "yearFrom", "yearTo", "type", "fuelType", "transmission","term"]
-
-        $(document).on('click', '.vehicle-item', function() {
-            const selectedFull = $(this).data('id');
-            const selectedVehicle = vehicles.find(vehicle => vehicle.full === selectedFull);
-
-            const detailsTableBody = $('#vehicle-details tbody');
-            detailsTableBody.empty();
-            
-            Object.entries(selectedVehicle).forEach(([key, value]) => {
-            if(showKeys.includes(key)){
-                console.log(key+" - "+value);
-            	detailsTableBody.append(`
-                    <tr>
-                        <td>${key}</td>
-                        <td>${value || 'N/A'}</td>
-                    </tr>
-                `);
-            }      
-            if(key == "ABI"){
-                detailsTableBody.append(`
-                    <input id="ABI" value="${value || 'N/A'}">
-                `);
-            } 
-            });
-
-            $('#vehicle-list').hide();
-            $('#vehicle-search').val(selectedFull);
-        });
-
-        $(document).click(function(event) {
-            if (!$(event.target).closest('#vehicle-search, #vehicle-list').length) {
-                $('#vehicle-list').hide();
-            }
-        });
-        
-        // Gets a reference to the form element
-        var form = document.getElementById('email-form');
-
-    // Adds a listener for the "submit" event.
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-    });
-    $("#signupbtn").click(function(event) {
-    	signUp()
-    });
-
-
-  // Close the modal when clicking on the "X" or the close button
-  $(".close, #closeModal").on("click", function () {
-    $("#confirmationModal").fadeOut();
-  });
-
-  // Optionally, close the modal when clicking outside the modal content
-  $(window).on("click", function (event) {
-    if ($(event.target).is("#confirmationModal")) {
-      $("#confirmationModal").fadeOut();
-    }
-  });
-}, 2000);
-
-
-function signUp(){
-	var volvoModel = $("#vehicle-search").val();
-	var email = $("#email").val();
-	var volvoABI = $("#ABI").val();
-	var date = $("#Date").val();
-
-	var settings = {
-        "url": webhookEmailSignup,
-        "method": "POST",
-        "timeout": 0,
-        "headers": {
-            "Content-Type": "text/plain;charset=utf-8"
-        },
-        "data": JSON.stringify({
-            "volvoModel": volvoModel,
-            "email": email,
-            "date": date,
-            "volvoABI": volvoABI,
-        }),
-    };
-
-    $.ajax(settings).done(function(response) {
-    	console.log(response);
-    	$("#confirmationModal").fadeIn();
-    })
-}
-
-
-//NEW BELOW
-function populateYearFilter() {
-    const yearFilter = document.getElementById('year-filter');
-    const years = [...new Set(vehicles.map(v => v.year))].sort();
-    years.forEach(year => {
-        const option = document.createElement('option');
-        option.value = year;
-        option.textContent = year;
-        yearFilter.appendChild(option);
-    });
-}
-
-function populateModelFilter() {
-    const modelOptions = document.getElementById('model-options');
-    modelOptions.innerHTML = ''; // Clear existing options
-    const models = [...new Set(vehicles.map(v => v.model))].sort();
-    models.forEach(model => {
-        const option = document.createElement('option');
-        option.value = model;
-        modelOptions.appendChild(option);
-    });
-}
-
-function populateFuelFilter() {
-    const fuelFilter = document.getElementById('fuel-filter');
-    fuelFilter.innerHTML = '<option value="">Fuel Type</option>'; // Reset options
-    const fuelTypes = [...new Set(vehicles.map(v => v.fuelType))].sort();
-    fuelTypes.forEach(fuel => {
-        const option = document.createElement('option');
-        option.value = fuel;
-        option.textContent = fuel;
-        fuelFilter.appendChild(option);
-    });
-}
-
-
+// Filter Vehicles Function
 function filterVehicles() {
-    console.log("filterVehicles");
     const selectedYear = document.getElementById('year-filter').value;
     const selectedModel = document.getElementById('model-filter').value.toLowerCase();
     const selectedFuel = document.getElementById('fuel-filter').value;
-    console.log(selectedYear);
-    console.log(selectedModel);
-    console.log(selectedModel);
 
     filteredVehicles = vehicles.filter(vehicle => {
-        const matchesYear = selectedYear ? vehicle.year == selectedYear : true;
+        const matchesYear = selectedYear ? vehicle.year === parseInt(selectedYear) : true;
         const matchesModel = selectedModel ? vehicle.model.toLowerCase().includes(selectedModel) : true;
-        const matchesFuel = selectedFuel ? vehicle.fuelType == selectedFuel : true;
+        const matchesFuel = selectedFuel ? vehicle.fuelType === selectedFuel : true;
         return matchesYear && matchesModel && matchesFuel;
     });
-    console.log(filteredVehicles);
 
     updateVehicleList();
-    updateModelFilterOptions();
-    updateFuelFilterOptions();
-}
-function updateVehicleList() {
-    console.log("updateVehicleList");
-    const vehicleList = document.getElementById('vehicle-list');
-    vehicleList.innerHTML = ''; // Clear existing list
-
-    filteredVehicles.forEach(vehicle => {
-        const div = document.createElement('div');
-        div.textContent = `${vehicle.year} ${vehicle.model} (${vehicle.fuelType})`;
-        vehicleList.appendChild(div);
-    });
 }
 
+// Update Model Filter Options Function
 function updateModelFilterOptions() {
     const modelOptions = document.getElementById('model-options');
     modelOptions.innerHTML = ''; // Clear existing options
@@ -265,7 +61,7 @@ function updateModelFilterOptions() {
     const selectedYear = document.getElementById('year-filter').value;
     const selectedFuel = document.getElementById('fuel-filter').value;
 
-    let vehiclesForModels = vehicles.slice(); // Start with all vehicles
+    let vehiclesForModels = vehicles.slice();
 
     if (selectedYear) {
         vehiclesForModels = vehiclesForModels.filter(vehicle => vehicle.year === parseInt(selectedYear));
@@ -284,7 +80,7 @@ function updateModelFilterOptions() {
     });
 }
 
-
+// Update Fuel Filter Options Function
 function updateFuelFilterOptions() {
     const fuelFilter = document.getElementById('fuel-filter');
     fuelFilter.innerHTML = '<option value="">Fuel Type</option>'; // Reset options
@@ -292,7 +88,7 @@ function updateFuelFilterOptions() {
     const selectedYear = document.getElementById('year-filter').value;
     const selectedModel = document.getElementById('model-filter').value.toLowerCase();
 
-    let vehiclesForFuelTypes = vehicles.slice(); // Start with all vehicles
+    let vehiclesForFuelTypes = vehicles.slice();
 
     if (selectedYear) {
         vehiclesForFuelTypes = vehiclesForFuelTypes.filter(vehicle => vehicle.year === parseInt(selectedYear));
@@ -312,4 +108,4 @@ function updateFuelFilterOptions() {
     });
 }
 
-//NEW ABOVE
+}, 2000);
