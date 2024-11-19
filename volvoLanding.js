@@ -19,6 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('model-filter').addEventListener('input', filterVehicles);
     document.getElementById('fuel-filter').addEventListener('change', filterVehicles);
 });
+
+document.getElementById('year-filter').addEventListener('change', function() {
+    filterVehicles();
+    updateModelFilterOptions();
+});
+
 //NEW ABOVE
 
 setTimeout(function() {
@@ -80,57 +86,7 @@ setTimeout(function() {
             }
         }
         */
-        //NEW BELOW
-        function filterVehicles() {
-            const selectedYear = document.getElementById('year-filter').value;
-            const selectedModel = document.getElementById('model-filter').value.toLowerCase();
-            const selectedFuel = document.getElementById('fuel-filter').value;
-
-            filteredVehicles = vehicles.filter(vehicle => {
-                const matchesYear = selectedYear ? vehicle.year == selectedYear : true;
-                const matchesModel = selectedModel ? vehicle.model.toLowerCase().includes(selectedModel) : true;
-                const matchesFuel = selectedFuel ? vehicle.fuelType == selectedFuel : true;
-                return matchesYear && matchesModel && matchesFuel;
-            });
-
-            updateVehicleList();
-            updateModelFilterOptions();
-            updateFuelFilterOptions();
-        }
-        function updateVehicleList() {
-            const vehicleList = document.getElementById('vehicle-list');
-            vehicleList.innerHTML = ''; // Clear existing list
-
-            filteredVehicles.forEach(vehicle => {
-                const div = document.createElement('div');
-                div.textContent = `${vehicle.year} ${vehicle.model} (${vehicle.fuelType})`;
-                vehicleList.appendChild(div);
-            });
-        }
-
-        function updateModelFilterOptions() {
-            const modelOptions = document.getElementById('model-options');
-            modelOptions.innerHTML = ''; // Clear existing options
-            const models = [...new Set(filteredVehicles.map(v => v.model))].sort();
-            models.forEach(model => {
-                const option = document.createElement('option');
-                option.value = model;
-                modelOptions.appendChild(option);
-            });
-        }
-
-        function updateFuelFilterOptions() {
-            const fuelFilter = document.getElementById('fuel-filter');
-            fuelFilter.innerHTML = '<option value="">Fuel Type</option>'; // Reset options
-            const fuelTypes = [...new Set(filteredVehicles.map(v => v.fuelType))].sort();
-            fuelTypes.forEach(fuel => {
-                const option = document.createElement('option');
-                option.value = fuel;
-                option.textContent = fuel;
-                fuelFilter.appendChild(option);
-            });
-        }
-        //NEW ABOVE
+        
 
 
         $('#vehicle-search').on('input', filterVehicles);
@@ -260,3 +216,55 @@ function populateFuelFilter() {
         fuelFilter.appendChild(option);
     });
 }
+
+
+function filterVehicles() {
+    const selectedYear = document.getElementById('year-filter').value;
+    const selectedModel = document.getElementById('model-filter').value.toLowerCase();
+    const selectedFuel = document.getElementById('fuel-filter').value;
+
+    filteredVehicles = vehicles.filter(vehicle => {
+        const matchesYear = selectedYear ? vehicle.year == selectedYear : true;
+        const matchesModel = selectedModel ? vehicle.model.toLowerCase().includes(selectedModel) : true;
+        const matchesFuel = selectedFuel ? vehicle.fuelType == selectedFuel : true;
+        return matchesYear && matchesModel && matchesFuel;
+    });
+
+    updateVehicleList();
+    updateModelFilterOptions();
+    updateFuelFilterOptions();
+}
+function updateVehicleList() {
+    const vehicleList = document.getElementById('vehicle-list');
+    vehicleList.innerHTML = ''; // Clear existing list
+
+    filteredVehicles.forEach(vehicle => {
+        const div = document.createElement('div');
+        div.textContent = `${vehicle.year} ${vehicle.model} (${vehicle.fuelType})`;
+        vehicleList.appendChild(div);
+    });
+}
+
+function updateModelFilterOptions() {
+    const modelOptions = document.getElementById('model-options');
+    modelOptions.innerHTML = ''; // Clear existing options
+    const models = [...new Set(filteredVehicles.map(v => v.model))].sort();
+    models.forEach(model => {
+        const option = document.createElement('option');
+        option.value = model;
+        modelOptions.appendChild(option);
+    });
+}
+
+function updateFuelFilterOptions() {
+    const fuelFilter = document.getElementById('fuel-filter');
+    fuelFilter.innerHTML = '<option value="">Fuel Type</option>'; // Reset options
+    const fuelTypes = [...new Set(filteredVehicles.map(v => v.fuelType))].sort();
+    fuelTypes.forEach(fuel => {
+        const option = document.createElement('option');
+        option.value = fuel;
+        option.textContent = fuel;
+        fuelFilter.appendChild(option);
+    });
+}
+//NEW ABOVE
