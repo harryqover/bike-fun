@@ -10,14 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch or define your vehicle data
     // vehicles = [ { year: 2020, model: 'XC90', fuelType: 'Petrol', ... }, ... ];
 
-    populateYearFilter();
-    populateModelFilter();
-    populateFuelFilter();
-
-    // Event listeners
-    document.getElementById('year-filter').addEventListener('change', filterVehicles);
-    document.getElementById('model-filter').addEventListener('input', filterVehicles);
-    document.getElementById('fuel-filter').addEventListener('change', filterVehicles);
+    
 });
 
 document.getElementById('year-filter').addEventListener('change', function() {
@@ -29,6 +22,15 @@ document.getElementById('year-filter').addEventListener('change', function() {
 
 setTimeout(function() {
 	$("#vehicle-details").hide(500);
+    populateYearFilter();
+    populateModelFilter();
+    populateFuelFilter();
+
+    // Event listeners
+    document.getElementById('year-filter').addEventListener('change', filterVehicles);
+    document.getElementById('model-filter').addEventListener('input', filterVehicles);
+    document.getElementById('fuel-filter').addEventListener('change', filterVehicles);
+    
         // Load JSON data from GitHub-hosted JSON
         $.getJSON('https://harryqover.github.io/bike-fun/volvo_car_data.json', function(data) {
             vehicles = data;
