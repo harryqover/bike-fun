@@ -1,4 +1,4 @@
-console.warn("1311 1029")
+console.warn("1911 1705")
 const webhookEmailSignup = "https://script.google.com/macros/s/AKfycbwM6BWIdthN5E-ov5HTjKnIl9m54ns0Y5FJMj0Svv6lKM-JbfyLjeE-W5PoARkt8w4Few/exec";
 
 setTimeout(function() {
