@@ -200,7 +200,7 @@ function signUp(){
             "volvoABI": volvoABI,
         }),
     };
-    if(volvoABI && email){
+    if(volvoABI != "" && isValidEmail(email) && date != ""){
         $.ajax(settings).done(function(response) {
             console.log(response);
             $("#confirmationModal").fadeIn();
@@ -209,4 +209,7 @@ function signUp(){
         alert("missing info");
     }
     
+}
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
