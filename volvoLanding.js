@@ -1,4 +1,6 @@
-console.warn("2030")
+console.warn("1239");
+const webhookEmailSignup = "https://script.google.com/macros/s/AKfycbwM6BWIdthN5E-ov5HTjKnIl9m54ns0Y5FJMj0Svv6lKM-JbfyLjeE-W5PoARkt8w4Few/exec";
+
 setTimeout(function() {
     $("#vehicle-details").hide();
     let vehicles = [];
@@ -136,6 +138,11 @@ setTimeout(function() {
             tbody.empty();
             for (const [key, value] of Object.entries(selectedVehicle)) {
                 tbody.append(`<tr><td>${key}</td><td>${value}</td></tr>`);
+                if(key == "ABI"){
+                    tbody.append(`
+                        <input id="ABI" value="${value || 'N/A'}">
+                    `);
+                } 
             }
         } else {
             // Invalid variant
@@ -170,3 +177,31 @@ setTimeout(function() {
     });
 
 }, 2000);
+
+
+function signUp(){
+    var volvoModel = $("#vehicle-search").val();
+    var email = $("#email").val();
+    var volvoABI = $("#ABI").val();
+    var date = $("#Date").val();
+
+    var settings = {
+        "url": webhookEmailSignup,
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "text/plain;charset=utf-8"
+        },
+        "data": JSON.stringify({
+            "volvoModel": volvoModel,
+            "email": email,
+            "date": date,
+            "volvoABI": volvoABI,
+        }),
+    };
+
+    $.ajax(settings).done(function(response) {
+        console.log(response);
+        $("#confirmationModal").fadeIn();
+    })
+}
