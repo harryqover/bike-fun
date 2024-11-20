@@ -185,6 +185,7 @@ function signUp(){
     var volvoABI = $("#ABI").val();
     var date = $("#Date").val();
 
+
     var settings = {
         "url": webhookEmailSignup,
         "method": "POST",
@@ -199,9 +200,13 @@ function signUp(){
             "volvoABI": volvoABI,
         }),
     };
-
-    $.ajax(settings).done(function(response) {
-        console.log(response);
-        $("#confirmationModal").fadeIn();
-    })
+    if(volvoABI && email){
+        $.ajax(settings).done(function(response) {
+            console.log(response);
+            $("#confirmationModal").fadeIn();
+        }) 
+    } else {
+        alert("missing info");
+    }
+    
 }
