@@ -175,6 +175,16 @@ setTimeout(function() {
 
         $("#vehicle-search").autocomplete("option", "source", filteredVariants);
     });
+    // Gets a reference to the form element
+    var form = document.getElementById('email-form');
+
+    // Adds a listener for the "submit" event.
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+    });
+    $("#signupbtn").click(function(event) {
+        signUp()
+    });
 
 }, 2000);
 
