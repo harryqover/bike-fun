@@ -1,5 +1,6 @@
 console.warn("2030")
 setTimeout(function() {
+    $("#vehicle-details").hide();
     let vehicles = [];
     let filteredVehicles = [];
 
