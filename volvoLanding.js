@@ -4,7 +4,7 @@ setTimeout(function() {
     let filteredVehicles = [];
 
     // Load vehicle data
-    $.getJSON('https://harryqover.github.io/bike-fun/volvo_car_data.json?xx=true', function(data) {
+    $.getJSON('https://harryqover.github.io/bike-fun/volvo_car_data.json?xx=2', function(data) {
         vehicles = data;
         console.log('Vehicles data loaded:', vehicles);
 
