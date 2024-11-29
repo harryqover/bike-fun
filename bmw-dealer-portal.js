@@ -1,4 +1,4 @@
-console.log("hello bmw");
+console.log("hello bmw 2");
 
 
   document.getElementById('insuranceForm').addEventListener('submit', async function (event) {
