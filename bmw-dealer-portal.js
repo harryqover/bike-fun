@@ -60,7 +60,7 @@ console.log("hello bmw 2");
         email: customerEmail,
         firstName: customerName,
         phone: customerPhone,
-      }
+      },
       partnerId: "66f672c447f3f290d35c8609",
       productConfigurationId: "bmwdemo", // Update with your product configuration ID
       country: "IE",
