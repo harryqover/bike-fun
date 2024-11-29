@@ -1,5 +1,6 @@
 console.log("hello bmw");
 
+
   document.getElementById('insuranceForm').addEventListener('submit', async function (event) {
     event.preventDefault(); // Prevent the default form submission
 
@@ -21,6 +22,7 @@ console.log("hello bmw");
         conditionAtPurchase: "VEHICLE_CONDITION_NEW",
         value: 500000, // Replace with actual value
         mainDriver: {
+          firstName: customerName,
           address: {
             ratingArea: "42",
             smallAreaId: "42",
@@ -53,6 +55,12 @@ console.log("hello bmw");
         anyDriverConvictedNonMotorOffences: false,
         anyDriverClaimsLastThreeYears: false
       },
+      policyHolder: {
+        entityType: "ENTITY_TYPE_PERSON",
+        email: customerEmail,
+        firstName: customerName,
+        phone: customerPhone,
+      }
       partnerId: "66f672c447f3f290d35c8609",
       productConfigurationId: "bmwdemo", // Update with your product configuration ID
       country: "IE",
@@ -62,7 +70,7 @@ console.log("hello bmw");
         startDate: new Date().toISOString().split('T')[0] // Current date in YYYY-MM-DD format
       },
       metadata: {
-        stepHistory: "risk",
+        stepHistory: "dealer-portal",
         lastStepAt: Date.now().toString(),
         documentsSentByMailConsented: "true",
         termsAndConditionsConsented: "true",
@@ -75,7 +83,7 @@ console.log("hello bmw");
 
     try {
       // Send POST request to API endpoint
-      const response = await fetch('https://appqoverme-ui.stg.qover.io/modules/policies/policy-quotes?appId=bmwdemo', {
+      const response = await fetch('https://appqoverme-ui.sbx.qover.io/modules/policies/policy-quotes?appId=volvodemo', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
