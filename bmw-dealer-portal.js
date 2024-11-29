@@ -1,3 +1,4 @@
+console.log("hello bmw");
 
   document.getElementById('insuranceForm').addEventListener('submit', async function (event) {
     event.preventDefault(); // Prevent the default form submission
