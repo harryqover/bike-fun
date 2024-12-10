@@ -65,7 +65,8 @@ function getNinjaData(cigarId, email) {
         "STATUS_OPEN": translations['active'],
         "STATUS_CLOSED": translations['closed'],
         "STATUS_PENDING": translations['notactive'],
-        "STATUS_INCOMPLETE": translations['missingdata']
+        "STATUS_INCOMPLETE": translations['missingdata'],
+        "CONTRACT_STATUS_PENDING": translations['notactive']
     }
 
     var settings = {
@@ -241,7 +242,9 @@ function getNinjaData(cigarId, email) {
             if(product == "HOMEOWNER"){
                 $("a[data-var='product']").attr("href","https://protect.immoweb.be");
             }
-            $("#action-menu-list").append('<a onclick="reSendEmail" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestresendcontract"]+'</a>');
+            if(product != "volvo"){
+                $("#action-menu-list").append('<a onclick="reSendEmail" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestresendcontract"]+'</a>');    
+            }
             //$("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["contact"]+'</a>');
             $("#action-menu-list").append('<a href="https://www.qover.com/claims?contract='+cigarId+'&email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["makeaclaim"]+'</a>');
             $("[data-var='requestamend']").attr("href","https://"+zendeskSubDomain+".zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+cigarId+"&tf_anonymous_requester_email="+email);
