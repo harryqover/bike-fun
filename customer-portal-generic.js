@@ -94,6 +94,8 @@ function getNinjaData(cigarId, email) {
             $("[data-trans='logout']").hide();
             $("[data-var='assistance-icon']").hide();
         } else {
+            console.warn("payload");
+            console.log(response.payload);
             const currency = response.payload.currency;
             const lang = $('#langinput').find(":selected").val();
             const country = response.payload.refs.country;
