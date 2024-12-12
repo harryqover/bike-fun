@@ -3,7 +3,9 @@ function getGiftCard(email) {
     if (!email) {
         var email = $("#email").val();
     }
-    $(".modal-gift-card > div > p").text("⏳ Please hold on, we are creating your gift card...")
+    $(".modal-gift-card > div > p").text("⏳ Please hold on, we are creating your gift card...");
+    $("#email").hide();
+    $("#submitgift").hide();
 
     var settings = {
         "url": "https://script.google.com/macros/s/AKfycbzAbLdRcpW6ZQFYJFpU-SEM6OiO_oT0GSiNjCrNKrZQObtfnMJYR8REBA_2uQv89zYY/exec",
