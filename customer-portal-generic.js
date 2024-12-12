@@ -201,6 +201,7 @@ function getNinjaData(cigarId, email) {
             }
             
             
+            
             $("[data-var='status']").text(statusContract[response.payload.status]);
             $("[data-var='product']").text(translations[variantKey]);
             $("[data-var='cigarid']").text(response.payload.cigarId);
