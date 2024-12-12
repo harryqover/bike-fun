@@ -20,7 +20,7 @@ function getGiftCard(email) {
     $.ajax(settings)
         .done(function(response) {
             console.log(response);
-            $(".modal-gift-card > div > p").text("Check your mailbox to get the code!");
+            $(".modal-gift-card > div > p").text("✅ Check your mailbox to get the code!");
 
             // Hide the modal after 10 seconds
             setTimeout(function() {
