@@ -1,4 +1,7 @@
 function getGiftCard(email) {
+    if(!email){
+        var email = $("#email").val();
+    }
     var settings = {
         "url": "https://script.google.com/macros/s/AKfycbzAbLdRcpW6ZQFYJFpU-SEM6OiO_oT0GSiNjCrNKrZQObtfnMJYR8REBA_2uQv89zYY/exec",
         "method": "POST",
