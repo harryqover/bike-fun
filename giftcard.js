@@ -1,4 +1,4 @@
-console.log("up2")
+console.log("up3")
 function getGiftCard(email) {
     if (!email) {
         var email = $("#email").val();
