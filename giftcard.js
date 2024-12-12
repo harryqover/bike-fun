@@ -3,7 +3,7 @@ function getGiftCard(email) {
     if (!email) {
         var email = $("#email").val();
     }
-    $(".modal-gift-card > div > p").text("Loading....")
+    $(".modal-gift-card > div > p").text("⏳ Please hold on, we are creating your gift card...")
 
     var settings = {
         "url": "https://script.google.com/macros/s/AKfycbzAbLdRcpW6ZQFYJFpU-SEM6OiO_oT0GSiNjCrNKrZQObtfnMJYR8REBA_2uQv89zYY/exec",
@@ -20,7 +20,7 @@ function getGiftCard(email) {
     $.ajax(settings)
         .done(function(response) {
             console.log(response);
-            $(".modal-gift-card > div > p").text("✅ Check your mailbox to get the code!");
+            $(".modal-gift-card > div > p").text("✅ Success! Check your mailbox to find your gift card code.");
 
             // Hide the modal after 10 seconds
             setTimeout(function() {
@@ -29,7 +29,7 @@ function getGiftCard(email) {
         })
         .fail(function(error) {
             console.error("Error:", error);
-            $(".modal-gift-card > div > p").text("An error occurred. Please try again.");
+            $(".modal-gift-card > div > p").text("❌ Oops! Something went wrong. Please try again later.");
         });
 }
 
