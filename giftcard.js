@@ -1,8 +1,9 @@
 console.log("up3");
+/*
 document.querySelectorAll("body > section.promo").forEach(element => {
     element.style.display = "none";
 });
-
+*/
 
 function getGiftCard(email) {
     if (!email) {
