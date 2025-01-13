@@ -14,7 +14,7 @@ function getGiftCard(email) {
     $("#submitgift").hide();
 
     var settings = {
-        "url": "https://script.google.com/macros/s/AKfycbzAbLdRcpW6ZQFYJFpU-SEM6OiO_oT0GSiNjCrNKrZQObtfnMJYR8REBA_2uQv89zYY/exec",
+        "url": "https://script.google.com/macros/s/AKfycbyRx9n9A8wunSh2a7lAZ4xy7vThiaSf7of_ES36qTW2jVCL_U_WJc-qJLtN8qph0jM/exec",
         "method": "POST",
         "timeout": 0,
         "headers": {
