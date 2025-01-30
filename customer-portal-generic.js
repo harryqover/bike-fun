@@ -363,6 +363,10 @@ function getNinjaData(cigarId, email) {
                 $("[data-var='renewal']").text(translations['cancelledon']+ " " + cancelDate.toLocaleDateString());
                 $("[data-var='cancel']").hide();
                 $("[data-var='greencardbypost']").hide();
+                if(product == "volvo"){
+                    $("[data-var='renewal']").hide();
+                    $("[data-var='end']").hide();
+                }
             } else if (response.payload.status == "STATUS_PENDING") {
                 $(".statusdiv").css("background-color", "#FFC1BC");
                 $("[data-var='makeaclaim']").hide();
