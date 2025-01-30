@@ -66,7 +66,8 @@ function getNinjaData(cigarId, email) {
         "STATUS_CLOSED": translations['closed'],
         "STATUS_PENDING": translations['notactive'],
         "STATUS_INCOMPLETE": translations['missingdata'],
-        "CONTRACT_STATUS_PENDING": translations['notactive']
+        "CONTRACT_STATUS_PENDING": translations['notactive'],
+        "CONTRACT_STATUS_CANCELED": translations['closed']
     }
 
     var settings = {
@@ -355,7 +356,7 @@ function getNinjaData(cigarId, email) {
                 console.log("active but cancel at renewal")
                 $(".statusdiv").css("background-color", "#FFC1BC");
                 $("[data-var='renewal']").text(translations['willbecancelledon']);
-            } else if (response.payload.status == "STATUS_CLOSED") {
+            } else if (["STATUS_CLOSED","CONTRACT_STATUS_CANCELED"].includes(response.payload.status)) {
                 console.log("closed");
                 var cancelDate = new Date(response.payload.versionInfo.effectiveDate);
                 $(".statusdiv").css("background-color", "#FFC1BC")
