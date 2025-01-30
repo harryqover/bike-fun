@@ -249,6 +249,7 @@ function getNinjaData(cigarId, email) {
             if(product == "volvo"){
                 $("#action-menu-list").append('<a href="https://volvo-car-insurance.zendesk.com/hc/en-ie/requests/new" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestamend"]+'</a>');
                 $("#action-menu-list").append('<a href="https://volvo-car-insurance.zendesk.com/hc/en-ie/requests/new" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["cancelcontract"]+'</a>');
+                $("#action-menu-list").append('<a href="https://volvo-car-insurance.zendesk.com/hc/en-ie" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">FAQs</a>');
                 $("[data-var='makeaclaim']").attr("href","https://forms.qover.com/233112828692357?contract="+cigarId+"&email="+ email);
                 $("a[data-var='product']").attr("href","https://www.volvocarinsurance.ie/");
                 
