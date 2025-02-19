@@ -44,7 +44,7 @@
     /* --- Container & Steps --- */
     .container {
       background: #ffffff;
-      margin: 0 10px;
+      margin: 0 10px 150px; /* Added extra bottom margin for mobile */
       padding: 20px 15px;
       border-radius: 6px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -289,7 +289,7 @@
     @media (min-width: 600px) {
       .container {
         max-width: 900px;
-        margin: 20px auto;
+        margin: 20px auto 0; /* on desktop, container margin-bottom is not needed */
       }
       .steps li {
         font-size: 0.9rem;
