@@ -144,9 +144,14 @@
       flex: 1;
       min-width: 250px;
     }
-    /* Company fields container (shown only if user confirms company) */
+    /* Company fields container (shown only if customer confirms they're a company) */
     #companyFields {
       display: none;
+    }
+    
+    /* --- Insurance Start Date Section --- */
+    #startDateContainer {
+      margin-top: 10px;
     }
     
     /* --- Buttons --- */
@@ -502,27 +507,22 @@
         </div>
       </div>
 
-      <!-- Insurance Start Date -->
+      <!-- Insurance Start Date with Optional Saving -->
       <div class="section">
         <h2 class="collapsible">Insurance Start Date <span class="toggle-icon">–</span></h2>
         <div class="section-content">
-          <label>Select your desired start date</label>
-          <input type="date" name="startDate" required autocomplete="off" />
-        </div>
-      </div>
-
-      <!-- Terms & Conditions -->
-      <div class="section">
-        <h2 class="collapsible">Terms &amp; Conditions <span class="toggle-icon">–</span></h2>
-        <div class="section-content">
-          <label style="display:flex; align-items:center; gap:10px;">
-            <input type="checkbox" name="terms" required />
-            <span>I have read and accept the Terms &amp; Conditions.</span>
+          <label>
+            <input type="checkbox" id="setStartDateNow" checked />
+            I want to set a start date now.
           </label>
+          <div id="startDateContainer">
+            <label>Select your desired start date</label>
+            <input type="date" name="startDate" required autocomplete="off" />
+          </div>
         </div>
       </div>
 
-      <button type="submit">Create Quote</button>
+      <button type="submit" id="submitButton">Create Quote</button>
       <div id="message"></div>
     </form>
   </div>
@@ -563,6 +563,17 @@
       }
     });
 
+    // Insurance Start Date: toggle start date input and button text.
+    $("#setStartDateNow").on("change", function() {
+      if ($(this).is(":checked")) {
+        $("#startDateContainer").slideDown();
+        $("#submitButton").text("Create Quote");
+      } else {
+        $("#startDateContainer").slideUp();
+        $("#submitButton").text("Save Quote For Later");
+      }
+    });
+
     // Collapse all sections except the first one on load.
     $(document).ready(function(){
       $(".section").each(function(index) {
@@ -593,7 +604,7 @@
         $("input[name='city']").val("Vienna");
         $("input[name='zip']").val("12345");
         $("input[name='country']").val("AT");
-        // Set as company for testing
+        // Set as company for testing and show company fields.
         $("input[name='isCompany'][value='yes']").prop("checked", true).trigger("change");
         $("input[name='companyName']").val("Test Company");
         $("input[name='companyNumber']").val("123456789");
@@ -636,12 +647,16 @@
     // Update the displayed insurance price based on driver age
     function updatePrice() {
       const driverBirthdateStr = document.querySelector('input[name="driverBirthdate"]').value;
-      const startDateStr = document.querySelector('input[name="startDate"]').value;
+      const startDateInput = document.querySelector('input[name="startDate"]');
       const priceValueEl = document.getElementById('priceValue');
-      if (!driverBirthdateStr || !startDateStr) {
+      
+      // If customer opts not to set start date, use default price.
+      if(!$("#setStartDateNow").is(":checked") || !startDateInput.value) {
         priceValueEl.textContent = "€590.41";
         return;
       }
+      
+      const startDateStr = startDateInput.value;
       const ageAtStart = getAgeAtStart(driverBirthdateStr, startDateStr);
       let price = 590.41;
       if (ageAtStart < 21) {
@@ -706,8 +721,34 @@
       const isCompany = formData.get("isCompany");
       const companyName = formData.get("companyName") ? formData.get("companyName").trim() : "";
       const companyNumber = formData.get("companyNumber") ? formData.get("companyNumber").trim() : "";
-      const startDate = formData.get("startDate");
-
+      const setStart = $("#setStartDateNow").is(":checked");
+      const startDate = setStart ? formData.get("startDate") : "";
+      
+      // If start date is to be set, validate it.
+      if(setStart) {
+        if (!startDate) {
+          $("#message").html('<p class="error">Please select a start date.</p>');
+          $("#loadingOverlay").hide();
+          return;
+        }
+        const ageAtStart = getAgeAtStart(driverBirthdate, startDate);
+        if (ageAtStart === null) {
+          $("#message").html('<p class="error">Please enter valid dates for the driver and start date.</p>');
+          $("#loadingOverlay").hide();
+          return;
+        }
+        if (model === "lite" && ageAtStart < 15) {
+          $("#message").html('<p class="error">For Microlino LITE, the youngest driver must be at least 15 years old.</p>');
+          $("#loadingOverlay").hide();
+          return;
+        }
+        if (model === "edition" && ageAtStart < 17) {
+          $("#message").html('<p class="error">For Microlino Edition, the youngest driver must be at least 17 years old.</p>');
+          $("#loadingOverlay").hide();
+          return;
+        }
+      }
+      
       if (!vin) {
         $("#message").html('<p class="error">VIN is required.</p>');
         $("#loadingOverlay").hide();
@@ -733,34 +774,15 @@
         $("#loadingOverlay").hide();
         return;
       }
-
-      const ageAtStart = getAgeAtStart(driverBirthdate, startDate);
-      if (ageAtStart === null) {
-        $("#message").html('<p class="error">Please enter valid dates for the driver and start date.</p>');
-        $("#loadingOverlay").hide();
-        return;
-      }
-      if (model === "lite" && ageAtStart < 15) {
-        $("#message").html('<p class="error">For Microlino LITE, the youngest driver must be at least 15 years old.</p>');
-        $("#loadingOverlay").hide();
-        return;
-      }
-      if (model === "edition" && ageAtStart < 17) {
-        $("#message").html('<p class="error">For Microlino Edition, the youngest driver must be at least 17 years old.</p>');
-        $("#loadingOverlay").hide();
-        return;
-      }
-
-      // Build the payload including the new "atFaultClaimsLast3Years" property
-      // and the entityType based on isCompany.
+      
+      // Build the payload
       const payload = {
         productConfigurationId: "microlino",
         partnerId: "67a9f3824ce2c52c73463db6",
         country: "AT",
         language: "de",
-        contractPeriod: {
-          startDate: startDate,
-          timeZone: "Europe/Brussels"
+        renewal: {
+          type: "RENEWAL_TYPE_OPT_IN"
         },
         package: {
           name: "comprehensive",
@@ -775,9 +797,6 @@
             accident: "default",
             vandalism: "default"
           }
-        },
-        renewal: {
-          type: "RENEWAL_TYPE_OPT_IN"
         },
         policyholder: {
           entityType: (isCompany === "yes") ? "ENTITY_TYPE_COMPANY" : "ENTITY_TYPE_PERSON",
@@ -807,6 +826,13 @@
         }
       };
 
+      if(setStart) {
+        payload.contractPeriod = {
+          startDate: startDate,
+          timeZone: "Europe/Brussels"
+        };
+      }
+      
       if (isCompany === "yes") {
         payload.policyholder.companyName = companyName;
         if (companyNumber) {
@@ -848,9 +874,10 @@
           $("#errorModal .modal-body").html(errorList);
           $("#errorModal").show();
         } else {
-          // If payment object exists and contains an id, redirect the customer to the payment page.
+          // If payment object exists and contains an id, redirect to payment.
           if (response.payload && response.payload.payment && response.payload.payment.id) {
-            var redirectUrl = "https://volvoinsurance.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" + response.payload.id + "&paymentId=" + response.payload.payment.id;
+            var redirectUrl = "https://volvoinsurance.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" 
+              + response.payload.id + "&paymentId=" + response.payload.payment.id;
             window.location.href = redirectUrl;
           } else {
             $("#message").html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
