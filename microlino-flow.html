@@ -720,7 +720,7 @@
         return;
       }
 
-      // Build the payload
+      // Build the payload including the new "atFaultClaimsLast3Years" property.
       const payload = {
         productConfigurationId: "microlino",
         partnerId: "67a9f3824ce2c52c73463db6",
@@ -770,7 +770,8 @@
           birthdateYoungestDriver: driverBirthdate,
           anyDriverInsuranceProposalDeclinedOrPolicyCancelled: policyCancelled === "yes",
           interchangeableLicensePlate: interchangeableLicensePlate === "yes",
-          diplomaticCar: diplomaticCar === "yes"
+          diplomaticCar: diplomaticCar === "yes",
+          atFaultClaimsLast3Years: claims
         }
       };
 
