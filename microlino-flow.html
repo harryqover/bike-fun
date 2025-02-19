@@ -70,17 +70,31 @@
       color: #00205b;
     }
     
-    /* --- Form Sections --- */
+    /* --- Collapsible Sections --- */
     .section {
       margin-bottom: 20px;
-      padding-bottom: 15px;
       border-bottom: 1px solid #E2E2E2;
     }
     .section h2 {
-      margin-top: 0;
+      margin: 0;
+      padding: 10px;
+      background: #f7f7f7;
       color: #00205b;
       font-size: 1.2rem;
+      cursor: pointer;
+      user-select: none;
     }
+    .toggle-icon {
+      float: right;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    .section-content {
+      padding: 15px;
+      display: block;
+    }
+    
+    /* --- Form Inputs --- */
     label {
       display: block;
       margin-top: 10px;
@@ -343,125 +357,134 @@
     <form id="quoteForm">
       <!-- Vehicle Information -->
       <div class="section">
-        <h2>Vehicle Information</h2>
-        <label>Which Microlino model would you like to insure?</label>
-        <div class="radio-group">
-          <label>
-            <input type="radio" name="model" value="lite" required />
-            <img 
-              src="https://configurator.microlino-car.com/resources/public/microlino/col-redmo24_rim-cap24_rof-sun24_int-si24@1.png" 
-              alt="Microlino LITE" />
-            <span>Microlino LITE</span>
-          </label>
-          <label>
-            <input type="radio" name="model" value="edition" required />
-            <img 
-              src="https://configurator.microlino-car.com/resources/public/microlino/col-redmo24_rim-cap24_rof-sun24_int-si24@1.png" 
-              alt="Microlino Edition" />
-            <span>Microlino Edition</span>
-          </label>
+        <h2 class="collapsible">Vehicle Information <span class="toggle-icon">–</span></h2>
+        <div class="section-content">
+          <label>Which Microlino model would you like to insure?</label>
+          <div class="radio-group">
+            <label>
+              <input type="radio" name="model" value="lite" required />
+              <img src="https://configurator.microlino-car.com/resources/public/microlino/col-redmo24_rim-cap24_rof-sun24_int-si24@1.png" alt="Microlino LITE" />
+              <span>Microlino LITE</span>
+            </label>
+            <label>
+              <input type="radio" name="model" value="edition" required />
+              <img src="https://configurator.microlino-car.com/resources/public/microlino/col-redmo24_rim-cap24_rof-sun24_int-si24@1.png" alt="Microlino Edition" />
+              <span>Microlino Edition</span>
+            </label>
+          </div>
+
+          <label>Enter your Vehicle Identification Number (VIN)</label>
+          <input type="text" name="vin" required placeholder="E.g., WBA12345678901234" />
+
+          <label>Vehicle Registration Number (Optional)</label>
+          <input type="text" name="vrn" placeholder="E.g., 22AA123" />
         </div>
-
-        <label>Enter your Vehicle Identification Number (VIN)</label>
-        <input type="text" name="vin" required placeholder="E.g., WBA12345678901234" />
-
-        <label>Vehicle Registration Number (Optional)</label>
-        <input type="text" name="vrn" placeholder="E.g., 22AA123" />
       </div>
 
       <!-- Driver Information -->
       <div class="section">
-        <h2>Driver Information</h2>
-        <label>Enter the birthdate of your youngest driver</label>
-        <input type="date" name="driverBirthdate" required />
-        <p style="font-size:0.8rem; margin-top:5px;">
-          For Microlino LITE, the minimum age is 15 years; for Microlino Edition, it is 17 years.
-        </p>
+        <h2 class="collapsible">Driver Information <span class="toggle-icon">–</span></h2>
+        <div class="section-content">
+          <label>Enter the birthdate of your youngest driver</label>
+          <input type="date" name="driverBirthdate" required />
+          <p style="font-size:0.8rem; margin-top:5px;">
+            For Microlino LITE, the minimum age is 15 years; for Microlino Edition, it is 17 years.
+          </p>
+        </div>
       </div>
 
       <!-- Eligibility Check -->
       <div class="section">
-        <h2>Eligibility Check</h2>
-        <label>Is your vehicle registered as a diplomatic car?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="diplomaticCar" value="yes" required /> Yes</label>
-          <label><input type="radio" name="diplomaticCar" value="no" required /> No</label>
-        </div>
+        <h2 class="collapsible">Eligibility Check <span class="toggle-icon">–</span></h2>
+        <div class="section-content">
+          <label>Is your vehicle registered as a diplomatic car?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="diplomaticCar" value="yes" required /> Yes</label>
+            <label><input type="radio" name="diplomaticCar" value="no" required /> No</label>
+          </div>
 
-        <label>Are you applying for an interchangeable license plate?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="interchangeableLicensePlate" value="yes" required /> Yes</label>
-          <label><input type="radio" name="interchangeableLicensePlate" value="no" required /> No</label>
-        </div>
+          <label>Are you applying for an interchangeable license plate?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="interchangeableLicensePlate" value="yes" required /> Yes</label>
+            <label><input type="radio" name="interchangeableLicensePlate" value="no" required /> No</label>
+          </div>
 
-        <label>Has your motor insurance policy been canceled or terminated in the past three years?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="policyCancelled" value="yes" required /> Yes</label>
-          <label><input type="radio" name="policyCancelled" value="no" required /> No</label>
-        </div>
+          <label>Has your motor insurance policy been canceled or terminated in the past three years?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="policyCancelled" value="yes" required /> Yes</label>
+            <label><input type="radio" name="policyCancelled" value="no" required /> No</label>
+          </div>
 
-        <label>How many at-fault liability claims have you had in the last 3 years?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="claims" value="0" required /> 0</label>
-          <label><input type="radio" name="claims" value="1" required /> 1</label>
-          <label><input type="radio" name="claims" value="2" required /> 2</label>
-          <label><input type="radio" name="claims" value="3+" required /> 3 or more</label>
+          <label>How many at-fault liability claims have you had in the last 3 years?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="claims" value="0" required /> 0</label>
+            <label><input type="radio" name="claims" value="1" required /> 1</label>
+            <label><input type="radio" name="claims" value="2" required /> 2</label>
+            <label><input type="radio" name="claims" value="3+" required /> 3 or more</label>
+          </div>
         </div>
       </div>
 
       <!-- Policyholder Details -->
       <div class="section">
-        <h2>Policyholder Details</h2>
-        <label>First Name</label>
-        <input type="text" name="firstName" required placeholder="John" />
+        <h2 class="collapsible">Policyholder Details <span class="toggle-icon">–</span></h2>
+        <div class="section-content">
+          <label>First Name</label>
+          <input type="text" name="firstName" required placeholder="John" />
 
-        <label>Last Name</label>
-        <input type="text" name="lastName" required placeholder="Doe" />
+          <label>Last Name</label>
+          <input type="text" name="lastName" required placeholder="Doe" />
 
-        <label>Birthdate</label>
-        <input type="date" name="policyholderBirthdate" required />
+          <label>Birthdate</label>
+          <input type="date" name="policyholderBirthdate" required />
 
-        <label>Email Address</label>
-        <input type="email" name="email" required placeholder="john.doe@example.com" />
+          <label>Email Address</label>
+          <input type="email" name="email" required placeholder="john.doe@example.com" />
 
-        <label>Phone Number</label>
-        <input type="text" name="phone" required placeholder="+43 123 456789" />
+          <label>Phone Number</label>
+          <input type="text" name="phone" required placeholder="+43 123 456789" />
 
-        <label>Street Address</label>
-        <input type="text" name="street" required placeholder="Main Street" />
+          <label>Street Address</label>
+          <input type="text" name="street" required placeholder="Main Street" />
 
-        <label>House Number</label>
-        <input type="text" name="houseNumber" required placeholder="10" />
+          <label>House Number</label>
+          <input type="text" name="houseNumber" required placeholder="10" />
 
-        <label>City</label>
-        <input type="text" name="city" required placeholder="Vienna" />
+          <label>City</label>
+          <input type="text" name="city" required placeholder="Vienna" />
 
-        <label>ZIP Code</label>
-        <input type="text" name="zip" required placeholder="12345" />
+          <label>ZIP Code</label>
+          <input type="text" name="zip" required placeholder="12345" />
 
-        <label>Country</label>
-        <input type="text" name="country" value="AT" required placeholder="AT" />
+          <label>Country</label>
+          <input type="text" name="country" value="AT" required placeholder="AT" />
 
-        <label>Company Name (Optional)</label>
-        <input type="text" name="companyName" placeholder="If applicable" />
+          <label>Company Name (Optional)</label>
+          <input type="text" name="companyName" placeholder="If applicable" />
 
-        <label>Company Number (Optional)</label>
-        <input type="text" name="companyNumber" placeholder="If applicable" />
+          <label>Company Number (Optional)</label>
+          <input type="text" name="companyNumber" placeholder="If applicable" />
+        </div>
       </div>
 
       <!-- Insurance Start Date -->
       <div class="section">
-        <h2>Insurance Start Date</h2>
-        <label>Select your desired start date</label>
-        <input type="date" name="startDate" required />
+        <h2 class="collapsible">Insurance Start Date <span class="toggle-icon">–</span></h2>
+        <div class="section-content">
+          <label>Select your desired start date</label>
+          <input type="date" name="startDate" required />
+        </div>
       </div>
 
       <!-- Terms & Conditions -->
       <div class="section">
-        <label style="display:flex; align-items:center; gap:10px;">
-          <input type="checkbox" name="terms" required />
-          <span>I have read and accept the Terms &amp; Conditions.</span>
-        </label>
+        <h2 class="collapsible">Terms &amp; Conditions <span class="toggle-icon">–</span></h2>
+        <div class="section-content">
+          <label style="display:flex; align-items:center; gap:10px;">
+            <input type="checkbox" name="terms" required />
+            <span>I have read and accept the Terms &amp; Conditions.</span>
+          </label>
+        </div>
       </div>
 
       <button type="submit">Create Quote</button>
@@ -495,6 +518,13 @@
       "subject.birthdateYoungestDriver": "driverBirthdate"
       // Add more mappings as needed.
     };
+
+    // Collapsible sections functionality
+    $(".collapsible").click(function() {
+      $(this).next(".section-content").slideToggle();
+      var icon = $(this).find(".toggle-icon");
+      icon.text(icon.text() === "–" ? "+" : "–");
+    });
 
     // Calculate age at the chosen start date
     function getAgeAtStart(birthdateStr, startDateStr) {
@@ -733,12 +763,15 @@
       
       $.ajax(settings).done(function(response) {
         $("#loadingOverlay").hide();
-        // Check for validation errors
-        if (response._validationErrors && response._validationErrors.length > 0) {
+        // Check for validation errors inside response.payload
+        var errors = [];
+        if (response.payload && response.payload._validationErrors && response.payload._validationErrors.length > 0) {
+          errors = response.payload._validationErrors;
+        }
+        if (errors.length > 0) {
           var errorList = "<ul>";
-          response._validationErrors.forEach(function(error) {
+          errors.forEach(function(error) {
             errorList += "<li>" + error.code + " (Field: " + error.field + ")</li>";
-            // Highlight problematic form field based on mapping
             var fieldName = fieldMapping[error.field];
             if (fieldName) {
               $("[name='" + fieldName + "']").css("border", "2px solid red");
