@@ -519,11 +519,59 @@
       // Add more mappings as needed.
     };
 
-    // Collapsible sections functionality
+    // Collapse all sections except the first one on load.
+    $(document).ready(function(){
+      $(".section").each(function(index) {
+        if(index !== 0) {
+          $(this).find(".section-content").hide();
+          $(this).find(".toggle-icon").text("+");
+        }
+      });
+      
+      // If URL contains test=true, prefill form with fake data for testing
+      const urlParams = new URLSearchParams(window.location.search);
+      if(urlParams.get("test") === "true"){
+        $("input[name='model'][value='lite']").prop("checked", true);
+        $("input[name='vin']").val("TESTVIN1234567890");
+        $("input[name='vrn']").val("TESTVRN123");
+        $("input[name='driverBirthdate']").val("2000-01-01");
+        $("input[name='diplomaticCar'][value='no']").prop("checked", true);
+        $("input[name='interchangeableLicensePlate'][value='no']").prop("checked", true);
+        $("input[name='policyCancelled'][value='no']").prop("checked", true);
+        $("input[name='claims'][value='0']").prop("checked", true);
+        $("input[name='firstName']").val("John");
+        $("input[name='lastName']").val("Doe");
+        $("input[name='policyholderBirthdate']").val("1980-01-01");
+        $("input[name='email']").val("john.doe@example.com");
+        $("input[name='phone']").val("+43123456789");
+        $("input[name='street']").val("Main Street");
+        $("input[name='houseNumber']").val("10");
+        $("input[name='city']").val("Vienna");
+        $("input[name='zip']").val("12345");
+        $("input[name='country']").val("AT");
+        $("input[name='companyName']").val("Test Company");
+        $("input[name='companyNumber']").val("123456789");
+        $("input[name='startDate']").val("2025-02-20");
+        $("input[name='terms']").prop("checked", true);
+        updatePrice();
+      }
+    });
+
+    // Collapsible sections: When one section is opened, collapse all others.
     $(".collapsible").click(function() {
-      $(this).next(".section-content").slideToggle();
-      var icon = $(this).find(".toggle-icon");
-      icon.text(icon.text() === "–" ? "+" : "–");
+      var $thisSectionContent = $(this).next(".section-content");
+      // Collapse all other sections.
+      $(".section-content").not($thisSectionContent).slideUp();
+      $(".toggle-icon").not($(this).find(".toggle-icon")).text("+");
+      
+      // Toggle the clicked section.
+      if($thisSectionContent.is(":visible")) {
+        $thisSectionContent.slideUp();
+        $(this).find(".toggle-icon").text("+");
+      } else {
+        $thisSectionContent.slideDown();
+        $(this).find(".toggle-icon").text("–");
+      }
     });
 
     // Calculate age at the chosen start date
@@ -578,36 +626,6 @@
     // Modal close functionality
     $(".close").on("click", function() {
       $("#errorModal").hide();
-    });
-
-    // If URL contains test=true, prefill form with fake data for testing
-    $(document).ready(function(){
-      const urlParams = new URLSearchParams(window.location.search);
-      if(urlParams.get("test") === "true"){
-        $("input[name='model'][value='lite']").prop("checked", true);
-        $("input[name='vin']").val("TESTVIN1234567890");
-        $("input[name='vrn']").val("TESTVRN123");
-        $("input[name='driverBirthdate']").val("2000-01-01");
-        $("input[name='diplomaticCar'][value='no']").prop("checked", true);
-        $("input[name='interchangeableLicensePlate'][value='no']").prop("checked", true);
-        $("input[name='policyCancelled'][value='no']").prop("checked", true);
-        $("input[name='claims'][value='0']").prop("checked", true);
-        $("input[name='firstName']").val("John");
-        $("input[name='lastName']").val("Doe");
-        $("input[name='policyholderBirthdate']").val("1980-01-01");
-        $("input[name='email']").val("john.doe@example.com");
-        $("input[name='phone']").val("+43123456789");
-        $("input[name='street']").val("Main Street");
-        $("input[name='houseNumber']").val("10");
-        $("input[name='city']").val("Vienna");
-        $("input[name='zip']").val("12345");
-        $("input[name='country']").val("AT");
-        $("input[name='companyName']").val("Test Company");
-        $("input[name='companyNumber']").val("123456789");
-        $("input[name='startDate']").val("2025-02-20");
-        $("input[name='terms']").prop("checked", true);
-        updatePrice();
-      }
     });
 
     // Handle form submission using jQuery AJAX
