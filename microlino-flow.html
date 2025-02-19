@@ -217,6 +217,22 @@
       background-color: #c23c30;
     }
     
+    /* --- Loading Overlay --- */
+    #loadingOverlay {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.8);
+      text-align: center;
+      padding-top: 20%;
+      font-size: 1.5rem;
+      color: #00205b;
+    }
+    
     /* --- Modal for Errors --- */
     .modal {
       display: none; 
@@ -307,6 +323,11 @@
       <button id="viewInfoButton">View Info</button>
       <button id="saveOfferButton">Save Offer</button>
     </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay">
+    <div class="spinner">Loading, please wait...</div>
   </div>
 
   <div class="container">
@@ -529,12 +550,45 @@
       $("#errorModal").hide();
     });
 
+    // If URL contains test=true, prefill form with fake data for testing
+    $(document).ready(function(){
+      const urlParams = new URLSearchParams(window.location.search);
+      if(urlParams.get("test") === "true"){
+        $("input[name='model'][value='lite']").prop("checked", true);
+        $("input[name='vin']").val("TESTVIN1234567890");
+        $("input[name='vrn']").val("TESTVRN123");
+        $("input[name='driverBirthdate']").val("2000-01-01");
+        $("input[name='diplomaticCar'][value='no']").prop("checked", true);
+        $("input[name='interchangeableLicensePlate'][value='no']").prop("checked", true);
+        $("input[name='policyCancelled'][value='no']").prop("checked", true);
+        $("input[name='claims'][value='0']").prop("checked", true);
+        $("input[name='firstName']").val("John");
+        $("input[name='lastName']").val("Doe");
+        $("input[name='policyholderBirthdate']").val("1980-01-01");
+        $("input[name='email']").val("john.doe@example.com");
+        $("input[name='phone']").val("+43123456789");
+        $("input[name='street']").val("Main Street");
+        $("input[name='houseNumber']").val("10");
+        $("input[name='city']").val("Vienna");
+        $("input[name='zip']").val("12345");
+        $("input[name='country']").val("AT");
+        $("input[name='companyName']").val("Test Company");
+        $("input[name='companyNumber']").val("123456789");
+        $("input[name='startDate']").val("2025-02-20");
+        $("input[name='terms']").prop("checked", true);
+        updatePrice();
+      }
+    });
+
     // Handle form submission using jQuery AJAX
     $("#quoteForm").on("submit", function(e) {
       e.preventDefault();
       // Reset any previous error highlighting
       $("input").css("border", "1px solid #E2E2E2");
       $("#message").html("");
+      
+      // Show loading overlay
+      $("#loadingOverlay").show();
 
       const formData = new FormData(this);
       const model = formData.get("model");
@@ -561,36 +615,44 @@
 
       if (!vin) {
         $("#message").html('<p class="error">VIN is required.</p>');
+        $("#loadingOverlay").hide();
         return;
       }
       if (diplomaticCar === "yes") {
         $("#message").html('<p class="error">Applications for diplomatic cars cannot proceed.</p>');
+        $("#loadingOverlay").hide();
         return;
       }
       if (interchangeableLicensePlate === "yes") {
         $("#message").html('<p class="error">Interchangeable license plate applications are not eligible.</p>');
+        $("#loadingOverlay").hide();
         return;
       }
       if (policyCancelled === "yes") {
         $("#message").html('<p class="error">Applications with a canceled or terminated policy cannot proceed.</p>');
+        $("#loadingOverlay").hide();
         return;
       }
       if (claims === "3+") {
         $("#message").html('<p class="error">Having 3 or more at-fault liability claims disqualifies your application.</p>');
+        $("#loadingOverlay").hide();
         return;
       }
 
       const ageAtStart = getAgeAtStart(driverBirthdate, startDate);
       if (ageAtStart === null) {
         $("#message").html('<p class="error">Please enter valid dates for the driver and start date.</p>');
+        $("#loadingOverlay").hide();
         return;
       }
       if (model === "lite" && ageAtStart < 15) {
         $("#message").html('<p class="error">For Microlino LITE, the youngest driver must be at least 15 years old.</p>');
+        $("#loadingOverlay").hide();
         return;
       }
       if (model === "edition" && ageAtStart < 17) {
         $("#message").html('<p class="error">For Microlino Edition, the youngest driver must be at least 17 years old.</p>');
+        $("#loadingOverlay").hide();
         return;
       }
 
@@ -670,6 +732,7 @@
       };
       
       $.ajax(settings).done(function(response) {
+        $("#loadingOverlay").hide();
         // Check for validation errors
         if (response._validationErrors && response._validationErrors.length > 0) {
           var errorList = "<ul>";
@@ -689,6 +752,7 @@
         }
       }).fail(function(jqXHR, textStatus, errorThrown) {
         console.error("Error:", textStatus, errorThrown);
+        $("#loadingOverlay").hide();
         $("#message").html('<p class="error">An error occurred while creating the quote.</p>');
       });
     });
