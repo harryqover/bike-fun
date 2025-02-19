@@ -158,9 +158,13 @@
       padding: 10px 15px;
       box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
       z-index: 9999;
+    }
+    .shopping-cart > div {
+      text-align: center;
+      margin-bottom: 10px;
     }
     .shopping-cart h3 {
       margin: 0;
@@ -175,6 +179,23 @@
       font-weight: bold;
       font-size: 1.1rem;
       color: #333;
+    }
+    .cart-buttons {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+    .cart-buttons button {
+      flex: 1;
+      padding: 8px;
+      font-size: 0.85rem;
+      background-color: #00BCD4;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+    }
+    .cart-buttons button:hover {
+      background-color: #0097A7;
     }
 
     /* Desktop styles */
@@ -203,6 +224,9 @@
         flex-direction: column;
         text-align: center;
       }
+      .cart-buttons {
+        flex-direction: column;
+      }
       .shopping-cart h3 {
         font-size: 1.1rem;
       }
@@ -217,10 +241,14 @@
 
   <!-- Floating Shopping Cart (Mobile: Sticky Footer | Desktop: Fixed Box) -->
   <div class="shopping-cart">
-    <h3>Your Insurance</h3>
     <div>
+      <h3>Your Insurance</h3>
       <p>Yearly Price</p>
       <p class="price" id="priceValue">€590.41</p>
+    </div>
+    <div class="cart-buttons">
+      <button id="viewInfoButton">View Info</button>
+      <button id="saveOfferButton">Save Offer</button>
     </div>
   </div>
 
@@ -408,6 +436,19 @@
     document.querySelector('input[name="driverBirthdate"]').addEventListener('change', updatePrice);
     document.querySelector('input[name="startDate"]').addEventListener('change', updatePrice);
     updatePrice();
+
+    // Event listener for "View Insurance Info" button
+    document.getElementById('viewInfoButton').addEventListener('click', function() {
+      // Replace with your actual landing page URL
+      window.location.href = "https://landingpage.example.com";
+    });
+
+    // Event listener for "Save Offer" button
+    document.getElementById('saveOfferButton').addEventListener('click', function() {
+      // For demonstration purposes: simulate sending the offer by email.
+      // In production, replace this with your email API call or mailto link.
+      alert("Your offer has been saved and sent to your email.");
+    });
 
     // Handle form submission
     document.getElementById('quoteForm').addEventListener('submit', function (e) {
