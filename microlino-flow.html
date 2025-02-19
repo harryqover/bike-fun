@@ -144,7 +144,7 @@
       flex: 1;
       min-width: 250px;
     }
-    /* Company fields container */
+    /* Company fields container (shown only if user confirms company) */
     #companyFields {
       display: none;
     }
@@ -593,7 +593,7 @@
         $("input[name='city']").val("Vienna");
         $("input[name='zip']").val("12345");
         $("input[name='country']").val("AT");
-        // For test, set as company and prefill company fields.
+        // Set as company for testing
         $("input[name='isCompany'][value='yes']").prop("checked", true).trigger("change");
         $("input[name='companyName']").val("Test Company");
         $("input[name='companyNumber']").val("123456789");
@@ -751,7 +751,8 @@
         return;
       }
 
-      // Build the payload including "atFaultClaimsLast3Years" and entityType based on isCompany.
+      // Build the payload including the new "atFaultClaimsLast3Years" property
+      // and the entityType based on isCompany.
       const payload = {
         productConfigurationId: "microlino",
         partnerId: "67a9f3824ce2c52c73463db6",
@@ -806,7 +807,6 @@
         }
       };
 
-      // If company, add company details
       if (isCompany === "yes") {
         payload.policyholder.companyName = companyName;
         if (companyNumber) {
@@ -848,7 +848,13 @@
           $("#errorModal .modal-body").html(errorList);
           $("#errorModal").show();
         } else {
-          $("#message").html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
+          // If payment object exists and contains an id, redirect the customer to the payment page.
+          if (response.payload && response.payload.payment && response.payload.payment.id) {
+            var redirectUrl = "https://volvoinsurance.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" + response.payload.id + "&paymentId=" + response.payload.payment.id;
+            window.location.href = redirectUrl;
+          } else {
+            $("#message").html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
+          }
         }
       }).fail(function(jqXHR, textStatus, errorThrown) {
         console.error("Error:", textStatus, errorThrown);
