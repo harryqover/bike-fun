@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Microlino Insurance Quote</title>
+  <!-- Include jQuery from a CDN -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     /* Mobile-first base styles */
     body {
@@ -146,7 +148,6 @@
       margin-top: 20px;
       padding: 10px 0;
     }
-
     /* Floating Shopping Cart - Mobile Sticky Footer */
     .shopping-cart {
       position: fixed;
@@ -197,7 +198,6 @@
     .cart-buttons button:hover {
       background-color: #0097A7;
     }
-
     /* Desktop styles */
     @media (min-width: 600px) {
       .container {
@@ -437,24 +437,24 @@
     document.querySelector('input[name="startDate"]').addEventListener('change', updatePrice);
     updatePrice();
 
-    // Event listener for "View Insurance Info" button
+    // "View Insurance Info" button redirect
     document.getElementById('viewInfoButton').addEventListener('click', function() {
-      // Replace with your actual landing page URL
+      // Replace with your landing page URL
       window.location.href = "https://landingpage.example.com";
     });
 
-    // Event listener for "Save Offer" button
+    // "Save Offer" button functionality (simulate sending by email)
     document.getElementById('saveOfferButton').addEventListener('click', function() {
-      // For demonstration purposes: simulate sending the offer by email.
-      // In production, replace this with your email API call or mailto link.
       alert("Your offer has been saved and sent to your email.");
     });
 
-    // Handle form submission
-    document.getElementById('quoteForm').addEventListener('submit', function (e) {
+    // Handle form submission using jQuery AJAX
+    $("#quoteForm").on("submit", function(e) {
       e.preventDefault();
-      const messageDiv = document.getElementById('message');
-      messageDiv.innerHTML = "";
+      const messageDiv = $("#message");
+      messageDiv.html("");
+      
+      // Gather form data
       const formData = new FormData(this);
       const model = formData.get("model");
       const vin = formData.get("vin").trim();
@@ -479,118 +479,121 @@
       const startDate = formData.get("startDate");
 
       if (!vin) {
-        messageDiv.innerHTML = '<p class="error">VIN is required.</p>';
+        messageDiv.html('<p class="error">VIN is required.</p>');
         return;
       }
       if (diplomaticCar === "yes") {
-        messageDiv.innerHTML = '<p class="error">Applications for diplomatic cars cannot proceed.</p>';
+        messageDiv.html('<p class="error">Applications for diplomatic cars cannot proceed.</p>');
         return;
       }
       if (interchangeableLicensePlate === "yes") {
-        messageDiv.innerHTML = '<p class="error">Interchangeable license plate applications are not eligible.</p>';
+        messageDiv.html('<p class="error">Interchangeable license plate applications are not eligible.</p>');
         return;
       }
       if (policyCancelled === "yes") {
-        messageDiv.innerHTML = '<p class="error">Applications with a canceled or terminated policy cannot proceed.</p>';
+        messageDiv.html('<p class="error">Applications with a canceled or terminated policy cannot proceed.</p>');
         return;
       }
       if (claims === "3+") {
-        messageDiv.innerHTML = '<p class="error">Having 3 or more at-fault liability claims disqualifies your application.</p>';
+        messageDiv.html('<p class="error">Having 3 or more at-fault liability claims disqualifies your application.</p>');
         return;
       }
 
       const ageAtStart = getAgeAtStart(driverBirthdate, startDate);
       if (ageAtStart === null) {
-        messageDiv.innerHTML = '<p class="error">Please enter valid dates for the driver and start date.</p>';
+        messageDiv.html('<p class="error">Please enter valid dates for the driver and start date.</p>');
         return;
       }
       if (model === "lite" && ageAtStart < 15) {
-        messageDiv.innerHTML = '<p class="error">For Microlino LITE, the youngest driver must be at least 15 years old.</p>';
+        messageDiv.html('<p class="error">For Microlino LITE, the youngest driver must be at least 15 years old.</p>');
         return;
       }
       if (model === "edition" && ageAtStart < 17) {
-        messageDiv.innerHTML = '<p class="error">For Microlino Edition, the youngest driver must be at least 17 years old.</p>';
+        messageDiv.html('<p class="error">For Microlino Edition, the youngest driver must be at least 17 years old.</p>');
         return;
       }
 
+      // Build payload
       const payload = {
-        action: "createQuote",
-        payload: {
-          productConfigurationId: "microlino",
-          partnerId: "67a9f3824ce2c52c73463db6",
-          country: "AT",
-          language: "de",
-          contractPeriod: {
-            startDate: startDate,
-            timeZone: "Europe/Brussels"
-          },
-          package: {
-            name: "comprehensive",
-            coverages: {
-              tpl: "default",
-              mod: "default",
-              "fire-explosion-lightning": "default",
-              theft: "default",
-              glass: "default",
-              "animal-collision": "default",
-              "natural-disaster": "default",
-              accident: "default",
-              vandalism: "default"
-            }
-          },
-          renewal: {
-            type: "RENEWAL_TYPE_OPT_IN"
-          },
-          policyholder: {
-            entityType: companyName ? "ENTITY_TYPE_COMPANY" : "ENTITY_TYPE_PERSON",
-            firstName: firstName,
-            lastName: lastName,
-            birthdate: policyholderBirthdate,
-            email: email,
-            phone: phone,
-            address: {
-              street: street,
-              number: houseNumber,
-              zip: zip,
-              city: city,
-              country: country
-            }
-          },
-          subject: {
-            make: "Microlino",
-            model: model,
-            vin: vin,
-            vrn: vrn || "",
-            birthdateYoungestDriver: driverBirthdate,
-            anyDriverInsuranceProposalDeclinedOrPolicyCancelled: policyCancelled === "yes",
-            interchangeableLicensePlate: interchangeableLicensePlate === "yes",
-            diplomaticCar: diplomaticCar === "yes"
+        productConfigurationId: "microlino",
+        partnerId: "67a9f3824ce2c52c73463db6",
+        country: "AT",
+        language: "de",
+        contractPeriod: {
+          startDate: startDate,
+          timeZone: "Europe/Brussels"
+        },
+        package: {
+          name: "comprehensive",
+          coverages: {
+            tpl: "default",
+            mod: "default",
+            "fire-explosion-lightning": "default",
+            theft: "default",
+            glass: "default",
+            "animal-collision": "default",
+            "natural-disaster": "default",
+            accident: "default",
+            vandalism: "default"
           }
+        },
+        renewal: {
+          type: "RENEWAL_TYPE_OPT_IN"
+        },
+        policyholder: {
+          entityType: companyName ? "ENTITY_TYPE_COMPANY" : "ENTITY_TYPE_PERSON",
+          firstName: firstName,
+          lastName: lastName,
+          birthdate: policyholderBirthdate,
+          email: email,
+          phone: phone,
+          address: {
+            street: street,
+            number: houseNumber,
+            zip: zip,
+            city: city,
+            country: country
+          }
+        },
+        subject: {
+          make: "Microlino",
+          model: model,
+          vin: vin,
+          vrn: vrn || "",
+          birthdateYoungestDriver: driverBirthdate,
+          anyDriverInsuranceProposalDeclinedOrPolicyCancelled: policyCancelled === "yes",
+          interchangeableLicensePlate: interchangeableLicensePlate === "yes",
+          diplomaticCar: diplomaticCar === "yes"
         }
       };
 
       if (companyName) {
-        payload.payload.policyholder.companyName = companyName;
+        payload.policyholder.companyName = companyName;
         if (companyNumber) {
-          payload.payload.policyholder.vatIn = companyNumber;
+          payload.policyholder.vatIn = companyNumber;
         }
       }
 
-      fetch("https://script.google.com/macros/s/AKfycbz1WluaUb1mLRIw2FCdtmUDB0noSE0I6jOu-WVgXKL6q-UEDL6WFWfs9UXECZPjHEoW/exec", {
+      // AJAX settings (using jQuery)
+      var settings = {
+        url: "https://script.google.com/macros/s/AKfycbz1WluaUb1mLRIw2FCdtmUDB0noSE0I6jOu-WVgXKL6q-UEDL6WFWfs9UXECZPjHEoW/exec",
         method: "POST",
+        timeout: 0,
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "text/plain;charset=utf-8"
         },
-        body: JSON.stringify(payload)
-      })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Success:", data);
-        messageDiv.innerHTML = '<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(data, null, 2) + "</pre>";
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        messageDiv.innerHTML = '<p class="error">An error occurred while creating the quote.</p>';
+        data: JSON.stringify({
+          payload: payload,
+          action: "createQuote"
+        })
+      };
+      
+      $.ajax(settings).done(function(response) {
+        console.log("Success:", response);
+        messageDiv.html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
+      }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.error("Error:", textStatus, errorThrown);
+        messageDiv.html('<p class="error">An error occurred while creating the quote.</p>');
       });
     });
   </script>
