@@ -775,7 +775,7 @@
         return;
       }
       
-      // Build the payload
+      // Build the payload with only tpl and mod coverages
       const payload = {
         productConfigurationId: "microlino",
         partnerId: "67a9f3824ce2c52c73463db6",
@@ -788,14 +788,7 @@
           name: "comprehensive",
           coverages: {
             tpl: "default",
-            mod: "default",
-            "fire-explosion-lightning": "default",
-            theft: "default",
-            glass: "default",
-            "animal-collision": "default",
-            "natural-disaster": "default",
-            accident: "default",
-            vandalism: "default"
+            mod: "default"
           }
         },
         policyholder: {
