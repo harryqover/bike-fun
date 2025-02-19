@@ -144,6 +144,10 @@
       flex: 1;
       min-width: 250px;
     }
+    /* Company fields container */
+    #companyFields {
+      display: none;
+    }
     
     /* --- Buttons --- */
     button {
@@ -440,6 +444,19 @@
       <div class="section">
         <h2 class="collapsible">Policyholder Details <span class="toggle-icon">–</span></h2>
         <div class="section-content">
+          <!-- New radio group: Are you a company? -->
+          <label>Are you a company?</label>
+          <div class="radio-group">
+            <label>
+              <input type="radio" name="isCompany" value="no" checked required />
+              No
+            </label>
+            <label>
+              <input type="radio" name="isCompany" value="yes" required />
+              Yes
+            </label>
+          </div>
+          <!-- Two-column layout for personal details and address -->
           <div class="policyholder-columns">
             <div class="column">
               <label>First Name</label>
@@ -472,13 +489,15 @@
               
               <label>Country</label>
               <input type="text" name="country" value="AT" required placeholder="AT" autocomplete="country" />
-              
-              <label>Company Name (Optional)</label>
-              <input type="text" name="companyName" placeholder="If applicable" autocomplete="organization" />
-              
-              <label>Company Number (Optional)</label>
-              <input type="text" name="companyNumber" placeholder="If applicable" autocomplete="off" />
             </div>
+          </div>
+          <!-- Company Fields Container -->
+          <div id="companyFields">
+            <label>Company Name</label>
+            <input type="text" name="companyName" placeholder="If applicable" autocomplete="organization" />
+            
+            <label>Company Number</label>
+            <input type="text" name="companyNumber" placeholder="If applicable" autocomplete="off" />
           </div>
         </div>
       </div>
@@ -535,6 +554,15 @@
       // Add more mappings as needed.
     };
 
+    // On Policyholder Details, show/hide company fields based on "Are you a company?" selection.
+    $("input[name='isCompany']").on("change", function() {
+      if ($(this).val() === "yes") {
+        $("#companyFields").slideDown();
+      } else {
+        $("#companyFields").slideUp();
+      }
+    });
+
     // Collapse all sections except the first one on load.
     $(document).ready(function(){
       $(".section").each(function(index) {
@@ -565,6 +593,8 @@
         $("input[name='city']").val("Vienna");
         $("input[name='zip']").val("12345");
         $("input[name='country']").val("AT");
+        // For test, set as company and prefill company fields.
+        $("input[name='isCompany'][value='yes']").prop("checked", true).trigger("change");
         $("input[name='companyName']").val("Test Company");
         $("input[name='companyNumber']").val("123456789");
         $("input[name='startDate']").val("2025-02-20");
@@ -673,8 +703,9 @@
       const city = formData.get("city").trim();
       const zip = formData.get("zip").trim();
       const country = formData.get("country").trim() || "AT";
-      const companyName = formData.get("companyName").trim();
-      const companyNumber = formData.get("companyNumber").trim();
+      const isCompany = formData.get("isCompany");
+      const companyName = formData.get("companyName") ? formData.get("companyName").trim() : "";
+      const companyNumber = formData.get("companyNumber") ? formData.get("companyNumber").trim() : "";
       const startDate = formData.get("startDate");
 
       if (!vin) {
@@ -720,7 +751,7 @@
         return;
       }
 
-      // Build the payload including the new "atFaultClaimsLast3Years" property.
+      // Build the payload including "atFaultClaimsLast3Years" and entityType based on isCompany.
       const payload = {
         productConfigurationId: "microlino",
         partnerId: "67a9f3824ce2c52c73463db6",
@@ -748,7 +779,7 @@
           type: "RENEWAL_TYPE_OPT_IN"
         },
         policyholder: {
-          entityType: companyName ? "ENTITY_TYPE_COMPANY" : "ENTITY_TYPE_PERSON",
+          entityType: (isCompany === "yes") ? "ENTITY_TYPE_COMPANY" : "ENTITY_TYPE_PERSON",
           firstName: firstName,
           lastName: lastName,
           birthdate: policyholderBirthdate,
@@ -775,7 +806,8 @@
         }
       };
 
-      if (companyName) {
+      // If company, add company details
+      if (isCompany === "yes") {
         payload.policyholder.companyName = companyName;
         if (companyNumber) {
           payload.policyholder.vatIn = companyNumber;
