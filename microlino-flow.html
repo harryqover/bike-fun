@@ -2,54 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Microlino Insurance Quote</title>
   <style>
+    /* Mobile-first base styles */
     body {
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #E0F7FA 0%, #80DEEA 100%);
       color: #333;
+      line-height: 1.4;
     }
     header {
       background: #fff;
-      padding: 20px;
+      padding: 20px 10px;
       text-align: center;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
     header h1 {
       margin: 0;
-      font-size: 1.8rem;
+      font-size: 1.6rem;
     }
     header p {
       margin: 5px 0 0;
       font-weight: 300;
       color: #666;
+      font-size: 0.9rem;
     }
     .container {
       background: #fff;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 20px 30px;
+      margin: 0 10px;
+      padding: 20px 15px;
       border-radius: 6px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .steps {
       display: flex;
       justify-content: space-around;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       list-style: none;
       padding: 0;
+      font-size: 0.8rem;
     }
     .steps li {
       flex: 1;
       text-align: center;
-      padding: 10px 0;
+      padding: 8px 0;
       border-bottom: 2px solid #ccc;
       color: #999;
       font-weight: bold;
-      font-size: 0.9rem;
     }
     .steps li.active {
       border-color: #00BCD4;
@@ -57,18 +60,19 @@
     }
     .section {
       margin-bottom: 20px;
-      padding-bottom: 10px;
+      padding-bottom: 15px;
       border-bottom: 1px solid #ccc;
     }
     .section h2 {
       margin-top: 0;
       color: #00BCD4;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
     }
     label {
       display: block;
       margin-top: 10px;
       font-weight: bold;
+      font-size: 0.9rem;
     }
     input[type="text"],
     input[type="email"],
@@ -77,31 +81,34 @@
       width: 100%;
       padding: 10px;
       margin-top: 5px;
-      box-sizing: border-box;
       border: 1px solid #ccc;
       border-radius: 4px;
       font-size: 0.95rem;
+      box-sizing: border-box;
     }
     .radio-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 10px;
       margin-top: 5px;
     }
     .radio-group label {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 5px;
       font-weight: normal;
+      font-size: 0.9rem;
     }
     .radio-group img {
       display: block;
-      width: 100px;
+      width: 80px;
+      height: auto;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
     button {
-      padding: 14px 24px;
+      width: 100%;
+      padding: 14px;
       font-size: 1rem;
       font-weight: bold;
       margin-top: 20px;
@@ -127,45 +134,78 @@
     pre {
       background: #f7f7f7;
       padding: 10px;
-      overflow: auto;
       border-radius: 4px;
+      overflow: auto;
       margin-top: 10px;
+      font-size: 0.8rem;
     }
     footer {
       text-align: center;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       color: #fff;
-      margin-top: 30px;
+      margin-top: 20px;
       padding: 10px 0;
     }
-    /* Floating Shopping Cart */
+
+    /* Floating Shopping Cart - Mobile Sticky Footer */
     .shopping-cart {
       position: fixed;
-      top: 120px;
-      right: 30px;
+      bottom: 0;
+      left: 0;
+      right: 0;
       background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 15px;
-      width: 200px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      text-align: center;
+      border-top: 1px solid #ccc;
+      padding: 10px 15px;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       z-index: 9999;
     }
     .shopping-cart h3 {
       margin: 0;
-      margin-bottom: 10px;
-      font-size: 1.1rem;
+      font-size: 1rem;
       color: #00BCD4;
     }
     .shopping-cart p {
-      margin: 5px 0;
+      margin: 0;
       font-size: 1rem;
     }
     .shopping-cart .price {
       font-weight: bold;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: #333;
+    }
+
+    /* Desktop styles */
+    @media (min-width: 600px) {
+      .container {
+        max-width: 900px;
+        margin: 20px auto;
+      }
+      .steps li {
+        font-size: 0.9rem;
+      }
+      header h1 {
+        font-size: 1.8rem;
+      }
+      header p {
+        font-size: 1rem;
+      }
+      .shopping-cart {
+        position: fixed;
+        top: 120px;
+        right: 30px;
+        bottom: auto;
+        width: 200px;
+        border-radius: 8px;
+        padding: 15px;
+        flex-direction: column;
+        text-align: center;
+      }
+      .shopping-cart h3 {
+        font-size: 1.1rem;
+      }
     }
   </style>
 </head>
@@ -175,11 +215,13 @@
     <p>Get your quote in a few simple steps</p>
   </header>
 
-  <!-- Floating Shopping Cart -->
+  <!-- Floating Shopping Cart (Mobile: Sticky Footer | Desktop: Fixed Box) -->
   <div class="shopping-cart">
     <h3>Your Insurance</h3>
-    <p>Yearly Price</p>
-    <p class="price" id="priceValue">€590.41</p>
+    <div>
+      <p>Yearly Price</p>
+      <p class="price" id="priceValue">€590.41</p>
+    </div>
   </div>
 
   <div class="container">
@@ -193,7 +235,7 @@
     </ul>
 
     <form id="quoteForm">
-      <!-- 1. Vehicle Information -->
+      <!-- Vehicle Information -->
       <div class="section">
         <h2>Vehicle Information</h2>
         <label>Which Microlino model would you like to insure?</label>
@@ -221,17 +263,17 @@
         <input type="text" name="vrn" placeholder="E.g., 22AA123" />
       </div>
 
-      <!-- 2. Driver Information -->
+      <!-- Driver Information -->
       <div class="section">
         <h2>Driver Information</h2>
         <label>Enter the birthdate of your youngest driver</label>
         <input type="date" name="driverBirthdate" required />
-        <p style="font-size:0.9rem; margin-top:5px;">
+        <p style="font-size:0.8rem; margin-top:5px;">
           For Microlino LITE, the minimum age is 15 years; for Microlino Edition, it is 17 years.
         </p>
       </div>
 
-      <!-- 3. Eligibility Check -->
+      <!-- Eligibility Check -->
       <div class="section">
         <h2>Eligibility Check</h2>
         <label>Is your vehicle registered as a diplomatic car?</label>
@@ -261,7 +303,7 @@
         </div>
       </div>
 
-      <!-- 4. Policyholder Details -->
+      <!-- Policyholder Details -->
       <div class="section">
         <h2>Policyholder Details</h2>
         <label>First Name</label>
@@ -301,7 +343,7 @@
         <input type="text" name="companyNumber" placeholder="If applicable" />
       </div>
 
-      <!-- 5. Insurance Start Date -->
+      <!-- Insurance Start Date -->
       <div class="section">
         <h2>Insurance Start Date</h2>
         <label>Select your desired start date</label>
@@ -363,29 +405,24 @@
     }
 
     // Listen for changes to update the price dynamically
-    const driverBirthdateInput = document.querySelector('input[name="driverBirthdate"]');
-    const startDateInput = document.querySelector('input[name="startDate"]');
-    driverBirthdateInput.addEventListener('change', updatePrice);
-    startDateInput.addEventListener('change', updatePrice);
+    document.querySelector('input[name="driverBirthdate"]').addEventListener('change', updatePrice);
+    document.querySelector('input[name="startDate"]').addEventListener('change', updatePrice);
     updatePrice();
 
-    // Form submission handling
+    // Handle form submission
     document.getElementById('quoteForm').addEventListener('submit', function (e) {
       e.preventDefault();
       const messageDiv = document.getElementById('message');
       messageDiv.innerHTML = "";
-
       const formData = new FormData(this);
       const model = formData.get("model");
       const vin = formData.get("vin").trim();
       const vrn = formData.get("vrn").trim();
       const driverBirthdate = formData.get("driverBirthdate");
-
       const diplomaticCar = formData.get("diplomaticCar");
       const interchangeableLicensePlate = formData.get("interchangeableLicensePlate");
       const policyCancelled = formData.get("policyCancelled");
       const claims = formData.get("claims");
-
       const firstName = formData.get("firstName").trim();
       const lastName = formData.get("lastName").trim();
       const policyholderBirthdate = formData.get("policyholderBirthdate");
