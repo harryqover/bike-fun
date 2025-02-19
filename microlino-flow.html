@@ -44,7 +44,7 @@
     /* --- Container & Steps --- */
     .container {
       background: #ffffff;
-      margin: 0 10px 150px; /* Added extra bottom margin for mobile */
+      margin: 0 10px 150px; /* Extra bottom margin for mobile */
       padding: 20px 15px;
       border-radius: 6px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -132,6 +132,17 @@
       height: auto;
       border: 1px solid #E2E2E2;
       border-radius: 4px;
+    }
+    
+    /* --- Policyholder Two-Column Layout --- */
+    .policyholder-columns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .policyholder-columns .column {
+      flex: 1;
+      min-width: 250px;
     }
     
     /* --- Buttons --- */
@@ -289,7 +300,7 @@
     @media (min-width: 600px) {
       .container {
         max-width: 900px;
-        margin: 20px auto 0; /* on desktop, container margin-bottom is not needed */
+        margin: 20px auto 0;
       }
       .steps li {
         font-size: 0.9rem;
@@ -374,10 +385,10 @@
           </div>
 
           <label>Enter your Vehicle Identification Number (VIN)</label>
-          <input type="text" name="vin" required placeholder="E.g., WBA12345678901234" />
+          <input type="text" name="vin" required placeholder="E.g., WBA12345678901234" autocomplete="off" />
 
           <label>Vehicle Registration Number (Optional)</label>
-          <input type="text" name="vrn" placeholder="E.g., 22AA123" />
+          <input type="text" name="vrn" placeholder="E.g., 22AA123" autocomplete="off" />
         </div>
       </div>
 
@@ -386,7 +397,7 @@
         <h2 class="collapsible">Driver Information <span class="toggle-icon">–</span></h2>
         <div class="section-content">
           <label>Enter the birthdate of your youngest driver</label>
-          <input type="date" name="driverBirthdate" required />
+          <input type="date" name="driverBirthdate" required autocomplete="bday" />
           <p style="font-size:0.8rem; margin-top:5px;">
             For Microlino LITE, the minimum age is 15 years; for Microlino Edition, it is 17 years.
           </p>
@@ -425,45 +436,50 @@
         </div>
       </div>
 
-      <!-- Policyholder Details -->
+      <!-- Policyholder Details (Two Columns) -->
       <div class="section">
         <h2 class="collapsible">Policyholder Details <span class="toggle-icon">–</span></h2>
         <div class="section-content">
-          <label>First Name</label>
-          <input type="text" name="firstName" required placeholder="John" />
-
-          <label>Last Name</label>
-          <input type="text" name="lastName" required placeholder="Doe" />
-
-          <label>Birthdate</label>
-          <input type="date" name="policyholderBirthdate" required />
-
-          <label>Email Address</label>
-          <input type="email" name="email" required placeholder="john.doe@example.com" />
-
-          <label>Phone Number</label>
-          <input type="text" name="phone" required placeholder="+43 123 456789" />
-
-          <label>Street Address</label>
-          <input type="text" name="street" required placeholder="Main Street" />
-
-          <label>House Number</label>
-          <input type="text" name="houseNumber" required placeholder="10" />
-
-          <label>City</label>
-          <input type="text" name="city" required placeholder="Vienna" />
-
-          <label>ZIP Code</label>
-          <input type="text" name="zip" required placeholder="12345" />
-
-          <label>Country</label>
-          <input type="text" name="country" value="AT" required placeholder="AT" />
-
-          <label>Company Name (Optional)</label>
-          <input type="text" name="companyName" placeholder="If applicable" />
-
-          <label>Company Number (Optional)</label>
-          <input type="text" name="companyNumber" placeholder="If applicable" />
+          <div class="policyholder-columns">
+            <div class="column">
+              <label>First Name</label>
+              <input type="text" name="firstName" required placeholder="John" autocomplete="given-name" />
+              
+              <label>Last Name</label>
+              <input type="text" name="lastName" required placeholder="Doe" autocomplete="family-name" />
+              
+              <label>Birthdate</label>
+              <input type="date" name="policyholderBirthdate" required autocomplete="bday" />
+              
+              <label>Email Address</label>
+              <input type="email" name="email" required placeholder="john.doe@example.com" autocomplete="email" />
+              
+              <label>Phone Number</label>
+              <input type="text" name="phone" required placeholder="+43 123 456789" autocomplete="tel" />
+            </div>
+            <div class="column">
+              <label>Street Address</label>
+              <input type="text" name="street" required placeholder="Main Street" autocomplete="street-address" />
+              
+              <label>House Number</label>
+              <input type="text" name="houseNumber" required placeholder="10" autocomplete="address-line1" />
+              
+              <label>City</label>
+              <input type="text" name="city" required placeholder="Vienna" autocomplete="address-level2" />
+              
+              <label>ZIP Code</label>
+              <input type="text" name="zip" required placeholder="12345" autocomplete="postal-code" />
+              
+              <label>Country</label>
+              <input type="text" name="country" value="AT" required placeholder="AT" autocomplete="country" />
+              
+              <label>Company Name (Optional)</label>
+              <input type="text" name="companyName" placeholder="If applicable" autocomplete="organization" />
+              
+              <label>Company Number (Optional)</label>
+              <input type="text" name="companyNumber" placeholder="If applicable" autocomplete="off" />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -472,7 +488,7 @@
         <h2 class="collapsible">Insurance Start Date <span class="toggle-icon">–</span></h2>
         <div class="section-content">
           <label>Select your desired start date</label>
-          <input type="date" name="startDate" required />
+          <input type="date" name="startDate" required autocomplete="off" />
         </div>
       </div>
 
