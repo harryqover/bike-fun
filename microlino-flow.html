@@ -604,7 +604,7 @@
         $("input[name='city']").val("Vienna");
         $("input[name='zip']").val("12345");
         $("input[name='country']").val("AT");
-        // Set as company for testing and show company fields.
+        // Set as company for testing and prefill company fields.
         $("input[name='isCompany'][value='yes']").prop("checked", true).trigger("change");
         $("input[name='companyName']").val("Test Company");
         $("input[name='companyNumber']").val("123456789");
@@ -874,10 +874,10 @@
           $("#errorModal .modal-body").html(errorList);
           $("#errorModal").show();
         } else {
-          // If payment object exists and contains an id, redirect to payment.
+          // If payment object exists and contains an id, redirect to payment page.
           if (response.payload && response.payload.payment && response.payload.payment.id) {
             var redirectUrl = "https://volvoinsurance.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" 
-              + response.payload.id + "&paymentId=" + response.payload.payment.id;
+              + response.payload.id + "&paymentId=" + response.payload.payment.id + "&appId=q809unxlpt18fzf20zgb9vqu";
             window.location.href = redirectUrl;
           } else {
             $("#message").html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
