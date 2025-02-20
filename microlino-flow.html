@@ -869,7 +869,7 @@
         } else {
           // If payment object exists and contains an id, redirect to payment page.
           if (response.payload && response.payload.payment && response.payload.payment.id) {
-            var redirectUrl = "https://volvoinsurance.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" 
+            var redirectUrl = "https://appqoverme-ui.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" 
               + response.payload.id + "&paymentId=" + response.payload.payment.id + "&appId=q809unxlpt18fzf20zgb9vqu";
             window.location.href = redirectUrl;
           } else {
