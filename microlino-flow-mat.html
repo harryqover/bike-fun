@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Microlino Insurance Quote</title>
-  
-  <!-- Include jQuery -->
+
+  <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
+
   <style>
-    /* 1) RESET & BASIC STYLES */
+    /* 🎨 General Styles */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -17,732 +17,238 @@
     }
     body {
       font-family: 'Helvetica Neue', Arial, sans-serif;
-      color: #101820; /* Dark text */
+      color: #101820;
       background-color: #ffffff;
-      line-height: 1.4;
+      line-height: 1.5;
+    }
+    h1, h2 {
+      color: #00205b;
     }
     a {
       text-decoration: none;
-      color: #101820;
+      color: #00205b;
     }
-    input, button, select, textarea {
+    input, button, select {
       font-family: inherit;
       font-size: 1rem;
     }
 
-    /* 2) PAGE LAYOUT */
-    .page-header {
-      text-align: center;
-      padding: 2rem 1rem 1rem;
-      border-bottom: 1px solid #E2E2E2;
-      margin-bottom: 1rem;
-    }
-    .page-header h1 {
-      font-size: 1.8rem;
-      color: #00205b; /* Dark Blue */
-      margin-bottom: 0.5rem;
-    }
-    .page-header p {
-      color: #6e6e6e;
-      font-size: 1rem;
-    }
-
-    .main-container {
+    /* 📌 Page Layout */
+    .container {
       display: flex;
-      flex-direction: column;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 1rem;
-    }
-    /* On wider screens, form + summary side by side */
-    @media (min-width: 900px) {
-      .main-container {
-        flex-direction: row;
-        align-items: flex-start;
-      }
+      padding: 1.5rem;
+      gap: 2rem;
     }
 
-    /* Left column: form */
+    /* Left Column (Form) */
     .form-column {
       flex: 1;
-      margin-right: 1.5rem;
     }
 
-    /* Right column: summary box */
+    /* Right Column (Sticky Summary) */
     .summary-column {
       width: 100%;
-      max-width: 350px;
-      margin-top: 2rem;
-    }
-    @media (min-width: 900px) {
-      .summary-column {
-        margin-top: 0;
-      }
+      max-width: 340px;
+      position: sticky;
+      top: 20px;
     }
 
-    /* 3) FORM STYLES */
-    form {
-      width: 100%;
-    }
-    .form-section {
-      margin-bottom: 2rem;
-    }
-    .form-section h2 {
-      font-size: 1.2rem;
+    /* 🔽 Collapsible Sections */
+    .section {
+      border: 1px solid #E2E2E2;
+      border-radius: 6px;
       margin-bottom: 1rem;
-      color: #00205b;
+      overflow: hidden;
     }
-    label {
-      display: block;
+    .section h2 {
+      font-size: 1.2rem;
+      background: #F6F6F6;
+      padding: 1rem;
+      margin: 0;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .toggle-icon {
       font-weight: bold;
-      margin-bottom: 0.3rem;
-      color: #101820;
     }
-    input[type="text"],
-    input[type="email"],
-    input[type="date"],
-    select {
+    .section-content {
+      padding: 1rem;
+      display: none;
+    }
+    .section.active .section-content {
+      display: block;
+    }
+
+    /* 📄 Form Styles */
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 0.5rem;
+    }
+    input, select {
       width: 100%;
       padding: 0.75rem;
       border: 1px solid #E2E2E2;
       border-radius: 4px;
       font-size: 1rem;
-      margin-bottom: 1rem;
+      margin-top: 0.3rem;
     }
     .radio-group {
       display: flex;
-      flex-wrap: wrap;
       gap: 1rem;
-      margin-bottom: 1rem;
+      margin-top: 0.5rem;
     }
     .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
       font-weight: normal;
-      cursor: pointer;
     }
     .radio-group input {
-      margin-right: 0.4rem;
+      margin-right: 0.3rem;
     }
 
-    /* Buttons */
-    button[type="submit"] {
-      background-color: #e24337; /* Milano Red */
+    /* ✅ Button */
+    button {
+      background-color: #e24337;
       color: #ffffff;
       border: none;
       border-radius: 4px;
-      padding: 0.75rem 1rem;
+      padding: 0.75rem;
       font-size: 1rem;
       cursor: pointer;
-      margin-top: 1rem;
       width: 100%;
+      margin-top: 1rem;
     }
-    button[type="submit"]:hover {
+    button:hover {
       background-color: #c23c30;
     }
 
-    /* Error & Success Messages */
-    .error {
-      color: red;
-      margin: 1rem 0 0;
-      font-weight: bold;
-    }
-    .success {
-      color: green;
-      margin: 1rem 0 0;
-      font-weight: bold;
-    }
-    pre {
-      background: #f7f7f7;
-      padding: 0.75rem;
-      border-radius: 4px;
-      margin-top: 0.5rem;
-      overflow: auto;
-      font-size: 0.9rem;
-    }
-
-    /* 4) SUMMARY COLUMN (Insurance Plan) */
+    /* 🛒 Sticky Insurance Summary */
     .summary-box {
       border: 1px solid #E2E2E2;
       border-radius: 8px;
       padding: 1rem;
-      background-color: #fafafa;
+      background: #fafafa;
+      text-align: center;
     }
     .summary-box h3 {
-      margin-top: 0;
       font-size: 1.2rem;
-      color: #00205b;
-      margin-bottom: 1rem;
     }
-    .summary-box .price-container {
-      margin-bottom: 1rem;
-      font-size: 1.2rem;
+    .summary-box .price {
       font-weight: bold;
-      color: #101820;
-    }
-    .summary-box .additional-info {
-      font-size: 0.9rem;
-      color: #6e6e6e;
-      line-height: 1.4;
-      margin-bottom: 1rem;
-    }
-    .summary-box .help-section {
-      margin-top: 1rem;
-      border-top: 1px solid #E2E2E2;
-      padding-top: 1rem;
-      font-size: 0.9rem;
-      color: #6e6e6e;
-    }
-    .summary-box .help-section a {
-      color: #e24337;
-      font-weight: bold;
+      font-size: 1.4rem;
+      margin: 0.5rem 0;
     }
 
-    /* 5) LOADING OVERLAY & MODAL */
-    #loadingOverlay {
-      display: none;
-      position: fixed;
-      z-index: 10000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255,255,255,0.8);
-      text-align: center;
-      padding-top: 20%;
-      font-size: 1.5rem;
-      color: #00205b;
+    /* 📱 Mobile Styles */
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+      }
+      .summary-column {
+        position: relative;
+        top: auto;
+        max-width: 100%;
+      }
     }
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 10000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.5);
-    }
-    .modal-content {
-      background-color: #ffffff;
-      margin: 15% auto;
-      padding: 1rem;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 400px;
-      border-radius: 8px;
-      position: relative;
-    }
-    .close {
-      color: #aaa;
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .close:hover,
-    .close:focus {
-      color: black;
-      text-decoration: none;
-    }
+
   </style>
 </head>
-
 <body>
-  <!-- Page Header -->
-  <header class="page-header">
+
+  <header style="text-align: center; padding: 2rem 1rem;">
     <h1>Fill in this form to receive your quote</h1>
     <p>We only need a few details to get you insured.</p>
   </header>
 
-  <!-- Main Container: Form Column + Summary Column -->
-  <div class="main-container">
-
-    <!-- Left Column: the Form -->
+  <div class="container">
+    
+    <!-- 🔹 Left Column (Form) -->
     <div class="form-column">
       <form id="quoteForm">
-        
-        <!-- Vehicle Information -->
-        <div class="form-section">
-          <h2>Vehicle information</h2>
-          <label>Which Microlino model would you like to insure?</label>
-          <div class="radio-group">
-            <label>
-              <input type="radio" name="model" value="lite" required />
-              Microlino LITE
-            </label>
-            <label>
-              <input type="radio" name="model" value="edition" required />
-              Microlino Edition
-            </label>
-          </div>
 
-          <label>Vehicle Identification Number (VIN)</label>
-          <input type="text" name="vin" required placeholder="e.g. WBA12345678901234" autocomplete="off" />
-
-          <label>Vehicle Registration Number (optional)</label>
-          <input type="text" name="vrn" placeholder="e.g. 22AA123" autocomplete="off" />
-        </div>
-
-        <!-- Driver Information -->
-        <div class="form-section">
-          <h2>Driver information</h2>
-          <label>Birthdate of youngest driver</label>
-          <input type="date" name="driverBirthdate" required autocomplete="bday" />
-          <p style="font-size:0.85rem; color:#6e6e6e; margin-top:0.3rem;">
-            For Microlino LITE, minimum age is 15 years; for Microlino Edition, it is 17 years.
-          </p>
-        </div>
-
-        <!-- Eligibility Check -->
-        <div class="form-section">
-          <h2>Eligibility check</h2>
-          <label>Is your vehicle registered as a diplomatic car?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="diplomaticCar" value="yes" required /> Yes</label>
-            <label><input type="radio" name="diplomaticCar" value="no" required /> No</label>
-          </div>
-
-          <label>Are you applying for an interchangeable license plate?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="interchangeableLicensePlate" value="yes" required /> Yes</label>
-            <label><input type="radio" name="interchangeableLicensePlate" value="no" required /> No</label>
-          </div>
-
-          <label>Has your motor insurance policy been canceled/terminated in the past 3 years?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="policyCancelled" value="yes" required /> Yes</label>
-            <label><input type="radio" name="policyCancelled" value="no" required /> No</label>
-          </div>
-
-          <label>How many at-fault liability claims have you had in the last 3 years?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="claims" value="0" required /> 0</label>
-            <label><input type="radio" name="claims" value="1" required /> 1</label>
-            <label><input type="radio" name="claims" value="2" required /> 2</label>
-            <label><input type="radio" name="claims" value="3+" required /> 3 or more</label>
-          </div>
-        </div>
-
-        <!-- Policyholder Details -->
-        <div class="form-section">
-          <h2>Policyholder details</h2>
-
-          <label>Are you a company?</label>
-          <div class="radio-group">
-            <label>
-              <input type="radio" name="isCompany" value="no" checked required />
-              No
-            </label>
-            <label>
-              <input type="radio" name="isCompany" value="yes" required />
-              Yes
-            </label>
-          </div>
-
-          <div class="policyholder-columns">
-            <div class="column">
-              <label>First Name</label>
-              <input type="text" name="firstName" required placeholder="John" autocomplete="given-name" />
-
-              <label>Last Name</label>
-              <input type="text" name="lastName" required placeholder="Doe" autocomplete="family-name" />
-
-              <label>Birthdate</label>
-              <input type="date" name="policyholderBirthdate" required autocomplete="bday" />
-
-              <label>Email Address</label>
-              <input type="email" name="email" required placeholder="john.doe@example.com" autocomplete="email" />
-
-              <label>Phone Number</label>
-              <input type="text" name="phone" required placeholder="+43 123 456789" autocomplete="tel" />
+        <!-- 🚗 Vehicle Info -->
+        <div class="section active">
+          <h2>Vehicle Information <span class="toggle-icon">–</span></h2>
+          <div class="section-content">
+            <label>Which Microlino model would you like to insure?</label>
+            <div class="radio-group">
+              <label><input type="radio" name="model" value="lite" required> Microlino LITE</label>
+              <label><input type="radio" name="model" value="edition" required> Microlino Edition</label>
             </div>
+            <label>Vehicle Identification Number (VIN)</label>
+            <input type="text" name="vin" required placeholder="e.g. WBA12345678901234">
+          </div>
+        </div>
 
-            <div class="column">
-              <label>Street Address</label>
-              <input type="text" name="street" required placeholder="Main Street" autocomplete="street-address" />
+        <!-- 👨‍👦 Driver Info -->
+        <div class="section">
+          <h2>Driver Information <span class="toggle-icon">+</span></h2>
+          <div class="section-content">
+            <label>Birthdate of youngest driver</label>
+            <input type="date" name="driverBirthdate" required>
+          </div>
+        </div>
 
-              <label>House Number</label>
-              <input type="text" name="houseNumber" required placeholder="10" autocomplete="address-line1" />
-
-              <label>City</label>
-              <input type="text" name="city" required placeholder="Vienna" autocomplete="address-level2" />
-
-              <label>ZIP Code</label>
-              <input type="text" name="zip" required placeholder="12345" autocomplete="postal-code" />
-
-              <label>Country</label>
-              <input type="text" name="country" value="AT" required placeholder="AT" autocomplete="country" />
+        <!-- ⚠️ Eligibility -->
+        <div class="section">
+          <h2>Eligibility Check <span class="toggle-icon">+</span></h2>
+          <div class="section-content">
+            <label>Is your vehicle registered as a diplomatic car?</label>
+            <div class="radio-group">
+              <label><input type="radio" name="diplomaticCar" value="yes" required> Yes</label>
+              <label><input type="radio" name="diplomaticCar" value="no" required> No</label>
             </div>
           </div>
+        </div>
 
-          <div id="companyFields">
-            <label>Company Name</label>
-            <input type="text" name="companyName" placeholder="If applicable" autocomplete="organization" />
-
-            <label>Company Number</label>
-            <input type="text" name="companyNumber" placeholder="If applicable" autocomplete="off" />
+        <!-- 🏠 Policyholder Info -->
+        <div class="section">
+          <h2>Policyholder Details <span class="toggle-icon">+</span></h2>
+          <div class="section-content">
+            <label>First Name</label>
+            <input type="text" name="firstName" required>
+            <label>Last Name</label>
+            <input type="text" name="lastName" required>
           </div>
         </div>
 
-        <!-- Start Date (optional) -->
-        <div class="form-section">
-          <h2>Insurance start date</h2>
-          <label>
-            <input type="checkbox" id="setStartDateNow" checked />
-            I want to set a start date now.
-          </label>
-          <div id="startDateContainer">
-            <label>Select your desired start date</label>
-            <input type="date" name="startDate" required autocomplete="off" />
-          </div>
-        </div>
-
-        <!-- Submit -->
-        <button type="submit" id="submitButton">Create Quote</button>
-        <div id="message"></div>
+        <button type="submit">Create Quote</button>
       </form>
-    </div><!-- end form-column -->
+    </div>
 
-    <!-- Right Column: Summary Box (Insurance Plan) -->
+    <!-- 🛒 Right Column (Insurance Summary) -->
     <div class="summary-column">
       <div class="summary-box">
         <h3>Insurance Plan</h3>
-        <div class="price-container" id="priceValueContainer">Yearly Price: <span id="priceValue">€590.41</span></div>
-        <div class="additional-info">
-          <strong>Includes:</strong><br/>
-          - TPL (Third-Party Liability)<br/>
-          - MOD (Own Damage Coverage)
-        </div>
-        <div class="help-section">
-          <p>Need help to finalize your quote?</p>
-          <p>
-            <a href="#">Chat</a><br/>
-            We are available Monday to Friday from 9 a.m to 5 p.m
-          </p>
-        </div>
-      </div>
-    </div><!-- end summary-column -->
-
-  </div><!-- end main-container -->
-
-  <footer>
-    &copy; <span id="year"></span> Microlino - All Rights Reserved
-  </footer>
-
-  <!-- Loading Overlay -->
-  <div id="loadingOverlay">
-    <div class="spinner">Loading, please wait...</div>
-  </div>
-
-  <!-- Modal for displaying validation errors -->
-  <div id="errorModal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <div class="modal-body">
-        <!-- Error messages will be injected here -->
+        <p class="price" id="priceValue">€590.41</p>
+        <p><strong>Includes:</strong> TPL & MOD Coverage</p>
       </div>
     </div>
+
   </div>
 
   <script>
-    /* 1) YEAR IN FOOTER */
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    /* 2) FIELD MAPPING FOR ERROR HIGHLIGHT */
-    var fieldMapping = {
-      "subject.atFaultClaimsLast3Years": "claims",
-      "subject.vin": "vin",
-      "subject.vrn": "vrn",
-      "subject.birthdateYoungestDriver": "driverBirthdate"
-      // Add more mappings as needed.
-    };
-
-    /* 3) SHOW/HIDE COMPANY FIELDS */
-    $("input[name='isCompany']").on("change", function() {
-      if ($(this).val() === "yes") {
-        $("#companyFields").slideDown();
-      } else {
-        $("#companyFields").slideUp();
-      }
+    // 🔽 Toggle Collapsible Sections
+    $(".section h2").click(function () {
+      $(".section").not($(this).parent()).removeClass("active").find(".section-content").slideUp();
+      $(".toggle-icon").text("+");
+      $(this).parent().toggleClass("active").find(".section-content").slideToggle();
+      $(this).find(".toggle-icon").text($(this).parent().hasClass("active") ? "–" : "+");
     });
 
-    /* 4) OPTIONAL START DATE LOGIC */
-    $("#setStartDateNow").on("change", function() {
-      if ($(this).is(":checked")) {
-        $("#startDateContainer").slideDown();
-        $("#submitButton").text("Create Quote");
-      } else {
-        $("#startDateContainer").slideUp();
-        $("#submitButton").text("Save Quote For Later");
-      }
-    });
-
-    /* 5) REMOVE EMPTY STRINGS RECURSIVELY */
-    function removeEmpty(obj) {
-      Object.keys(obj).forEach(key => {
-        if (obj[key] === "") {
-          delete obj[key];
-        } else if (typeof obj[key] === "object" && obj[key] !== null) {
-          removeEmpty(obj[key]);
-        }
-      });
-      return obj;
-    }
-
-    /* 6) PRICE CALCULATION (BASIC DEMO) */
-    function getAgeAtStart(birthdateStr, startDateStr) {
-      if (!birthdateStr || !startDateStr) return null;
-      const birthDate = new Date(birthdateStr);
-      const startDate = new Date(startDateStr);
-      let age = startDate.getFullYear() - birthDate.getFullYear();
-      const monthDiff = startDate.getMonth() - birthDate.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && startDate.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      return age;
-    }
-    function updatePrice() {
-      const driverBirthdateStr = document.querySelector('input[name="driverBirthdate"]').value;
-      const startDateInput = document.querySelector('input[name="startDate"]');
-      const priceValueEl = document.getElementById('priceValue');
-      
-      if (!$("#setStartDateNow").is(":checked") || !startDateInput.value) {
-        priceValueEl.textContent = "€590.41";
-        return;
-      }
-      const ageAtStart = getAgeAtStart(driverBirthdateStr, startDateInput.value);
-      let price = 590.41;
-      if (ageAtStart < 21) {
-        price = 915.13;
-      }
-      priceValueEl.textContent = price.toLocaleString('de-DE', {
-        style: 'currency',
-        currency: 'EUR'
-      });
-    }
-    document.querySelector('input[name="driverBirthdate"]').addEventListener('change', updatePrice);
-    document.querySelector('input[name="startDate"]').addEventListener('change', updatePrice);
-    updatePrice();
-
-    /* 7) "View Info" & "Save Offer" Buttons */
-    document.getElementById('viewInfoButton').addEventListener('click', function() {
-      // Replace with your landing page or info page
-      window.location.href = "https://landingpage.example.com";
-    });
-    document.getElementById('saveOfferButton').addEventListener('click', function() {
-      alert("Your offer has been saved and sent to your email.");
-    });
-
-    /* 8) MODAL CLOSE */
-    $(".close").on("click", function() {
-      $("#errorModal").hide();
-    });
-
-    /* 9) FORM SUBMISSION (AJAX) */
-    $("#quoteForm").on("submit", function(e) {
-      e.preventDefault();
-      // Reset any previous error highlighting
-      $("input").css("border", "1px solid #E2E2E2");
-      $("#message").html("");
-
-      // Show loading overlay
-      $("#loadingOverlay").show();
-
-      const formData = new FormData(this);
-      const model = formData.get("model");
-      const vin = formData.get("vin").trim();
-      const vrn = formData.get("vrn").trim();
-      const driverBirthdate = formData.get("driverBirthdate");
-      const diplomaticCar = formData.get("diplomaticCar");
-      const interchangeableLicensePlate = formData.get("interchangeableLicensePlate");
-      const policyCancelled = formData.get("policyCancelled");
-      const claims = formData.get("claims");
-      const firstName = formData.get("firstName").trim();
-      const lastName = formData.get("lastName").trim();
-      const policyholderBirthdate = formData.get("policyholderBirthdate");
-      const email = formData.get("email").trim();
-      const phone = formData.get("phone").trim();
-      const street = formData.get("street").trim();
-      const houseNumber = formData.get("houseNumber").trim();
-      const city = formData.get("city").trim();
-      const zip = formData.get("zip").trim();
-      const country = formData.get("country").trim() || "AT";
-      const isCompany = formData.get("isCompany");
-      const companyName = formData.get("companyName") ? formData.get("companyName").trim() : "";
-      const companyNumber = formData.get("companyNumber") ? formData.get("companyNumber").trim() : "";
-      const setStart = $("#setStartDateNow").is(":checked");
-      const startDate = setStart ? formData.get("startDate") : "";
-
-      // Basic validations
-      if (!vin) {
-        $("#message").html('<p class="error">VIN is required.</p>');
-        $("#loadingOverlay").hide();
-        return;
-      }
-      if (diplomaticCar === "yes") {
-        $("#message").html('<p class="error">Applications for diplomatic cars cannot proceed.</p>');
-        $("#loadingOverlay").hide();
-        return;
-      }
-      if (interchangeableLicensePlate === "yes") {
-        $("#message").html('<p class="error">Interchangeable license plate applications are not eligible.</p>');
-        $("#loadingOverlay").hide();
-        return;
-      }
-      if (policyCancelled === "yes") {
-        $("#message").html('<p class="error">Applications with a canceled or terminated policy cannot proceed.</p>');
-        $("#loadingOverlay").hide();
-        return;
-      }
-      if (claims === "3+") {
-        $("#message").html('<p class="error">Having 3 or more at-fault liability claims disqualifies your application.</p>');
-        $("#loadingOverlay").hide();
-        return;
-      }
-
-      // If setting start date, check driver age
-      if (setStart && startDate) {
-        const ageAtStart = getAgeAtStart(driverBirthdate, startDate);
-        if (ageAtStart === null) {
-          $("#message").html('<p class="error">Please enter valid dates for the driver and start date.</p>');
-          $("#loadingOverlay").hide();
-          return;
-        }
-        if (model === "lite" && ageAtStart < 15) {
-          $("#message").html('<p class="error">For Microlino LITE, the youngest driver must be at least 15 years old.</p>');
-          $("#loadingOverlay").hide();
-          return;
-        }
-        if (model === "edition" && ageAtStart < 17) {
-          $("#message").html('<p class="error">For Microlino Edition, the youngest driver must be at least 17 years old.</p>');
-          $("#loadingOverlay").hide();
-          return;
-        }
-      }
-
-      // Build payload with only tpl + mod
-      const payload = {
-        productConfigurationId: "microlino",
-        partnerId: "67a9f3824ce2c52c73463db6",
-        country: "AT",
-        language: "de",
-        renewal: {
-          type: "RENEWAL_TYPE_OPT_IN"
-        },
-        package: {
-          name: "comprehensive",
-          coverages: {
-            tpl: "default",
-            mod: "default"
-          }
-        },
-        policyholder: {
-          entityType: (isCompany === "yes") ? "ENTITY_TYPE_COMPANY" : "ENTITY_TYPE_PERSON",
-          firstName: firstName,
-          lastName: lastName,
-          birthdate: policyholderBirthdate,
-          email: email,
-          phone: phone,
-          address: {
-            street: street,
-            number: houseNumber,
-            zip: zip,
-            city: city,
-            country: country
-          }
-        },
-        subject: {
-          make: "Microlino",
-          model: model,
-          vin: vin,
-          vrn: vrn || "",
-          birthdateYoungestDriver: driverBirthdate,
-          anyDriverInsuranceProposalDeclinedOrPolicyCancelled: (policyCancelled === "yes"),
-          interchangeableLicensePlate: (interchangeableLicensePlate === "yes"),
-          diplomaticCar: (diplomaticCar === "yes"),
-          atFaultClaimsLast3Years: claims
-        }
-      };
-
-      if (setStart && startDate) {
-        payload.contractPeriod = {
-          startDate: startDate,
-          timeZone: "Europe/Brussels"
-        };
-      }
-      if (isCompany === "yes") {
-        payload.policyholder.companyName = companyName;
-        if (companyNumber) {
-          payload.policyholder.vatIn = companyNumber;
-        }
-      }
-
-      // Remove empty strings from payload
-      removeEmpty(payload);
-      function removeEmpty(obj) {
-        Object.keys(obj).forEach(key => {
-          if (obj[key] === "") {
-            delete obj[key];
-          } else if (typeof obj[key] === "object" && obj[key] !== null) {
-            removeEmpty(obj[key]);
-          }
-        });
-        return obj;
-      }
-
-      // Send the request
-      var settings = {
-        url: "https://script.google.com/macros/s/AKfycbz1WluaUb1mLRIw2FCdtmUDB0noSE0I6jOu-WVgXKL6q-UEDL6WFWfs9UXECZPjHEoW/exec",
-        method: "POST",
-        timeout: 0,
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        data: JSON.stringify({
-          payload: payload,
-          action: "createQuote"
-        })
-      };
-      
-      $.ajax(settings).done(function(response) {
-        $("#loadingOverlay").hide();
-
-        // Check for validation errors
-        var errors = [];
-        if (response.payload && response.payload._validationErrors && response.payload._validationErrors.length > 0) {
-          errors = response.payload._validationErrors;
-        }
-        if (errors.length > 0) {
-          var errorList = "<ul>";
-          errors.forEach(function(error) {
-            errorList += "<li>" + error.code + " (Field: " + error.field + ")</li>";
-            var fieldName = fieldMapping[error.field];
-            if (fieldName) {
-              $("[name='" + fieldName + "']").css("border", "2px solid red");
-            }
-          });
-          errorList += "</ul>";
-          $("#errorModal .modal-body").html(errorList);
-          $("#errorModal").show();
-        } else {
-          // If payment object is present, redirect
-          if (response.payload && response.payload.payment && response.payload.payment.id) {
-            var redirectUrl = "https://appqoverme-ui.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" 
-              + response.payload.id + "&paymentId=" + response.payload.payment.id + "&appId=q809unxlpt18fzf20zgb9vqu";
-            window.location.href = redirectUrl;
-          } else {
-            // Otherwise show success
-            $("#message").html('<p class="success">Quote created successfully!</p><pre>' 
-              + JSON.stringify(response, null, 2) + "</pre>");
-          }
-        }
-      }).fail(function(jqXHR, textStatus, errorThrown) {
-        console.error("Error:", textStatus, errorThrown);
-        $("#loadingOverlay").hide();
-        $("#message").html('<p class="error">An error occurred while creating the quote.</p>');
-      });
+    // 🛒 Sticky Cart Scroll Effect
+    $(window).on("scroll", function () {
+      var cart = $(".summary-column");
+      var scrollPos = $(window).scrollTop();
+      cart.css("top", Math.max(20, scrollPos + 20) + "px");
     });
   </script>
+
 </body>
 </html>
