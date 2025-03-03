@@ -547,10 +547,10 @@
 
     // Mapping API error field names to form input names
     var fieldMapping = {
-      "subject.underwriting.atFaultClaimsLast3Years": "claims",
+      "subject.atFaultClaimsLast3Years": "claims",
       "subject.vin": "vin",
       "subject.vrn": "vrn",
-      "subject.underwriting.birthdateYoungestDriver": "driverBirthdate"
+      "subject.birthdateYoungestDriver": "driverBirthdate"
       // Add more mappings as needed.
     };
 
@@ -823,13 +823,11 @@
           model: model,
           vin: vin,
           vrn: vrn || "",
-          underwriting: {
-            birthdateYoungestDriver: driverBirthdate,
-            anyDriverInsuranceProposalDeclinedOrPolicyCancelled: policyCancelled === "yes",
-            interchangeableLicensePlate: interchangeableLicensePlate === "yes",
-            diplomaticCar: diplomaticCar === "yes",
-            atFaultClaimsLast3Years: claims
-          }
+          birthdateYoungestDriver: driverBirthdate,
+          anyDriverInsuranceProposalDeclinedOrPolicyCancelled: policyCancelled === "yes",
+          interchangeableLicensePlate: interchangeableLicensePlate === "yes",
+          diplomaticCar: diplomaticCar === "yes",
+          atFaultClaimsLast3Years: claims
         }
       };
 
@@ -911,7 +909,6 @@
         $("#message").html('<p class="error">An error occurred while creating the quote.</p>');
       });
     });
-  console.log("20240303");
   </script>
 </body>
 </html>
