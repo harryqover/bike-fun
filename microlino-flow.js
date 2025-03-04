@@ -612,15 +612,19 @@ $("#quoteForm").on("submit", function(e) {
       errors = response.payload._validationErrors;
     }
     if (errors.length > 0) {
-      var errorList = "<ul>";
+      var errorList = "";
       errors.forEach(function(error) {
-        errorList += "<li>" + error.code + " (Field: " + error.field + ")</li>";
+        if(error.code == "CONTRACT_PERIOD_REQUIRED"){
+        	errorList += "<p>You'll receive an email with your quote saved.</p>";
+        } else {
+        	errorList += "<p>" + error.code + " (Field: " + error.field + ")</p>";	
+        }
         var fieldName = fieldMapping[error.field];
         if (fieldName) {
           $("[name='" + fieldName + "']").css("border", "2px solid red");
         }
       });
-      errorList += "</ul>";
+      errorList += "";
       $("#errorModal .modal-body").html(errorList);
       $("#errorModal").show();
     } else {
