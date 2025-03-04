@@ -88,7 +88,7 @@ $(".collapsible").click(function() {
 
 	console.log("$thisSectionContent");
   	console.log($thisSectionContent);
-  	console.log($thisSectionContent.prevObject[0].data( "step" ));
+  	console.log($($thisSectionContent.prevObject[0]).data("step"));
   	
   
   // Toggle the clicked section.
