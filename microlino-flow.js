@@ -147,11 +147,6 @@ document.querySelector('input[name="driverBirthdate"]').addEventListener('change
 document.querySelector('input[name="startDate"]').addEventListener('change', updatePrice);
 updatePrice();
 
-// "View Insurance Info" button redirect
-document.getElementById('viewInfoButton').addEventListener('click', function() {
-  // Replace with your landing page URL
-  window.location.href = "https://landingpage.example.com";
-});
 
 // "Save Offer" button functionality (simulate sending by email)
 document.getElementById('saveOfferButton').addEventListener('click', function() {
