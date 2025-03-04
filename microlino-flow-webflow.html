@@ -7,39 +7,6 @@
   <!-- Include jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
-    /* --- Brand Typography & Colors --- */
-    /* For production, load the actual Microlino fonts (Futura and Tisa Sans Pro) */
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Tisa Sans Pro', Helvetica, Arial, sans-serif;
-      background: linear-gradient(135deg, #F6F6F6, #FFFFFF);
-      color: #101820; /* Gotham Black */
-      line-height: 1.4;
-    }
-    h1, h2, h3, .steps li {
-      font-family: 'Futura', 'Futura PT', sans-serif;
-    }
-    
-    /* --- Header --- */
-    header {
-      background: #ffffff;
-      padding: 20px 10px;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 1.8rem;
-      color: #00205b; /* Dark Blue */
-    }
-    header p {
-      margin: 5px 0 0;
-      font-weight: 300;
-      color: #a7a8a9; /* Dark Grey */
-      font-size: 0.9rem;
-    }
     
     /* --- Container & Steps --- */
     .container {
@@ -48,26 +15,6 @@
       padding: 20px 15px;
       border-radius: 6px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .steps {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 15px;
-      list-style: none;
-      padding: 0;
-      font-size: 0.8rem;
-    }
-    .steps li {
-      flex: 1;
-      text-align: center;
-      padding: 8px 0;
-      border-bottom: 2px solid #E2E2E2;
-      color: #a7a8a9;
-      font-weight: bold;
-    }
-    .steps li.active {
-      border-color: #00205b;
-      color: #00205b;
     }
     
     /* --- Collapsible Sections --- */
@@ -94,56 +41,7 @@
       display: block;
     }
     
-    /* --- Form Inputs --- */
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-      font-size: 0.9rem;
-    }
-    input[type="text"],
-    input[type="email"],
-    input[type="date"],
-    select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #E2E2E2;
-      border-radius: 4px;
-      font-size: 0.95rem;
-      box-sizing: border-box;
-    }
-    .radio-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 5px;
-    }
-    .radio-group label {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-weight: normal;
-      font-size: 0.9rem;
-    }
-    .radio-group img {
-      display: block;
-      width: 80px;
-      height: auto;
-      border: 1px solid #E2E2E2;
-      border-radius: 4px;
-    }
     
-    /* --- Policyholder Two-Column Layout --- */
-    .policyholder-columns {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-    .policyholder-columns .column {
-      flex: 1;
-      min-width: 250px;
-    }
     /* Company fields container (shown only if customer confirms they're a company) */
     #companyFields {
       display: none;
@@ -188,67 +86,6 @@
       overflow: auto;
       margin-top: 10px;
       font-size: 0.8rem;
-    }
-    
-    /* --- Footer --- */
-    footer {
-      text-align: center;
-      font-size: 0.8rem;
-      color: #ffffff;
-      margin-top: 20px;
-      padding: 10px 0;
-      background: #00205b;
-    }
-    
-    /* --- Floating Shopping Cart --- */
-    .shopping-cart {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #ffffff;
-      border-top: 1px solid #E2E2E2;
-      padding: 10px 15px;
-      box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 9999;
-    }
-    .shopping-cart > div {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .shopping-cart h3 {
-      margin: 0;
-      font-size: 1rem;
-      color: #00205b;
-    }
-    .shopping-cart p {
-      margin: 0;
-      font-size: 1rem;
-    }
-    .shopping-cart .price {
-      font-weight: bold;
-      font-size: 1.1rem;
-      color: #101820;
-    }
-    .cart-buttons {
-      display: flex;
-      gap: 10px;
-      width: 100%;
-    }
-    .cart-buttons button {
-      flex: 1;
-      padding: 8px;
-      font-size: 0.85rem;
-      background-color: #e24337;
-      color: #ffffff;
-      border: none;
-      border-radius: 4px;
-    }
-    .cart-buttons button:hover {
-      background-color: #c23c30;
     }
     
     /* --- Loading Overlay --- */
@@ -341,11 +178,6 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1>Microlino Insurance Quote</h1>
-    <p>Get your quote in a few simple steps</p>
-  </header>
-
   <!-- Floating Shopping Cart (Mobile: Sticky Footer | Desktop: Fixed Box) -->
   <div class="shopping-cart">
     <div>
@@ -394,10 +226,10 @@
           </div>
 
           <label>Enter your Vehicle Identification Number (VIN)</label>
-          <input type="text" name="vin" required placeholder="E.g., WBA12345678901234" autocomplete="off" />
+          <input class="field" type="text" name="vin" required placeholder="E.g., WBA12345678901234" autocomplete="off" />
 
           <label>Vehicle Registration Number (Optional)</label>
-          <input type="text" name="vrn" placeholder="E.g., 22AA123" autocomplete="off" />
+          <input class="field" type="text" name="vrn" placeholder="E.g., 22AA123" autocomplete="off" />
         </div>
       </div>
 
@@ -406,7 +238,7 @@
         <h2 class="collapsible">Driver Information <span class="toggle-icon">–</span></h2>
         <div class="section-content">
           <label>Enter the birthdate of your youngest driver</label>
-          <input type="date" name="driverBirthdate" required autocomplete="bday" />
+          <input class="field date" type="date" name="driverBirthdate" required autocomplete="bday" />
           <p style="font-size:0.8rem; margin-top:5px;">
             For Microlino LITE, the minimum age is 15 years; for Microlino Edition, it is 17 years.
           </p>
@@ -419,25 +251,25 @@
         <div class="section-content">
           <label>Is your vehicle registered as a diplomatic car?</label>
           <div class="radio-group">
-            <label><input type="radio" name="diplomaticCar" value="yes" required /> Yes</label>
-            <label><input type="radio" name="diplomaticCar" value="no" required /> No</label>
+            <label><input class="radio-button-field w-radio" type="radio" name="diplomaticCar" value="yes" required /> Yes</label>
+            <label><input class="radio-button-field w-radio" type="radio" name="diplomaticCar" value="no" required /> No</label>
           </div>
 
           <label>Are you applying for an interchangeable license plate?</label>
           <div class="radio-group">
-            <label><input type="radio" name="interchangeableLicensePlate" value="yes" required /> Yes</label>
-            <label><input type="radio" name="interchangeableLicensePlate" value="no" required /> No</label>
+            <label><input class="radio-button-field w-radio" type="radio" name="interchangeableLicensePlate" value="yes" required /> Yes</label>
+            <label><input class="radio-button-field w-radio" type="radio" name="interchangeableLicensePlate" value="no" required /> No</label>
           </div>
 
           <label>Has your motor insurance policy been canceled or terminated in the past three years?</label>
           <div class="radio-group">
-            <label><input type="radio" name="policyCancelled" value="yes" required /> Yes</label>
-            <label><input type="radio" name="policyCancelled" value="no" required /> No</label>
+            <label><input class="radio-button-field w-radio" type="radio" name="policyCancelled" value="yes" required /> Yes</label>
+            <label><input class="radio-button-field w-radio" type="radio" name="policyCancelled" value="no" required /> No</label>
           </div>
 
           <label>How many at-fault liability claims have you had in the last 3 years?</label>
           <div class="radio-group">
-            <label><input type="radio" name="claims" value="0" required /> 0</label>
+            <label><input class="radio-button-field w-radio" type="radio" name="claims" value="0" required /> 0</label>
             <label><input type="radio" name="claims" value="1" required /> 1</label>
             <label><input type="radio" name="claims" value="2" required /> 2</label>
             <label><input type="radio" name="claims" value="3+" required /> 3 or more</label>
@@ -453,11 +285,11 @@
           <label>Are you a company?</label>
           <div class="radio-group">
             <label>
-              <input type="radio" name="isCompany" value="no" checked required />
+              <input class="radio-button-field w-radio" type="radio" name="isCompany" value="no" checked required />
               No
             </label>
             <label>
-              <input type="radio" name="isCompany" value="yes" required />
+              <input class="radio-button-field w-radio" type="radio" name="isCompany" value="yes" required />
               Yes
             </label>
           </div>
@@ -465,44 +297,44 @@
           <div class="policyholder-columns">
             <div class="column">
               <label>First Name</label>
-              <input type="text" name="firstName" required placeholder="John" autocomplete="given-name" />
+              <input class="field" type="text" name="firstName" required placeholder="John" autocomplete="given-name" />
               
               <label>Last Name</label>
-              <input type="text" name="lastName" required placeholder="Doe" autocomplete="family-name" />
+              <input class="field" type="text" name="lastName" required placeholder="Doe" autocomplete="family-name" />
               
               <label>Birthdate</label>
-              <input type="date" name="policyholderBirthdate" required autocomplete="bday" />
+              <input class="field" type="date" name="policyholderBirthdate" required autocomplete="bday" />
               
               <label>Email Address</label>
-              <input type="email" name="email" required placeholder="john.doe@example.com" autocomplete="email" />
+              <input class="field" type="email" name="email" required placeholder="john.doe@example.com" autocomplete="email" />
               
               <label>Phone Number</label>
-              <input type="text" name="phone" required placeholder="+43 123 456789" autocomplete="tel" />
+              <input class="field" type="text" name="phone" required placeholder="+43 123 456789" autocomplete="tel" />
             </div>
             <div class="column">
               <label>Street Address</label>
-              <input type="text" name="street" required placeholder="Main Street" autocomplete="street-address" />
+              <input class="field" type="text" name="street" required placeholder="Main Street" autocomplete="street-address" />
               
               <label>House Number</label>
-              <input type="text" name="houseNumber" required placeholder="10" autocomplete="address-line1" />
+              <input class="field" type="text" name="houseNumber" required placeholder="10" autocomplete="address-line1" />
               
               <label>City</label>
-              <input type="text" name="city" required placeholder="Vienna" autocomplete="address-level2" />
+              <input class="field" type="text" name="city" required placeholder="Vienna" autocomplete="address-level2" />
               
               <label>ZIP Code</label>
-              <input type="text" name="zip" required placeholder="12345" autocomplete="postal-code" />
+              <input class="field" type="text" name="zip" required placeholder="12345" autocomplete="postal-code" />
               
               <label>Country</label>
-              <input type="text" name="country" value="AT" required placeholder="AT" autocomplete="country" />
+              <input class="field" type="text" name="country" value="AT" required placeholder="AT" autocomplete="country" />
             </div>
           </div>
           <!-- Company Fields Container -->
           <div id="companyFields">
             <label>Company Name</label>
-            <input type="text" name="companyName" placeholder="If applicable" autocomplete="organization" />
+            <input class="field" type="text" name="companyName" placeholder="If applicable" autocomplete="organization" />
             
             <label>Company Number</label>
-            <input type="text" name="companyNumber" placeholder="If applicable" autocomplete="off" />
+            <input class="field" type="text" name="companyNumber" placeholder="If applicable" autocomplete="off" />
           </div>
         </div>
       </div>
@@ -512,24 +344,21 @@
         <h2 class="collapsible">Insurance Start Date <span class="toggle-icon">–</span></h2>
         <div class="section-content">
           <label>
-            <input type="checkbox" id="setStartDateNow" checked />
+            <input class="w-checkbox-input" type="checkbox" id="setStartDateNow" checked />
             I want to set a start date now.
           </label>
           <div id="startDateContainer">
             <label>Select your desired start date</label>
-            <input type="date" name="startDate" required autocomplete="off" />
+            <input type="date date" name="startDate" required autocomplete="off" />
           </div>
         </div>
       </div>
 
-      <button type="submit" id="submitButton">Create Quote</button>
+      <button type="submit" id="submitButton" class="button final w-button">Go to the payment</button>
       <div id="message"></div>
     </form>
   </div>
 
-  <footer>
-    &copy; <span id="year"></span> Microlino - All Rights Reserved
-  </footer>
 
   <!-- Modal for displaying validation errors -->
   <div id="errorModal" class="modal">
@@ -542,9 +371,7 @@
   </div>
 
   <script>
-    // Set current year in footer
-    document.getElementById('year').textContent = new Date().getFullYear();
-
+   
     // Mapping API error field names to form input names
     var fieldMapping = {
       "subject.atFaultClaimsLast3Years": "claims",
