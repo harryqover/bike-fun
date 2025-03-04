@@ -84,7 +84,7 @@ $(".collapsible").click(function() {
   var $thisSectionContent = $(this).next(".section-content");
   // Collapse all other sections.
   $(".section-content").not($thisSectionContent).slideUp();
-  $(".toggle-icon").not($(this).find(".toggle-icon")).text("+");
+  $(".toggle-icon").not($(this).find(".toggle-icon")).text("Continue");
 
 	console.log("$thisSectionContent");
   	console.log($thisSectionContent);
