@@ -332,7 +332,11 @@ document.getElementById('saveOfferButton').addEventListener('click', function() 
         diplomaticCar: diplomaticCar === "yes",
         atFaultClaimsLast3Years: claims
       }
+    },
+    metadata:{
+    	terms: "acceptance,important,eligibility,general,interchangeablePlate"
     }
+
   };
 
   if(setStart) {
