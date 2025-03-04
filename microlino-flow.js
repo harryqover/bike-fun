@@ -78,6 +78,60 @@ $(document).ready(function(){
     updatePrice();
   }
 });
+// If URL contains action=pay and id call API to redirect to payment
+if(urlParams.get("action") === "pay"){
+	$("#loadingOverlay").show();
+
+	// AJAX settings (using jQuery)
+	  var settings = {
+	    url: "https://script.google.com/macros/s/AKfycbz1WluaUb1mLRIw2FCdtmUDB0noSE0I6jOu-WVgXKL6q-UEDL6WFWfs9UXECZPjHEoW/exec",
+	    method: "POST",
+	    timeout: 0,
+	    headers: {
+	      "Content-Type": "text/plain;charset=utf-8"
+	    },
+	    data: JSON.stringify({
+	      payload: {"id":urlParams.get("id")},
+	      action: "pay"
+	    })
+	  };
+	  
+	  $.ajax(settings).done(function(response) {
+	    $("#loadingOverlay").hide();
+	    // Check for validation errors inside response.payload
+	    var errors = [];
+	    if (response.payload && response.payload._validationErrors && response.payload._validationErrors.length > 0) {
+	      errors = response.payload._validationErrors;
+	    }
+	    if (errors.length > 0) {
+	      var errorList = "<ul>";
+	      errors.forEach(function(error) {
+	        errorList += "<li>" + error.code + " (Field: " + error.field + ")</li>";
+	        var fieldName = fieldMapping[error.field];
+	        if (fieldName) {
+	          $("[name='" + fieldName + "']").css("border", "2px solid red");
+	        }
+	      });
+	      errorList += "</ul>";
+	      $("#errorModal .modal-body").html(errorList);
+	      $("#errorModal").show();
+	    } else {
+	      // If payment object exists and contains an id, redirect to payment page.
+	      if (response.payload && response.payload.payment && response.payload.payment.id) {
+	        var redirectUrl = "https://appqoverme-ui.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" 
+	          + response.payload.id + "&paymentId=" + response.payload.payment.id + "&appId=q809unxlpt18fzf20zgb9vqu";
+	        window.location.href = redirectUrl;
+	      } else {
+	        $("#message").html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
+	      }
+	    }
+	  }).fail(function(jqXHR, textStatus, errorThrown) {
+	    console.error("Error:", textStatus, errorThrown);
+	    $("#loadingOverlay").hide();
+	    $("#message").html('<p class="error">An error occurred while creating the quote.</p>');
+	  });
+
+}
 
 // Collapsible sections: When one section is opened, collapse all others.
 $(".collapsible").click(function() {
