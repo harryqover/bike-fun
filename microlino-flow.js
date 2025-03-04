@@ -89,12 +89,16 @@ $(".collapsible").click(function() {
 	console.log("$thisSectionContent");
   	console.log($thisSectionContent);
   	console.log($($thisSectionContent.prevObject[0]).data("step"));
+  	var currentStep = $($thisSectionContent.prevObject[0]).data("step");
+  	$("a[step='"+currentStep+"'] .stepper-label").css("color", "orange");
   	
   
   // Toggle the clicked section.
   if($thisSectionContent.is(":visible")) {
     $thisSectionContent.slideUp();
     $(this).find(".toggle-icon").text("+");
+    console.log("step to hide");
+    console.log($(this).data("step"));
   } else {
     $thisSectionContent.slideDown();
     $(this).find(".toggle-icon").text("–");
