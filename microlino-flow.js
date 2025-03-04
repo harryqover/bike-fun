@@ -96,12 +96,12 @@ $(".collapsible").click(function() {
   // Toggle the clicked section.
   if($thisSectionContent.is(":visible")) {
     $thisSectionContent.slideUp();
-    $(this).find(".toggle-icon").text("+");
+    $(this).find(".toggle-icon").text("Continue");
     console.log("step to hide");
     console.log($(this).data("step"));
   } else {
     $thisSectionContent.slideDown();
-    $(this).find(".toggle-icon").text("–");
+    $(this).find(".toggle-icon").text("Hide");
   }
 });
 
