@@ -85,6 +85,9 @@ $(".collapsible").click(function() {
   // Collapse all other sections.
   $(".section-content").not($thisSectionContent).slideUp();
   $(".toggle-icon").not($(this).find(".toggle-icon")).text("+");
+
+	console.log("$thisSectionContent");
+  	console.log($thisSectionContent);
   
   // Toggle the clicked section.
   if($thisSectionContent.is(":visible")) {
