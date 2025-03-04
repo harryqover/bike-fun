@@ -77,11 +77,9 @@ $(document).ready(function(){
     $("input[name='terms']").prop("checked", true);
     updatePrice();
   }
-});
-// If URL contains action=pay and id call API to redirect to payment
+  // If URL contains action=pay and id call API to redirect to payment
 if(urlParams.get("action") === "pay"){
 	$("#loadingOverlay").show();
-
 	// AJAX settings (using jQuery)
 	  var settings = {
 	    url: "https://script.google.com/macros/s/AKfycbz1WluaUb1mLRIw2FCdtmUDB0noSE0I6jOu-WVgXKL6q-UEDL6WFWfs9UXECZPjHEoW/exec",
@@ -130,8 +128,9 @@ if(urlParams.get("action") === "pay"){
 	    $("#loadingOverlay").hide();
 	    $("#message").html('<p class="error">An error occurred while creating the quote.</p>');
 	  });
-
 }
+});
+
 
 // Collapsible sections: When one section is opened, collapse all others.
 $(".collapsible").click(function() {
