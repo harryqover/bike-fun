@@ -202,7 +202,7 @@ $(document).ready(function(){
       }).fail(function(jqXHR, textStatus, errorThrown) {
         console.error("Error:", textStatus, errorThrown);
         $("#loadingOverlay").hide();
-        $("#message").html('<p class="error">An error occurred while creating the quote.</p>');
+        $("#message").html('<p class="error">Beim Erstellen des Angebots ist ein Fehler aufgetreten.</p>');
       });
   }
 });
@@ -213,7 +213,7 @@ $(".collapsible").click(function() {
   var $thisSectionContent = $(this).next(".section-content");
   // Collapse all other sections.
   $(".section-content").not($thisSectionContent).slideUp();
-  $(".toggle-icon").not($(this).find(".toggle-icon")).text("Continue");
+  $(".toggle-icon").not($(this).find(".toggle-icon")).text("Weiter");
 
 	console.log("$thisSectionContent");
   	console.log($thisSectionContent);
@@ -225,12 +225,12 @@ $(".collapsible").click(function() {
   // Toggle the clicked section.
   if($thisSectionContent.is(":visible")) {
     $thisSectionContent.slideUp();
-    $(this).find(".toggle-icon").text("Continue");
+    $(this).find(".toggle-icon").text("Weiter");
     //var stepToHide = $(this).data("step");
     //$("a[step='"+stepToHide+"'] .stepper-label").css("color", "#36493d");
   } else {
     $thisSectionContent.slideDown();
-    $(this).find(".toggle-icon").text("Hide");
+    $(this).find(".toggle-icon").text("Ausblenden");
   }
 });
 /*
