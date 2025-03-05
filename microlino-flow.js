@@ -33,10 +33,10 @@ $("input[name='isCompany']").on("change", function() {
 $("#setStartDateNow").on("change", function() {
   if ($(this).is(":checked")) {
     $("#startDateContainer").slideDown();
-    $("#submitButton").text("Create Quote");
+    $("#submitButton").text("Weiter zur Zahlung");
   } else {
     $("#startDateContainer").slideUp();
-    $("#submitButton").text("Save Quote For Later");
+    $("#submitButton").text("Angebot für später speichern");
   }
 });
 
