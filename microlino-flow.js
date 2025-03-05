@@ -230,7 +230,7 @@ $(".collapsible").click(function() {
     $(this).find(".toggle-icon").text("Hide");
   }
 });
-
+/*
 $(".toggle-icon").click(function() {
   var $thisSectionContent = $(this).parent();
   $(".section-content").not($thisSectionContent).slideUp();
@@ -244,8 +244,21 @@ $(".toggle-icon").click(function() {
     $thisSectionContent.slideDown();
     //$(this).find(".toggle-icon").text("Hide");
   }
+  console.log("next section ici");
+  console.log($(this).next(".section-content"));
+  $(this).next(".section-content").css("border-radius","1px solid red");
+  $(this).next(".section-content").slideDown();
 
+});*/
+$(".toggle-icon").click(function() {
+    var currentSection = $(this).closest(".section"); // Find the closest section
+    var nextSection = currentSection.next(".section"); // Find the next section
+
+    if (nextSection.length) {
+        nextSection.find(".section-content").slideDown(); // Slide down the next section's content
+    }
 });
+
 
 
 // Calculate age at the chosen start date
