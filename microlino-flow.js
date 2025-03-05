@@ -175,9 +175,7 @@ $(document).ready(function(){
           $("input[name='companyName']").val(response.payload.policyholder.companyName);
           $("input[name='companyNumber']").val(response.payload.policyholder.vatIn);
         }
-        
-        
-        $("input[name='startDate']").val(response.payload.subject.policyholder.companyName);
+        $("input[name='startDate']").val(response.payload.contractPeriod.startDate);
         $("input[name='terms']").prop("checked", true);
         updatePrice();
         var errors = [];
