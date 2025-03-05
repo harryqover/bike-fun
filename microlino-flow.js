@@ -253,7 +253,10 @@ $(".toggle-icon").click(function() {
 $(".toggle-icon").click(function() {
     var currentSection = $(this).closest(".section"); // Find the closest section
     var nextSection = currentSection.next(".section"); // Find the next section
-
+    var $thisSectionContent = $(this).parent();
+    if($thisSectionContent.is(":visible")) {
+      $thisSectionContent.slideUp();
+    }
     if (nextSection.length) {
         nextSection.find(".section-content").slideDown(); // Slide down the next section's content
     }
