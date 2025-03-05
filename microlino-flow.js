@@ -48,6 +48,9 @@ $(document).ready(function(){
       //$(this).find(".toggle-icon").text("+");
     }
   });
+  const today = new Date();
+  const formattedToday = today.toISOString().split('T')[0]; // Extracts YYYY-MM-DD
+  $("input[name='startDate']").val(formattedToday);
   
   // If URL contains test=true, prefill form with fake data for testing
   const urlParams = new URLSearchParams(window.location.search);
