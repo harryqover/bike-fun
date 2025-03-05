@@ -574,50 +574,50 @@ $("#quoteForm").on("submit", function(e) {
   // If start date is to be set, validate it.
   if(setStart) {
     if (!startDate) {
-      $("#message").html('<p class="error">Please select a start date.</p>');
+      $("#message").html('<p class="error">Bitte wählen Sie ein Startdatum.</p>');
       $("#loadingOverlay").hide();
       return;
     }
     const ageAtStart = getAgeAtStart(driverBirthdate, startDate);
     if (ageAtStart === null) {
-      $("#message").html('<p class="error">Please enter valid dates for the driver and start date.</p>');
+      $("#message").html('<p class="error">Bitte geben Sie gültige Daten für den Fahrer und das Startdatum ein.</p>');
       $("#loadingOverlay").hide();
       return;
     }
     if (model === "lite" && ageAtStart < 15) {
-      $("#message").html('<p class="error">For Microlino LITE, the youngest driver must be at least 15 years old.</p>');
+      $("#message").html('<p class="error">Für den Microlino LITE muss der jüngste Fahrer mindestens 15 Jahre alt sein.</p>');
       $("#loadingOverlay").hide();
       return;
     }
     if (model === "edition" && ageAtStart < 17) {
-      $("#message").html('<p class="error">For Microlino Edition, the youngest driver must be at least 17 years old.</p>');
+      $("#message").html('<p class="error">Für den Microlino EDITION muss der jüngste Fahrer mindestens 17 Jahre alt sein.</p>');
       $("#loadingOverlay").hide();
       return;
     }
   }
   
   if (!vin) {
-    $("#message").html('<p class="error">VIN is required.</p>');
+    $("#message").html('<p class="error">Die Fahrzeug-Identifikationsnummer (FIN) ist erforderlich.</p>');
     $("#loadingOverlay").hide();
     return;
   }
   if (diplomaticCar === "yes") {
-    $("#message").html('<p class="error">Applications for diplomatic cars cannot proceed.</p>');
+    $("#message").html('<p class="error">Anträge für Diplomatenfahrzeuge können nicht bearbeitet werden.</p>');
     $("#loadingOverlay").hide();
     return;
   }
   if (interchangeableLicensePlate === "yes") {
-    $("#message").html('<p class="error">Interchangeable license plate applications are not eligible.</p>');
+    $("#message").html('<p class="error">Anträge für Wechselkennzeichen sind nicht zulässig.</p>');
     $("#loadingOverlay").hide();
     return;
   }
   if (policyCancelled === "yes") {
-    $("#message").html('<p class="error">Applications with a canceled or terminated policy cannot proceed.</p>');
+    $("#message").html('<p class="error">Anträge mit einer gekündigten oder beendeten Versicherungspolice können nicht bearbeitet werden.</p>');
     $("#loadingOverlay").hide();
     return;
   }
   if (claims === "3+") {
-    $("#message").html('<p class="error">Having 3 or more at-fault liability claims disqualifies your application.</p>');
+    $("#message").html('<p class="error">Bei 3 oder mehr Haftpflichtschäden in eigener Schuld ist Ihr Antrag nicht zulässig.</p>');
     $("#loadingOverlay").hide();
     return;
   }
@@ -725,7 +725,7 @@ $("#quoteForm").on("submit", function(e) {
       var errorList = "";
       errors.forEach(function(error) {
         if(error.code == "CONTRACT_PERIOD_REQUIRED"){
-        	errorList += "<p>You'll receive an email with your quote saved.</p>";
+        	errorList += "<p>Sie erhalten eine E-Mail mit einem Link zu Ihrem Angebot.</p>";
         } else {
         	errorList += "<p>" + error.code + " (Field: " + error.field + ")</p>";	
         }
@@ -744,12 +744,12 @@ $("#quoteForm").on("submit", function(e) {
           + response.payload.id + "&paymentId=" + response.payload.payment.id + "&appId=q809unxlpt18fzf20zgb9vqu";
         window.location.href = redirectUrl;
       } else {
-        $("#message").html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
+        $("#message").html('<p class="success">Angebot erfolgreich erstellt!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
       }
     }
   }).fail(function(jqXHR, textStatus, errorThrown) {
     console.error("Error:", textStatus, errorThrown);
     $("#loadingOverlay").hide();
-    $("#message").html('<p class="error">An error occurred while creating the quote.</p>');
+    $("#message").html('<p class="error">Beim Erstellen des Angebots ist ein Fehler aufgetreten.</p>');
   });
 });
