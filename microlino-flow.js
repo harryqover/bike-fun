@@ -66,7 +66,7 @@ $(document).ready(function(){
     $("input[name='email']").val("harry+test@qover.com");
     $("input[name='phone']").val("+43123456789");
     $("input[name='street']").val("Main Street");
-    $("input[name='houseNumber']").val("10");
+    //$("input[name='houseNumber']").val("10");
     $("input[name='city']").val("Vienna");
     $("input[name='zip']").val("12345");
     $("input[name='country']").val("AT");
@@ -164,7 +164,7 @@ $(document).ready(function(){
         $("input[name='email']").val(response.payload.policyholder.email);
         $("input[name='phone']").val(response.payload.policyholder.phone);
         $("input[name='street']").val(response.payload.policyholder.address.street);
-        $("input[name='houseNumber']").val(response.payload.policyholder.address.number);
+        //$("input[name='houseNumber']").val(response.payload.policyholder.address.number);
         $("input[name='city']").val(response.payload.policyholder.address.city);
         $("input[name='zip']").val(response.payload.policyholder.address.zip);
         $("input[name='country']").val("AT");
@@ -301,7 +301,7 @@ document.getElementById('saveOfferButton').addEventListener('click', function() 
   const email = formData.get("email").trim();
   const phone = formData.get("phone").trim();
   const street = formData.get("street").trim();
-  const houseNumber = formData.get("houseNumber").trim();
+  const houseNumber = " ";
   const city = formData.get("city").trim();
   const zip = formData.get("zip").trim();
   const country = formData.get("country").trim() || "AT";
@@ -523,7 +523,7 @@ $("#quoteForm").on("submit", function(e) {
   const email = formData.get("email").trim();
   const phone = formData.get("phone").trim();
   const street = formData.get("street").trim();
-  const houseNumber = formData.get("houseNumber").trim();
+  const houseNumber = " ";
   const city = formData.get("city").trim();
   const zip = formData.get("zip").trim();
   const country = formData.get("country").trim() || "AT";
