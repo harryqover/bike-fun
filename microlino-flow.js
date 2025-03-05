@@ -215,16 +215,16 @@ $(".collapsible").click(function() {
 	console.log("$thisSectionContent");
   	console.log($thisSectionContent);
   	console.log($($thisSectionContent.prevObject[0]).data("step"));
-  	var currentStep = $($thisSectionContent.prevObject[0]).data("step");
-  	$("a[step='"+currentStep+"'] .stepper-label").css("color", "orange");
+  	//var currentStep = $($thisSectionContent.prevObject[0]).data("step");
+  	//$("a[step='"+currentStep+"'] .stepper-label").css("color", "orange");
   	
   
   // Toggle the clicked section.
   if($thisSectionContent.is(":visible")) {
     $thisSectionContent.slideUp();
     $(this).find(".toggle-icon").text("Continue");
-    var stepToHide = $(this).data("step");
-    $("a[step='"+stepToHide+"'] .stepper-label").css("color", "#36493d");
+    //var stepToHide = $(this).data("step");
+    //$("a[step='"+stepToHide+"'] .stepper-label").css("color", "#36493d");
   } else {
     $thisSectionContent.slideDown();
     $(this).find(".toggle-icon").text("Hide");
