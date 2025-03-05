@@ -45,7 +45,7 @@ $(document).ready(function(){
   $(".section").each(function(index) {
     if(index !== 0) {
       $(this).find(".section-content").hide();
-      $(this).find(".toggle-icon").text("+");
+      //$(this).find(".toggle-icon").text("+");
     }
   });
   
