@@ -194,14 +194,7 @@ $(document).ready(function(){
           $("#errorModal .modal-body").html(errorList);
           $("#errorModal").show();
         } else {
-          // If payment object exists and contains an id, redirect to payment page.
-          if (response.payload && response.payload.payment && response.payload.payment.id) {
-            var redirectUrl = "https://appqoverme-ui.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" 
-              + response.payload.id + "&paymentId=" + response.payload.payment.id + "&appId=q809unxlpt18fzf20zgb9vqu";
-            window.location.href = redirectUrl;
-          } else {
-            $("#message").html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
-          }
+          console.warn("quote retrieved");
         }
       }).fail(function(jqXHR, textStatus, errorThrown) {
         console.error("Error:", textStatus, errorThrown);
