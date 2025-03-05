@@ -1,4 +1,4 @@
-console.log("20250305 0536")
+console.log("20250305 0541")
 // Mapping API error field names to form input names
 var fieldMapping = {
   "subject.underwriting.atFaultClaimsLast3Years": "claims",
@@ -71,9 +71,9 @@ $(document).ready(function(){
     $("input[name='zip']").val("12345");
     $("input[name='country']").val("AT");
     // Set as company for testing and prefill company fields.
-    $("input[name='isCompany'][value='yes']").prop("checked", true).trigger("change");
-    $("input[name='companyName']").val("Test Company");
-    $("input[name='companyNumber']").val("123456789");
+    //$("input[name='isCompany'][value='yes']").prop("checked", true).trigger("change");
+    //$("input[name='companyName']").val("Test Company");
+    //$("input[name='companyNumber']").val("123456789");
     $("input[name='startDate']").val("2025-03-09");
     $("input[name='terms']").prop("checked", true);
     updatePrice();
@@ -159,21 +159,25 @@ $(document).ready(function(){
         $("input[name='interchangeableLicensePlate'][value='no']").prop("checked", true);
         $("input[name='policyCancelled'][value='no']").prop("checked", true);
         $("input[name='claims'][value='0']").prop("checked", true);
-        $("input[name='firstName']").val(response.payload.subject.policyholder.firstName);
-        $("input[name='lastName']").val(response.payload.subject.policyholder.lastName);
-        $("input[name='policyholderBirthdate']").val(response.payload.subject.policyholder.birthdate);
-        $("input[name='email']").val(response.payload.subject.policyholder.email);
-        $("input[name='phone']").val(response.payload.subject.policyholder.phone);
-        $("input[name='street']").val(response.payload.subject.policyholder.address.street);
-        $("input[name='houseNumber']").val(response.payload.subject.policyholder.address.number);
-        $("input[name='city']").val(response.payload.subject.policyholder.address.city);
-        $("input[name='zip']").val(response.payload.subject.policyholder.address.zip);
+        $("input[name='firstName']").val(response.payload.policyholder.firstName);
+        $("input[name='lastName']").val(response.payload.policyholder.lastName);
+        $("input[name='policyholderBirthdate']").val(response.payload.policyholder.birthdate);
+        $("input[name='email']").val(response.payload.policyholder.email);
+        $("input[name='phone']").val(response.payload.policyholder.phone);
+        $("input[name='street']").val(response.payload.policyholder.address.street);
+        $("input[name='houseNumber']").val(response.payload.policyholder.address.number);
+        $("input[name='city']").val(response.payload.policyholder.address.city);
+        $("input[name='zip']").val(response.payload.policyholder.address.zip);
         $("input[name='country']").val("AT");
         // Set as company for testing and prefill company fields.
-        $("input[name='isCompany'][value='yes']").prop("checked", true).trigger("change");
-        $("input[name='companyName']").val("Test Company");
-        $("input[name='companyNumber']").val("123456789");
-        $("input[name='startDate']").val("2025-03-09");
+        if(response.payload.policyholder.entityType == "ENTITY_TYPE_COMPANY"){
+          $("input[name='isCompany'][value='yes']").prop("checked", true).trigger("change");
+          $("input[name='companyName']").val(response.payload.policyholder.companyName);
+          $("input[name='companyNumber']").val(response.payload.policyholder.vatIn);
+        }
+        
+        
+        $("input[name='startDate']").val(response.payload.subject.policyholder.companyName);
         $("input[name='terms']").prop("checked", true);
         updatePrice();
         var errors = [];
