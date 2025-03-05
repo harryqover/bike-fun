@@ -304,7 +304,7 @@ document.getElementById('saveOfferButton').addEventListener('click', function() 
   const houseNumber = " ";
   const city = formData.get("city").trim();
   const zip = formData.get("zip").trim();
-  const country = formData.get("country").trim() || "AT";
+  const country = "AT";
   const isCompany = formData.get("isCompany");
   const companyName = formData.get("companyName") ? formData.get("companyName").trim() : "";
   const companyNumber = formData.get("companyNumber") ? formData.get("companyNumber").trim() : "";
@@ -526,7 +526,7 @@ $("#quoteForm").on("submit", function(e) {
   const houseNumber = " ";
   const city = formData.get("city").trim();
   const zip = formData.get("zip").trim();
-  const country = formData.get("country").trim() || "AT";
+  const country = "AT";
   const isCompany = formData.get("isCompany");
   const companyName = formData.get("companyName") ? formData.get("companyName").trim() : "";
   const companyNumber = formData.get("companyNumber") ? formData.get("companyNumber").trim() : "";
