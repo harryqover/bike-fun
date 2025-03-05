@@ -234,6 +234,14 @@ $(".collapsible").click(function() {
 $(".toggle-icon").click(function() {
   var $thisSectionContent = $(this).parent();
   $(".section-content").not($thisSectionContent).slideUp();
+  $(".toggle-icon").not($(this).find(".toggle-icon")).text("xxx");
+  if($thisSectionContent.is(":visible")) {
+    $thisSectionContent.slideUp();
+    $(this).find(".toggle-icon").text("Continue");
+  } else {
+    $thisSectionContent.slideDown();
+    $(this).find(".toggle-icon").text("Hide");
+  }
 
 });
 
