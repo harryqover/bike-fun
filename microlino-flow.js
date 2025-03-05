@@ -231,6 +231,13 @@ $(".collapsible").click(function() {
   }
 });
 
+$(".toggle-icon").click(function() {
+  var $thisSectionContent = $(this).parent();
+  $(".section-content").not($thisSectionContent).slideUp();
+
+});
+
+
 // Calculate age at the chosen start date
 function getAgeAtStart(birthdateStr, startDateStr) {
   if (!birthdateStr || !startDateStr) return null;
@@ -275,6 +282,7 @@ updatePrice();
 
 
 // "Save Offer" button functionality (simulate sending by email)
+/* STOP SAVE OFFER
 document.getElementById('saveOfferButton').addEventListener('click', function() {
   e.preventDefault();
   // Reset any previous error highlighting
@@ -490,6 +498,7 @@ document.getElementById('saveOfferButton').addEventListener('click', function() 
     $("#message").html('<p class="error">An error occurred while creating the quote.</p>');
   });
 });
+*/
 
 // Modal close functionality
 $(".close").on("click", function() {
