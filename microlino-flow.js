@@ -150,7 +150,6 @@ $(document).ready(function(){
       
       $.ajax(settings).done(function(response) {
         $("#loadingOverlay").hide();
-        // Check for validation errors inside response.payload
         $("input[name='model'][value='"+response.payload.subject.model+"']").prop("checked", true);
         $("input[name='vin']").val(response.payload.subject.vin);
         $("input[name='vrn']").val(response.payload.subject.vrn);
