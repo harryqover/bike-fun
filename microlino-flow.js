@@ -235,12 +235,14 @@ $(".toggle-icon").click(function() {
   var $thisSectionContent = $(this).parent();
   $(".section-content").not($thisSectionContent).slideUp();
   $(".toggle-icon").not($(this).find(".toggle-icon")).text("xxx");
+  console.log("isVisible?")
+  console.log($thisSectionContent.is(":visible"));
   if($thisSectionContent.is(":visible")) {
     $thisSectionContent.slideUp();
-    $(this).find(".toggle-icon").text("Continue");
+    //$(this).find(".toggle-icon").text("Continue");
   } else {
     $thisSectionContent.slideDown();
-    $(this).find(".toggle-icon").text("Hide");
+    //$(this).find(".toggle-icon").text("Hide");
   }
 
 });
