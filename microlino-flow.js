@@ -307,9 +307,9 @@ function updatePrice() {
   
   const startDateStr = startDateInput.value;
   const ageAtStart = getAgeAtStart(driverBirthdateStr, startDateStr);
-  let price = 590.41;
+  let price = 590;
   if (ageAtStart < 21) {
-    price = 915.13;
+    price = 915;
   }
   priceValueEl.textContent = price.toLocaleString('de-DE', {
     style: 'currency',
