@@ -721,8 +721,10 @@ $("#quoteForm").on("submit", function(e) {
       errors = response.payload._validationErrors;
     }
     if (errors.length > 0) {
+
       var errorList = "";
       errors.forEach(function(error) {
+        console.warn("event - error - ", error.code);
         if(error.code == "CONTRACT_PERIOD_REQUIRED"){
         	errorList += "<p>Sie erhalten eine E-Mail mit einem Link zu Ihrem Angebot.</p>";
         } else {
@@ -738,6 +740,7 @@ $("#quoteForm").on("submit", function(e) {
       $("#errorModal").show();
     } else {
       // If payment object exists and contains an id, redirect to payment page.
+      console.warn("event - step - goToPayment");
       if (response.payload && response.payload.payment && response.payload.payment.id) {
         var redirectUrl = "https://appqoverme-ui.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" 
           + response.payload.id + "&paymentId=" + response.payload.payment.id + "&appId=q809unxlpt18fzf20zgb9vqu";
