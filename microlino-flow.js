@@ -198,6 +198,12 @@ $(document).ready(function(){
           $("#errorModal").show();
         } else {
           console.warn("quote retrieved");
+          dataLayer.push({
+            'event': 'generic',
+            'eventCategory': 'step',
+            'eventAction': 'apiCall',
+            'eventLabel': 'retrieved quote'
+          });
         }
       }).fail(function(jqXHR, textStatus, errorThrown) {
         console.error("Error:", textStatus, errorThrown);
@@ -219,6 +225,12 @@ $(".collapsible").click(function() {
   	console.log($thisSectionContent);
   	console.log($($thisSectionContent.prevObject[0]).data("step"));
     console.warn("event - step - ", $($thisSectionContent.prevObject[0]).data("step"));
+    dataLayer.push({
+      'event': 'generic',
+      'eventCategory': 'step',
+      'eventAction': 'click',
+      'eventLabel': $($thisSectionContent.prevObject[0]).data("step")
+    });
   	//var currentStep = $($thisSectionContent.prevObject[0]).data("step");
   	//$("a[step='"+currentStep+"'] .stepper-label").css("color", "orange");
   	
@@ -725,6 +737,12 @@ $("#quoteForm").on("submit", function(e) {
       var errorList = "";
       errors.forEach(function(error) {
         console.warn("event - error - ", error.code);
+        dataLayer.push({
+          'event': 'generic',
+          'eventCategory': 'error',
+          'eventAction': 'apiCall',
+          'eventLabel': error.code
+        });
         if(error.code == "CONTRACT_PERIOD_REQUIRED"){
         	errorList += "<p>Sie erhalten eine E-Mail mit einem Link zu Ihrem Angebot.</p>";
         } else {
@@ -741,6 +759,12 @@ $("#quoteForm").on("submit", function(e) {
     } else {
       // If payment object exists and contains an id, redirect to payment page.
       console.warn("event - step - goToPayment");
+      dataLayer.push({
+        'event': 'generic',
+        'eventCategory': 'step',
+        'eventAction': 'apiCall',
+        'eventLabel': 'goToPayment'
+      });
       if (response.payload && response.payload.payment && response.payload.payment.id) {
         var redirectUrl = "https://appqoverme-ui.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" 
           + response.payload.id + "&paymentId=" + response.payload.payment.id + "&appId=q809unxlpt18fzf20zgb9vqu";
