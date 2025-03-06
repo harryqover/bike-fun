@@ -218,6 +218,7 @@ $(".collapsible").click(function() {
 	console.log("$thisSectionContent");
   	console.log($thisSectionContent);
   	console.log($($thisSectionContent.prevObject[0]).data("step"));
+    console.warn("event - step - ", $($thisSectionContent.prevObject[0]).data("step"));
   	//var currentStep = $($thisSectionContent.prevObject[0]).data("step");
   	//$("a[step='"+currentStep+"'] .stepper-label").css("color", "orange");
   	
@@ -545,8 +546,6 @@ $("#quoteForm").on("submit", function(e) {
   $("#loadingOverlay").show();
 
   const formData = new FormData(this);
-  console.log("formData");
-  console.log(formData);
   const model = formData.get("model");
   const vin = formData.get("vin").trim();
   const vrn = formData.get("vrn").trim();
