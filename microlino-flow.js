@@ -610,7 +610,7 @@ $("#quoteForm").on("submit", function(e) {
   if (!vin) {
     $("#message").html('<p class="error">Die Fahrzeug-Identifikationsnummer (FIN) ist erforderlich.</p>');
     $("#loadingOverlay").hide();
-    return;
+    //return;
   }
   if (diplomaticCar === "yes") {
     $("#message").html('<p class="error">Anträge für Diplomatenfahrzeuge können nicht bearbeitet werden.</p>');
