@@ -743,8 +743,11 @@ $("#quoteForm").on("submit", function(e) {
           'eventAction': 'apiCall',
           'eventLabel': error.code
         });
+        
         if(error.code == "CONTRACT_PERIOD_REQUIRED"){
         	errorList += "<p>Sie erhalten eine E-Mail mit einem Link zu Ihrem Angebot.</p>";
+        } else if(error.code == "SUBJECT_VIN_REQUIRED"){
+          errorList += "<p>Die Fahrzeug-Identifikationsnummer (FIN) ist nicht erforderlich, um ein Angebot zu erhalten. Sie wird jedoch für den Abschluss des Versicherungsvertrags benötigt.</p>";
         } else {
         	errorList += "<p>" + error.code + " (Field: " + error.field + ")</p>";	
         }
