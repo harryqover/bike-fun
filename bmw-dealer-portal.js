@@ -6,7 +6,7 @@ $('#employeeEmail').val("harry+employee@qover.com")
     $('#customerName').val("harry")
     $('#customerEmail').val("harry+customer@qover.com")
 
-    
+
   document.getElementById('insuranceForm').addEventListener('submit', async function (event) {
     event.preventDefault(); // Prevent the default form submission
 
@@ -26,7 +26,7 @@ $('#employeeEmail').val("harry+employee@qover.com")
         model: vehicleModel,
         vehiclePurchaseDate: deliveryDate
       },
-      policyHolder: {
+      policyholder: {
         entityType: "ENTITY_TYPE_PERSON",
         email: customerEmail,
         firstName: customerName,
@@ -36,7 +36,7 @@ $('#employeeEmail').val("harry+employee@qover.com")
       language: "en",
       contractPeriod: {
         timeZone: "Europe/Dublin",
-        startDate: new Date().toISOString().split('T')[0] // Current date in YYYY-MM-DD format
+        startDate: new Date(deliveryDate).toISOString().split('T')[0] // Current date in YYYY-MM-DD format
       },
       metadata: {
         stepHistory: "dealer-portal",
