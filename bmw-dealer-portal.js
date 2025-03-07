@@ -1,4 +1,4 @@
-console.log("hello bmw 2");
+console.log("hello bmw 4");
 
 
   document.getElementById('insuranceForm').addEventListener('submit', async function (event) {
@@ -10,7 +10,6 @@ console.log("hello bmw 2");
     const deliveryDate = document.getElementById('deliveryDate').value;
     const customerName = document.getElementById('customerName').value;
     const customerEmail = document.getElementById('customerEmail').value;
-    const customerPhone = document.getElementById('customerPhone').value;
 
     // Prepare data for API request
     const requestData = {
