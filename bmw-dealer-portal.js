@@ -30,7 +30,6 @@ $('#employeeEmail').val("harry+employee@qover.com")
         entityType: "ENTITY_TYPE_PERSON",
         email: customerEmail,
         firstName: customerName,
-        phone: customerPhone,
       },
       productConfigurationId: "bmwmini",
       country: "IE",
