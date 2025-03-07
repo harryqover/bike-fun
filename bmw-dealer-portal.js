@@ -1,8 +1,16 @@
 console.log("hello bmw 4");
 
+$('#employeeEmail').val("harry+employee@qover.com")
+    $('#vehicleModel').val("BMW X5")
+    $('#deliveryDate').val("2025-03-31")
+    $('#customerName').val("harry")
+    $('#customerEmail').val("harry+customer@qover.com")
 
+    
   document.getElementById('insuranceForm').addEventListener('submit', async function (event) {
     event.preventDefault(); // Prevent the default form submission
+
+    
 
     // Extract form data
     const employeeEmail = document.getElementById('employeeEmail').value;
