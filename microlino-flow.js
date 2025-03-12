@@ -595,6 +595,11 @@ $("#quoteForm").on("submit", function(e) {
       $("#loadingOverlay").hide();
       return;
     }
+    if(ageAtStart > 116){
+      $("#message").html('<p class="error">Der jüngste Fahrer darf höchstens 116 Jahre alt sein.</p>');
+      $("#loadingOverlay").hide();
+      return;
+    }
     if (model === "lite" && ageAtStart < 15) {
       $("#message").html('<p class="error">Für den Microlino LITE muss der jüngste Fahrer mindestens 15 Jahre alt sein.</p>');
       $("#loadingOverlay").hide();
