@@ -231,7 +231,7 @@ function getNinjaData(cigarId, email) {
                 productLink = (partnerId == "6569f1426a95fa27a3fd6302")?"https://www.asgcare.dk/faq#coverage_helvetia":"https://insuremytesla.qover.com";
                 $("a[data-var='product']").attr("href",productLink);
             }
-            if(product =="PLEV"){
+            if(product == "PLEV"){
                 $("#action-menu-list").append('<a href="https://carrefour-assurance.qover.com/" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["makeaclaim"]+'</a>');
                 $("#action-menu-list").append('<a onclick="reSendEmail" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestresendcontractgreencard"]+'</a>');
                 $("#action-menu-list").append('<a href="https://carrefour-assurance.qover.com/resilier-votre-contrat" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["cancelcontract"]+'</a>');
@@ -247,14 +247,27 @@ function getNinjaData(cigarId, email) {
             if(product != "volvo"){
                 $("#action-menu-list").append('<a onclick="reSendEmail" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestresendcontract"]+'</a>');
             }
-            if(product == "volvo"){
+            if(["volvo","volvodemo"].includes(product)){
                 $("#action-menu-list").append('<a href="https://volvo-car-insurance.zendesk.com/hc/en-ie/requests/new" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestamend"]+'</a>');
                 $("#action-menu-list").append('<a href="https://volvo-car-insurance.zendesk.com/hc/en-ie/requests/new" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["cancelcontract"]+'</a>');
                 $("#action-menu-list").append('<a href="https://volvo-car-insurance.zendesk.com/hc/en-ie" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">FAQs</a>');
                 $("[data-var='makeaclaim']").attr("href","https://forms.qover.com/233112828692357?contract="+cigarId+"&email="+ email);
                 $("a[data-var='product']").attr("href","https://www.volvocarinsurance.ie/");
                 $("[data-var='riskPurchaseDate']").text(response.payload.risk.purchaseDate);
-                
+            }
+            if(["bmm"].includes(product)){
+                $("[data-var='makeaclaim']").attr("href","https://forms.qover.com/233112828692357?contract="+cigarId+"&email="+ email);
+                if(risk.id == "BMW"){
+                    $("#action-menu-list").append('<a href="https://bmw-car-insurance.zendesk.com/hc/en-ie/requests/new" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestamend"]+'</a>');
+                    $("#action-menu-list").append('<a href="https://bmw-car-insurance.zendesk.com/hc/en-ie/requests/new" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["cancelcontract"]+'</a>');
+                    $("a[data-var='product']").attr("href","/");
+                }
+                if(risk.id == "MINI"){
+                    $("#action-menu-list").append('<a href="https://mini-car-insurance.zendesk.com/hc/en-ie/requests/new" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestamend"]+'</a>');
+                    $("#action-menu-list").append('<a href="https://mini-car-insurance.zendesk.com/hc/en-ie/requests/new" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["cancelcontract"]+'</a>');
+                    $("a[data-var='product']").attr("href","/");
+                }
+                $("[data-var='riskPurchaseDate']").text(response.payload.risk.purchaseDate);
             }
             
             //$("#action-menu-list").append('<a href="https://'+zendeskSubDomain+'.zendesk.com/hc/'+zendeskLang+'/requests/new?tf_description=Contract%20reference:%20'+cigarId+'&tf_anonymous_requester_email=' + email+'" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["contact"]+'</a>');
