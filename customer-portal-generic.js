@@ -101,7 +101,10 @@ function getNinjaData(cigarId, email) {
             const currency = response.payload.currency;
             const lang = $('#langinput').find(":selected").val();
             const country = response.payload.refs.country;
-            const product = response.payload.refs.product;
+            var product = response.payload.refs.product;
+            if(product == "volvodemo"){
+                product = "volvo";
+            }
             const partnerId = response.payload.refs.partnerId;
 
             //START create var for zendesk lang based on zendesk locales availabilities
