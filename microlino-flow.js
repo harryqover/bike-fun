@@ -301,7 +301,7 @@ function updatePrice() {
   
   // If customer opts not to set start date, use default price.
   if(!$("#setStartDateNow").is(":checked") || !startDateInput.value) {
-    priceValueEl.textContent = "€590.41";
+    priceValueEl.textContent = "€590.00";
     return;
   }
   
