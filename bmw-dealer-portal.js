@@ -39,7 +39,7 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
       metadata: {
         stepHistory: "dealer-portal",
         lastStepAt: Date.now().toString(),
-        lastStepUrl: "https://appqoverme-ui.sbx.qover.io/bmm/risk?appId=m1yf5oeskryvn0cs89je3f8i&",
+        lastStepUrl: "https://appqoverme-ui.sbx.qover.io/bmm/risk?appId=m1yf5oeskryvn0cs89je3f8i",
         documentsSentByMailConsented: "true",
         termsAndConditionsConsented: "true",
         requestPaperCopy: "false"
