@@ -1,4 +1,4 @@
-console.log("hello bmw 8");
+console.log("hello bmw 9");
 
 $('#employeeEmail').val("harry+employee@qover.com")
     $('#vehicleModel').val("BMW X5")
@@ -45,35 +45,27 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
       },
       appId: "m1yf5oeskryvn0cs89je3f8i"
     };
-    const payload = {
-      payload: requestData,
-      action: "createQuote"
-    }
 
-    try {
-      // Send POST request to API endpoint
-      const response = await fetch('https://script.google.com/macros/s/AKfycbxzMsR5FrB4fouWlxZiHDjX5h6cXoXGQs7y3QElScz6PPm0ewkhymQ4P61Nm9QJwB2QDw/exec', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
+    var settings = {
+      url: "https://script.google.com/macros/s/AKfycbxzMsR5FrB4fouWlxZiHDjX5h6cXoXGQs7y3QElScz6PPm0ewkhymQ4P61Nm9QJwB2QDw/exec",
+      method: "POST",
+      timeout: 0,
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      data: JSON.stringify({
+        payload: requestData,
+        action: "createQuote"
+      })
+    };
+    
+    $.ajax(settings).done(function(response) {
+      console.log("draft created");
+      console.log(response);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const responseData = await response.json();
-
-      // Handle success (e.g., show confirmation to the employee)
-      alert('Insurance quote created successfully!');
-      console.log('Response:', responseData);
-    } catch (error) {
-      // Handle error (e.g., show error message)
-      alert('Failed to create insurance quote. Please try again.');
-      console.error('Error:', error);
-    }
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+      console.error("Error:", textStatus, errorThrown);
+    });
   });
 
 /*
