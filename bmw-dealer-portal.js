@@ -1,4 +1,4 @@
-console.log("hello bmw 5");
+console.log("hello bmw 6");
 
 $('#employeeEmail').val("harry+employee@qover.com")
     $('#vehicleModel').val("BMW X5")
@@ -53,9 +53,7 @@ $('#employeeEmail').val("harry+employee@qover.com")
       const response = await fetch('https://appqoverme-ui.sbx.qover.io/modules/policies/policy-quotes?appId=m1yf5oeskryvn0cs89je3f8i', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Origin': 'https://appqoverme-ui.sbx.qover.io'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(requestData)
       });
