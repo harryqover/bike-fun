@@ -54,7 +54,8 @@ $('#employeeEmail').val("harry+employee@qover.com")
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Origin': 'https://appqoverme-ui.sbx.qover.io'
         },
         body: JSON.stringify(requestData)
       });
