@@ -1,4 +1,4 @@
-console.log("hello bmw 12");
+console.log("hello bmw 13");
 
 $('#employeeEmail').val("harry+employee@qover.com")
     $('#vehicleModel').val("BMW X5")
@@ -67,11 +67,11 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
       console.log(response);
       console.log(response.payload.id);
       $("#loadingOverlay").hide(500);
-      $("#message").html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
+      $("#message").html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response.payload.id, null, 2) + "</pre>");
 
     }).fail(function(jqXHR, textStatus, errorThrown) {
       console.error("Error:", textStatus, errorThrown);
       $("#loadingOverlay").hide(500);
-      $("#message").html('<p class="error">An error occurred while creating the quote.</p>');
+      $("#message").html('<p class="error">An error occurred while creating the quote.</p><pre>' + JSON.stringify(response, null, 2) + '</pre>');
     });
   });
