@@ -683,7 +683,8 @@ $("#quoteForm").on("submit", function(e) {
       }
     },
     metadata:{
-    	terms: "acceptance,important,eligibility,general,interchangeablePlate"
+    	terms: "acceptance,important,eligibility,general,interchangeablePlate",
+      lastStepUrl: "http://microlino-insurance.qover.com/subscription?id="
     }
   };
 
