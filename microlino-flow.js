@@ -84,6 +84,7 @@ $(document).ready(function(){
   // If URL contains action=pay and id call API to redirect to payment
   if(urlParams.get("action") === "pay"){
   	$("#loadingOverlay").show();
+    console.log("starting payment flow");
   	// AJAX settings (using jQuery)
   	  var settings = {
   	    url: "https://script.google.com/macros/s/AKfycbz1WluaUb1mLRIw2FCdtmUDB0noSE0I6jOu-WVgXKL6q-UEDL6WFWfs9UXECZPjHEoW/exec",
@@ -97,7 +98,9 @@ $(document).ready(function(){
   	      action: "pay"
   	    })
   	  };
-  	  
+  	  console.log("settings");
+      console.log(settings);
+
   	  $.ajax(settings).done(function(response) {
   	    $("#loadingOverlay").hide();
   	    // Check for validation errors inside response.payload
