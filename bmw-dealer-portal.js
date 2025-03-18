@@ -17,6 +17,8 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
     const deliveryDate = document.getElementById('deliveryDate').value;
     const customerName = document.getElementById('customerName').value;
     const customerEmail = document.getElementById('customerEmail').value;
+    const customerEmail = document.getElementById('customerEmail').value;
+    const dealership = document.getElementById('dealership').value;
 
     // Prepare data for API request
     const requestData = {
@@ -40,6 +42,7 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
       metadata: {
         stepHistory: "dealer-portal",
         dealerReferrer: employeeEmail,
+        dealerStore: dealership,
         lastStepAt: Date.now().toString(),
         lastStepUrl: "https://appqoverme-ui.sbx.qover.io/bmm/risk?appId=m1yf5oeskryvn0cs89je3f8i",
         documentsSentByMailConsented: "true",
