@@ -414,8 +414,11 @@ $("#quoteForm").on("submit", function(e) {
       return;
     }
   }
-  console.log("zip.length()");
-  console.log(zip.length());
+  if (!/^\d{4}$/.test(zip)) {
+    $("#message").html('<p class="error">Bitte geben Sie eine gültige österreichische Postleitzahl (4 Ziffern) ein.</p>');
+    $("#loadingOverlay").hide();
+    return;
+  }
   
   if (!vin) {
     $("#message").html('<p class="error">Die Fahrzeug-Identifikationsnummer (FIN) ist erforderlich.</p>');
