@@ -141,9 +141,16 @@ $(document).ready(function(){
   	    } else {
   	      // If payment object exists and contains an id, redirect to payment page.
   	      if (response.payload && response.payload.payment && response.payload.payment.id) {
-  	        var redirectUrl = "https://appqoverme-ui.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" 
+            if(domain == "webflow.io"){
+             var redirectUrl1 = "https://appqoverme-ui.sbx.qover.io/subscription/pay/recurring/sepadd";
+            } else {
+             var redirectUrl1 = "https://app.qover.com/payout/pay/recurring/sepadd";
+            }
+            var redirectUrl2 = "?locale=de-AT&id=" + response.payload.id + "&paymentId=" + response.payload.payment.id + "&appId=q809unxlpt18fzf20zgb9vqu";
+  	        /*var redirectUrl = "https://appqoverme-ui.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" 
   	          + response.payload.id + "&paymentId=" + response.payload.payment.id + "&appId=q809unxlpt18fzf20zgb9vqu";
-  	        window.location.href = redirectUrl;
+              */
+  	        window.location.href = redirectUrl1 + redirectUrl2;
   	      } else {
   	        $("#message").html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
   	      }
