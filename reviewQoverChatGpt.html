@@ -105,6 +105,51 @@
     const partner = getParameterByName("partner");
     const country = getParameterByName("country");
     const minPublicRating = 3;
+    if(source == "emailClaimNPS" && rating > 0){
+        rating = rating /2;
+      }
+
+
+      console.warn(rating);
+
+        const googleSheetUrl = "https://script.google.com/macros/s/AKfycbyzxKUaL5DCzI3ND_9j4WgLW0-8eXH3wDG276jZD7wbwhTY8ut2FRIMTrkeHUQQOceD/exec";
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", googleSheetUrl, true);
+      xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
+      xhr.timeout = 0;
+      xhr.onreadystatechange = function() {
+        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+          console.log(this.responseText);
+          var ref = ((cigarId)?cigarId:zendeskId);
+            if (rating > minPublicRating) {
+              //var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://g.page/r/CeJV3VPdzwkCEAI/review"];//mix
+              //var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://www.trustpilot.com/evaluate/qover.com"];//full trustpilot
+              var redirectUrls = ["https://g.page/r/CeJV3VPdzwkCEAI/review","https://g.page/r/CeJV3VPdzwkCEAI/review", "https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com", "https://www.trustpilot.com/evaluate/qover.com"];//90% trustpilot
+              //var redirectUrls = ["https://g.page/r/CeJV3VPdzwkCEAI/review","https://g.page/r/CeJV3VPdzwkCEAI/review"];//full Google
+            var randomIndex = Math.floor(Math.random() * redirectUrls.length);
+            var urlToRedirect = redirectUrls[randomIndex];
+
+            if(cigarId == "Home Protect Tenant"){
+              urlToRedirect = "https://www.trustpilot.com/review/protect.immoweb.be"; 
+            }
+            /* to redirect emailClaimNPS to specific form
+            if(source == "emailClaimNPS"){
+              urlToRedirect = "https://forms.qover.com/232471409583055?contractReference="+ref+"&language="+lang+"&source="+source;
+            }*/
+
+            window.location.replace(urlToRedirect);
+              //window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
+          } else {
+            var urlToRedirect = "https://forms.qover.com/221674111787054?contractReference="+ref+"&language="+lang+"&source="+source;
+            if(source == "emailClaimNPS"){
+              urlToRedirect = "https://forms.qover.com/232471409583055?contractReference="+ref+"&language="+lang+"&source="+source; 
+            }
+            window.location.replace(urlToRedirect);
+          }
+          }
+      };
+      xhr.send(JSON.stringify({ cigarId: cigarId, rating: originalRating, zendeskId: zendeskId, source: source, product: product, partner: partner, country: country }));
 
     const translationH1 = {
       fr: "Merci pour vos commentaires !",
