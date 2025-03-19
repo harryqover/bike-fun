@@ -164,14 +164,33 @@
 
     let ref = cigarId || zendeskId;
 
+    const googleSheetUrl = "https://script.google.com/macros/s/AKfycbyzxKUaL5DCzI3ND_9j4WgLW0-8eXH3wDG276jZD7wbwhTY8ut2FRIMTrkeHUQQOceD/exec";
+
+    let urlToRedirect = "";
+    if (rating > minPublicRating) {
+      const redirectOptions = [
+        { url: "https://g.page/r/CeJV3VPdzwkCEAI/review", weight: 2 },
+        { url: "https://www.trustpilot.com/evaluate/qover.com", weight: 8 }
+      ];
+      const weightedRedirectUrls = redirectOptions.flatMap(opt => Array(opt.weight).fill(opt.url));
+      urlToRedirect = weightedRedirectUrls[Math.floor(Math.random() * weightedRedirectUrls.length)];
+      //urlToRedirect = redirectUrls[Math.floor(Math.random() * redirectUrls.length)];
+      if (cigarId === "Home Protect Tenant") {
+        urlToRedirect = "https://www.trustpilot.com/review/protect.immoweb.be";
+      }
+    } else {
+      urlToRedirect = `https://forms.qover.com/221674111787054?contractReference=${ref}&language=${lang}&source=${source}`;
+      if (source === "emailClaimNPS") {
+        urlToRedirect = `https://forms.qover.com/232471409583055?contractReference=${ref}&language=${lang}&source=${source}`;
+      }
+    }
+
     let seconds = 10;
     const countdownInterval = setInterval(() => {
       seconds--;
-      countdownText.textContent = `Redirecting in ${seconds} seconds...`;
+      countdownText.textContent = `Redirecting in ${seconds} seconds to ${urlToRedirect}`;
       if (seconds <= 0) clearInterval(countdownInterval);
     }, 1000);
-
-    const googleSheetUrl = "https://script.google.com/macros/s/AKfycbyzxKUaL5DCzI3ND_9j4WgLW0-8eXH3wDG276jZD7wbwhTY8ut2FRIMTrkeHUQQOceD/exec";
 
     const xhr = new XMLHttpRequest();
     xhr.open("POST", googleSheetUrl, true);
@@ -179,24 +198,7 @@
     xhr.onreadystatechange = function() {
       if (this.readyState === XMLHttpRequest.DONE) {
         if (this.status === 200) {
-          let urlToRedirect = "";
-          if (rating > minPublicRating) {
-            const redirectOptions = [
-              { url: "https://g.page/r/CeJV3VPdzwkCEAI/review", weight: 2 },
-              { url: "https://www.trustpilot.com/evaluate/qover.com", weight: 8 }
-            ];
-            const weightedRedirectUrls = redirectOptions.flatMap(opt => Array(opt.weight).fill(opt.url));
-            urlToRedirect = weightedRedirectUrls[Math.floor(Math.random() * weightedRedirectUrls.length)];
-            //urlToRedirect = redirectUrls[Math.floor(Math.random() * redirectUrls.length)];
-            if (cigarId === "Home Protect Tenant") {
-              urlToRedirect = "https://www.trustpilot.com/review/protect.immoweb.be";
-            }
-          } else {
-            urlToRedirect = `https://forms.qover.com/221674111787054?contractReference=${ref}&language=${lang}&source=${source}`;
-            if (source === "emailClaimNPS") {
-              urlToRedirect = `https://forms.qover.com/232471409583055?contractReference=${ref}&language=${lang}&source=${source}`;
-            }
-          }
+          
           setTimeout(() => { window.location.replace(urlToRedirect); }, 1);
         } else {
           fallbackMessage.classList.add('show');
