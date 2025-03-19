@@ -1,5 +1,6 @@
 <html>
 	<head>
+		<title>Review Qover</title>
 		<script>
 			function getParameterByName(a){a=a.replace(/[\[]/,"\\[").replace(/[\]]/,"\\]");a=new RegExp("[\\?\x26]"+a+"\x3d([^\x26#]*)");a=a.exec(location.search);return null===a?"":decodeURIComponent(a[1].replace(/\+/g," "))}
 		</script>
@@ -60,8 +61,7 @@
 			var zendeskId = getParameterByName("z");
 			var cigarId = getParameterByName("c");
 			var source = getParameterByName("s");
-			var lang = getParameterByName("l");
-			lang = lang.toLowerCase();
+			var lang = (getParameterByName("l") || "en").toLowerCase();
 			var product = getParameterByName("product");
 			var partner = getParameterByName("partner");
 			var country = getParameterByName("country");
