@@ -210,7 +210,7 @@
     xhr.onerror = function() {
       fallbackMessage.classList.add('show');
     }
-    xhr.send(JSON.stringify({ cigarId, rating: originalRating, zendeskId, "auto redirected", product, partner, country }));
+    xhr.send(JSON.stringify({ cigarId, rating: originalRating, zendeskId, source: "auto redirected", product, partner, country }));
     //xhr.send(JSON.stringify({ cigarId, rating: originalRating, zendeskId, source, product, partner, country }));
 
     setTimeout(() => { window.location.replace(urlToRedirect); }, 2000);
