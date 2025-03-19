@@ -121,17 +121,24 @@
       nl: "Bedankt voor uw feedback!",
       de: "Vielen Dank für Ihr Feedback!",
       it: "Grazie per il vostro feedback!",
-      pt: "Obrigado pelo seu feedback!"
+      pt: "Obrigado pelo seu feedback!",
+      da: "Tak for din feedback!",
+      no: "Takk for tilbakemeldingen!",
+      sv: "Tack för din feedback!"
     };
 
+
     const translationH2Positive = {
-      fr: "🌟 Laissez un avis public avant le 30 juin et nous ferons un don de 5 € à une association caritative. Ajoutez simplement votre référence Qover dans votre avis.",
+      fr: "🌟 Laissez un avis public avant le 30 juin et nous ferons un don de 5€ à une association caritative. Ajoutez simplement votre référence Qover dans votre avis.",
       en: "🎁 Leave a public review by 30 June and we’ll donate €5 to charity. Just add your Qover reference in your review!",
-      es: "🎁 Deja una reseña pública antes del 30 de junio y donaremos 5 € a una causa solidaria. Solo tienes que añadir tu referencia Qover en la reseña.",
+      es: "🎁 Deja una reseña pública antes del 30 de junio y donaremos 5€ a una causa solidaria. Solo tienes que añadir tu referencia Qover en la reseña.",
       nl: "🎁 Laat een publieke review achter voor 30 juni en wij doneren €5 aan een goed doel. Vergeet niet je Qover-referentie toe te voegen!",
-      de: "🎁 Hinterlassen Sie bis zum 30. Juni eine öffentliche Bewertung und wir spenden 5 € für einen guten Zweck. Bitte geben Sie Ihre Qover-Referenz an!",
-      it: "🎁 Lascia una recensione pubblica entro il 30 giugno e doneremo 5 € in beneficenza. Aggiungi il tuo riferimento Qover alla recensione!",
-      pt: "🎁 Deixe uma avaliação pública até 30 de junho e doaremos 5 € para caridade. Basta incluir a sua referência Qover na avaliação!"
+      de: "🎁 Hinterlassen Sie bis zum 30. Juni eine öffentliche Bewertung und wir spenden 5€ für einen guten Zweck. Bitte geben Sie Ihre Qover-Referenz an!",
+      it: "🎁 Lascia una recensione pubblica entro il 30 giugno e doneremo 5€ in beneficenza. Aggiungi il tuo riferimento Qover alla recensione!",
+      pt: "🎁 Deixe uma avaliação pública até 30 de junho e doaremos 5€ para caridade. Basta incluir a sua referência Qover na avaliação!",
+      da: "🎁 Skriv en offentlig anmeldelse inden den 30. juni, og vi donerer 5€ til velgørenhed. Husk at tilføje din Qover-reference i anmeldelsen!",
+      no: "🎁 Legg igjen en offentlig vurdering innen 30. juni, så donerer vi 5€ til veldedighet. Husk å legge til din Qover-referanse i vurderingen!",
+      sv: "🎁 Lämna en offentlig recension före den 30 juni så skänker vi 5€ till välgörenhet. Kom ihåg att inkludera din Qover-referens i recensionen!"
     };
 
     const translationH2Negative = {
@@ -141,8 +148,12 @@
       nl: "Wij zouden het leuk vinden om meer informatie te ontvangen.",
       de: "Wir würden uns freuen, mehr Informationen zu erhalten.",
       it: "Saremmo lieti di ricevere ulteriori informazioni.",
-      pt: "Gostaríamos de obter mais informações."
+      pt: "Gostaríamos de obter mais informações.",
+      da: "Vi vil meget gerne have mere information.",
+      no: "Vi ønsker gjerne mer informasjon.",
+      sv: "Vi vill gärna få mer information."
     };
+
 
     h1.textContent = translationH1[lang] || translationH1.en;
     h2.textContent = rating > minPublicRating ? translationH2Positive[lang] || translationH2Positive.en : translationH2Negative[lang] || translationH2Negative.en;
