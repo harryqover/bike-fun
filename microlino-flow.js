@@ -1,5 +1,22 @@
 console.log("20250317 1407")
 // Mapping API error field names to form input names
+function getRootDomain(hostname) {
+  const parts = hostname.split('.');
+
+  // Handle domains like co.uk, com.au, etc.
+  if (parts.length > 2) {
+    const tld = parts.slice(-2).join('.');
+    const knownTLDs = ['co.uk', 'com.au', 'org.uk', 'gov.uk']; // Add more as needed
+    if (knownTLDs.includes(tld)) {
+      return parts.slice(-3).join('.');
+    }
+  }
+
+  return parts.slice(-2).join('.');
+}
+
+const domain = getRootDomain(window.location.hostname);
+
 var fieldMapping = {
   "subject.underwriting.atFaultClaimsLast3Years": "claims",
   "subject.vin": "vin",
@@ -95,7 +112,8 @@ $(document).ready(function(){
   	    },
   	    data: JSON.stringify({
   	      payload: {"id":urlParams.get("id")},
-  	      action: "pay"
+  	      action: "pay",
+          domain: domain
   	    })
   	  };
   	  console.log("settings");
@@ -150,7 +168,8 @@ $(document).ready(function(){
         },
         data: JSON.stringify({
           payload: {"id":urlParams.get("id")},
-          action: "getQuote"
+          action: "getQuote",
+          domain: domain
         })
       };
       
@@ -730,7 +749,8 @@ $("#quoteForm").on("submit", function(e) {
     },
     data: JSON.stringify({
       payload: payload,
-      action: "createQuote"
+      action: "createQuote",
+      domain: domain
     })
   };
   
