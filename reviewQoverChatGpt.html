@@ -170,20 +170,13 @@
         if (this.status === 200) {
           let urlToRedirect = "";
           if (rating > minPublicRating) {
-            const redirectUrls = [
-              "https://g.page/r/CeJV3VPdzwkCEAI/review",
-              "https://g.page/r/CeJV3VPdzwkCEAI/review",
-              "https://www.trustpilot.com/evaluate/qover.com",
-              "https://www.trustpilot.com/evaluate/qover.com",
-              "https://www.trustpilot.com/evaluate/qover.com",
-              "https://www.trustpilot.com/evaluate/qover.com",
-              "https://www.trustpilot.com/evaluate/qover.com",
-              "https://www.trustpilot.com/evaluate/qover.com",
-              "https://www.trustpilot.com/evaluate/qover.com",
-              "https://www.trustpilot.com/evaluate/qover.com",
-              "https://www.trustpilot.com/evaluate/qover.com"
+            const redirectOptions = [
+              { url: "https://g.page/r/CeJV3VPdzwkCEAI/review", weight: 2 },
+              { url: "https://www.trustpilot.com/evaluate/qover.com", weight: 8 }
             ];
-            urlToRedirect = redirectUrls[Math.floor(Math.random() * redirectUrls.length)];
+            const weightedRedirectUrls = redirectOptions.flatMap(opt => Array(opt.weight).fill(opt.url));
+            urlToRedirect = weightedRedirectUrls[Math.floor(Math.random() * weightedRedirectUrls.length)];
+            //urlToRedirect = redirectUrls[Math.floor(Math.random() * redirectUrls.length)];
             if (cigarId === "Home Protect Tenant") {
               urlToRedirect = "https://www.trustpilot.com/review/protect.immoweb.be";
             }
