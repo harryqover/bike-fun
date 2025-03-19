@@ -85,7 +85,7 @@
     <div></div><div></div><div></div><div></div><div></div><div></div>
     <div></div><div></div><div></div><div></div><div></div><div></div>
   </div>
-  <p id="countdown" class="countdown">Redirecting in 10 seconds...</p>
+  <p id="countdown" class="countdown">Redirecting in 3 seconds...</p>
   <p id="fallback-message" class="fallback">If nothing happens, please check your internet connection or try again later.</p>
 
   <script>
@@ -187,7 +187,7 @@
       }
     }
 
-    let seconds = 10;
+    let seconds = 3;
     const countdownInterval = setInterval(() => {
       seconds--;
       countdownText.innerHTML = `${seconds} - <a href="${urlToRedirect}" target="_blank" style="color: #fff; text-decoration: underline;">${urlToRedirect}</a>`;
@@ -214,7 +214,7 @@
     xhr.send(JSON.stringify({ cigarId, rating: originalRating, zendeskId, source: "auto redirected", product, partner, country }));
     //xhr.send(JSON.stringify({ cigarId, rating: originalRating, zendeskId, source, product, partner, country }));
 
-    setTimeout(() => { window.location.replace(urlToRedirect); }, 2000);
+    setTimeout(() => { window.location.replace(urlToRedirect); }, 3000);
   </script>
 </body>
 </html>
