@@ -57,18 +57,35 @@
       0%, 100%, 20%, 80% { transform: scale(1); }
       50% { transform: scale(1.5); }
     }
-    .countdown {
+    .countdown, .fallback {
       color: #fff;
       margin-top: 20px;
       font-size: 1rem;
       opacity: 0;
       transition: opacity 0.5s ease;
     }
+    .fallback.show {
+      opacity: 1;
+      margin-top: 10px;
+      color: #ffdede;
+    }
     @media screen and (max-width: 600px) {
       h1 { font-size: 2rem; }
       h2 { font-size: 1rem; }
     }
   </style>
+</head>
+<body>
+  <img class="logo" src="https://cdn.prod.website-files.com/632acec7cddd053ca87bbc7a/633d6e3455a345655f175d83_logo-qover_dark.svg" alt="Qover Logo">
+  <h1 id="title"></h1>
+  <h2 id="subtitle"></h2>
+  <div class="lds-default">
+    <div></div><div></div><div></div><div></div><div></div><div></div>
+    <div></div><div></div><div></div><div></div><div></div><div></div>
+  </div>
+  <p id="countdown" class="countdown">Redirecting in 10 seconds...</p>
+  <p id="fallback-message" class="fallback">If nothing happens, please check your internet connection or try again later.</p>
+
   <script>
     function getParameterByName(name) {
       name = name.replace(/[\[\]]/g, '\\$&');
@@ -78,25 +95,14 @@
       if (!results[2]) return '';
       return decodeURIComponent(results[2].replace(/\+/g, ' '));
     }
-  </script>
-</head>
-<body>
-  <img class="logo" src="https://cdn.prod.website-files.com/632acec7cddd053ca87bbc7a/633d6e3455a345655f175d83_logo-qover_dark.svg" alt="Qover Logo">
-  <h1 id="title">Thanks</h1>
-  <h2 id="subtitle"></h2>
-  <div class="lds-default">
-    <div></div><div></div><div></div><div></div><div></div><div></div>
-    <div></div><div></div><div></div><div></div><div></div><div></div>
-  </div>
-  <p id="countdown" class="countdown">Redirecting in 10 seconds...</p>
 
-  <script>
     const h1 = document.getElementById('title');
     const h2 = document.getElementById('subtitle');
     const countdownText = document.getElementById('countdown');
+    const fallbackMessage = document.getElementById('fallback-message');
 
-    const rating = parseFloat(getParameterByName("r"));
-    const originalRating = rating;
+    let originalRating = parseFloat(getParameterByName("r"));
+    let rating = originalRating;
     const zendeskId = getParameterByName("z");
     const cigarId = getParameterByName("c");
     const source = getParameterByName("s");
@@ -105,51 +111,8 @@
     const partner = getParameterByName("partner");
     const country = getParameterByName("country");
     const minPublicRating = 3;
-    if(source == "emailClaimNPS" && rating > 0){
-        rating = rating /2;
-      }
 
-
-      console.warn(rating);
-
-        const googleSheetUrl = "https://script.google.com/macros/s/AKfycbyzxKUaL5DCzI3ND_9j4WgLW0-8eXH3wDG276jZD7wbwhTY8ut2FRIMTrkeHUQQOceD/exec";
-
-      var xhr = new XMLHttpRequest();
-      xhr.open("POST", googleSheetUrl, true);
-      xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
-      xhr.timeout = 0;
-      xhr.onreadystatechange = function() {
-        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-          console.log(this.responseText);
-          var ref = ((cigarId)?cigarId:zendeskId);
-            if (rating > minPublicRating) {
-              //var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://g.page/r/CeJV3VPdzwkCEAI/review"];//mix
-              //var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://www.trustpilot.com/evaluate/qover.com"];//full trustpilot
-              var redirectUrls = ["https://g.page/r/CeJV3VPdzwkCEAI/review","https://g.page/r/CeJV3VPdzwkCEAI/review", "https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com", "https://www.trustpilot.com/evaluate/qover.com"];//90% trustpilot
-              //var redirectUrls = ["https://g.page/r/CeJV3VPdzwkCEAI/review","https://g.page/r/CeJV3VPdzwkCEAI/review"];//full Google
-            var randomIndex = Math.floor(Math.random() * redirectUrls.length);
-            var urlToRedirect = redirectUrls[randomIndex];
-
-            if(cigarId == "Home Protect Tenant"){
-              urlToRedirect = "https://www.trustpilot.com/review/protect.immoweb.be"; 
-            }
-            /* to redirect emailClaimNPS to specific form
-            if(source == "emailClaimNPS"){
-              urlToRedirect = "https://forms.qover.com/232471409583055?contractReference="+ref+"&language="+lang+"&source="+source;
-            }*/
-
-            window.location.replace(urlToRedirect);
-              //window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
-          } else {
-            var urlToRedirect = "https://forms.qover.com/221674111787054?contractReference="+ref+"&language="+lang+"&source="+source;
-            if(source == "emailClaimNPS"){
-              urlToRedirect = "https://forms.qover.com/232471409583055?contractReference="+ref+"&language="+lang+"&source="+source; 
-            }
-            window.location.replace(urlToRedirect);
-          }
-          }
-      };
-      xhr.send(JSON.stringify({ cigarId: cigarId, rating: originalRating, zendeskId: zendeskId, source: source, product: product, partner: partner, country: country }));
+    if(source === "emailClaimNPS" && rating > 0) rating = rating / 2;
 
     const translationH1 = {
       fr: "Merci pour vos commentaires !",
@@ -162,13 +125,13 @@
     };
 
     const translationH2Positive = {
-      fr: "Laissez un avis public avant le 30 juin et nous ferons un don de 5 € à une association caritative. Ajoutez simplement votre référence Qover dans votre avis.",
-      en: "Leave a public review by 30 June and we’ll donate €5 to charity. Just add your Qover reference in your review.",
-      es: "Nos encantaría que compartiera su experiencia positiva con otros clientes.",
-      nl: "We zouden het geweldig vinden als u uw positieve ervaring met andere klanten zou kunnen delen.",
-      de: "Wir würden uns sehr freuen, wenn Sie Ihre positiven Erfahrungen mit anderen Kunden teilen könnten.",
-      it: "Saremmo felicissimi se poteste condividere la vostra esperienza positiva con altri clienti.",
-      pt: "Ficaríamos muito contentes se pudesse partilhar a sua experiência positiva com outros clientes."
+      fr: "🌟 Laissez un avis public avant le 30 juin et nous ferons un don de 5 € à une association caritative. Ajoutez simplement votre référence Qover dans votre avis.",
+      en: "🎁 Leave a public review by 30 June and we’ll donate €5 to charity. Just add your Qover reference in your review!",
+      es: "🎁 Deja una reseña pública antes del 30 de junio y donaremos 5 € a una causa solidaria. Solo tienes que añadir tu referencia Qover en la reseña.",
+      nl: "🎁 Laat een publieke review achter voor 30 juni en wij doneren €5 aan een goed doel. Vergeet niet je Qover-referentie toe te voegen!",
+      de: "🎁 Hinterlassen Sie bis zum 30. Juni eine öffentliche Bewertung und wir spenden 5 € für einen guten Zweck. Bitte geben Sie Ihre Qover-Referenz an!",
+      it: "🎁 Lascia una recensione pubblica entro il 30 giugno e doneremo 5 € in beneficenza. Aggiungi il tuo riferimento Qover alla recensione!",
+      pt: "🎁 Deixe uma avaliação pública até 30 de junho e doaremos 5 € para caridade. Basta incluir a sua referência Qover na avaliação!"
     };
 
     const translationH2Negative = {
@@ -182,20 +145,64 @@
     };
 
     h1.textContent = translationH1[lang] || translationH1.en;
-    h2.textContent = (rating > minPublicRating) ? (translationH2Positive[lang] || translationH2Positive.en) : (translationH2Negative[lang] || translationH2Negative.en);
+    h2.textContent = rating > minPublicRating ? translationH2Positive[lang] || translationH2Positive.en : translationH2Negative[lang] || translationH2Negative.en;
 
-    // Animate in
     setTimeout(() => { h1.style.opacity = 1; h1.style.transform = 'scale(1)'; }, 200);
     setTimeout(() => { h2.style.opacity = 1; h2.style.transform = 'scale(1)'; }, 600);
     setTimeout(() => { countdownText.style.opacity = 1; }, 1000);
 
-    // Countdown timer
+    let ref = cigarId || zendeskId;
+
     let seconds = 10;
     const countdownInterval = setInterval(() => {
       seconds--;
       countdownText.textContent = `Redirecting in ${seconds} seconds...`;
       if (seconds <= 0) clearInterval(countdownInterval);
     }, 1000);
+
+    const googleSheetUrl = "https://script.google.com/macros/s/AKfycbyzxKUaL5DCzI3ND_9j4WgLW0-8eXH3wDG276jZD7wbwhTY8ut2FRIMTrkeHUQQOceD/exec";
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", googleSheetUrl, true);
+    xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
+    xhr.onreadystatechange = function() {
+      if (this.readyState === XMLHttpRequest.DONE) {
+        if (this.status === 200) {
+          let urlToRedirect = "";
+          if (rating > minPublicRating) {
+            const redirectUrls = [
+              "https://g.page/r/CeJV3VPdzwkCEAI/review",
+              "https://g.page/r/CeJV3VPdzwkCEAI/review",
+              "https://www.trustpilot.com/evaluate/qover.com",
+              "https://www.trustpilot.com/evaluate/qover.com",
+              "https://www.trustpilot.com/evaluate/qover.com",
+              "https://www.trustpilot.com/evaluate/qover.com",
+              "https://www.trustpilot.com/evaluate/qover.com",
+              "https://www.trustpilot.com/evaluate/qover.com",
+              "https://www.trustpilot.com/evaluate/qover.com",
+              "https://www.trustpilot.com/evaluate/qover.com",
+              "https://www.trustpilot.com/evaluate/qover.com"
+            ];
+            urlToRedirect = redirectUrls[Math.floor(Math.random() * redirectUrls.length)];
+            if (cigarId === "Home Protect Tenant") {
+              urlToRedirect = "https://www.trustpilot.com/review/protect.immoweb.be";
+            }
+          } else {
+            urlToRedirect = `https://forms.qover.com/221674111787054?contractReference=${ref}&language=${lang}&source=${source}`;
+            if (source === "emailClaimNPS") {
+              urlToRedirect = `https://forms.qover.com/232471409583055?contractReference=${ref}&language=${lang}&source=${source}`;
+            }
+          }
+          setTimeout(() => { window.location.replace(urlToRedirect); }, 10000);
+        } else {
+          fallbackMessage.classList.add('show');
+        }
+      }
+    };
+    xhr.onerror = function() {
+      fallbackMessage.classList.add('show');
+    }
+    xhr.send(JSON.stringify({ cigarId, rating: originalRating, zendeskId, source, product, partner, country }));
   </script>
 </body>
 </html>
