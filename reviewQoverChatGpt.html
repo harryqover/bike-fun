@@ -188,9 +188,10 @@
     let seconds = 10;
     const countdownInterval = setInterval(() => {
       seconds--;
-      countdownText.textContent = `Redirecting in ${seconds} seconds to ${urlToRedirect}`;
+      countdownText.innerHTML = `${seconds} - <a href="${urlToRedirect}" target="_blank" style="color: #fff; text-decoration: underline;">${urlToRedirect}</a>`;
       if (seconds <= 0) clearInterval(countdownInterval);
     }, 1000);
+
 
     const xhr = new XMLHttpRequest();
     xhr.open("POST", googleSheetUrl, true);
