@@ -1,179 +1,219 @@
-<html>
-	<head>
-		<title>Review Qover</title>
-		<script>
-			function getParameterByName(a){a=a.replace(/[\[]/,"\\[").replace(/[\]]/,"\\]");a=new RegExp("[\\?\x26]"+a+"\x3d([^\x26#]*)");a=a.exec(location.search);return null===a?"":decodeURIComponent(a[1].replace(/\+/g," "))}
-		</script>
-		<style>
-			@import url('https://fonts.googleapis.com/css2?family=Albert+Sans&display=swap');
-			.lds-default{display:inline-block;position:relative;width:80px;height:80px}.lds-default div{position:absolute;width:6px;height:6px;background:white;border-radius:50%;animation:1.2s linear infinite lds-default}.lds-default div:first-child{animation-delay:0s;top:37px;left:66px}.lds-default div:nth-child(2){animation-delay:-.1s;top:22px;left:62px}.lds-default div:nth-child(3){animation-delay:-.2s;top:11px;left:52px}.lds-default div:nth-child(4){animation-delay:-.3s;top:7px;left:37px}.lds-default div:nth-child(5){animation-delay:-.4s;top:11px;left:22px}.lds-default div:nth-child(6){animation-delay:-.5s;top:22px;left:11px}.lds-default div:nth-child(7){animation-delay:-.6s;top:37px;left:7px}.lds-default div:nth-child(8){animation-delay:-.7s;top:52px;left:11px}.lds-default div:nth-child(9){animation-delay:-.8s;top:62px;left:22px}.lds-default div:nth-child(10){animation-delay:-.9s;top:66px;left:37px}.lds-default div:nth-child(11){animation-delay:-1s;top:62px;left:52px}.lds-default div:nth-child(12){animation-delay:-1.1s;top:52px;left:62px}@keyframes lds-default{0%,100%,20%,80%{transform:scale(1)}50%{transform:scale(1.5)}}
-			body{
-			    background-color: #3e6ae1;
-			    background-image: radial-gradient(circle farthest-side at 0 0,#5c85f1,#234ec2);
-			    flex-direction: column;
-			    justify-content: center;
-			    align-items: center;
-			    display: flex;
-			    position: fixed;
-			    top: 0%;
-			    bottom: 0%;
-			    left: 0%;
-			    right: 0%;
-			    font-family: Albert Sans,sans-serif;
-			}
-			h1{
-				color: #fff;
-			    text-align: center;
-			    margin-left: 40px;
-			    margin-right: 40px;
-			    font-size: 64px;
-			    line-height: 68px;
-			    filter: blur(5px);
-			    transform: scale(0.5); /* initial scale */
-				opacity: 0; /* initial opacity */
-				transition: all 1s ease-out; /* transition effect */
-			}
-			h2{
-				color: #fff;
-			    text-align: center;
-			    font-weight: 400;
-				margin-top: 20px;
-			    font-size: 24px;
-			    line-height: 30px;
-			    transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
-			    opacity: 1;
-			    filter: blur(0px);
-			    transform-style: preserve-3d;
-			    filter: blur(5px);
-			    transform: scale(0.5); /* initial scale */
-				opacity: 0; /* initial opacity */
-				transition: all 1s ease-out; /* transition effect */
-			}
-		</style>
-	</head>
-	<body>
-		<h1>Thanks</h1>
-		<h2></h2>
-		<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-		<script>
-			var originalRating = getParameterByName("r");
-			var rating = originalRating;
-			var zendeskId = getParameterByName("z");
-			var cigarId = getParameterByName("c");
-			var source = getParameterByName("s");
-			var lang = (getParameterByName("l") || "en").toLowerCase();
-			var product = getParameterByName("product");
-			var partner = getParameterByName("partner");
-			var country = getParameterByName("country");
-			var minPublicRating = 3;
-			const h1 = document.querySelector('h1');
-			const h2 = document.querySelector('h2');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review Qover</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Albert+Sans&display=swap');
+    body {
+      background-color: #fff;
+      /*background-image: radial-gradient(circle farthest-side at 0 0, #5c85f1, #234ec2);*/
+      background-image: linear-gradient(to bottom,#ffffff80,#ffffff80),radial-gradient(circle farthest-side at 0% 100%,var(--coral),#d6f6f900 50%),radial-gradient(circle farthest-corner at 0% 0%,#2f44dd4d,#fff0 58%),radial-gradient(circle farthest-corner at 100% 0%,#2fd4df66,#fff0 36%);
+      font-family: 'Albert Sans', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+      text-align: center;
+    }
+    .logo {
+      max-width: 160px;
+      margin-bottom: 30px;
+    }
+    h1 {
+      color: #081425;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 1s ease-out;
+    }
+    h2 {
+      color: #081425;
+      font-size: 1.25rem;
+      font-weight: 400;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 1s ease-out;
+    }
+    .lds-default {
+      display: inline-block;
+      position: relative;
+      width: 80px;
+      height: 80px;
+      margin-top: 2rem;
+    }
+    .lds-default div {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+      animation: lds-default 1.2s linear infinite;
+    }
+    @keyframes lds-default {
+      0%, 100%, 20%, 80% { transform: scale(1); }
+      50% { transform: scale(1.5); }
+    }
+    .countdown, .fallback {
+      color: #081425;
+      margin-top: 20px;
+      font-size: 1rem;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .fallback.show {
+      opacity: 1;
+      margin-top: 10px;
+      color: #ffdede;
+    }
+    @media screen and (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      h2 { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <!--<img class="logo" src="https://cdn.prod.website-files.com/632acec7cddd053ca87bbc7a/633d6e378e2320dede9f58ac_logo-qover_white.svg" alt="Qover Logo">-->
+  <img class="logo" src="https://cdn.prod.website-files.com/632acec7cddd053ca87bbc7a/633d6e3455a345655f175d83_logo-qover_dark.svg" alt="Qover Logo">
+  <h1 id="title"></h1>
+  <h2 id="subtitle"></h2>
+  <div class="lds-default">
+    <div></div><div></div><div></div><div></div><div></div><div></div>
+    <div></div><div></div><div></div><div></div><div></div><div></div>
+  </div>
+  <p id="countdown" class="countdown">Redirecting in 3 seconds...</p>
+  <p id="fallback-message" class="fallback">If nothing happens, please check your internet connection or try again later.</p>
 
-			if(source == "emailClaimNPS" && rating > 0){
-				rating = rating /2;
-			}
+  <script>
+    function getParameterByName(name) {
+      name = name.replace(/[\[\]]/g, '\\$&');
+      const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+      const results = regex.exec(window.location.href);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    const h1 = document.getElementById('title');
+    const h2 = document.getElementById('subtitle');
+    const countdownText = document.getElementById('countdown');
+    const fallbackMessage = document.getElementById('fallback-message');
+
+    let originalRating = parseFloat(getParameterByName("r"));
+    let rating = originalRating;
+    const zendeskId = getParameterByName("z");
+    const cigarId = getParameterByName("c");
+    const source = getParameterByName("s");
+    const lang = (getParameterByName("l") || "en").toLowerCase();
+    const product = getParameterByName("product");
+    const partner = getParameterByName("partner");
+    const country = getParameterByName("country");
+    const minPublicRating = 3;
+
+    if(source === "emailClaimNPS" && rating > 0) rating = rating / 2;
+
+    const translationH1 = {
+      fr: "Merci pour vos commentaires !",
+      en: "Thank you for your feedback!",
+      es: "Gracias por sus comentarios.",
+      nl: "Bedankt voor uw feedback!",
+      de: "Vielen Dank für Ihr Feedback!",
+      it: "Grazie per il vostro feedback!",
+      pt: "Obrigado pelo seu feedback!",
+      da: "Tak for din feedback!",
+      no: "Takk for tilbakemeldingen!",
+      sv: "Tack för din feedback!"
+    };
 
 
-			console.warn(rating);
+    const translationH2Positive = {
+      fr: "🌟 Laissez un avis public avant le 30 juin et nous ferons un don de 5€ à une association caritative. Ajoutez simplement votre référence Qover dans votre avis.",
+      en: "🎁 Leave a public review by 30 June and we’ll donate €5 to charity. Just add your Qover reference in your review!",
+      es: "🎁 Deja una reseña pública antes del 30 de junio y donaremos 5€ a una causa solidaria. Solo tienes que añadir tu referencia Qover en la reseña.",
+      nl: "🎁 Laat een publieke review achter voor 30 juni en wij doneren €5 aan een goed doel. Vergeet niet je Qover-referentie toe te voegen!",
+      de: "🎁 Hinterlassen Sie bis zum 30. Juni eine öffentliche Bewertung und wir spenden 5€ für einen guten Zweck. Bitte geben Sie Ihre Qover-Referenz an!",
+      it: "🎁 Lascia una recensione pubblica entro il 30 giugno e doneremo 5€ in beneficenza. Aggiungi il tuo riferimento Qover alla recensione!",
+      pt: "🎁 Deixe uma avaliação pública até 30 de junho e doaremos 5€ para caridade. Basta incluir a sua referência Qover na avaliação!",
+      da: "🎁 Skriv en offentlig anmeldelse inden den 30. juni, og vi donerer 5€ til velgørenhed. Husk at tilføje din Qover-reference i anmeldelsen!",
+      no: "🎁 Legg igjen en offentlig vurdering innen 30. juni, så donerer vi 5€ til veldedighet. Husk å legge til din Qover-referanse i vurderingen!",
+      sv: "🎁 Lämna en offentlig recension före den 30 juni så skänker vi 5€ till välgörenhet. Kom ihåg att inkludera din Qover-referens i recensionen!"
+    };
 
-		    var googleSheetUrl = "https://script.google.com/macros/s/AKfycbyzxKUaL5DCzI3ND_9j4WgLW0-8eXH3wDG276jZD7wbwhTY8ut2FRIMTrkeHUQQOceD/exec";
+    const translationH2Negative = {
+      fr: "Nous serions ravis d'obtenir de plus amples informations.",
+      en: "We would love to get more information.",
+      es: "Estaremos encantados de recibir más información.",
+      nl: "Wij zouden het leuk vinden om meer informatie te ontvangen.",
+      de: "Wir würden uns freuen, mehr Informationen zu erhalten.",
+      it: "Saremmo lieti di ricevere ulteriori informazioni.",
+      pt: "Gostaríamos de obter mais informações.",
+      da: "Vi vil meget gerne have mere information.",
+      no: "Vi ønsker gjerne mer informasjon.",
+      sv: "Vi vill gärna få mer information."
+    };
 
-			var xhr = new XMLHttpRequest();
-			xhr.open("POST", googleSheetUrl, true);
-			xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
-			xhr.timeout = 0;
-			xhr.onreadystatechange = function() {
-				if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-					console.log(this.responseText);
-					var ref = ((cigarId)?cigarId:zendeskId);
-				    if (rating > minPublicRating) {
-				    	//var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://g.page/r/CeJV3VPdzwkCEAI/review"];//mix
-				    	//var redirectUrls = ["https://www.trustpilot.com/evaluate/qover.com", "https://www.trustpilot.com/evaluate/qover.com"];//full trustpilot
-				    	var redirectUrls = ["https://g.page/r/CeJV3VPdzwkCEAI/review","https://g.page/r/CeJV3VPdzwkCEAI/review", "https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com","https://www.trustpilot.com/evaluate/qover.com", "https://www.trustpilot.com/evaluate/qover.com"];//90% trustpilot
-				    	//var redirectUrls = ["https://g.page/r/CeJV3VPdzwkCEAI/review","https://g.page/r/CeJV3VPdzwkCEAI/review"];//full Google
-						var randomIndex = Math.floor(Math.random() * redirectUrls.length);
-						var urlToRedirect = redirectUrls[randomIndex];
 
-						if(cigarId == "Home Protect Tenant"){
-							urlToRedirect = "https://www.trustpilot.com/review/protect.immoweb.be";	
-						}
-						/* to redirect emailClaimNPS to specific form
-						if(source == "emailClaimNPS"){
-							urlToRedirect = "https://forms.qover.com/232471409583055?contractReference="+ref+"&language="+lang+"&source="+source;
-						}*/
+    h1.textContent = translationH1[lang] || translationH1.en;
+    h2.textContent = rating > minPublicRating ? translationH2Positive[lang] || translationH2Positive.en : translationH2Negative[lang] || translationH2Negative.en;
 
-						window.location.replace(urlToRedirect);
-					  	//window.location.replace("https://www.trustpilot.com/evaluate/qover.com");
-					} else {
-						var urlToRedirect = "https://forms.qover.com/221674111787054?contractReference="+ref+"&language="+lang+"&source="+source;
-						if(source == "emailClaimNPS"){
-							urlToRedirect = "https://forms.qover.com/232471409583055?contractReference="+ref+"&language="+lang+"&source="+source;	
-						}
-						window.location.replace(urlToRedirect);
-					}
-			    }
-			};
-			xhr.send(JSON.stringify({ cigarId: cigarId, rating: originalRating, zendeskId: zendeskId, source: source, product: product, partner: partner, country: country }));
-			const translationH1 = {
-				"fr": "Merci pour vos commentaires !",
-				"en": "Thank you for your feedback!",
-				"es": "Gracias por sus comentarios.",
-				"nl": "Bedankt voor uw feedback!",
-				"de": "Vielen Dank für Ihr Feedback!",
-				"it": "Grazie per il vostro feedback!",
-				"pt": "Obrigado pelo seu feedback!"
-			}
-			const textH1 = translationH1[lang];
+    setTimeout(() => { h1.style.opacity = 1; h1.style.transform = 'scale(1)'; }, 200);
+    setTimeout(() => { h2.style.opacity = 1; h2.style.transform = 'scale(1)'; }, 600);
+    setTimeout(() => { countdownText.style.opacity = 1; }, 1000);
 
-			/*
-			const translationH2Positive = {
-				"fr": "Nous serions ravis que vous puissiez partager votre expérience positive avec d'autres clients.",
-				"en": "We would be over the moon if you could share your positive experience with other customers.",
-				"es": "Nos encantaría que compartiera su experiencia positiva con otros clientes.",
-				"nl": "We zouden het geweldig vinden als u uw positieve ervaring met andere klanten zou kunnen delen.",
-				"de": "Wir würden uns sehr freuen, wenn Sie Ihre positiven Erfahrungen mit anderen Kunden teilen könnten.",
-				"it": "Saremmo felicissimi se poteste condividere la vostra esperienza positiva con altri clienti.",
-				"pt": "Ficaríamos muito contentes se pudesse partilhar a sua experiência positiva com outros clientes."
-			}*/
-			const translationH2Positive = {
-				"fr": "Laissez un avis public avant le 30 juin et nous ferons un don de 5 € à une association caritative. Ajoutez simplement votre référence Qover dans votre avis.",
-				"en": "Leave a public review by 30 June and we’ll donate €5 to charity. Just add your Qover reference in your review.",
-				"es": "Nos encantaría que compartiera su experiencia positiva con otros clientes.",
-				"nl": "We zouden het geweldig vinden als u uw positieve ervaring met andere klanten zou kunnen delen.",
-				"de": "Wir würden uns sehr freuen, wenn Sie Ihre positiven Erfahrungen mit anderen Kunden teilen könnten.",
-				"it": "Saremmo felicissimi se poteste condividere la vostra esperienza positiva con altri clienti.",
-				"pt": "Ficaríamos muito contentes se pudesse partilhar a sua experiência positiva com outros clientes."
-			}
-			const textH2Positive = translationH2Positive[lang];
+    let ref = cigarId || zendeskId;
 
-			const translationH2Negative = {
-				"fr": "Nous serions ravis d'obtenir de plus amples informations.",
-				"en": "We would love to get more information.",
-				"es": "Estaremos encantados de recibir más información.",
-				"nl": "Wij zouden het leuk vinden om meer informatie te ontvangen.",
-				"de": "Wir würden uns freuen, mehr Informationen zu erhalten.",
-				"it": "Saremmo lieti di ricevere ulteriori informazioni.",
-				"pt": "Gostaríamos de obter mais informações."
-			}
-			const textH2Negative = translationH2Negative[lang];
+    const googleSheetUrl = "https://script.google.com/macros/s/AKfycbyzxKUaL5DCzI3ND_9j4WgLW0-8eXH3wDG276jZD7wbwhTY8ut2FRIMTrkeHUQQOceD/exec";
 
-			if (rating > minPublicRating) {
-				h1.textContent = textH1;
-				h2.textContent = textH2Positive;
-			} else {
-				h1.textContent = textH1;
-				h2.textContent = textH2Negative;
-			}
-			h1.style.filter = 'blur(0)';
-		    h1.style.transform = 'scale(1)';
-		    h1.style.opacity = 1;
-			setTimeout(function() {
-			    h2.style.filter = 'blur(0)';
-			    h2.style.transform = 'scale(1)';
-		    	h2.style.opacity = 1;
-			  }, 500);
+    let urlToRedirect = "";
+    if (rating > minPublicRating) {
+      const redirectOptions = [
+        { url: "https://g.page/r/CeJV3VPdzwkCEAI/review", weight: 2 },
+        { url: "https://www.trustpilot.com/evaluate/qover.com", weight: 8 }
+      ];
+      const weightedRedirectUrls = redirectOptions.flatMap(opt => Array(opt.weight).fill(opt.url));
+      urlToRedirect = weightedRedirectUrls[Math.floor(Math.random() * weightedRedirectUrls.length)];
+      //urlToRedirect = redirectUrls[Math.floor(Math.random() * redirectUrls.length)];
+      if (cigarId === "Home Protect Tenant") {
+        urlToRedirect = "https://www.trustpilot.com/review/protect.immoweb.be";
+      }
+    } else {
+      urlToRedirect = `https://forms.qover.com/221674111787054?contractReference=${ref}&language=${lang}&source=${source}`;
+      if (source === "emailClaimNPS") {
+        urlToRedirect = `https://forms.qover.com/232471409583055?contractReference=${ref}&language=${lang}&source=${source}`;
+      }
+    }
 
-			console.log("https://harryqover.github.io/bike-fun/reviewQover?r=8&z=56788&c=BE109817398&s=emailClaimNPS&l=FR");
-		</script>
-	</body>
+    let seconds = 5;
+    const countdownInterval = setInterval(() => {
+      seconds--;
+      countdownText.innerHTML = `${seconds} - <a href="${urlToRedirect}" target="_blank" style="color: #081425; text-decoration: underline;">${urlToRedirect}</a>`;
+      if (seconds <= 0) clearInterval(countdownInterval);
+    }, 1000);
+
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", googleSheetUrl, true);
+    xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
+    xhr.onreadystatechange = function() {
+      if (this.readyState === XMLHttpRequest.DONE) {
+        if (this.status === 200) {
+          
+          setTimeout(() => { window.location.replace(urlToRedirect); }, 1);
+        } else {
+          fallbackMessage.classList.add('show');
+        }
+      }
+    };
+    xhr.onerror = function() {
+      fallbackMessage.classList.add('show');
+    }
+    xhr.send(JSON.stringify({ cigarId, rating: originalRating, zendeskId, source, product, partner, country }));
+
+    setTimeout(() => { window.location.replace(urlToRedirect); }, 5000);
+  </script>
+</body>
 </html>

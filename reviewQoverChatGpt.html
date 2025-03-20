@@ -187,7 +187,7 @@
       }
     }
 
-    let seconds = 3;
+    let seconds = 5;
     const countdownInterval = setInterval(() => {
       seconds--;
       countdownText.innerHTML = `${seconds} - <a href="${urlToRedirect}" target="_blank" style="color: #081425; text-decoration: underline;">${urlToRedirect}</a>`;
@@ -213,7 +213,7 @@
     }
     xhr.send(JSON.stringify({ cigarId, rating: originalRating, zendeskId, source, product, partner, country }));
 
-    setTimeout(() => { window.location.replace(urlToRedirect); }, 3000);
+    setTimeout(() => { window.location.replace(urlToRedirect); }, 5000);
   </script>
 </body>
 </html>
