@@ -18,7 +18,6 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
     const deliveryDate = document.getElementById('deliveryDate').value;
     const customerName = document.getElementById('customerName').value;
     const customerEmail = document.getElementById('customerEmail').value;
-    const customerEmail = document.getElementById('customerEmail').value;
     const dealership = document.getElementById('dealership').value;
 
     // Prepare data for API request
