@@ -1090,6 +1090,9 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+vehicleMakeDropdown.value = "mini";
+vehicleMakeDropdown.dispatchEvent(new Event("change"));
+
 // FORM SUBMISSION
 document.getElementById('insuranceForm').addEventListener('submit', async function (event) {
     event.preventDefault(); // Prevent the default form submission
