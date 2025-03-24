@@ -1,4 +1,4 @@
-console.log("20250324 1119")
+console.log("20250324 1131")
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
   const parts = hostname.split('.');
