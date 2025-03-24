@@ -75,6 +75,10 @@ $("#setStartDateNow").on("change", function() {
 
 // Collapse all sections except the first one on load.
 $(document).ready(function(){
+  $("#quoteForm").on("focus", "[required]", function () {
+    $(this).css("border", "1px solid #E2E2E2");
+  });
+
   $(".section").each(function(index) {
     if(index !== 0) {
       $(this).find(".section-content").hide();
