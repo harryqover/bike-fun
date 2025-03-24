@@ -1,4 +1,4 @@
-console.log("20250324 1028")
+console.log("20250324 1119")
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
   const parts = hostname.split('.');
@@ -381,6 +381,39 @@ $("#quoteForm").on("submit", function(e) {
   // Reset any previous error highlighting
   $("input").css("border", "1px solid #E2E2E2");
   $("#message").html("");
+
+  //START HANDLE INPUT NOT FILLED IN
+    // Manually validate all required visible inputs
+    let hasError = false;
+
+    $("#quoteForm [required]").each(function () {
+      const $field = $(this);
+
+      // Check if inside a hidden section
+      if ($field.closest(".section-content").css("display") === "none") {
+        // Show the section so the field can be focused
+        $field.closest(".section-content").slideDown();
+      }
+
+      // Check if the field is empty
+      if (!$field.val() || ($field.is(":checkbox") && !$field.is(":checked"))) {
+        $field.css("border", "2px solid red");
+        hasError = true;
+      }
+    });
+
+    if (hasError) {
+      $("#message").html('<p class="error">Bitte füllen Sie alle erforderlichen Felder aus.</p>');
+      $("#loadingOverlay").hide();
+      // Scroll to first error
+      $('html, body').animate({
+        scrollTop: $("#quoteForm [required]").filter(function () {
+          return !$(this).val() || ($(this).is(":checkbox") && !$(this).is(":checked"));
+        }).first().offset().top - 100
+      }, 600);
+      return;
+    }
+  //STOP HANDLE INPUT NOT FILLED IN
   
   // Show loading overlay
   $("#loadingOverlay").show();
