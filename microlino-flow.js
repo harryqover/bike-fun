@@ -447,7 +447,7 @@ $("#quoteForm").on("submit", function(e) {
   
   if (!vin) {
     $("#message").html('<p class="warning">Die Fahrzeug-Identifikationsnummer (FIN) ist nicht erforderlich, um ein Angebot zu erhalten. Sie wird jedoch für den Abschluss des Versicherungsvertrags benötigt.</p>');
-    $("#loadingOverlay").hide();
+    //$("#loadingOverlay").hide();
     //return;
   }
   if (diplomaticCar === "yes") {
