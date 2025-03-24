@@ -1,4 +1,4 @@
-console.log("hello bmwmini 16");
+console.log("hello bmwmini 17");
 /*
 $('#employeeEmail').val("employee@dealer.com")
 $('#vehicleModel').val("your model")
@@ -1056,6 +1056,9 @@ document.addEventListener("DOMContentLoaded", function () {
       .map(item => item.model);
 
     const uniqueModels = [...new Set(modelsForMake)];
+    
+    console.log("modelsForMake", modelsForMake);
+    console.log("uniqueModels", uniqueModels);
 
     if (uniqueModels.length > 0) {
       vehicleModelDropdown.disabled = false;
@@ -1067,9 +1070,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   });
-
-  console.log("modelsForMake", modelsForMake);
-  console.log("uniqueModels", uniqueModels);
 
   // On model change, populate extended models
   vehicleModelDropdown.addEventListener("change", function () {
