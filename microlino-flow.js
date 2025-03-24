@@ -365,6 +365,9 @@ function updatePrice() {
   if (ageAtStart < 21) {
     price = 915;
     taxPrice =  92.07;
+    $(".info-message").show(250);
+  } else {
+    $(".info-message").hide(250);
   }
   priceValueEl.textContent = price.toLocaleString('de-DE', {
     style: 'currency',
