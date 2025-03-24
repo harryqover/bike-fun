@@ -389,15 +389,10 @@ $("#quoteForm").on("submit", function(e) {
   //START HANDLE INPUT NOT FILLED IN
     // Manually validate all required visible inputs
     let hasError = false;
-
+    console.log('checking missing required start');
     $("#quoteForm [required]").each(function () {
       const $field = $(this);
-
-      // Check if inside a hidden section
-      if ($field.closest(".section-content").css("display") === "none") {
-        // Show the section so the field can be focused
-        $field.closest(".section-content").slideDown();
-      }
+      console.log('checking missing required start', $field);
 
       // Check if the field is empty
       if (!$field.val() || ($field.is(":checkbox") && !$field.is(":checked"))) {
@@ -405,16 +400,10 @@ $("#quoteForm").on("submit", function(e) {
         hasError = true;
       }
     });
-
+    console.log('checking missing required end', hasError);
     if (hasError) {
       $("#message").html('<p class="error">Bitte füllen Sie alle erforderlichen Felder aus.</p>');
       $("#loadingOverlay").hide();
-      // Scroll to first error
-      $('html, body').animate({
-        scrollTop: $("#quoteForm [required]").filter(function () {
-          return !$(this).val() || ($(this).is(":checkbox") && !$(this).is(":checked"));
-        }).first().offset().top - 100
-      }, 600);
       return;
     }
   //STOP HANDLE INPUT NOT FILLED IN
