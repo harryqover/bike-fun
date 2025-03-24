@@ -1032,71 +1032,81 @@ const modelData = [
 ];
 
 document.addEventListener("DOMContentLoaded", function () {
-  const vehicleMakeDropdown = document.getElementById("vehicleMake");
-  const vehicleModelDropdown = document.getElementById("vehicleModel");
-  const extendedModelDropdown = document.getElementById("extendedVehicleModel");
-
-  console.log(vehicleMakeDropdown.value);
-  
-  vehicleModelDropdown.disabled = true;
-  extendedModelDropdown.disabled = true;
-
-  // On make change, populate models
-  vehicleMakeDropdown.addEventListener("change", function () {
-    const selectedMake = this.value.toLowerCase();
-
-    console.log(selectedMake);
-
-    // Clear model and extended model dropdowns
-    vehicleModelDropdown.innerHTML = `<option value="" disabled selected>Select a vehicle model</option>`;
-    extendedModelDropdown.innerHTML = `<option value="" disabled selected>Select an extended vehicle model</option>`;
+  // Add a small delay to ensure elements are fully loaded
+  setTimeout(() => {
+    const vehicleMakeDropdown = document.getElementById("vehicleMake");
+    const vehicleModelDropdown = document.getElementById("vehicleModel");
+    const extendedModelDropdown = document.getElementById("extendedVehicleModel");
+    
+    if (!vehicleMakeDropdown || !vehicleModelDropdown || !extendedModelDropdown) {
+      console.error("One or more dropdown elements not found");
+      return;
+    }
+    
+    console.log("Make dropdown value:", vehicleMakeDropdown.value);
+    
     vehicleModelDropdown.disabled = true;
     extendedModelDropdown.disabled = true;
-
-    const modelsForMake = modelData
-      .filter(item => item.make.toLowerCase() === selectedMake)
-      .map(item => item.model);
-
-    const uniqueModels = [...new Set(modelsForMake)];
     
-    console.log("modelsForMake", modelsForMake);
-    console.log("uniqueModels", uniqueModels);
-
-    if (uniqueModels.length > 0) {
-      vehicleModelDropdown.disabled = false;
-      uniqueModels.forEach(model => {
-        const option = document.createElement("option");
-        option.value = model;
-        option.textContent = model;
-        vehicleModelDropdown.appendChild(option);
-      });
-    }
-  });
-
-  // On model change, populate extended models
-  vehicleModelDropdown.addEventListener("change", function () {
-    const selectedMake = vehicleMakeDropdown.value.toLowerCase();
-    const selectedModel = this.value;
-
-    extendedModelDropdown.innerHTML = `<option value="" disabled selected>Select an extended vehicle model</option>`;
-    extendedModelDropdown.disabled = true;
-
-    const matchingModels = modelData.filter(item =>
-      item.make.toLowerCase() === selectedMake &&
-      item.model === selectedModel
-    );
-
-    if (matchingModels.length > 0) {
-      extendedModelDropdown.disabled = false;
-      matchingModels.forEach(item => {
-        const option = document.createElement("option");
-        option.value = item.modelExt;
-        option.textContent = item.modelExt;
-        extendedModelDropdown.appendChild(option);
-      });
-    }
-  });
-  vehicleMakeDropdown.dispatchEvent(new Event("change"));
+    // On make change, populate models
+    vehicleMakeDropdown.addEventListener("change", function () {
+      const selectedMake = this.value.toLowerCase();
+      
+      console.log("Selected make:", selectedMake);
+      
+      // Clear model and extended model dropdowns
+      vehicleModelDropdown.innerHTML = `<option value="" disabled selected>Select a vehicle model</option>`;
+      extendedModelDropdown.innerHTML = `<option value="" disabled selected>Select an extended vehicle model</option>`;
+      vehicleModelDropdown.disabled = true;
+      extendedModelDropdown.disabled = true;
+      
+      const modelsForMake = modelData
+        .filter(item => item.make.toLowerCase() === selectedMake)
+        .map(item => item.model);
+      
+      const uniqueModels = [...new Set(modelsForMake)];
+      
+      console.log("Models for make:", modelsForMake);
+      console.log("Unique models:", uniqueModels);
+      
+      if (uniqueModels.length > 0) {
+        vehicleModelDropdown.disabled = false;
+        uniqueModels.forEach(model => {
+          const option = document.createElement("option");
+          option.value = model;
+          option.textContent = model;
+          vehicleModelDropdown.appendChild(option);
+        });
+      }
+    });
+    
+    // On model change, populate extended models
+    vehicleModelDropdown.addEventListener("change", function () {
+      const selectedMake = vehicleMakeDropdown.value.toLowerCase();
+      const selectedModel = this.value;
+      
+      extendedModelDropdown.innerHTML = `<option value="" disabled selected>Select an extended vehicle model</option>`;
+      extendedModelDropdown.disabled = true;
+      
+      const matchingModels = modelData.filter(item =>
+        item.make.toLowerCase() === selectedMake &&
+        item.model === selectedModel
+      );
+      
+      if (matchingModels.length > 0) {
+        extendedModelDropdown.disabled = false;
+        matchingModels.forEach(item => {
+          const option = document.createElement("option");
+          option.value = item.modelExt;
+          option.textContent = item.modelExt;
+          extendedModelDropdown.appendChild(option);
+        });
+      }
+    });
+    
+    // Trigger the initial change event after everything is set up
+    vehicleMakeDropdown.dispatchEvent(new Event("change"));
+  }, 100); // Small delay to ensure DOM is fully ready
 });
 
 
