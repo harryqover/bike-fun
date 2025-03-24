@@ -36,7 +36,17 @@ function removeEmpty(obj) {
   });
   return obj;
 }
+// Function to update button text based on VIN and start date fields
+function updateSubmitButtonText() {
+    const vinValue = $("input[name='vin']").val().trim();
+    const startDateChecked = $("#setStartDateNow").is(":checked");
 
+    if (vinValue !== "" || startDateChecked) {
+      $("#submitButton").text("Weiter zur Zahlung");
+    } else {
+      $("#submitButton").text("Angebot für später speichern");
+    }
+}
 // On Policyholder Details, show/hide company fields based on "Are you a company?" selection.
 $("input[name='isCompany']").on("change", function() {
   if ($(this).val() === "yes") {
@@ -50,12 +60,18 @@ $("input[name='isCompany']").on("change", function() {
 $("#setStartDateNow").on("change", function() {
   if ($(this).is(":checked")) {
     $("#startDateContainer").slideDown();
-    $("#submitButton").text("Weiter zur Zahlung");
+    //$("#submitButton").text("Weiter zur Zahlung");
   } else {
     $("#startDateContainer").slideUp();
-    $("#submitButton").text("Angebot für später speichern");
+    //$("#submitButton").text("Angebot für später speichern");
   }
+  updateSubmitButtonText();
 });
+// Trigger check on VIN input change
+  $("input[name='vin']").on("input", function () {
+    updateSubmitButtonText();
+  });
+
 
 // Collapse all sections except the first one on load.
 $(document).ready(function(){
