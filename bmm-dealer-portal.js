@@ -1,4 +1,4 @@
-console.log("hello bmwmini 17");
+console.log("hello bmwmini 18");
 /*
 $('#employeeEmail').val("employee@dealer.com")
 $('#vehicleModel').val("your model")
@@ -1036,6 +1036,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const vehicleModelDropdown = document.getElementById("vehicleModel");
   const extendedModelDropdown = document.getElementById("extendedVehicleModel");
 
+  console.log(vehicleMakeDropdown.value);
+  
   vehicleModelDropdown.disabled = true;
   extendedModelDropdown.disabled = true;
 
