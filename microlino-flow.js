@@ -456,6 +456,13 @@ $("#quoteForm").on("submit", function(e) {
       $("#loadingOverlay").hide();
       return;
     }
+    const agePolicyHolderAtStart = getAgeAtStart(policyholderBirthdate, startDate);
+    if(agePolicyHolderAtStart < 18){
+      $("#message").html('<p class="error">Der Versicherungsnehmer muss mindestens 18 Jahre alt sein.</p>');
+      $("#loadingOverlay").hide();
+      return;
+    }
+
     const ageAtStart = getAgeAtStart(driverBirthdate, startDate);
     if (ageAtStart === null) {
       $("#message").html('<p class="error">Bitte geben Sie gültige Daten für den Fahrer und das Startdatum ein.</p>');
