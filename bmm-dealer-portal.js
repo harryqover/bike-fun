@@ -1043,6 +1043,8 @@ document.addEventListener("DOMContentLoaded", function () {
   vehicleMakeDropdown.addEventListener("change", function () {
     const selectedMake = this.value.toLowerCase();
 
+    console.log(selectedMake);
+
     // Clear model and extended model dropdowns
     vehicleModelDropdown.innerHTML = `<option value="" disabled selected>Select a vehicle model</option>`;
     extendedModelDropdown.innerHTML = `<option value="" disabled selected>Select an extended vehicle model</option>`;
@@ -1065,6 +1067,9 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   });
+
+  console.log("modelsForMake", modelsForMake);
+  console.log("uniqueModels", uniqueModels);
 
   // On model change, populate extended models
   vehicleModelDropdown.addEventListener("change", function () {
@@ -1091,8 +1096,10 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+/*
 vehicleMakeDropdown.value = "mini";
 vehicleMakeDropdown.dispatchEvent(new Event("change"));
+*/
 
 // FORM SUBMISSION
 document.getElementById('insuranceForm').addEventListener('submit', async function (event) {
