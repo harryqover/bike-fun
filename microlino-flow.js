@@ -1,4 +1,4 @@
-console.log("20250324 1141")
+console.log("20250324 1322")
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
   const parts = hostname.split('.');
@@ -393,6 +393,7 @@ $(".close").on("click", function() {
 // Handle form submission using jQuery AJAX
 $("#quoteForm").on("submit", function(e) {
   e.preventDefault();
+  $(".section-content").slideDown();
   console.log('start on submit');
   // Reset any previous error highlighting
   $("input").css("border", "1px solid #E2E2E2");
