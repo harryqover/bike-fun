@@ -1,4 +1,4 @@
-console.log("20250324 1023")
+console.log("20250324 1028")
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
   const parts = hostname.split('.');
@@ -446,7 +446,7 @@ $("#quoteForm").on("submit", function(e) {
   }
   
   if (!vin) {
-    $("#message").html('<p class="warning">Die Fahrzeug-Identifikationsnummer (FIN) ist nicht erforderlich, um ein Angebot zu erhalten. Sie wird jedoch für den Abschluss des Versicherungsvertrags benötigt.</p>');
+    $("#message").html('<p class="warning">Wir haben Ihnen das Angebot per E-Mail zugesendet. Für den Abschluss des Versicherungsvertrags benötigen wir jedoch noch Ihre Fahrzeug-Identifikationsnummer (FIN). Bitte reichen Sie diese nach, damit wir den Prozess fortsetzen können.</p>');
     //$("#loadingOverlay").hide();
     //return;
   }
