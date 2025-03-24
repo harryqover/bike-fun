@@ -1094,12 +1094,9 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   });
+  vehicleMakeDropdown.dispatchEvent(new Event("change"));
 });
 
-/*
-vehicleMakeDropdown.value = "mini";
-vehicleMakeDropdown.dispatchEvent(new Event("change"));
-*/
 
 // FORM SUBMISSION
 document.getElementById('insuranceForm').addEventListener('submit', async function (event) {
