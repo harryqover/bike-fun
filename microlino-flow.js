@@ -349,20 +349,28 @@ function updatePrice() {
   const driverBirthdateStr = document.querySelector('input[name="driverBirthdate"]').value;
   const startDateInput = document.querySelector('input[name="startDate"]');
   const priceValueEl = document.getElementById('priceValue');
+  const taxValueEl = document.getElementById('taxValue');
   
   // If customer opts not to set start date, use default price.
   if(!$("#setStartDateNow").is(":checked") || !startDateInput.value) {
     priceValueEl.textContent = "€590.00";
+    taxValueEl.textContent = "€59.37";
     return;
   }
   
   const startDateStr = startDateInput.value;
   const ageAtStart = getAgeAtStart(driverBirthdateStr, startDateStr);
   let price = 590;
+  let taxPrice =  59.37;
   if (ageAtStart < 21) {
     price = 915;
+    taxPrice =  92.07;
   }
   priceValueEl.textContent = price.toLocaleString('de-DE', {
+    style: 'currency',
+    currency: 'EUR'
+  });
+  taxValueEl.textContent = taxPrice.toLocaleString('de-DE', {
     style: 'currency',
     currency: 'EUR'
   });
