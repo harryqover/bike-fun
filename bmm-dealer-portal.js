@@ -1,10 +1,11 @@
 console.log("hello bmwmini 13");
-
+/*
 $('#employeeEmail').val("employee@dealer.com")
 $('#vehicleModel').val("your model")
 $('#deliveryDate').val("yyyy-mm-dd")
 $('#customerName').val("customer name")
 $('#customerEmail').val("customer@domain.com")
+*/
 
 // VEHICLE MODEL DATA
 const modelData = [
