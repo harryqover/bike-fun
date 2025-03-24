@@ -14,9 +14,9 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
     // Extract form data
     const employeeEmail = document.getElementById('employeeEmail').value;
     const vehicleModel = document.getElementById('vehicleModel').value;
+    const extendedVehicleModel = document.getElementById('extendedVehicleModel').value;
     const deliveryDate = document.getElementById('deliveryDate').value;
     const customerName = document.getElementById('customerName').value;
-    const customerEmail = document.getElementById('customerEmail').value;
     const customerEmail = document.getElementById('customerEmail').value;
     const dealership = document.getElementById('dealership').value;
 
@@ -25,6 +25,7 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
       subject: {
         make: "BMW",
         model: vehicleModel,
+        modelVersion: extendedVehicleModel,
         vehiclePurchaseDate: deliveryDate
       },
       policyholder: {
