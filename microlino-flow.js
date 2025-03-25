@@ -162,7 +162,7 @@ $(document).ready(function(){
   	      // If payment object exists and contains an id, redirect to payment page.
   	      if (response.payload && response.payload.payment && response.payload.payment.id) {
             if(domain == "webflow.io"){
-               var redirectUrl1 = "https://appqoverme-ui.sbx.qover.io/subscription/pay";
+               var redirectUrl1 = "https://appqoverme-ui.sbx.qover.io/payout/pay";
                var redirectUrl2 = "?locale=de-AT&id=" + response.payload.id + "&appId=q809unxlpt18fzf20zgb9vqu";
             } else {
              var redirectUrl1 = "https://app.qover.com/payout/pay";
@@ -656,7 +656,7 @@ $("#quoteForm").on("submit", function(e) {
       });
       if (response.payload && response.payload.payment && response.payload.payment.id) {
         if(domain == "webflow.io"){
-           var redirectUrl1 = "https://appqoverme-ui.sbx.qover.io/subscription/pay";
+           var redirectUrl1 = "https://appqoverme-ui.sbx.qover.io/payout/pay";
            var redirectUrl2 = "?locale=de-AT&id=" + response.payload.id + "&appId=q809unxlpt18fzf20zgb9vqu";
         } else {
          var redirectUrl1 = "https://app.qover.com/payout/pay";
