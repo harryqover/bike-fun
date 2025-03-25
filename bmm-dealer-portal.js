@@ -1,4 +1,4 @@
-console.log("hello bmwmini! This should be a working version!");
+console.log("hello bmwmini, this will work!");
 /*
 $('#employeeEmail').val("employee@dealer.com")
 $('#vehicleModel').val("your model")
