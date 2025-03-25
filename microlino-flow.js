@@ -566,7 +566,9 @@ $("#quoteForm").on("submit", function(e) {
       lastStepUrl: "http://microlino-insurance.qover.com/subscription?"
     }
   };
-
+  if(domain == "webflow.io"){
+    payload.metadata.lastStepUrl = "http://microlino-aa147b.webflow.io/subscription?"
+  }
   if(setStart) {
     payload.contractPeriod = {
       startDate: startDate,
