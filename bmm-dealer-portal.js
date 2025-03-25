@@ -1,4 +1,4 @@
-console.log("hello bmwmini 20");
+console.log("hello bmwmini! This should be a working version!");
 /*
 $('#employeeEmail').val("employee@dealer.com")
 $('#vehicleModel').val("your model")
@@ -159,4 +159,18 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
       $("#loadingOverlay").hide(500);
       $("#message").html('<p class="error">An error occurred while creating the quote.</p><pre>' + JSON.stringify(response, null, 2) + '</pre>');
     });
-  });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  const selectedMake = makeSelect.value;
+  if (selectedMake) {
+    updateModelOptions(selectedMake);
+
+    // Optionally pre-fill first available model
+    const firstModelOption = modelSelect.options[1]; // skip placeholder
+    if (firstModelOption) {
+      modelSelect.value = firstModelOption.value;
+      updateExtendedModelOptions(selectedMake, firstModelOption.value);
+    }
+  }
+});
