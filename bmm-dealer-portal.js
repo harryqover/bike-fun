@@ -160,17 +160,3 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
       $("#message").html('<p class="error">An error occurred while creating the quote.</p><pre>' + JSON.stringify(response, null, 2) + '</pre>');
     });
 });
-
-document.addEventListener('DOMContentLoaded', function () {
-  const selectedMake = makeSelect.value;
-  if (selectedMake) {
-    updateModelOptions(selectedMake);
-
-    // Optionally pre-fill first available model
-    const firstModelOption = modelSelect.options[1]; // skip placeholder
-    if (firstModelOption) {
-      modelSelect.value = firstModelOption.value;
-      updateExtendedModelOptions(selectedMake, firstModelOption.value);
-    }
-  }
-});
