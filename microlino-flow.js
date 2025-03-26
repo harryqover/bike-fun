@@ -524,7 +524,7 @@ $("#quoteForm").on("submit", function(e) {
     country: "AT",
     language: "de",
     renewal: {
-      type: "RENEWAL_TYPE_OPT_IN"
+      type: "RENEWAL_TYPE_OPT_OUT"
     },
     package: {
       name: "comprehensive",

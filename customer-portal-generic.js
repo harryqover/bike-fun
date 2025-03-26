@@ -37,7 +37,42 @@ setTimeout(function() {
     $("#cigardid").val(getParameterByName("contract"));
     $(".loading").hide();
     //getTranslation();
-}, 1500);
+}, 1000);
+
+// 🌀 STEP 1: Create loading spinner with JS
+const loadingDiv = document.createElement("div");
+loadingDiv.id = "loadingScreen";
+loadingDiv.style.position = "fixed";
+loadingDiv.style.top = 0;
+loadingDiv.style.left = 0;
+loadingDiv.style.right = 0;
+loadingDiv.style.bottom = 0;
+loadingDiv.style.background = "#ffffffd4";
+loadingDiv.style.zIndex = 9999;
+loadingDiv.style.display = "flex";
+loadingDiv.style.alignItems = "center";
+loadingDiv.style.justifyContent = "center";
+
+// Spinner inside
+const spinner = document.createElement("div");
+spinner.className = "spinner";
+spinner.style.width = "40px";
+spinner.style.height = "40px";
+spinner.style.border = "4px solid #2a609d";
+spinner.style.borderTop = "4px solid transparent";
+spinner.style.borderRadius = "50%";
+spinner.style.animation = "spin 1s linear infinite";
+loadingDiv.appendChild(spinner);
+
+// Keyframe animation
+const style = document.createElement("style");
+style.textContent = `
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+`;
+document.head.appendChild(style);
+
 
 function clickToLogin() {
     var cigarId = $('input[name="name"]').val();
