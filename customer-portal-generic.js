@@ -457,7 +457,6 @@ function translateAll() {
                     var text = $(this).html();
                 });
             }
-            document.getElementById("loadingScreen").remove()
         }
     };
     xhrLocales.send();
