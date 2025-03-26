@@ -260,7 +260,8 @@ function getNinjaData(cigarId, email) {
                 $("a[data-var='product']").attr("href","https://www.volvocarinsurance.ie/");
                 $("[data-var='riskPurchaseDate']").text(response.payload.risk.purchaseDate);
             }
-            if(["bmm"].includes(product)){
+            console.log("product: ", product);
+            if(["bmm","bmwmini","mini"].includes(product)){
                 $("[data-var='makeaclaim']").attr("href","https://forms.qover.com/233112828692357?contract="+cigarId+"&email="+ email);
                 if(risk.id == "BMW"){
                     $("#action-menu-list").append('<a href="https://bmw-car-insurance.zendesk.com/hc/en-ie/requests/new" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestamend"]+'</a>');
