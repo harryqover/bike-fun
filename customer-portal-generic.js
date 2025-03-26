@@ -263,12 +263,12 @@ function getNinjaData(cigarId, email) {
             console.log("product: ", product);
             if(["bmm","bmwmini","mini"].includes(product)){
                 $("[data-var='makeaclaim']").attr("href","https://forms.qover.com/233112828692357?contract="+cigarId+"&email="+ email);
-                if(risk.id == "BMW"){
+                if(response.payload.risk.id == "BMW"){
                     $("#action-menu-list").append('<a href="https://bmw-car-insurance.zendesk.com/hc/en-ie/requests/new" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestamend"]+'</a>');
                     $("#action-menu-list").append('<a href="https://bmw-car-insurance.zendesk.com/hc/en-ie/requests/new" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["cancelcontract"]+'</a>');
                     $("a[data-var='product']").attr("href","/");
                 }
-                if(risk.id == "MINI"){
+                if(response.payload.risk.id == "MINI"){
                     $("#action-menu-list").append('<a href="https://mini-car-insurance.zendesk.com/hc/en-ie/requests/new" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["requestamend"]+'</a>');
                     $("#action-menu-list").append('<a href="https://mini-car-insurance.zendesk.com/hc/en-ie/requests/new" data-var="reSendEmail" class="dropdown-link w-dropdown-link" tabindex="0">'+translations["cancelcontract"]+'</a>');
                     $("a[data-var='product']").attr("href","/");
@@ -368,7 +368,7 @@ function getNinjaData(cigarId, email) {
 
             console.warn("status check HEEEEERRRREEEE");
             //START show correct renewal status and color
-            
+
             if (["CONTRACT_STATUS_ACTIVE","STATUS_OPEN","STATUS_INCOMPLETE"].includes(response.payload.status) && (!response.payload.versionInfo.cancelInformation || response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == false)) {
                 console.log("full active")
                 $("[data-var='renewal']").text(translations['renewaldate']);
@@ -405,6 +405,7 @@ function getNinjaData(cigarId, email) {
                 }
             } else {
                 console.log("something else: " + response.payload.status + " - " + response.payload.versionInfo);
+                $("[data-var='renewal']").text(translations['renewaldate']);
             }
             //STOP show correct renewal status and color
 
