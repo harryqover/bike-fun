@@ -368,11 +368,12 @@ function getNinjaData(cigarId, email) {
 
             console.warn("status check HEEEEERRRREEEE");
             //START show correct renewal status and color
-            if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && (!response.payload.versionInfo.cancelInformation || response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == false)) {
+            
+            if (["CONTRACT_STATUS_ACTIVE","STATUS_OPEN","STATUS_INCOMPLETE"].includes(response.payload.status) && (!response.payload.versionInfo.cancelInformation || response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == false)) {
                 console.log("full active")
                 $("[data-var='renewal']").text(translations['renewaldate']);
                 $(".statusdiv").css("background-color", "#80cc7a")
-            } else if ((response.payload.status == "STATUS_OPEN" || response.payload.status == "STATUS_INCOMPLETE") && response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == true) {
+            } else if (["CONTRACT_STATUS_ACTIVE","STATUS_OPEN","STATUS_INCOMPLETE"].includes(response.payload.status) && response.payload.versionInfo.cancelInformation.requestCancelAtRenewal == true) {
                 console.log("active but cancel at renewal")
                 $(".statusdiv").css("background-color", "#FFC1BC");
                 $("[data-var='renewal']").text(translations['willbecancelledon']);
