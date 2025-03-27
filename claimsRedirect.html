@@ -234,6 +234,25 @@ document.querySelector("#cancelRedirectBtn").addEventListener("click", function 
   logDebug("⛔ Redirect cancelled by user.");
   document.getElementById("cancelRedirectBtn").style.display = "none";
 });
+function validateInputsLive() {
+  const emailInput = document.querySelector("#email");
+  const contractInput = document.querySelector("#cigardid");
+
+  emailInput.addEventListener("input", () => {
+    const isValid = isValidEmail(emailInput.value.trim());
+    emailInput.style.borderColor = isValid ? "green" : "red";
+    logDebug("Email " + (isValid ? "looks valid ✅" : "is invalid ❌"));
+  });
+
+  contractInput.addEventListener("input", () => {
+    const rule = matchRedirectRule(contractInput.value.trim());
+    contractInput.style.borderColor = rule ? "green" : "red";
+    logDebug("Contract " + (rule ? `matched "${rule.PatternPrefix}" ✅` : "did not match any pattern ❌"));
+  });
+}
+
+// Call this after page loads
+validateInputsLive();
 </script>
 
 
