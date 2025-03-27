@@ -107,6 +107,7 @@ const redirectRules = [
 ];
 
 let redirectTimeout;
+let countdownInterval;
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -138,9 +139,15 @@ function matchRedirectRule(contractRef) {
   return match;
 }
 
-function logDebug(msg) {
+function logDebug(msg, replaceLast = false) {
   const debugBox = document.getElementById("debug");
-  debugBox.innerHTML += msg + "<br>";
+  if (replaceLast && debugBox.lastChild) {
+    debugBox.lastChild.innerHTML = msg;
+  } else {
+    const p = document.createElement("p");
+    p.innerHTML = msg;
+    debugBox.appendChild(p);
+  }
   debugBox.style.display = "block";
 }
 
@@ -187,11 +194,19 @@ function handleClaimRedirect() {
   logDebug("Matched Product: " + product);
   logDebug("Matched Country: " + country);
   logDebug("Generated Redirect URL: " + finalUrl);
-  logDebug("Redirecting in 10 seconds...");
+
+  let countdown = 10;
+  logDebug(`Redirecting in ${countdown} seconds...`);
+  countdownInterval = setInterval(() => {
+    countdown--;
+    logDebug(`Redirecting in ${countdown} seconds...`, true);
+    if (countdown <= 0) clearInterval(countdownInterval);
+  }, 1000);
 
   document.getElementById("cancelRedirectBtn").style.display = "block";
 
   redirectTimeout = setTimeout(() => {
+    clearInterval(countdownInterval);
     window.open(finalUrl, "_blank");
   }, 10000);
 }
@@ -203,10 +218,12 @@ document.querySelector("#btnToPaperform").addEventListener("click", function (e)
 
 document.querySelector("#cancelRedirectBtn").addEventListener("click", function () {
   clearTimeout(redirectTimeout);
+  clearInterval(countdownInterval);
   logDebug("⛔ Redirect cancelled by user.");
   document.getElementById("cancelRedirectBtn").style.display = "none";
 });
 </script>
+
 
 </body>
 </html>
