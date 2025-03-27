@@ -53,6 +53,20 @@
       color: red;
       margin-top: 1rem;
     }
+    .debug {
+      margin-top: 1rem;
+      background: #eef;
+      padding: 1rem;
+      border-radius: 5px;
+      font-size: 0.9rem;
+    }
+    #cancelRedirectBtn {
+      background-color: #dc3545;
+      margin-top: 1rem;
+    }
+    #cancelRedirectBtn:hover {
+      background-color: #a71d2a;
+    }
   </style>
 </head>
 <body>
@@ -75,85 +89,115 @@
     <input type="email" id="email" placeholder="e.g. name@example.com">
 
     <button id="btnToPaperform">Submit</button>
+    <button id="cancelRedirectBtn" style="display:none;">Cancel Redirect</button>
+
+    <div id="debug" class="debug" style="display: none;"></div>
   </div>
 
   <script>
-    // Redirect rule set from your CSV (full list + policy references)
-const redirectRules = [
-  { PatternPrefix: "FR20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-  { PatternPrefix: "BE20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-  { PatternPrefix: "GB20", TPA: "Crawford", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-  { PatternPrefix: "DE20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-  { PatternPrefix: "ES20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-  { PatternPrefix: "AT20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-  { PatternPrefix: "NL20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-  { PatternPrefix: "PT20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-  { PatternPrefix: "DK20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-  { PatternPrefix: "FR31", TPA: "VA", Product: "PLEV", Redirect: "https://form.jotformeu.com/222722171740044" },
-  { PatternPrefix: "BE07", TPA: "Baloise", Product: "TENANT", Redirect: "https://forms.qover.com/222193789305361" },
+    const redirectRules = [
+      { PatternPrefix: "FR20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+      { PatternPrefix: "BE20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+      { PatternPrefix: "GB20", TPA: "Crawford", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+      { PatternPrefix: "DE20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+      { PatternPrefix: "ES20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+      { PatternPrefix: "AT20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+      { PatternPrefix: "NL20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+      { PatternPrefix: "PT20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+      { PatternPrefix: "DK20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+      { PatternPrefix: "FR31", TPA: "VA", Product: "PLEV", Redirect: "https://form.jotformeu.com/222722171740044" },
+      { PatternPrefix: "BE07", TPA: "Baloise", Product: "TENANT", Redirect: "https://forms.qover.com/222193789305361" },
+      { PatternPrefix: "P-MICAT", TPA: "MIC", Product: "MIC", Redirect: "https://forms.qover.com/233112828692357?product=MIC&country=AT" },
+      { PatternPrefix: "P-VDMIE", TPA: "VDM", Product: "VDM", Redirect: "https://forms.qover.com/233112828692357?product=VDM&country=IE" },
+      { PatternPrefix: "P-BMMIE", TPA: "BMM", Product: "BMM", Redirect: "https://forms.qover.com/233112828692357?product=BMM&country=IE" }
+    ];
 
-  // Policy based references
-  { PatternPrefix: "P-MICAT", TPA: "MIC", Product: "MIC", Redirect: "https://forms.qover.com/233112828692357?product=MIC&country=AT" },
-  { PatternPrefix: "P-VDMIE", TPA: "VDM", Product: "VDM", Redirect: "https://forms.qover.com/233112828692357?product=VDM&country=IE" },
-  { PatternPrefix: "P-BMMIE", TPA: "BMM", Product: "BMM", Redirect: "https://forms.qover.com/233112828692357?product=BMM&country=IE" }
-];
+    let redirectTimeout;
 
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
 
-function extractPrefix(contractRef) {
-  const match = contractRef.match(/^([A-Z]{2}\d{2})/);
-  if (match) return match[1];
+    function extractPrefix(contractRef) {
+      const match = contractRef.match(/^([A-Z]{2}\d{2})/);
+      if (match) return match[1];
+      const policyMatch = contractRef.match(/^(P\-[A-Z]+)/);
+      return policyMatch ? policyMatch[1] : null;
+    }
 
-  const policyMatch = contractRef.match(/^(P\-[A-Z]+)/);
-  return policyMatch ? policyMatch[1] : null;
-}
+    function findRedirectUrl(contractRef) {
+      const prefix = extractPrefix(contractRef);
+      return redirectRules.find(rule => rule.PatternPrefix === prefix);
+    }
 
-function findRedirectUrl(contractRef) {
-  const prefix = extractPrefix(contractRef);
-  return redirectRules.find(rule => rule.PatternPrefix === prefix);
-}
+    function showError(message) {
+      const existing = document.querySelector(".error");
+      if (existing) existing.remove();
+      const p = document.createElement("p");
+      p.className = "error";
+      p.style.color = "red";
+      p.textContent = message;
+      document.querySelector("#btnToPaperform").after(p);
+    }
 
-function showError(message) {
-  const existing = document.querySelector(".error");
-  if (existing) existing.remove();
-  const p = document.createElement("p");
-  p.className = "error";
-  p.style.color = "red";
-  p.textContent = message;
-  document.querySelector("#btnToPaperform").after(p);
-}
+    function logDebug(msg) {
+      const debugBox = document.getElementById("debug");
+      debugBox.innerHTML += msg + "<br>";
+      debugBox.style.display = "block";
+    }
 
-function handleClaimRedirect() {
-  const contractRef = document.querySelector("#cigardid").value.trim();
-  const email = document.querySelector("#email").value.trim();
-  const lang = document.querySelector('#state')?.value || 'en';
+    function handleClaimRedirect() {
+      document.getElementById("debug").innerHTML = "";
+      document.getElementById("cancelRedirectBtn").style.display = "none";
 
-  if (!isValidEmail(email)) {
-    showError("Please enter a valid email address.");
-    return;
-  }
+      const contractRef = document.querySelector("#cigardid").value.trim();
+      const email = document.querySelector("#email").value.trim();
+      const lang = document.querySelector('#state')?.value || 'en';
 
-  const rule = findRedirectUrl(contractRef);
-  if (!rule) {
-    showError("We couldn't find a matching contract type. Please verify or contact support.");
-    return;
-  }
+      logDebug("Entered Contract Ref: " + contractRef);
+      logDebug("Entered Email: " + email);
+      logDebug("Selected Language: " + lang);
 
-  const country = contractRef.substring(0, 2);
-  const product = rule.Product || "unknown";
+      if (!isValidEmail(email)) {
+        showError("Please enter a valid email address.");
+        logDebug("Invalid email format");
+        return;
+      }
 
-  const finalUrl = `${rule.Redirect}&product=${product}&country=${country}&policyNumber=${contractRef}&language=${lang}&email=${encodeURIComponent(email)}`;
-  window.location.href = finalUrl;
-}
+      const rule = findRedirectUrl(contractRef);
+      if (!rule) {
+        showError("We couldn't find a matching contract type. Please verify or contact support.");
+        logDebug("No matching prefix found");
+        return;
+      }
 
-// Optional: Hook this to a button click
-document.querySelector("#btnToPaperform").addEventListener("click", function(e) {
-  e.preventDefault();
-  handleClaimRedirect();
-});
+      const country = contractRef.substring(0, 2);
+      const product = rule.Product || "unknown";
 
+      const finalUrl = `${rule.Redirect}&product=${product}&country=${country}&policyNumber=${contractRef}&language=${lang}&email=${encodeURIComponent(email)}`;
+
+      logDebug("Matched Product: " + product);
+      logDebug("Matched Country: " + country);
+      logDebug("Generated Redirect URL: " + finalUrl);
+      logDebug("Redirecting in 10 seconds...");
+
+      document.getElementById("cancelRedirectBtn").style.display = "block";
+
+      redirectTimeout = setTimeout(() => {
+        window.open(finalUrl, '_blank');
+      }, 10000);
+    }
+
+    document.querySelector("#btnToPaperform").addEventListener("click", function(e) {
+      e.preventDefault();
+      handleClaimRedirect();
+    });
+
+    document.querySelector("#cancelRedirectBtn").addEventListener("click", function(e) {
+      clearTimeout(redirectTimeout);
+      logDebug("⛔ Redirect cancelled by user.");
+      document.getElementById("cancelRedirectBtn").style.display = "none";
+    });
   </script>
 </body>
 </html>
