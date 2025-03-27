@@ -107,153 +107,156 @@
   </div>
 
   <script>
-const redirectRules = [
-  { PatternPrefix: "xx20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-  { PatternPrefix: "GB20", TPA: "Crawford", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=Crawford" },
-  { PatternPrefix: "xx10", TPA: "Qover", Product: "BIKE", Redirect: "https://forms.qover.com/212795616223356?tpa=Qover" },
-  { PatternPrefix: "FR31", TPA: "VA", Product: "PLEV", Redirect: "https://form.jotformeu.com/222722171740044" },
-  { PatternPrefix: "BE07", TPA: "Baloise", Product: "TENANT", Redirect: "https://forms.qover.com/222193789305361" },
-  { PatternPrefix: "P-MICAT", TPA: "MIC", Product: "MIC", Redirect: "https://forms.qover.com/233112828692357?product=MIC&country=AT" },
-  { PatternPrefix: "P-VDMIE", TPA: "VDM", Product: "VDM", Redirect: "https://forms.qover.com/233112828692357?product=VDM&country=IE" },
-  { PatternPrefix: "P-BMMIE", TPA: "BMM", Product: "BMM", Redirect: "https://forms.qover.com/233112828692357?product=BMM&country=IE" }
-];
+	const redirectRules = [
+	  { PatternPrefix: "xx20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+	  { PatternPrefix: "GB20", TPA: "Crawford", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=Crawford" },
+	  { PatternPrefix: "xx10", TPA: "Qover", Product: "BIKE", Redirect: "https://forms.qover.com/212795616223356?tpa=Qover" },
+	  { PatternPrefix: "FR31", TPA: "VA", Product: "PLEV", Redirect: "https://form.jotformeu.com/222722171740044" },
+	  { PatternPrefix: "BE07", TPA: "Baloise", Product: "TENANT", Redirect: "https://forms.qover.com/222193789305361" },
+	  { PatternPrefix: "P-MICAT", TPA: "MIC", Product: "MIC", Redirect: "https://forms.qover.com/233112828692357?product=MIC&country=AT" },
+	  { PatternPrefix: "P-VDMIE", TPA: "VDM", Product: "VDM", Redirect: "https://forms.qover.com/233112828692357?product=VDM&country=IE" },
+	  { PatternPrefix: "P-BMMIE", TPA: "BMM", Product: "BMM", Redirect: "https://forms.qover.com/233112828692357?product=BMM&country=IE" }
+	];
 
-let redirectTimeout;
-let countdownInterval;
+	let redirectTimeout;
+	let countdownInterval;
 
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
+	function isValidEmail(email) {
+	  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+	}
 
-function extractPrefix(contractRef) {
-  const match = contractRef.match(/^([A-Z]{2}\d{2})/);
-  if (match) return match[1];
-  const policyMatch = contractRef.match(/^(P\-[A-Z]+)/);
-  return policyMatch ? policyMatch[1] : null;
-}
+	function extractPrefix(contractRef) {
+	  const match = contractRef.match(/^([A-Z]{2}\d{2})/);
+	  if (match) return match[1];
+	  const policyMatch = contractRef.match(/^(P\-[A-Z]+)/);
+	  return policyMatch ? policyMatch[1] : null;
+	}
 
-function extractCountry(contractRef, rule) {
-  if (rule.PatternPrefix.startsWith("P-")) {
-    const match = rule.PatternPrefix.match(/([A-Z]{2})$/);
-    return match ? match[1] : "";
-  } else {
-    return contractRef.substring(0, 2);
-  }
-}
+	function extractCountry(contractRef, rule) {
+	  if (rule.PatternPrefix.startsWith("P-")) {
+	    const match = rule.PatternPrefix.match(/([A-Z]{2})$/);
+	    return match ? match[1] : "";
+	  } else {
+	    return contractRef.substring(0, 2);
+	  }
+	}
 
-function matchRedirectRule(contractRef) {
-  const prefix = extractPrefix(contractRef);
-  let match = redirectRules.find(rule => rule.PatternPrefix === prefix);
-  if (!match && prefix && prefix.length === 4) {
-    const wildcardPrefix = 'xx' + prefix.slice(2);
-    match = redirectRules.find(rule => rule.PatternPrefix === wildcardPrefix);
-  }
-  return match;
-}
+	function matchRedirectRule(contractRef) {
+	  const prefix = extractPrefix(contractRef);
+	  let match = redirectRules.find(rule => rule.PatternPrefix === prefix);
+	  if (!match && prefix && prefix.length === 4) {
+	    const wildcardPrefix = 'xx' + prefix.slice(2);
+	    match = redirectRules.find(rule => rule.PatternPrefix === wildcardPrefix);
+	  }
+	  return match;
+	}
 
-function logDebug(msg, replaceLast = false) {
-  const debugBox = document.getElementById("debug");
-  if (replaceLast && debugBox.lastChild) {
-    debugBox.lastChild.innerHTML = msg;
-  } else {
-    const p = document.createElement("p");
-    p.innerHTML = msg;
-    debugBox.appendChild(p);
-  }
-  debugBox.style.display = "block";
-}
+	function logDebug(msg, replaceLast = false) {
+	  const debugBox = document.getElementById("debug");
+	  if (replaceLast && debugBox.lastChild) {
+	    debugBox.lastChild.textContent = msg;
+	  } else {
+	    const p = document.createElement("div");
+	    p.textContent = msg;
+	    debugBox.appendChild(p);
+	  }
+	  debugBox.style.display = "block";
+	  debugBox.scrollTop = debugBox.scrollHeight;
+	}
 
-function showError(message) {
-  const existing = document.querySelector(".error");
-  if (existing) existing.remove();
-  const p = document.createElement("p");
-  p.className = "error";
-  p.style.color = "red";
-  p.textContent = message;
-  document.querySelector("#btnToPaperform").after(p);
-}
+	function clearDebug() {
+	  const debugBox = document.getElementById("debug");
+	  debugBox.innerHTML = "";
+	}
 
-function handleClaimRedirect() {
-  document.getElementById("debug").innerHTML = "";
-  document.getElementById("cancelRedirectBtn").style.display = "none";
+	function showError(message) {
+	  const existing = document.querySelector(".error");
+	  if (existing) existing.remove();
+	  const p = document.createElement("p");
+	  p.className = "error";
+	  p.style.color = "red";
+	  p.textContent = message;
+	  document.querySelector("#btnToPaperform").after(p);
+	}
 
-  const contractRef = document.querySelector("#cigardid").value.trim();
-  const email = document.querySelector("#email").value.trim();
-  const lang = document.querySelector("#state")?.value || "en";
+	function handleClaimRedirect() {
+	  clearDebug();
+	  document.getElementById("cancelRedirectBtn").style.display = "none";
 
-  logDebug("Entered Contract Ref: " + contractRef);
-  logDebug("Entered Email: " + email);
-  logDebug("Selected Language: " + lang);
+	  const contractRef = document.querySelector("#cigardid").value.trim();
+	  const email = document.querySelector("#email").value.trim();
+	  const lang = document.querySelector("#state")?.value || "en";
 
-  if (!isValidEmail(email)) {
-    showError("Please enter a valid email address.");
-    logDebug("Invalid email format");
-    return;
-  }
+	  logDebug("Entered Contract Ref: " + contractRef);
+	  logDebug("Entered Email: " + email);
+	  logDebug("Selected Language: " + lang);
 
-  const rule = matchRedirectRule(contractRef);
-  if (!rule) {
-    showError("We couldn't find a matching contract type. Please verify or contact support.");
-    logDebug("No matching rule found for prefix");
-    return;
-  }
+	  if (!isValidEmail(email)) {
+	    showError("Please enter a valid email address.");
+	    logDebug("Invalid email format");
+	    return;
+	  }
 
-  const country = extractCountry(contractRef, rule);
-  const product = rule.Product || "unknown";
+	  const rule = matchRedirectRule(contractRef);
+	  if (!rule) {
+	    showError("We couldn't find a matching contract type. Please verify or contact support.");
+	    logDebug("No matching rule found for prefix");
+	    return;
+	  }
 
-  const finalUrl = `${rule.Redirect}&product=${product}&country=${country}&policyNumber=${contractRef}&language=${lang}&email=${encodeURIComponent(email)}`;
+	  const country = extractCountry(contractRef, rule);
+	  const product = rule.Product || "unknown";
 
-  logDebug("Matched Product: " + product);
-  logDebug("Matched Country: " + country);
-  logDebug("Generated Redirect URL: " + finalUrl);
+	  const finalUrl = `${rule.Redirect}&product=${product}&country=${country}&policyNumber=${contractRef}&language=${lang}&email=${encodeURIComponent(email)}`;
 
-  let countdown = 10;
-  logDebug(`Redirecting in ${countdown} seconds...`);
-  countdownInterval = setInterval(() => {
-    countdown--;
-    logDebug(`Redirecting in ${countdown} seconds...`, true);
-    if (countdown <= 0) clearInterval(countdownInterval);
-  }, 1000);
+	  logDebug("Matched Product: " + product);
+	  logDebug("Matched Country: " + country);
+	  logDebug("Generated Redirect URL: " + finalUrl);
 
-  document.getElementById("cancelRedirectBtn").style.display = "block";
+	  let countdown = 10;
+	  logDebug(`Redirecting in ${countdown} seconds...`);
+	  countdownInterval = setInterval(() => {
+	    countdown--;
+	    logDebug(`Redirecting in ${countdown} seconds...`, true);
+	    if (countdown <= 0) clearInterval(countdownInterval);
+	  }, 1000);
 
-  redirectTimeout = setTimeout(() => {
-    clearInterval(countdownInterval);
-    window.open(finalUrl, "_blank");
-  }, 10000);
-}
+	  document.getElementById("cancelRedirectBtn").style.display = "block";
 
-document.querySelector("#btnToPaperform").addEventListener("click", function (e) {
-  e.preventDefault();
-  handleClaimRedirect();
-});
+	  redirectTimeout = setTimeout(() => {
+	    clearInterval(countdownInterval);
+	    window.open(finalUrl, "_blank");
+	  }, 10000);
+	}
 
-document.querySelector("#cancelRedirectBtn").addEventListener("click", function () {
-  clearTimeout(redirectTimeout);
-  clearInterval(countdownInterval);
-  logDebug("⛔ Redirect cancelled by user.");
-  document.getElementById("cancelRedirectBtn").style.display = "none";
-});
-function validateInputsLive() {
-  const emailInput = document.querySelector("#email");
-  const contractInput = document.querySelector("#cigardid");
+	document.querySelector("#btnToPaperform").addEventListener("click", function (e) {
+	  e.preventDefault();
+	  handleClaimRedirect();
+	});
 
-  emailInput.addEventListener("input", () => {
-    const isValid = isValidEmail(emailInput.value.trim());
-    emailInput.style.borderColor = isValid ? "green" : "red";
-    logDebug("Email " + (isValid ? "looks valid ✅" : "is invalid ❌"));
-  });
+	document.querySelector("#cancelRedirectBtn").addEventListener("click", function () {
+	  clearTimeout(redirectTimeout);
+	  clearInterval(countdownInterval);
+	  logDebug("⛔ Redirect cancelled by user.");
+	  document.getElementById("cancelRedirectBtn").style.display = "none";
+	});
 
-  contractInput.addEventListener("input", () => {
-    const rule = matchRedirectRule(contractInput.value.trim());
-    contractInput.style.borderColor = rule ? "green" : "red";
-    logDebug("Contract " + (rule ? `matched "${rule.PatternPrefix}" ✅` : "did not match any pattern ❌"));
-  });
-}
+	document.querySelector("#email").addEventListener("input", () => {
+	  clearDebug();
+	  const emailInput = document.querySelector("#email");
+	  const isValid = isValidEmail(emailInput.value.trim());
+	  emailInput.style.borderColor = isValid ? "green" : "red";
+	  logDebug("Email " + (isValid ? "looks valid ✅" : "is invalid ❌"));
+	});
 
-// Call this after page loads
-validateInputsLive();
-</script>
+	document.querySelector("#cigardid").addEventListener("input", () => {
+	  clearDebug();
+	  const contractInput = document.querySelector("#cigardid");
+	  const rule = matchRedirectRule(contractInput.value.trim());
+	  contractInput.style.borderColor = rule ? "green" : "red";
+	  logDebug("Contract " + (rule ? `matched \"${rule.PatternPrefix}\" ✅` : "did not match any pattern ❌"));
+	});
+	</script>
 
 
 </body>
