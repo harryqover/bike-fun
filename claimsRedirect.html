@@ -95,110 +95,119 @@
   </div>
 
   <script>
-  	console.log("updated 1135")
-    const redirectRules = [
-      { PatternPrefix: "FR20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-      { PatternPrefix: "BE20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-      { PatternPrefix: "GB20", TPA: "Crawford", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-      { PatternPrefix: "DE20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-      { PatternPrefix: "ES20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-      { PatternPrefix: "AT20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-      { PatternPrefix: "NL20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-      { PatternPrefix: "PT20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-      { PatternPrefix: "DK20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
-      { PatternPrefix: "FR31", TPA: "VA", Product: "PLEV", Redirect: "https://form.jotformeu.com/222722171740044" },
-      { PatternPrefix: "BE07", TPA: "Baloise", Product: "TENANT", Redirect: "https://forms.qover.com/222193789305361" },
-      { PatternPrefix: "P-MICAT", TPA: "MIC", Product: "MIC", Redirect: "https://forms.qover.com/233112828692357?product=MIC&country=AT" },
-      { PatternPrefix: "P-VDMIE", TPA: "VDM", Product: "VDM", Redirect: "https://forms.qover.com/233112828692357?product=VDM&country=IE" },
-      { PatternPrefix: "P-BMMIE", TPA: "BMM", Product: "BMM", Redirect: "https://forms.qover.com/233112828692357?product=BMM&country=IE" }
-    ];
+const redirectRules = [
+  { PatternPrefix: "xx20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+  { PatternPrefix: "GB20", TPA: "Crawford", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=Crawford" },
+  { PatternPrefix: "BE10", TPA: "Qover", Product: "BIKE", Redirect: "https://forms.qover.com/212795616223356?tpa=Qover" },
+  { PatternPrefix: "FR10", TPA: "Qover", Product: "BIKE", Redirect: "https://forms.qover.com/212795616223356?tpa=Qover" },
+  { PatternPrefix: "FR31", TPA: "VA", Product: "PLEV", Redirect: "https://form.jotformeu.com/222722171740044" },
+  { PatternPrefix: "BE07", TPA: "Baloise", Product: "TENANT", Redirect: "https://forms.qover.com/222193789305361" },
+  { PatternPrefix: "P-MICAT", TPA: "MIC", Product: "MIC", Redirect: "https://forms.qover.com/233112828692357?product=MIC&country=AT" },
+  { PatternPrefix: "P-VDMIE", TPA: "VDM", Product: "VDM", Redirect: "https://forms.qover.com/233112828692357?product=VDM&country=IE" },
+  { PatternPrefix: "P-BMMIE", TPA: "BMM", Product: "BMM", Redirect: "https://forms.qover.com/233112828692357?product=BMM&country=IE" }
+];
 
-    let redirectTimeout;
+let redirectTimeout;
 
-    function isValidEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
-    function extractPrefix(contractRef) {
-      const match = contractRef.match(/^([A-Z]{2}\d{2})/);
-      if (match) return match[1];
-      const policyMatch = contractRef.match(/^(P\-[A-Z]+)/);
-      return policyMatch ? policyMatch[1] : null;
-    }
+function extractPrefix(contractRef) {
+  const match = contractRef.match(/^([A-Z]{2}\d{2})/);
+  if (match) return match[1];
+  const policyMatch = contractRef.match(/^(P\-[A-Z]+)/);
+  return policyMatch ? policyMatch[1] : null;
+}
 
-    function findRedirectUrl(contractRef) {
-      const prefix = extractPrefix(contractRef);
-      return redirectRules.find(rule => rule.PatternPrefix === prefix);
-    }
+function extractCountry(contractRef, rule) {
+  if (rule.PatternPrefix.startsWith("P-")) {
+    const match = rule.PatternPrefix.match(/([A-Z]{2})$/);
+    return match ? match[1] : "";
+  } else {
+    return contractRef.substring(0, 2);
+  }
+}
 
-    function showError(message) {
-      const existing = document.querySelector(".error");
-      if (existing) existing.remove();
-      const p = document.createElement("p");
-      p.className = "error";
-      p.style.color = "red";
-      p.textContent = message;
-      document.querySelector("#btnToPaperform").after(p);
-    }
+function matchRedirectRule(contractRef) {
+  const prefix = extractPrefix(contractRef);
+  let match = redirectRules.find(rule => rule.PatternPrefix === prefix);
+  if (!match && prefix && prefix.length === 4) {
+    const wildcardPrefix = 'xx' + prefix.slice(2);
+    match = redirectRules.find(rule => rule.PatternPrefix === wildcardPrefix);
+  }
+  return match;
+}
 
-    function logDebug(msg) {
-      const debugBox = document.getElementById("debug");
-      debugBox.innerHTML += msg + "<br>";
-      debugBox.style.display = "block";
-    }
+function logDebug(msg) {
+  const debugBox = document.getElementById("debug");
+  debugBox.innerHTML += msg + "<br>";
+  debugBox.style.display = "block";
+}
 
-    function handleClaimRedirect() {
-      document.getElementById("debug").innerHTML = "";
-      document.getElementById("cancelRedirectBtn").style.display = "none";
+function showError(message) {
+  const existing = document.querySelector(".error");
+  if (existing) existing.remove();
+  const p = document.createElement("p");
+  p.className = "error";
+  p.style.color = "red";
+  p.textContent = message;
+  document.querySelector("#btnToPaperform").after(p);
+}
 
-      const contractRef = document.querySelector("#cigardid").value.trim();
-      const email = document.querySelector("#email").value.trim();
-      const lang = document.querySelector('#state')?.value || 'en';
+function handleClaimRedirect() {
+  document.getElementById("debug").innerHTML = "";
+  document.getElementById("cancelRedirectBtn").style.display = "none";
 
-      logDebug("Entered Contract Ref: " + contractRef);
-      logDebug("Entered Email: " + email);
-      logDebug("Selected Language: " + lang);
+  const contractRef = document.querySelector("#cigardid").value.trim();
+  const email = document.querySelector("#email").value.trim();
+  const lang = document.querySelector("#state")?.value || "en";
 
-      if (!isValidEmail(email)) {
-        showError("Please enter a valid email address.");
-        logDebug("Invalid email format");
-        return;
-      }
+  logDebug("Entered Contract Ref: " + contractRef);
+  logDebug("Entered Email: " + email);
+  logDebug("Selected Language: " + lang);
 
-      const rule = findRedirectUrl(contractRef);
-      if (!rule) {
-        showError("We couldn't find a matching contract type. Please verify or contact support.");
-        logDebug("No matching prefix found");
-        return;
-      }
+  if (!isValidEmail(email)) {
+    showError("Please enter a valid email address.");
+    logDebug("Invalid email format");
+    return;
+  }
 
-      const country = contractRef.substring(0, 2);
-      const product = rule.Product || "unknown";
+  const rule = matchRedirectRule(contractRef);
+  if (!rule) {
+    showError("We couldn't find a matching contract type. Please verify or contact support.");
+    logDebug("No matching rule found for prefix");
+    return;
+  }
 
-      const finalUrl = `${rule.Redirect}&product=${product}&country=${country}&policyNumber=${contractRef}&language=${lang}&email=${encodeURIComponent(email)}`;
+  const country = extractCountry(contractRef, rule);
+  const product = rule.Product || "unknown";
 
-      logDebug("Matched Product: " + product);
-      logDebug("Matched Country: " + country);
-      logDebug("Generated Redirect URL: " + finalUrl);
-      logDebug("Redirecting in 10 seconds...");
+  const finalUrl = `${rule.Redirect}&product=${product}&country=${country}&policyNumber=${contractRef}&language=${lang}&email=${encodeURIComponent(email)}`;
 
-      document.getElementById("cancelRedirectBtn").style.display = "block";
+  logDebug("Matched Product: " + product);
+  logDebug("Matched Country: " + country);
+  logDebug("Generated Redirect URL: " + finalUrl);
+  logDebug("Redirecting in 10 seconds...");
 
-      redirectTimeout = setTimeout(() => {
-        window.open(finalUrl, '_blank');
-      }, 10000);
-    }
+  document.getElementById("cancelRedirectBtn").style.display = "block";
 
-    document.querySelector("#btnToPaperform").addEventListener("click", function(e) {
-      e.preventDefault();
-      handleClaimRedirect();
-    });
+  redirectTimeout = setTimeout(() => {
+    window.open(finalUrl, "_blank");
+  }, 10000);
+}
 
-    document.querySelector("#cancelRedirectBtn").addEventListener("click", function(e) {
-      clearTimeout(redirectTimeout);
-      logDebug("⛔ Redirect cancelled by user.");
-      document.getElementById("cancelRedirectBtn").style.display = "none";
-    });
-  </script>
+document.querySelector("#btnToPaperform").addEventListener("click", function (e) {
+  e.preventDefault();
+  handleClaimRedirect();
+});
+
+document.querySelector("#cancelRedirectBtn").addEventListener("click", function () {
+  clearTimeout(redirectTimeout);
+  logDebug("⛔ Redirect cancelled by user.");
+  document.getElementById("cancelRedirectBtn").style.display = "none";
+});
+</script>
+
 </body>
 </html>
