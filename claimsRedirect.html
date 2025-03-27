@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Redirect Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .form-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+      margin-top: 1.5rem;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .error {
+      color: red;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Submit a Claim</h2>
+    <label for="state">Language</label>
+    <select id="state">
+      <option value="en" selected>English</option>
+      <option value="fr">Français</option>
+      <option value="de">Deutsch</option>
+      <option value="nl">Nederlands</option>
+      <option value="es">Español</option>
+      <option value="it">Italiano</option>
+    </select>
+
+    <label for="cigardid">Contract Reference</label>
+    <input type="text" id="cigardid" placeholder="e.g. BE20764381687">
+
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="e.g. name@example.com">
+
+    <button id="btnToPaperform">Submit</button>
+  </div>
+
+  <script>
+    // Redirect rule set from your CSV (full list + policy references)
+const redirectRules = [
+  { PatternPrefix: "FR20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+  { PatternPrefix: "BE20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+  { PatternPrefix: "GB20", TPA: "Crawford", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+  { PatternPrefix: "DE20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+  { PatternPrefix: "ES20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+  { PatternPrefix: "AT20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+  { PatternPrefix: "NL20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+  { PatternPrefix: "PT20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+  { PatternPrefix: "DK20", TPA: "VA", Product: "IAB", Redirect: "https://forms.qover.com/233112828692357?tpa=VA" },
+  { PatternPrefix: "FR31", TPA: "VA", Product: "PLEV", Redirect: "https://form.jotformeu.com/222722171740044" },
+  { PatternPrefix: "BE07", TPA: "Baloise", Product: "TENANT", Redirect: "https://forms.qover.com/222193789305361" },
+
+  // Policy based references
+  { PatternPrefix: "P-MICAT", TPA: "MIC", Product: "MIC", Redirect: "https://forms.qover.com/233112828692357?product=MIC&country=AT" },
+  { PatternPrefix: "P-VDMIE", TPA: "VDM", Product: "VDM", Redirect: "https://forms.qover.com/233112828692357?product=VDM&country=IE" },
+  { PatternPrefix: "P-BMMIE", TPA: "BMM", Product: "BMM", Redirect: "https://forms.qover.com/233112828692357?product=BMM&country=IE" }
+];
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function extractPrefix(contractRef) {
+  const match = contractRef.match(/^([A-Z]{2}\d{2})/);
+  if (match) return match[1];
+
+  const policyMatch = contractRef.match(/^(P\-[A-Z]+)/);
+  return policyMatch ? policyMatch[1] : null;
+}
+
+function findRedirectUrl(contractRef) {
+  const prefix = extractPrefix(contractRef);
+  return redirectRules.find(rule => rule.PatternPrefix === prefix);
+}
+
+function showError(message) {
+  const existing = document.querySelector(".error");
+  if (existing) existing.remove();
+  const p = document.createElement("p");
+  p.className = "error";
+  p.style.color = "red";
+  p.textContent = message;
+  document.querySelector("#btnToPaperform").after(p);
+}
+
+function handleClaimRedirect() {
+  const contractRef = document.querySelector("#cigardid").value.trim();
+  const email = document.querySelector("#email").value.trim();
+  const lang = document.querySelector('#state')?.value || 'en';
+
+  if (!isValidEmail(email)) {
+    showError("Please enter a valid email address.");
+    return;
+  }
+
+  const rule = findRedirectUrl(contractRef);
+  if (!rule) {
+    showError("We couldn't find a matching contract type. Please verify or contact support.");
+    return;
+  }
+
+  const country = contractRef.substring(0, 2);
+  const product = rule.Product || "unknown";
+
+  const finalUrl = `${rule.Redirect}&product=${product}&country=${country}&policyNumber=${contractRef}&language=${lang}&email=${encodeURIComponent(email)}`;
+  window.location.href = finalUrl;
+}
+
+// Optional: Hook this to a button click
+document.querySelector("#btnToPaperform").addEventListener("click", function(e) {
+  e.preventDefault();
+  handleClaimRedirect();
+});
+
+  </script>
+</body>
+</html>
