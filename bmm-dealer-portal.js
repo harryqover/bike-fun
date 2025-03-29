@@ -1,4 +1,4 @@
-console.log("hello bmwmini, this will work!");
+console.log("hello bmwmini, this will work! v2");
 /*
 $('#employeeEmail').val("employee@dealer.com")
 $('#vehicleModel').val("your model")
@@ -1077,13 +1077,16 @@ makeSelect.addEventListener('change', function () {
   updateModelOptions(selectedMake);
   // Update background image based on make
   const bmwCell = document.querySelector('.bmw-cell');
+  const logoPortal = document.querySelector('.logo-portal');
   if (bmwCell) {
     if (selectedMake === 'MINI') {
       bmwCell.style.backgroundImage = "url('https://cdn.prod.website-files.com/67bed75c989652e2907f8d69/67bee0440dae19a9e5fbb622_header-mini2.jpg')";
+      logoPortal.src = "https://cdn.prod.website-files.com/67bed75c989652e2907f8d69/67e55f1df764a89af1dc9814_logo-mini-carinsurance_white.svg";
     } else if (selectedMake === 'BMW') {
       bmwCell.style.backgroundImage = "url('https://cdn.prod.website-files.com/67613d17f20b95f5fef06083/679b577e764a24c427aa30af_hero-bmw8.webp')";
+      logoPortal.src = "https://cdn.prod.website-files.com/67613d17f20b95f5fef06083/67e5613c22c230fb8fdacdcc_logo-bmw-carinsurance.svg";
     } else {
-      bmwCell.style.backgroundImage = ''; // Optional: clear for other makes
+      bmwCell.style.backgroundImage = '';
     }
   }
 });
