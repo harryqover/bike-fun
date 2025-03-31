@@ -12,7 +12,8 @@ const variants = {
     "VARIANT_THEFT_CASH_INCL": "Theft & Emergency expense",
     "VARIANT_THEFT_DAMAGE_CASH_INCL": "Premium",
     "VARIANT_THEFT": "Theft",
-    "VARIANT_ASSISTANCE": "Assistance 24/7"
+    "VARIANT_ASSISTANCE": "Assistance 24/7",
+    "VARIANT_DAMAGE_ASSISTANCE": "Damage & Assistance 24/7"
 }
 const assistancePhone = {
     "BE" : "+32 2 541 92 01",
