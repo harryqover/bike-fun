@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Redirect Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .form-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+      margin-top: 1.5rem;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .error {
+      color: red;
+      margin-top: 1rem;
+    }
+    .debug {
+      margin-top: 1rem;
+      background: #eef;
+      padding: 1rem;
+      border-radius: 5px;
+      font-size: 0.9rem;
+    }
+    #debug {
+	    background: #111;
+	    color: #0f0;
+	    font-family: monospace;
+	    font-size: 0.85rem;
+	    padding: 1rem;
+	    border-radius: 5px;
+	    margin-top: 1rem;
+	    max-height: 200px;
+	    overflow-y: auto;
+	    white-space: pre-wrap;
+	  }
+    #cancelRedirectBtn {
+      background-color: #dc3545;
+      margin-top: 1rem;
+    }
+    #cancelRedirectBtn:hover {
+      background-color: #a71d2a;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Submit a Claim</h2>
+    <label for="state">Language</label>
+    <select id="state">
+      <option value="en" selected>English</option>
+      <option value="fr">Français</option>
+      <option value="de">Deutsch</option>
+      <option value="nl">Nederlands</option>
+      <option value="es">Español</option>
+      <option value="it">Italiano</option>
+    </select>
+
+    <label for="cigardid">Contract Reference</label>
+    <input type="text" id="cigardid" placeholder="e.g. BE20764381687">
+
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="e.g. name@example.com">
+
+    <button id="btnToPaperform">Submit</button>
+    <button id="cancelRedirectBtn" style="display:none;">Cancel Redirect</button>
+
+    <div id="debug" class="debug" style="display: none;"></div>
+  </div>
+
+  <script>
+const productPattern = [
+  { PatternPrefix: "xx20", Product: "IAB" },
+  { PatternPrefix: "xx10", Product: "BIKE" },
+  { PatternPrefix: "xx31", Product: "PLEV" },
+  { PatternPrefix: "BE07", Product: "TENANT" },
+  { PatternPrefix: "P-MICAT", Product: "MIC" },
+  { PatternPrefix: "P-VDMIE", Product: "VDM" },
+  { PatternPrefix: "P-BMMIE", Product: "BMM" }
+];
+
+const cowboyAlteosIds = [
+  "5ff6cf4fceba6039aadb446f",
+  "60938efba79100e71519a03b",
+  "607937e4654780240a132641",
+  "61b1b145415df342d60f4e0f",
+  "61b1c260415df342d60f4e10",
+  "60a75f9f987d3f484ed24ef4"
+];
+
+const redirectConfig = [
+  { product: "BIKE", claimProcess: "CowboyAlteos", Redirect: "https://forms.qover.com/213533942109352?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=Alteos" },
+  { product: "BIKE", claimProcess: "bikeQover", Redirect: "https://forms.qover.com/212795616223356?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=Qover" },
+  { product: "IAB", claimProcess: "teslaWakam", Redirect: "https://insuremytesla.qover.com/claims?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=Crawford" },
+  { product: "IAB", claimProcess: "teslaHelvetia", Redirect: "https://insuremytesla.qover.com/claims?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=VanAmeyde" },
+  { product: "IAB", claimProcess: "iabHelvetia", Redirect: "https://forms.qover.com/233112828692357?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=VanAmeyde" },
+  { product: "PLEV", claimProcess: "PLEV", Redirect: "https://form.jotformeu.com/222722171740044?tpa=VA" },
+  { product: "TENANT", claimProcess: "TENANT", Redirect: "https://forms.qover.com/222193789305361?tpa=Baloise" },
+  { product: "MIC", claimProcess: "MIC", Redirect: "https://forms.qover.com/233112828692357?product=MIC&country=AT&tpa=MIC" },
+  { product: "VDM", claimProcess: "VDM", Redirect: "https://forms.qover.com/233112828692357?product=VDM&country=IE&tpa=VDM" },
+  { product: "BMM", claimProcess: "BMM", Redirect: "https://forms.qover.com/233112828692357?product=BMM&country=IE&tpa=BMM" }
+];
+
+function extractPrefix(contractRef) {
+  const match = contractRef.match(/^([A-Z]{2}\d{2})/);
+  if (match) return match[1];
+  const policyMatch = contractRef.match(/^(P\-[A-Z]+)/);
+  return policyMatch ? policyMatch[1] : null;
+}
+
+function identifyProduct(contractRef) {
+  const prefix = extractPrefix(contractRef);
+  let match = productPattern.find(p => p.PatternPrefix === prefix);
+  if (!match && prefix && prefix.length === 4) {
+    const wildcardPrefix = 'xx' + prefix.slice(2);
+    match = productPattern.find(p => p.PatternPrefix === wildcardPrefix);
+  }
+  return match ? match.Product : null;
+}
+
+function getRedirectTemplate(product, claimProcess) {
+  const entry = redirectConfig.find(r => r.product === product && r.claimProcess === claimProcess);
+  return entry ? entry.Redirect : null;
+}
+
+function buildRedirectUrl(template, data) {
+  return template
+    .replace("{{lang}}", data.lang)
+    .replace("{{variant}}", data.variant || "")
+    .replace("{{email}}", encodeURIComponent(data.email))
+    .replace("{{cigarId}}", data.cigarId);
+}
+
+let preFetchedData = null;
+
+function showClaimModal(product, onConfirm) {
+  const modal = document.createElement("div");
+  modal.style.position = "fixed";
+  modal.style.top = "0";
+  modal.style.left = "0";
+  modal.style.width = "100%";
+  modal.style.height = "100%";
+  modal.style.background = "rgba(0,0,0,0.6)";
+  modal.style.display = "flex";
+  modal.style.justifyContent = "center";
+  modal.style.alignItems = "center";
+  modal.style.zIndex = "9999";
+
+  modal.innerHTML = `
+    <style>
+      .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+        margin-left: 8px;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+    <div style="background: white; padding: 2rem; border-radius: 10px; text-align: center; max-width: 400px;">
+      <h2>Before you continue</h2>
+      <p>Please make sure you have all necessary documents for <strong>${product}</strong> claims.</p>
+      <button id="confirmBtn" style="margin-top: 1rem; padding: 0.5rem 1rem;">Continue <span id="loadingSpinner" class="loader" style="display: none"></span></button>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const btn = modal.querySelector("#confirmBtn");
+  const spinner = modal.querySelector("#loadingSpinner");
+  btn.addEventListener("click", () => {
+    spinner.style.display = "inline-block";
+    btn.disabled = true;
+    onConfirm(() => {
+      modal.remove();
+    });
+  });
+}
+
+function getBikeRedirect(cigarId, email, lang, callback) {
+  if (preFetchedData?.product === "BIKE") {
+    callback(preFetchedData.url);
+    return;
+  }
+  const url = "https://api.prd.qover.io/bike/v1/contracts/claim-info?apikey=pk_C0132D71B8C4C4E55690";
+  fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ cigarId, email })
+  })
+    .then(res => res.json())
+    .then(response => {
+      const partnerId = response.partnerId;
+      const country = response.country;
+      const variant = response.variant;
+      const claimProcess = (cowboyAlteosIds.includes(partnerId) && country === "DE") ? "CowboyAlteos" : "bikeQover";
+      const template = getRedirectTemplate("BIKE", claimProcess);
+      const url = buildRedirectUrl(template, { lang, variant, email, cigarId });
+      preFetchedData = { product: "BIKE", url };
+      callback(url);
+    });
+}
+
+function getIABRedirect(cigarId, email, lang, callback) {
+  if (preFetchedData?.product === "IAB") {
+    callback(preFetchedData.url);
+    return;
+  }
+  const url = "https://script.google.com/macros/s/AKfycbxw_NiE8wEmOykXDcnaM6vzVfS6bYdv-Ne6bQmo-IBi0IvlKpSUW-6IAVxq5AwqrGasoQ/exec";
+  const payload = { cigarId, email, action: "getContractData" };
+  fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=UTF-8" },
+    body: JSON.stringify(payload)
+  })
+    .then(res => res.json())
+    .then(response => {
+      const make = response.payload.risk.make;
+      const country = cigarId.substring(0, 2);
+      let claimProcess = "iabHelvetia";
+      if (make === "MAKE_TESLA" && country === "GB") claimProcess = "teslaWakam";
+      else if (make === "MAKE_TESLA") claimProcess = "teslaHelvetia";
+      const template = getRedirectTemplate("IAB", claimProcess);
+      const url = buildRedirectUrl(template, { lang, variant: "", email, cigarId });
+      preFetchedData = { product: "IAB", url };
+      callback(url);
+    });
+}
+
+function handleRedirectFlow(cigarId, email, lang) {
+  const product = identifyProduct(cigarId);
+  if (!product) return alert("Unable to detect product from contract reference.");
+
+  // Prefetch here
+  if (product === "BIKE") {
+    getBikeRedirect(cigarId, email, lang, () => {});
+  } else if (product === "IAB") {
+    getIABRedirect(cigarId, email, lang, () => {});
+  }
+
+  showClaimModal(product, (closeModal) => {
+    const finish = (url) => {
+      closeModal();
+      window.open(url, "_blank");
+    };
+    if (product === "BIKE") {
+      getBikeRedirect(cigarId, email, lang, finish);
+    } else if (product === "IAB") {
+      getIABRedirect(cigarId, email, lang, finish);
+    } else {
+      const template = getRedirectTemplate(product, product);
+      if (!template) return alert("No redirect configured for this product.");
+      const url = buildRedirectUrl(template, { lang, variant: "", email, cigarId });
+      finish(url);
+    }
+  });
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const submitBtn = document.querySelector("#btnToPaperform");
+  if (submitBtn) {
+    submitBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      preFetchedData = null;
+      const cigarId = document.querySelector("#cigardid").value.trim();
+      const email = document.querySelector("#email").value.trim();
+      const lang = document.querySelector("#state")?.value || "en";
+      handleRedirectFlow(cigarId, email, lang);
+    });
+  }
+});
+</script>
+
+
+
+</body>
+</html>
