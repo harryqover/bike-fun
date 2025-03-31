@@ -183,7 +183,12 @@ function goLogin(cigarId, email) {
             $("[data-var='cigarid']").text(cigarId);
             $("[data-var='start']").text(start.toLocaleDateString());
             $("[data-var='end']").text(end.toLocaleDateString());
-            $("[data-var='theftdeductible']").text(currency+ " " + Math.round(theftDeductibleAmount * 100) / 100);
+            if(["VARIANT_ASSISTANCE","VARIANT_DAMAGE_ASSISTANCE"].includes(payloadFromApi.variant)){
+                $("[data-var='theftdeductible']").text("not covered");
+            } else {
+                $("[data-var='theftdeductible']").text(currency+ " " + Math.round(theftDeductibleAmount * 100) / 100);
+            }
+            
             $("[data-var='materialdeductible']").text(currency+" " + Math.round(damageDeductibleAmount * 100) / 100);
             $("[data-var='phone']").text(qoverPhone[country]);
 
@@ -314,9 +319,12 @@ function getNinjaData(cigarId, email) {
         if(response.payload.terms.variant == "VARIANT_ASSISTANCE"){
             $("[data-var='phoneassistance']").text("02 533 75 75"); 
             $(".div-block-324,.div-block-309,.claim-block,[data-var='pricediv'],[data-var='makeaclaim']").hide();   
-        } else if(response.payload.terms.variant == "VARIANT_THEFT_ASSISTANCE" || response.payload.terms.variant == "VARIANT_THEFT_DAMAGE_ASSISTANCE"){
+        } else if(["VARIANT_ASSISTANCE", "VARIANT_THEFT_ASSISTANCE", "VARIANT_THEFT_DAMAGE_ASSISTANCE"].includes(response.payload.terms.variant)){
             $("[data-var='phoneassistance']").text(assistancePhone[response.payload.refs.country]);
             $("[data-var='explanation-deductible']").text(translations['incaseoftheft']+ " "+ currency + " " + refundTheft + " "+translations['incaseofdamage']+ " "+ currency + " " + Math.round(damageDeductibleAmount * 100) / 100);
+        } else if(["VARIANT_DAMAGE_ASSISTANCE"].includes(response.payload.terms.variant)){
+            $("[data-var='phoneassistance']").text(assistancePhone[response.payload.refs.country]);
+            $("[data-var='explanation-deductible']").text(translations['incaseofdamage']+ " "+ currency + " " + Math.round(damageDeductibleAmount * 100) / 100);
         } else {
             $("[data-var='phoneassistance']").text("not available");    
             $(".assistance-emergency").hide();
