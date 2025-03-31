@@ -139,6 +139,42 @@ const redirectConfig = [
   { product: "BMM", claimProcess: "BMM", Redirect: "https://forms.qover.com/233112828692357?product=BMM&country=IE&tpa=BMM" }
 ];
 
+const modalContent = {
+  BIKE: `
+    <p>Make sure you have these elements in your possession before you continue:</p>
+    <ul>
+      <li>Invoice of your bike</li>
+      <li>Your IBAN (and/or RIB in France)</li>
+      <li>If your bike has an additional marking (Bicycode, Paravol, ...), we need the marking ID</li>
+    </ul>
+    <p><strong>Specific in case of material damage:</strong></p>
+    <ul>
+      <li>Pictures of the damaged bike</li>
+      <li>If there is a third party involved, the information of that third party</li>
+    </ul>
+    <p><strong>Specific in case of theft:</strong></p>
+    <ul>
+      <li>The copy of the police report</li>
+      <li>The brand and the model of your lock</li>
+      <li>If you have a GPS tracker on your bike, a screenshot of the last location</li>
+    </ul>
+  `,
+  IAB: `
+    <p>Please ensure you have the following items:</p>
+    <ul>
+      <li>Your vehicle registration certificate</li>
+      <li>A description of the incident</li>
+      <li>Photos if applicable</li>
+    </ul>
+  `,
+  PLEV: `<p>Have your invoice and any police reports ready if applicable.</p>`,
+  TENANT: `<p>Make sure you have your lease agreement and any incident documentation.</p>`,
+  MIC: `<p>Have your policy document and proof of incident ready.</p>`,
+  VDM: `<p>Prepare a claim report and supporting documents.</p>`,
+  BMM: `<p>Make sure to gather your agreement details and relevant photos.</p>`
+};
+
+
 function extractPrefix(contractRef) {
   const match = contractRef.match(/^([A-Z]{2}\d{2})/);
   if (match) return match[1];
@@ -172,6 +208,8 @@ function buildRedirectUrl(template, data) {
 let preFetchedData = null;
 
 function showClaimModal(product, onConfirm) {
+  const modalText = modalContent[product] || "<p>Please ensure you have the necessary documents ready before proceeding.</p>";
+
   const modal = document.createElement("div");
   modal.style.position = "fixed";
   modal.style.top = "0";
@@ -201,10 +239,12 @@ function showClaimModal(product, onConfirm) {
         100% { transform: rotate(360deg); }
       }
     </style>
-    <div style="background: white; padding: 2rem; border-radius: 10px; text-align: center; max-width: 400px;">
-      <h2>Before you continue</h2>
-      <p>Please make sure you have all necessary documents for <strong>${product}</strong> claims.</p>
-      <button id="confirmBtn" style="margin-top: 1rem; padding: 0.5rem 1rem;">Continue <span id="loadingSpinner" class="loader" style="display: none"></span></button>
+    <div style="background: white; padding: 2rem; border-radius: 10px; text-align: left; max-width: 500px;">
+      <h2 style="margin-top: 0;">Before you continue...</h2>
+      ${modalText}
+      <div style="text-align: center;">
+        <button id="confirmBtn" style="margin-top: 1rem; padding: 0.5rem 1rem;">Continue <span id="loadingSpinner" class="loader" style="display: none"></span></button>
+      </div>
     </div>
   `;
 
@@ -212,6 +252,7 @@ function showClaimModal(product, onConfirm) {
 
   const btn = modal.querySelector("#confirmBtn");
   const spinner = modal.querySelector("#loadingSpinner");
+
   btn.addEventListener("click", () => {
     spinner.style.display = "inline-block";
     btn.disabled = true;
@@ -220,6 +261,7 @@ function showClaimModal(product, onConfirm) {
     });
   });
 }
+
 
 function getBikeRedirect(cigarId, email, lang, callback) {
   if (preFetchedData?.product === "BIKE") {
