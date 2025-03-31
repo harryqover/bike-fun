@@ -274,7 +274,18 @@ function getBikeRedirect(cigarId, email, lang, callback) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ cigarId, email })
   })
-    .then(res => res.json())
+    .then(async res => {
+      if (!res.ok) {
+        const error = await res.json();
+        if (error.code === "EMAIL_DOESNT_MATCH") {
+          alert("The email address does not match the contract reference. Please verify and try again.");
+        } else {
+          alert("Something went wrong while retrieving your contract information.");
+        }
+        throw new Error(error.message || "API error");
+      }
+      return res.json();
+    })
     .then(response => {
       const partnerId = response.partnerId;
       const country = response.country;
@@ -284,6 +295,9 @@ function getBikeRedirect(cigarId, email, lang, callback) {
       const url = buildRedirectUrl(template, { lang, variant, email, cigarId });
       preFetchedData = { product: "BIKE", url };
       callback(url);
+    })
+    .catch(err => {
+      console.error("Failed to fetch BIKE data", err);
     });
 }
 
@@ -301,6 +315,10 @@ function getIABRedirect(cigarId, email, lang, callback) {
   })
     .then(res => res.json())
     .then(response => {
+      if (response.status === "success" && response.payload === "error") {
+        alert("We couldn't find your contract. Please verify your contract reference and email address.");
+        return;
+      }
       const make = response.payload.risk.make;
       const country = cigarId.substring(0, 2);
       let claimProcess = "iabHelvetia";
@@ -310,6 +328,10 @@ function getIABRedirect(cigarId, email, lang, callback) {
       const url = buildRedirectUrl(template, { lang, variant: "", email, cigarId });
       preFetchedData = { product: "IAB", url };
       callback(url);
+    })
+    .catch(error => {
+      console.error("Failed to fetch IAB data", error);
+      alert("Something went wrong while retrieving your contract information. Please try again later.");
     });
 }
 
