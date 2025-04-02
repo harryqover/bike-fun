@@ -51,7 +51,7 @@
       margin-bottom: 1rem;
     }
 
-    .strava-widget {
+    .strava-widget, .weather-widget {
       background: #eee;
       border: 2px dashed #ccc;
       padding: 2rem;
@@ -71,6 +71,17 @@
       display: block;
       margin-top: 0.5rem;
       font-weight: bold;
+    }
+
+    .whatsapp-link {
+      display: inline-block;
+      margin-top: 1rem;
+      background: #25D366;
+      color: white;
+      font-weight: bold;
+      padding: 0.75rem 1.5rem;
+      text-decoration: none;
+      border-radius: 8px;
     }
 
     footer {
@@ -95,6 +106,7 @@
       <p><strong>Time:</strong> 10:00 AM</p>
       <p><strong>Meeting Point:</strong> Playground of Josaphat Park, Schaerbeek</p>
       <p>Get ready for a wild hill session with over 1000D+ on a slope of ~15% – a real test of will, legs, and repetition tolerance!</p>
+      <a class="whatsapp-link" href="https://chat.whatsapp.com/JTsblYdO1847uMU3rGNOXS" target="_blank">Join the WhatsApp Group</a>
     </section>
 
     <section>
@@ -102,6 +114,14 @@
       <div class="strava-widget">
         <!-- Replace the link below with your actual Strava embed -->
         <p>[Strava Segment Widget Coming Soon]</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Weather Forecast</h2>
+      <div class="weather-widget">
+        <!-- Weather Widget Embed -->
+        <a class="weatherwidget-io" href="https://forecast7.com/en/50d86n4d38/schaerbeek/" data-label_1="SCHAERBEEK" data-label_2="WEATHER" data-theme="pure">SCHAERBEEK WEATHER</a>
       </div>
     </section>
 
@@ -125,6 +145,18 @@
   <footer>
     Josaphat 1000D+ Challenge | Schaerbeek, Brussels | Est. 2025
   </footer>
+
+  <!-- Scripts -->
+  <script>
+    !function(d,s,id){
+      var js,fjs=d.getElementsByTagName(s)[0];
+      if(!d.getElementById(id)){
+        js=d.createElement(s);js.id=id;
+        js.src='https://weatherwidget.io/js/widget.min.js';
+        fjs.parentNode.insertBefore(js,fjs);
+      }
+    }(document,'script','weatherwidget-io-js');
+  </script>
 
 </body>
 </html>
