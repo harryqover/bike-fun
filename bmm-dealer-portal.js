@@ -1258,52 +1258,48 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
 
 
 //EASE TESTING TO DEACTIVATE WHEN PROD
+const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('test') === 'true') {
+    setTimeout(() => {
+      const getRandomOptionValue = (select) => {
+        const options = Array.from(select.options).filter(opt => opt.value);
+        return options[Math.floor(Math.random() * options.length)].value;
+      };
 
-  window.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('test') !== 'true') return;
+      const form = document.getElementById('insuranceForm');
+      if (!form) return;
 
-    const getRandomOptionValue = (select) => {
-      const options = Array.from(select.options).filter(opt => opt.value);
-      return options[Math.floor(Math.random() * options.length)].value;
-    };
+      const dealership = document.getElementById('dealership');
+      if (dealership) dealership.value = getRandomOptionValue(dealership);
 
-    const form = document.getElementById('insuranceForm');
-    if (!form) return;
+      const vehicleMake = document.getElementById('vehicleMake');
+      if (vehicleMake) vehicleMake.value = getRandomOptionValue(vehicleMake);
 
-    // Fill selects with random values
-    const dealership = document.getElementById('dealership');
-    if (dealership) dealership.value = getRandomOptionValue(dealership);
+      const vehicleModel = document.getElementById('vehicleModel');
+      if (vehicleModel) vehicleModel.value = getRandomOptionValue(vehicleModel);
 
-    const vehicleMake = document.getElementById('vehicleMake');
-    if (vehicleMake) vehicleMake.value = getRandomOptionValue(vehicleMake);
+      const extendedVehicleModel = document.getElementById('extendedVehicleModel');
+      if (extendedVehicleModel) extendedVehicleModel.value = getRandomOptionValue(extendedVehicleModel);
 
-    const vehicleModel = document.getElementById('vehicleModel');
-    if (vehicleModel) vehicleModel.value = getRandomOptionValue(vehicleModel);
+      const employeeEmail = document.getElementById('employeeEmail');
+      if (employeeEmail) employeeEmail.value = 'harry+employee@qover.com';
 
-    const extendedVehicleModel = document.getElementById('extendedVehicleModel');
-    if (extendedVehicleModel) extendedVehicleModel.value = getRandomOptionValue(extendedVehicleModel);
+      const customerEmail = document.getElementById('customerEmail');
+      if (customerEmail) customerEmail.value = 'harry+customer@qover.com';
 
-    // Fill emails
-    const employeeEmail = document.getElementById('employeeEmail');
-    if (employeeEmail) employeeEmail.value = 'harry+employee@qover.com';
+      const customerName = document.getElementById('customerName');
+      if (customerName) customerName.value = 'Harry Customer';
 
-    const customerEmail = document.getElementById('customerEmail');
-    if (customerEmail) customerEmail.value = 'harry+customer@qover.com';
+      const deliveryDate = document.getElementById('deliveryDate');
+      if (deliveryDate) {
+        const today = new Date();
+        today.setDate(today.getDate() + Math.floor(Math.random() * 14) + 1);
+        deliveryDate.value = today.toISOString().split('T')[0];
+      }
 
-    // Fill customer name
-    const customerName = document.getElementById('customerName');
-    if (customerName) customerName.value = 'Harry Customer';
+      const consent = document.getElementById('consent');
+      if (consent) consent.checked = true;
 
-    // Fill delivery date with today + random 1-14 days
-    const deliveryDate = document.getElementById('deliveryDate');
-    if (deliveryDate) {
-      const today = new Date();
-      today.setDate(today.getDate() + Math.floor(Math.random() * 14) + 1);
-      deliveryDate.value = today.toISOString().split('T')[0];
-    }
-
-    // Check consent checkbox
-    const consent = document.getElementById('consent');
-    if (consent) consent.checked = true;
-  });
+      console.log('Form auto-filled after 3s delay without waiting for DOMContentLoaded');
+    }, 3000);
+  }
