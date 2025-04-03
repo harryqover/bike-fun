@@ -1140,27 +1140,54 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
     const customerEmail = document.getElementById('customerEmail').value;
     const dealership = document.getElementById('dealership').value;
 
-    const prodUrls = {
-      BMW: "https://app.bmw-car-insurance.ie/bmm/car-registration?",
-      MINI: "https://app.mini-car-insurance.ie/bmm/car-registration?"
-    };
-
-    const sbxUrls = {
-      BMW: "https://appqoverme-ui.sbx.qover.io/bmm/risk?appId=m1yf5oeskryvn0cs89je3f8i",
-      MINI: "https://appqoverme-ui.sbx.qover.io/bmm/risk?appId=fqjcf53no16aj7pa4fn1pbzk"
-    };
-
     const domainMap = {
-      "bmw-car-insurance.ie": prodUrls,
-      "mini-car-insurance.ie": prodUrls,
-      "webflow.io": sbxUrls
+      "bmw-car-insurance.ie": {
+        BMW: {
+          url: "https://app.bmw-car-insurance.ie/bmm/car-registration?",
+          appId: "oxv9x9m9e5hcsjdh9zs69l1b",
+          partnerId: "67ea56d9303db0de9a2fb9ee"
+        },
+        MINI: {
+          url: "https://app.mini-car-insurance.ie/bmm/car-registration?",
+          appId: "i74z9dw4i5pf3vao19mg5ffo",
+          partnerId: "67ea56ef303db0de9a2fb9ef"
+        }
+      },
+      "mini-car-insurance.ie": {
+        BMW: {
+          url: "https://app.bmw-car-insurance.ie/bmm/car-registration?",
+          appId: "oxv9x9m9e5hcsjdh9zs69l1b",
+          partnerId: "67ea56d9303db0de9a2fb9ee"
+        },
+        MINI: {
+          url: "https://app.mini-car-insurance.ie/bmm/car-registration?",
+          appId: "i74z9dw4i5pf3vao19mg5ffo",
+          partnerId: "67ea56ef303db0de9a2fb9ef"
+        }
+      },
+      "webflow.io": {
+        BMW: {
+          url: "https://appqoverme-ui.sbx.qover.io/bmm/risk?appId=m1yf5oeskryvn0cs89je3f8i",
+          appId: "m1yf5oeskryvn0cs89je3f8i",
+          partnerId: "6790b73daf7d9e71046537c8"
+        },
+        MINI: {
+          url: "https://appqoverme-ui.sbx.qover.io/bmm/risk?appId=fqjcf53no16aj7pa4fn1pbzk",
+          appId: "fqjcf53no16aj7pa4fn1pbzk",
+          partnerId: "67a62ba54ff46afcdd5b3176"
+        }
+      }
     };
 
-    if (domainMap[domain] && domainMap[domain][vehicleMake]) {
-      lastStepUrl = domainMap[domain][vehicleMake];
+    // Access everything from a single lookup
+    const config = domainMap[domain]?.[vehicleMake];
+    console.log(config)
+
+    if (config) {
+      const lastStepUrl = config.url;
+      const appId = config.appId;
+      const partnerId = config.partnerId;
     }
-
-
 
 
     // Prepare data for API request
@@ -1188,12 +1215,12 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
         referrer: employeeEmail,
         pos: dealership,
         lastStepAt: Date.now().toString(),
-        lastStepUrl: "https://appqoverme-ui.sbx.qover.io/bmm/risk?appId=m1yf5oeskryvn0cs89je3f8i",
+        lastStepUrl: lastStepUrl,
         documentsSentByMailConsented: "true",
         termsAndConditionsConsented: "true",
         requestPaperCopy: "false"
       },
-      appId: "m1yf5oeskryvn0cs89je3f8i"
+      appId: appId
     };
 
     var settings = {
