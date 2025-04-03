@@ -1,4 +1,4 @@
-console.log("hello bmwmini, this will work! v2");
+console.log("hello bmwmini, this will work! 1044");
 /*
 $('#employeeEmail').val("employee@dealer.com")
 $('#vehicleModel').val("your model")
@@ -7,6 +7,23 @@ $('#customerName').val("customer name")
 $('#customerEmail').val("customer@domain.com")
 */
 
+function getRootDomain(hostname) {
+  const parts = hostname.split('.');
+
+  // Handle domains like co.uk, com.au, etc.
+  if (parts.length > 2) {
+    const tld = parts.slice(-2).join('.');
+    const knownTLDs = ['co.uk', 'com.au', 'org.uk', 'gov.uk']; // Add more as needed
+    if (knownTLDs.includes(tld)) {
+      return parts.slice(-3).join('.');
+    }
+  }
+
+  return parts.slice(-2).join('.');
+}
+
+const domain = getRootDomain(window.location.hostname);
+console.log("domain ", domain);
 // VEHICLE MODEL DATA
 const modelData = [
   {
