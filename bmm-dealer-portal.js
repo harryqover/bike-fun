@@ -1236,8 +1236,27 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
         domain: domain
       })
     };
+    const $button = $("#insuranceForm > div.form-actions > button");
+    const originalText = $button.text();
+    const $spinner = $('<span class="xhr-spinner" style="display:inline-block; vertical-align:middle; margin-right:8px; width:16px; height:16px; border:2px solid #f3f3f3; border-top:2px solid #3498db; border-radius:50%; animation: spin 0.6s linear infinite;"></span>');
+    // Inject spinner animation keyframes into <head> if not already there
+    if (!document.getElementById("xhr-spinner-style")) {
+      const style = document.createElement("style");
+      style.id = "xhr-spinner-style";
+      style.innerHTML = `
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // Disable button and inject spinner + text
+    $button.prop("disabled", true).empty().append($spinner).append("Sending...");
     
     $.ajax(settings).done(function(response) {
+      $("#insuranceForm > div.form-actions > button").text("sending the quote");
       console.log("draft created");
       console.log(response);
       console.log(response.payload.id);
@@ -1259,8 +1278,12 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
 
     }).fail(function(jqXHR, textStatus, errorThrown) {
       console.error("Error:", textStatus, errorThrown);
+      $("#message").html('<p class="error">An error occurred while creating the quote.</p><pre>' + JSON.stringify(jqXHR.responseJSON || jqXHR.responseText, null, 2) + '</pre>');
+    })
+    .always(function() {
+      // Re-enable button and reset text
+      $button.prop("disabled", false).text(originalText);
       $("#loadingOverlay").hide(500);
-      $("#message").html('<p class="error">An error occurred while creating the quote.</p><pre>' + JSON.stringify(response, null, 2) + '</pre>');
     });
 });
 
