@@ -1241,10 +1241,10 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
       console.log("draft created");
       console.log(response);
       console.log(response.payload.id);
-      if(response.payload.status == 400){
-        $("#message").html('<p class="success">An error occurred while creating the quote!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
+      if([201,200].includes(response.payload.status)){
+        $("#message").html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response.payload.id, null, 2) + "</pre>");
       } else {
-        $("#message").html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response.payload.id, null, 2) + "</pre>");  
+        $("#message").html('<p class="success">An error occurred while creating the quote!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
       }
       $("#loadingOverlay").hide(500);
       
