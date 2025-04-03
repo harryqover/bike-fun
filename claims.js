@@ -29,9 +29,9 @@ const redirectConfig = [
   { product: "BIKE", claimProcess: "CowboyAlteos", Redirect: "https://forms.qover.com/213533942109352?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=Alteos" },
   { product: "COWBOYDE", claimProcess: "CowboyAlteos", Redirect: "https://forms.qover.com/213533942109352?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=Alteos" },
   { product: "COWBOY", claimProcess: "bikeQover", Redirect: "https://forms.qover.com/212795616223356?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=Qover" },
-  { product: "BIKE", claimProcess: "bikeQover", Redirect: "https://forms.qover.com/212795616223356?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=Qover" },
+  { product: "BIKE", claimProcess: "bikeQover", Redirect: "https://forms.qover.com/212795616223356?language={{lang}}&variant={{variant}}&email={{email}}&policy_reference={{cigarId}}&claims_handler=Qover&ref_country={{country}}" },
   { product: "IAB", claimProcess: "teslaWakam", Redirect: "https://insuremytesla.qover.com/claims?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=Crawford" },
-  { product: "IAB", claimProcess: "teslaHelvetia", Redirect: "https://insuremytesla.qover.com/claims?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=VanAmeyde" },
+  { product: "IAB", claimProcess: "teslaHelvetia", Redirect: "https://insuremytesla.qover.com/claims?language={{lang}}&variant={{variant}}&claimant_email={{email}}&contract_number={{cigarId}}&claims_handler=VanAmeyde" },
   { product: "IAB", claimProcess: "iabHelvetia", Redirect: "https://forms.qover.com/233112828692357?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=VanAmeyde" },
   { product: "PLEV", claimProcess: "PLEV", Redirect: "https://form.jotformeu.com/222722171740044?tpa=VA" },
   { product: "TENANT", claimProcess: "TENANT", Redirect: "https://forms.qover.com/222193789305361?tpa=Baloise" },
@@ -183,11 +183,13 @@ function getRedirectTemplate(product, claimProcess) {
 }
 
 function buildRedirectUrl(template, data) {
+  console.log("data buildRedirectUrl: ", data)
   return template
     .replace("{{lang}}", data.lang)
     .replace("{{variant}}", data.variant || "")
     .replace("{{email}}", encodeURIComponent(data.email))
     .replace("{{cigarId}}", data.cigarId);
+    .replace("{{country}}", data.refs.country);
 }
 
 let preFetchedData = null;
