@@ -1255,3 +1255,55 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
       $("#message").html('<p class="error">An error occurred while creating the quote.</p><pre>' + JSON.stringify(response, null, 2) + '</pre>');
     });
 });
+
+
+//EASE TESTING TO DEACTIVATE WHEN PROD
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('test') !== 'true') return;
+
+    const getRandomOptionValue = (select) => {
+      const options = Array.from(select.options).filter(opt => opt.value);
+      return options[Math.floor(Math.random() * options.length)].value;
+    };
+
+    const form = document.getElementById('insuranceForm');
+    if (!form) return;
+
+    // Fill selects with random values
+    const dealership = document.getElementById('dealership');
+    if (dealership) dealership.value = getRandomOptionValue(dealership);
+
+    const vehicleMake = document.getElementById('vehicleMake');
+    if (vehicleMake) vehicleMake.value = getRandomOptionValue(vehicleMake);
+
+    const vehicleModel = document.getElementById('vehicleModel');
+    if (vehicleModel) vehicleModel.value = getRandomOptionValue(vehicleModel);
+
+    const extendedVehicleModel = document.getElementById('extendedVehicleModel');
+    if (extendedVehicleModel) extendedVehicleModel.value = getRandomOptionValue(extendedVehicleModel);
+
+    // Fill emails
+    const employeeEmail = document.getElementById('employeeEmail');
+    if (employeeEmail) employeeEmail.value = 'harry+employee@qover.com';
+
+    const customerEmail = document.getElementById('customerEmail');
+    if (customerEmail) customerEmail.value = 'harry+customer@qover.com';
+
+    // Fill customer name
+    const customerName = document.getElementById('customerName');
+    if (customerName) customerName.value = 'Harry Customer';
+
+    // Fill delivery date with today + random 1-14 days
+    const deliveryDate = document.getElementById('deliveryDate');
+    if (deliveryDate) {
+      const today = new Date();
+      today.setDate(today.getDate() + Math.floor(Math.random() * 14) + 1);
+      deliveryDate.value = today.toISOString().split('T')[0];
+    }
+
+    // Check consent checkbox
+    const consent = document.getElementById('consent');
+    if (consent) consent.checked = true;
+  });
