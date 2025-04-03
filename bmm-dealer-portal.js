@@ -1215,12 +1215,12 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
         referrer: employeeEmail,
         pos: dealership,
         lastStepAt: Date.now().toString(),
-        lastStepUrl: lastStepUrl,
+        lastStepUrl: config.url,
         documentsSentByMailConsented: "true",
         termsAndConditionsConsented: "true",
         requestPaperCopy: "false"
       },
-      appId: appId
+      appId: config.appId
     };
 
     var settings = {
