@@ -1278,6 +1278,8 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
 
     }).fail(function(jqXHR, textStatus, errorThrown) {
       console.error("Error:", textStatus, errorThrown);
+      console.error("Status:", jqXHR.status);
+      console.error("Response:", jqXHR.responseText);
       $("#message").html('<p class="error">An error occurred while creating the quote.</p><pre>' + JSON.stringify(jqXHR.responseJSON || jqXHR.responseText, null, 2) + '</pre>');
     })
     .always(function() {
