@@ -1122,6 +1122,9 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+
+
+
 // FORM SUBMISSION
 document.getElementById('insuranceForm').addEventListener('submit', async function (event) {
     event.preventDefault(); // Prevent the default form submission
@@ -1136,6 +1139,29 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
     const customerName = document.getElementById('customerName').value;
     const customerEmail = document.getElementById('customerEmail').value;
     const dealership = document.getElementById('dealership').value;
+
+    const prodUrls = {
+      BMW: "https://app.bmw-car-insurance.ie/bmm/car-registration?",
+      MINI: "https://app.mini-car-insurance.ie/bmm/car-registration?"
+    };
+
+    const sbxUrls = {
+      BMW: "https://appqoverme-ui.sbx.qover.io/bmm/risk?appId=m1yf5oeskryvn0cs89je3f8i",
+      MINI: "https://appqoverme-ui.sbx.qover.io/bmm/risk?appId=fqjcf53no16aj7pa4fn1pbzk"
+    };
+
+    const domainMap = {
+      "bmw-car-insurance.ie": prodUrls,
+      "mini-car-insurance.ie": prodUrls,
+      "webflow.io": sbxUrls
+    };
+
+    if (domainMap[domain] && domainMap[domain][vehicleMake]) {
+      lastStepUrl = domainMap[domain][vehicleMake];
+    }
+
+
+
 
     // Prepare data for API request
     const requestData = {
