@@ -194,7 +194,7 @@ function buildRedirectUrl(template, data) {
 
 let preFetchedData = null;
 
-function showClaimModal(product, onConfirm) {
+function showClaimModal(product, onConfirm, isLoading = false) {
   const modalText = modalContent[product] || "<p>Please ensure you have the necessary documents ready before proceeding.</p>";
 
   const modal = document.createElement("div");
@@ -230,7 +230,10 @@ function showClaimModal(product, onConfirm) {
       <h2 style="margin-top: 0;">Before you continue...</h2>
       ${modalText}
       <div style="text-align: center;">
-        <button id="confirmBtn" style="margin-top: 1rem; padding: 0.5rem 1rem;">Continue <span id="loadingSpinner" class="loader" style="display: none"></span></button>
+        <button id="confirmBtn" style="margin-top: 1rem; padding: 0.5rem 1rem;" ${isLoading ? "disabled" : ""}>
+          Continue
+          <span id="loadingSpinner" class="loader" style="${isLoading ? "display: inline-block;" : "display: none;"}"></span>
+        </button>
       </div>
     </div>
   `;
@@ -247,7 +250,17 @@ function showClaimModal(product, onConfirm) {
       modal.remove();
     });
   });
+
+  // Return a reference to update loading state later if needed
+  return {
+    modal,
+    setLoading: (loading) => {
+      spinner.style.display = loading ? "inline-block" : "none";
+      btn.disabled = loading;
+    }
+  };
 }
+
 
 
 function getBikeRedirect(cigarId, email, lang, callback) {
@@ -326,14 +339,7 @@ function handleRedirectFlow(cigarId, email, lang) {
   const product = identifyProduct(cigarId);
   if (!product) return alert("Unable to detect product from contract reference.");
 
-  // Prefetch here
-  if (product === "BIKE") {
-    getBikeRedirect(cigarId, email, lang, () => {});
-  } else if (product === "IAB") {
-    getIABRedirect(cigarId, email, lang, () => {});
-  }
-
-  showClaimModal(product, (closeModal) => {
+  let modalRef = showClaimModal(product, (closeModal) => {
     const finish = (url) => {
       closeModal();
       window.open(url, "_blank");
@@ -348,8 +354,26 @@ function handleRedirectFlow(cigarId, email, lang) {
       const url = buildRedirectUrl(template, { lang, variant: "", email, cigarId });
       finish(url);
     }
-  });
+  }, true); // <-- starts with loading=true
+
+  // Start prefetch and disable "Continue" while loading
+  const finishPrefetch = () => {
+    modalRef.setLoading(false);
+  };
+
+  if (product === "BIKE") {
+    getBikeRedirect(cigarId, email, lang, () => {
+      finishPrefetch();
+    });
+  } else if (product === "IAB") {
+    getIABRedirect(cigarId, email, lang, () => {
+      finishPrefetch();
+    });
+  } else {
+    finishPrefetch(); // not async
+  }
 }
+
 
 
 
