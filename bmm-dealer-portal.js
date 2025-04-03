@@ -1179,7 +1179,8 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
       },
       data: JSON.stringify({
         payload: requestData,
-        action: "createQuote"
+        action: "createQuote",
+        domain: domain
       })
     };
     
