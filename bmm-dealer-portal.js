@@ -1272,15 +1272,6 @@ const urlParams = new URLSearchParams(window.location.search);
       const dealership = document.getElementById('dealership');
       if (dealership) dealership.value = getRandomOptionValue(dealership);
 
-      const vehicleMake = document.getElementById('vehicleMake');
-      if (vehicleMake) vehicleMake.value = getRandomOptionValue(vehicleMake);
-
-      const vehicleModel = document.getElementById('vehicleModel');
-      if (vehicleModel) vehicleModel.value = getRandomOptionValue(vehicleModel);
-
-      const extendedVehicleModel = document.getElementById('extendedVehicleModel');
-      if (extendedVehicleModel) extendedVehicleModel.value = getRandomOptionValue(extendedVehicleModel);
-
       const employeeEmail = document.getElementById('employeeEmail');
       if (employeeEmail) employeeEmail.value = 'harry+employee@qover.com';
 
