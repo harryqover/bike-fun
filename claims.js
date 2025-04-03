@@ -1,5 +1,5 @@
 /*20250403 0913*/
-console.log("20250403 0931")
+console.log("20250403 0944")
 const isValidEmail = (str) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str);
 
 const productPattern = [
