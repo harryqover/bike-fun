@@ -1,5 +1,5 @@
 /*20250403 0913*/
-console.log("20250403 0944")
+console.log("20250403 0951")
 const isValidEmail = (str) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str);
 
 const productPattern = [
@@ -189,7 +189,7 @@ function buildRedirectUrl(template, data) {
     .replace("{{variant}}", data.variant || "")
     .replace("{{email}}", encodeURIComponent(data.email))
     .replace("{{cigarId}}", data.cigarId)
-    .replace("{{country}}", data.refs.country);
+    .replace("{{country}}", data.country);
 }
 
 let preFetchedData = null;
@@ -279,7 +279,7 @@ function getBikeRedirect(cigarId, email, lang, callback) {
       const variant = response.variant;
       const claimProcess = (cowboyAlteosIds.includes(partnerId) && country === "DE") ? "CowboyAlteos" : "bikeQover";
       const template = getRedirectTemplate("BIKE", claimProcess);
-      const url = buildRedirectUrl(template, { lang, variant, email, cigarId });
+      const url = buildRedirectUrl(template, { lang, variant, email, cigarId, country });
       preFetchedData = { product: "BIKE", url };
       callback(url);
     })
