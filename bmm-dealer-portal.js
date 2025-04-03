@@ -1241,13 +1241,18 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
       console.log("draft created");
       console.log(response);
       console.log(response.payload.id);
-      if([201,200].includes(response.payload.status)){
+      if([201,200, 302].includes(response.payload.status)){
         $("#message").html('<p class="success">Quote created successfully!</p>');
         if(domain == "webflow.io"){
           $("#message").html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response.payload.id, null, 2) + "</pre>");
         }
       } else {
-        $("#message").html('<p class="success">An error occurred while creating the quote!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
+        if(domain == "webflow.io"){
+          $("#message").html('<p class="success">An error occurred while creating the quote!</p>');
+        } else {
+          $("#message").html('<p class="success">An error occurred while creating the quote!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");  
+        }
+        
       }
       $("#loadingOverlay").hide(500);
       
