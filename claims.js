@@ -33,7 +33,7 @@ const redirectConfig = [
   { product: "IAB", claimProcess: "teslaWakam", Redirect: "https://insuremytesla.qover.com/claims?language={{lang}}&variant={{variant}}&claimant_email={{email}}&policy_reference={{cigarId}}&claims_handler=Crawford&ref_country={{country}}" },
   { product: "IAB", claimProcess: "teslaHelvetia", Redirect: "https://insuremytesla.qover.com/claims?language={{lang}}&variant={{variant}}&claimant_email={{email}}&policy_reference={{cigarId}}&claims_handler=VanAmeyde&ref_country={{country}}" },
   { product: "IAB", claimProcess: "iabHelvetia", Redirect: "https://forms.qover.com/233112828692357?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=VanAmeyde" },
-  { product: "PLEV", claimProcess: "PLEV", Redirect: "https://form.jotformeu.com/222722171740044?tpa=VA" },
+  { product: "PLEV", claimProcess: "PLEV", Redirect: "https://carrefour-assurance.qover.com/declaration-de-sinistre?language=fr&claimant_email={{email}}&contract_number={{cigarId}}&partner=634e5fe8c9833bb23bd94be9&variant={{variant}}" },
   { product: "TENANT", claimProcess: "TENANT", Redirect: "https://forms.qover.com/222193789305361?tpa=Baloise" },
   { product: "MIC", claimProcess: "MIC", Redirect: "https://forms.qover.com/233112828692357?product=MIC&country=AT&tpa=MIC" },
   { product: "VDM", claimProcess: "VDM", Redirect: "https://forms.qover.com/233112828692357?product=VDM&country=IE&tpa=VDM" },
