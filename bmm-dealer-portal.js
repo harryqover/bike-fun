@@ -1256,17 +1256,17 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
     $button.prop("disabled", true).empty().append($spinner).append("Sending...");
     
     $.ajax(settings).done(function(response) {
-      $("#insuranceForm > div.form-actions > button").text("sending the quote");
       console.log("draft created");
       console.log(response);
       console.log(response.payload.id);
-      if([201,200, 302].includes(response.payload.status)){
+      
+      if(response.payload.id){
         $("#message").html('<p class="success">Quote created successfully!</p>');
         if(domain == "webflow.io"){
           $("#message").html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response.payload.id, null, 2) + "</pre>");
         }
       } else {
-        if(domain == "webflow.io"){
+        if(domain != "webflow.io"){
           $("#message").html('<p class="success">An error occurred while creating the quote!</p>');
         } else {
           $("#message").html('<p class="success">An error occurred while creating the quote!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");  
