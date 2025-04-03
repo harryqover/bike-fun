@@ -63,9 +63,9 @@ const modalContent = {
   IAB: `
     <p>Please ensure you have the following items:</p>
     <ul>
-      <li>Your vehicle registration certificate</li>
       <li>A description of the incident</li>
-      <li>Photos if applicable</li>
+      <li>Accident Form (if available)</li>
+      <li>Pictures of damaged car(s) (if applicable)</li>
     </ul>
   `,
   PLEV: `<p>Have your invoice and any police reports ready if applicable.</p>`,
