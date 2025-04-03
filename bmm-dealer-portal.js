@@ -1292,5 +1292,5 @@ const urlParams = new URLSearchParams(window.location.search);
       if (consent) consent.checked = true;
 
       console.log('Form auto-filled after 3s delay without waiting for DOMContentLoaded');
-    }, 3000);
+    }, 1000);
   }
