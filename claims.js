@@ -188,7 +188,7 @@ function buildRedirectUrl(template, data) {
     .replace("{{lang}}", data.lang)
     .replace("{{variant}}", data.variant || "")
     .replace("{{email}}", encodeURIComponent(data.email))
-    .replace("{{cigarId}}", data.cigarId);
+    .replace("{{cigarId}}", data.cigarId)
     .replace("{{country}}", data.refs.country);
 }
 
