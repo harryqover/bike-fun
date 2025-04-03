@@ -225,6 +225,27 @@ function showClaimModal(product, onConfirm, isLoading = false) {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
+      #confirmBtn {
+        margin-top: 1rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      #confirmBtn:hover:not(:disabled) {
+        background-color: #2980b9;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      }
+
+      #confirmBtn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
     </style>
     <div style="background: white; padding: 2rem; border-radius: 10px; text-align: left; max-width: 500px;">
       <h2 style="margin-top: 0;">Before you continue...</h2>
