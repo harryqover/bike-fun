@@ -1,5 +1,5 @@
 /*20250403 0913*/
-console.log("20250403 0951")
+console.log("20250403 0955")
 const isValidEmail = (str) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str);
 
 const productPattern = [
@@ -312,7 +312,7 @@ function getIABRedirect(cigarId, email, lang, callback) {
       if (make === "MAKE_TESLA" && country === "GB") claimProcess = "teslaWakam";
       else if (make === "MAKE_TESLA") claimProcess = "teslaHelvetia";
       const template = getRedirectTemplate("IAB", claimProcess);
-      const url = buildRedirectUrl(template, { lang, variant: "", email, cigarId });
+      const url = buildRedirectUrl(template, { lang, variant: "", email, cigarId, country});
       preFetchedData = { product: "IAB", url };
       callback(url);
     })
