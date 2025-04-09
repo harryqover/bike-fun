@@ -114,7 +114,10 @@
     const country = getParameterByName("country");
     const minPublicRating = 3;
 
-    if(source === "emailClaimNPS" && rating > 0) rating = rating / 2;
+    //if(["emailClaimNPS"].includes(source) && rating > 0) rating = rating / 2;
+    if ((source === "emailClaimNPS" || /_NPS$/i.test(source)) && rating > 0) {
+      rating = rating / 2;
+    }
 
     const translationH1 = {
       fr: "Merci pour vos commentaires !",
