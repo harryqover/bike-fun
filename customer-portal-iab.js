@@ -206,6 +206,12 @@ function getNinjaData(cigarId, email) {
             $("[data-var='amendlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_4414496783761=iab_amend&tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
             $("[data-var='contracttandlink']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang);
             //$("[data-var='cancel']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
+            if(response.payload.refs.country == "BE"){
+                $("[data-var='cancel']").attr("href", "https://flow.penbox.io/0fab563e-0acf-406a-97cd-6e12e561b713?partner=tesla&language="+lang+"&email=" + email+"&contract=" + response.payload.cigarId);
+            } else {
+                $("[data-var='cancel']").attr("href", "https://forms.qover.com/231272799262059?partner=tesla&language="+lang+"&email=" + email+"&contract=" + response.payload.cigarId);
+            }
+            
             $("[data-var='cancel']").attr("href", "https://forms.qover.com/231272799262059?partner=tesla&language="+lang+"&email=" + email+"&contract=" + response.payload.cigarId);
             $("[data-var='contact']").attr("href", "https://insuremytesla.zendesk.com/hc/"+zendeskLang+"/requests/new?tf_description=Contract%20reference:%20"+response.payload.cigarId+"&tf_anonymous_requester_email=" + email);
             $("[data-var='makeaclaim']").attr("href", "https://insuremytesla.qover.com/claims?language="+lang);
