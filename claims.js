@@ -35,9 +35,9 @@ const redirectConfig = [
   { product: "PLEV", claimProcess: "PLEV", Redirect: "https://carrefour-assurance.qover.com/declaration-de-sinistre?language=fr&claimant_email={{email}}&contract_number={{cigarId}}&partner=634e5fe8c9833bb23bd94be9&variant={{variant}}" },
   { product: "TENANT", claimProcess: "TENANT", Redirect: "https://forms.qover.com/222193789305361?tpa=Baloise" },
   { product: "IAB", claimProcess: "iabHelvetia", Redirect: "https://forms.qover.com/233112828692357?product=IAB&language={{lang}}&variant={{variant}}&email={{email}}&policy_reference={{cigarId}}&tpa_name=Van%20Ameyde" },
-  { product: "MIC", claimProcess: "MIC", Redirect: "https://forms.qover.com/233112828692357?product=microlino&country=AT&tpa_name=Van%20Ameyde&policy_reference={{cigarId}}" },
-  { product: "VDM", claimProcess: "VDM", Redirect: "https://forms.qover.com/233112828692357?product=volvo&country=IE&tpa_name=RedClick&policy_reference={{cigarId}}" },
-  { product: "BMM", claimProcess: "BMM", Redirect: "https://forms.qover.com/233112828692357?product=bmwmini&country=IE&tpa_name=Crawford&policy_reference={{cigarId}}" }
+  { product: "MIC", claimProcess: "MIC", Redirect: "https://forms.qover.com/233112828692357?product=microlino&ref_country=AT&tpa_name=Van%20Ameyde&policy_reference={{cigarId}}" },
+  { product: "VDM", claimProcess: "VDM", Redirect: "https://forms.qover.com/233112828692357?product=volvo&ref_country=IE&tpa_name=RedClick&policy_reference={{cigarId}}" },
+  { product: "BMM", claimProcess: "BMM", Redirect: "https://forms.qover.com/233112828692357?product=bmwmini&ref_country=IE&tpa_name=Crawford&policy_reference={{cigarId}}" }
 ];
 
 const modalContent = {
