@@ -1,146 +1,509 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Travel Insurance Information</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Insurance Quote</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input[type="text"], input[type="date"], select {
-            width: 200px;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-        }
-        input[type="checkbox"] {
-            margin-bottom: 10px;
-        }
-        .beneficiary {
-            border: 1px solid #eee;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-        #addBeneficiary {
-            padding: 8px 15px;
-            cursor: pointer;
-        }
-        #beneficiariesContainer {
-            margin-top: 10px;
-        }
-        .error {
-            color: red;
-            font-size: small;
-        }
+        body { font-family: sans-serif; margin: 20px; }
+        .step { display: none; border: 1px solid #ccc; padding: 20px; margin-top: 15px; border-radius: 5px; }
+        .step.active { display: block; }
+        label { display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold; }
+        select, input[type="date"], input[type="text"] { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; margin-right: 5px; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        button:hover:not(:disabled) { background-color: #0056b3; }
+        .error { color: red; font-size: 0.9em; margin-top: -5px; margin-bottom: 10px; }
+        .package-options { display: flex; justify-content: space-around; margin-top: 20px; flex-wrap: wrap; }
+        .package { border: 1px solid #eee; padding: 15px; margin: 10px; border-radius: 5px; text-align: center; width: 28%; min-width: 200px; }
+        .package h3 { margin-top: 0; }
+        .package .price { font-size: 1.4em; font-weight: bold; margin: 10px 0; }
+        .package button { width: 100%; }
+        .optional-coverages { margin-top: 20px; border-top: 1px dashed #ccc; padding-top: 15px; }
+        .optional-coverages label { display: inline-block; margin-right: 15px; font-weight: normal; }
+        .summary { background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 20px; }
+        .summary h3 { margin-top: 0; }
+        #totalPriceSummary { font-size: 1.2em; font-weight: bold; }
+        #medicalConditionCheck label { display: inline; font-weight: normal; }
+         #medicalConditionCheck input { width: auto; margin-right: 5px;}
+
     </style>
 </head>
 <body>
-    <h1>Enter Your Travel Information</h1>
-    <form id="travelInfoForm">
-        <div>
-            <label for="familyType">Family Type:</label>
-            <select id="familyType" name="familyType" required>
-                <option value="">Select Family Type</option>
-                <option value="FAMILY_TYPE_INDIVIDUAL">Individual</option>
-                <option value="FAMILY_TYPE_COUPLE">Couple</option>
-                <option value="FAMILY_TYPE_FAMILY">Family</option>
-            </select>
-        </div>
 
+<h1>Get Your Travel Insurance Quote</h1>
+
+<div id="step1" class="step active">
+    <h2>Step 1: Tell us about your trip</h2>
+    <form id="quoteForm">
         <div>
             <label for="tripZone">Trip Zone:</label>
             <select id="tripZone" name="tripZone" required>
-                <option value="">Select Trip Zone</option>
+                <option value="">-- Select Zone --</option>
                 <option value="ZONE_EUROPE">Europe</option>
-                <option value="ZONE_WORLD_EXCLUDING_USA">World (excluding USA)</option>
-                <option value="ZONE_WORLD_INCLUDING_USA">World (including USA)</option>
+                <option value="ZONE_WORLD_EXCLUDING_USA">Worldwide (excluding USA/Canada)</option>
+                <option value="ZONE_WORLD_INCLUDING_USA">Worldwide (including USA/Canada)</option>
             </select>
+            <div class="error" id="tripZoneError"></div>
         </div>
-
         <div>
-            <label for="noMedicalCondition">No Pre-existing Medical Conditions:</label>
-            <input type="checkbox" id="noMedicalCondition" name="noMedicalCondition" required>
-            <small>(You must confirm you have no known medical conditions before the trip)</small>
+            <label for="familyType">Who is travelling?</label>
+            <select id="familyType" name="familyType" required>
+                <option value="">-- Select Option --</option>
+                <option value="FAMILY_TYPE_INDIVIDUAL">Individual</option>
+                <option value="FAMILY_TYPE_COUPLE">Couple</option>
+                <option value="FAMILY_TYPE_FAMILY">Family (2 adults + children)</option>
+            </select>
+             <div class="error" id="familyTypeError"></div>
+        </div>
+         <div>
+            <label for="startDate">Trip Start Date:</label>
+            <input type="date" id="startDate" name="startDate" required>
+             <div class="error" id="startDateError"></div>
+        </div>
+         <div>
+            <label for="endDate">Trip End Date:</label>
+            <input type="date" id="endDate" name="endDate" required>
+             <div class="error" id="endDateError"></div>
+        </div>
+        <div id="medicalConditionCheck">
+             <label>Medical Condition Declaration:</label>
+             <input type="checkbox" id="noMedicalCondition" name="noMedicalCondition" value="true" required>
+             <span>I confirm that no traveller has pre-existing medical conditions.</span>
+             <div class="error" id="noMedicalConditionError"></div>
         </div>
 
-        <div id="beneficiariesContainer">
-            <h2>Beneficiary Information (Minimum 1)</h2>
-            <div class="beneficiary">
-                <h3>Beneficiary #1</h3>
-                <div>
-                    <label for="firstName_1">First Name:</label>
-                    <input type="text" id="firstName_1" name="extraBeneficiaries[0][firstName]" pattern="^.+$" required>
-                    <div class="error" id="firstName_1_error"></div>
-                </div>
-                <div>
-                    <label for="lastName_1">Last Name:</label>
-                    <input type="text" id="lastName_1" name="extraBeneficiaries[0][lastName]" pattern="^.+$" required>
-                    <div class="error" id="lastName_1_error"></div>
-                </div>
-                <div>
-                    <label for="birthdate_1">Birthdate (YYYY-MM-DD):</label>
-                    <input type="date" id="birthdate_1" name="extraBeneficiaries[0][birthdate]" required>
-                    <div class="error" id="birthdate_1_error"></div>
-                </div>
-                <div>
-                    <label for="type_1">Type:</label>
-                    <select id="type_1" name="extraBeneficiaries[0][type]" required>
-                        <option value="">Select Type</option>
-                        <option value="EXTRA_BENEFICIARY_TYPE_ADULT">Adult</option>
-                        <option value="EXTRA_BENEFICIARY_TYPE_SENIOR">Senior</option>
-                        <option value="EXTRA_BENEFICIARY_TYPE_CHILD">Child</option>
-                    </select>
-                    <div class="error" id="type_1_error"></div>
-                </div>
-            </div>
-            </div>
-
-        <button type="button" id="addBeneficiary">Add Another Beneficiary</button>
-
-        <br>
-        <button type="submit">Submit Information</button>
+        <button type="button" id="btnStep1Next">Show Plans</button>
     </form>
+</div>
 
-    <script>
-        const beneficiariesContainer = document.getElementById('beneficiariesContainer');
-        const addBeneficiaryButton = document.getElementById('addBeneficiary');
-        let beneficiaryCount = 1;
+<div id="step2" class="step">
+    <h2>Step 2: Choose your plan</h2>
+    <p>Based on your selection: <span id="tripInfoSummary"></span></p>
+    <div class="package-options">
+        <div class="package" id="packageBasic">
+            <h3>Basic</h3>
+            <div class="price">€ <span id="priceBasic">--</span></div>
+            <ul><li>Cancellation</li><li>Assistance</li><li>Medical</li><li>Baggage</li></ul>
+            <button type="button" class="btnSelectPackage" data-package="MULTIPERILBASIC" data-package-name="Basic">Select Basic</button>
+        </div>
+        <div class="package" id="packagePlus">
+            <h3>Plus</h3>
+            <div class="price">€ <span id="pricePlus">--</span></div>
+            <ul><li>Basic +</li><li>Higher Limits</li><li>More Coverages</li></ul>
+             <button type="button" class="btnSelectPackage" data-package="MULTIPERILPLUS" data-package-name="Plus">Select Plus</button>
+        </div>
+        <div class="package" id="packagePremium">
+            <h3>Premium</h3>
+             <div class="price">€ <span id="pricePremium">--</span></div>
+            <ul><li>Plus +</li><li>Highest Limits</li><li>Comprehensive Cover</li></ul>
+             <button type="button" class="btnSelectPackage" data-package="MULTIPERILPREMIUM" data-package-name="Premium">Select Premium</button>
+        </div>
+    </div>
 
-        addBeneficiaryButton.addEventListener('click', function() {
-            beneficiaryCount++;
-            const newBeneficiaryDiv = document.createElement('div');
-            newBeneficiaryDiv.classList.add('beneficiary');
-            newBeneficiaryDiv.innerHTML = `
-                <h3>Beneficiary #${beneficiaryCount}</h3>
-                <div>
-                    <label for="firstName_${beneficiaryCount}">First Name:</label>
-                    <input type="text" id="firstName_${beneficiaryCount}" name="extraBeneficiaries[${beneficiaryCount - 1}][firstName]" pattern="^.+$" required>
-                    <div class="error" id="firstName_${beneficiaryCount}_error"></div>
-                </div>
-                <div>
-                    <label for="lastName_${beneficiaryCount}">Last Name:</label>
-                    <input type="text" id="lastName_${beneficiaryCount}" name="extraBeneficiaries[${beneficiaryCount - 1}][lastName]" pattern="^.+$" required>
-                    <div class="error" id="lastName_${beneficiaryCount}_error"></div>
-                </div>
-                <div>
-                    <label for="birthdate_${beneficiaryCount}">Birthdate (YYYY-MM-DD):</label>
-                    <input type="date" id="birthdate_${beneficiaryCount}" name="extraBeneficiaries[${beneficiaryCount - 1}][birthdate]" required>
-                    <div class="error" id="birthdate_${beneficiaryCount}_error"></div>
-                </div>
-                <div>
-                    <label for="type_${beneficiaryCount}">Type:</label>
-                    <select id="type_${beneficiaryCount}" name="extraBeneficiaries[${beneficiaryCount - 1}][type]" required>
-                        <option value="">Select Type</option>
-                        <option value="EXTRA_BENEFICIARY_TYPE_ADULT">Adult</option>
-                        <option value="EXTRA_BENEFICIARY_TYPE_SENIOR">Senior</option>
-                        <option value="EXTRA_BENEFICIARY_TYPE_CHILD">Child</option>
-                    </select>
-                    <div class="error" id="type_${beneficiaryCount}_error"></div>
-                </div>
-            `;
-            beneficiariesContainer.appendChild(newBeneficiaryDiv); // This line was missing!
-        });
-    </script>
+    <div class="optional-coverages">
+        <h3>Optional Coverages</h3>
+        <div id="optionWinterSports">
+            <input type="checkbox" id="winterSports" name="winterSports">
+            <label for="winterSports">Winter Sports (+ € <span id="priceWinterSports">--</span>)</label>
+        </div>
+         <div id="optionCarHireExcess">
+            <input type="checkbox" id="carHireExcess" name="carHireExcess" disabled>
+            <label for="carHireExcess">Car Hire Excess (+ € <span id="priceCarHireExcess">--</span>)</label>
+            <small>(Only available for Europe Zone)</small>
+        </div>
+        <div id="optionExcessWaiver">
+             <input type="checkbox" id="excessWaiver" name="excessWaiver">
+             <label for="excessWaiver">Excess Waiver (+ € <span id="priceExcessWaiver">--</span>)</label>
+        </div>
+    </div>
+
+    <button type="button" id="btnStep2Back">Back</button>
+    <button type="button" id="btnStep2Next" disabled>Next</button>
+</div>
+
+<div id="step3" class="step">
+    <h2>Step 3: Summary</h2>
+    <div class="summary">
+        <h3>Your Selection</h3>
+        <p><strong>Trip Zone:</strong> <span id="summaryTripZone"></span></p>
+        <p><strong>Travellers:</strong> <span id="summaryFamilyType"></span></p>
+        <p><strong>Dates:</strong> <span id="summaryDates"></span></p>
+        <p><strong>Selected Plan:</strong> <span id="summaryPackage"></span></p>
+        <p><strong>Base Price:</strong> € <span id="summaryBasePrice"></span></p>
+        <div id="summaryOptionalCoverages">
+            <p><strong>Optional Coverages:</strong></p>
+            <ul>
+                </ul>
+        </div>
+        <hr>
+        <p><strong>Total Price (inc. Taxes):</strong> € <span id="totalPriceSummary">--</span></p>
+    </div>
+    <button type="button" id="btnStep3Back">Back</button>
+    <button type="button" id="btnProceedToPayment">Proceed to Payment</button>
+</div>
+
+<script>
+$(document).ready(function() {
+
+    // --- Pricing Data (Extracted and simplified from JSON) ---
+    // Base rates per coverage, variant, family type, zone
+    // Note: JSON sums rates for *each* coverage in a package. This is complex.
+    // Simplification: Using example rates directly per package variant/zone/family.
+    // These should ideally be fetched or calculated more dynamically if JSON structure allows.
+    // Example: Taking 'cancellation' rates as a proxy for package base rate multiplier.
+    const baseRates = {
+        // Rates derived from 'cancellation' coverage in the JSON as an example
+        'MULTIPERILBASIC': {
+            'FAMILY_TYPE_INDIVIDUAL': { 'ZONE_EUROPE': 5.14, 'ZONE_WORLD_EXCLUDING_USA': 7.18, 'ZONE_WORLD_INCLUDING_USA': 10.15 },
+            'FAMILY_TYPE_COUPLE': { 'ZONE_EUROPE': 8.15, 'ZONE_WORLD_EXCLUDING_USA': 10.69, 'ZONE_WORLD_INCLUDING_USA': 15.01 },
+            'FAMILY_TYPE_FAMILY': { 'ZONE_EUROPE': 9.43, 'ZONE_WORLD_EXCLUDING_USA': 10.31, 'ZONE_WORLD_INCLUDING_USA': 16.18 }
+        },
+        'MULTIPERILPLUS': {
+            'FAMILY_TYPE_INDIVIDUAL': { 'ZONE_EUROPE': 5.34, 'ZONE_WORLD_EXCLUDING_USA': 7.78, 'ZONE_WORLD_INCLUDING_USA': 10.95 },
+            'FAMILY_TYPE_COUPLE': { 'ZONE_EUROPE': 8.95, 'ZONE_WORLD_EXCLUDING_USA': 11.69, 'ZONE_WORLD_INCLUDING_USA': 16.01 },
+            'FAMILY_TYPE_FAMILY': { 'ZONE_EUROPE': 10.43, 'ZONE_WORLD_EXCLUDING_USA': 11.31, 'ZONE_WORLD_INCLUDING_USA': 17.18 }
+        },
+         'MULTIPERILPREMIUM': {
+            'FAMILY_TYPE_INDIVIDUAL': { 'ZONE_EUROPE': 6.34, 'ZONE_WORLD_EXCLUDING_USA': 8.78, 'ZONE_WORLD_INCLUDING_USA': 11.95 },
+            'FAMILY_TYPE_COUPLE': { 'ZONE_EUROPE': 9.95, 'ZONE_WORLD_EXCLUDING_USA': 12.69, 'ZONE_WORLD_INCLUDING_USA': 17.01 },
+            'FAMILY_TYPE_FAMILY': { 'ZONE_EUROPE': 11.43, 'ZONE_WORLD_EXCLUDING_USA': 12.31, 'ZONE_WORLD_INCLUDING_USA': 17.98 }
+        }
+        // !!! This is a MAJOR simplification. A real implementation would need to sum
+        // the basePremium expression for *each* coverage listed in the package definition
+        // in the JSON, evaluating the expression based on inputs.
+        // For now, we assume the first coverage rate roughly represents the package base.
+    };
+
+     const optionalRates = {
+        'winterSports': { // Per adult rate * 2 (as per JSON expression)
+            'basic': { 'ZONE_EUROPE': 29.71*2, 'ZONE_WORLD_EXCLUDING_USA': 42.80*2, 'ZONE_WORLD_INCLUDING_USA': 60.13*2 },
+            'plus': { 'ZONE_EUROPE': 41.38*2, 'ZONE_WORLD_EXCLUDING_USA': 56.13*2, 'ZONE_WORLD_INCLUDING_USA': 83.23*2 },
+            'premium': { 'ZONE_EUROPE': 55.46*2, 'ZONE_WORLD_EXCLUDING_USA': 73.68*2, 'ZONE_WORLD_INCLUDING_USA': 106.65*2 }
+        },
+        'carHireExcess': 50, // Fixed rate from JSON
+        'excessWaiver': 20 // Fixed rate from JSON
+    };
+
+    const TAX_RATE = 0.20; // 20% IPT from JSON
+
+    let currentStep = 1;
+    let quoteData = {};
+    let packagePrices = { basic: 0, plus: 0, premium: 0 };
+    let optionalPrices = { winterSports: 0, carHireExcess: 0, excessWaiver: 0 };
+    let selectedPackage = null; // { code: '', name: '', basePrice: 0 }
+    let selectedOptionals = {}; // { winterSports: true, carHireExcess: false, ... }
+
+    function navigateToStep(step) {
+        $('.step').removeClass('active');
+        $('#step' + step).addClass('active');
+        currentStep = step;
+    }
+
+     function validateStep1() {
+        let isValid = true;
+        $('.error').text(''); // Clear previous errors
+
+        const tripZone = $('#tripZone').val();
+        const familyType = $('#familyType').val();
+        const startDate = $('#startDate').val();
+        const endDate = $('#endDate').val();
+        const noMedical = $('#noMedicalCondition').is(':checked');
+        const today = new Date().toISOString().split('T')[0];
+
+        if (!tripZone) {
+            $('#tripZoneError').text('Please select a trip zone.');
+            isValid = false;
+        }
+        if (!familyType) {
+             $('#familyTypeError').text('Please select who is travelling.');
+            isValid = false;
+        }
+         if (!startDate) {
+             $('#startDateError').text('Please select a start date.');
+            isValid = false;
+        } else if (startDate < today) {
+             $('#startDateError').text('Start date cannot be in the past.');
+             isValid = false;
+        }
+         if (!endDate) {
+             $('#endDateError').text('Please select an end date.');
+            isValid = false;
+        }
+        if (startDate && endDate && endDate < startDate) {
+            $('#endDateError').text('End date cannot be before the start date.');
+            isValid = false;
+        }
+         if (!noMedical) {
+             $('#noMedicalConditionError').text('You must confirm no pre-existing medical conditions to proceed.');
+            isValid = false;
+        }
+
+
+        return isValid;
+    }
+
+
+    function calculatePrices() {
+        const zone = quoteData.tripZone;
+        const family = quoteData.familyType;
+        const startDate = new Date(quoteData.startDate);
+        const endDate = new Date(quoteData.endDate);
+
+        if (!zone || !family || !startDate || !endDate || startDate >= endDate) {
+             // Clear prices if inputs are invalid
+             $('#priceBasic, #pricePlus, #pricePremium').text('--');
+             $('#priceWinterSports, #priceCarHireExcess, #priceExcessWaiver').text('--');
+             packagePrices = { basic: 0, plus: 0, premium: 0 };
+             optionalPrices = { winterSports: 0, carHireExcess: 0, excessWaiver: 0 };
+             return;
+        }
+
+        // Calculate duration in days (inclusive)
+        const durationDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+        // --- Base Package Prices ---
+        // This calculation needs refinement based on how duration impacts the JSON basePremium expression.
+        // Assuming the basePremium in JSON is a *daily* rate for simplicity here.
+        // A yearly rate ('P1Y' basePeriod) divided by 365 might be another interpretation.
+        // **This is the most critical part to get right based on the true meaning of the JSON pricing.**
+        // Let's assume daily rate for this example:
+        const dailyRateBasic = (baseRates.MULTIPERILBASIC[family]?.[zone] ?? 0);
+        const dailyRatePlus = (baseRates.MULTIPERILPLUS[family]?.[zone] ?? 0);
+        const dailyRatePremium = (baseRates.MULTIPERILPREMIUM[family]?.[zone] ?? 0);
+
+        packagePrices.basic = dailyRateBasic * durationDays;
+        packagePrices.plus = dailyRatePlus * durationDays;
+        packagePrices.premium = dailyRatePremium * durationDays;
+
+        $('#priceBasic').text(packagePrices.basic.toFixed(2));
+        $('#pricePlus').text(packagePrices.plus.toFixed(2));
+        $('#pricePremium').text(packagePrices.premium.toFixed(2));
+
+        // --- Optional Coverage Prices ---
+         // Determine variant based on selected package (default to basic if none selected yet)
+         let variant = 'basic';
+         if (selectedPackage?.code === 'MULTIPERILPLUS') variant = 'plus';
+         else if (selectedPackage?.code === 'MULTIPERILPREMIUM') variant = 'premium';
+
+        // Winter Sports: Rate depends on zone and package variant. Assuming price is per trip, not per day.
+        optionalPrices.winterSports = optionalRates.winterSports[variant]?.[zone] ?? 0;
+        $('#priceWinterSports').text(optionalPrices.winterSports.toFixed(2));
+
+        // Car Hire Excess: Fixed rate, only enable for Europe
+        optionalPrices.carHireExcess = optionalRates.carHireExcess;
+         $('#priceCarHireExcess').text(optionalPrices.carHireExcess.toFixed(2));
+         if (zone === 'ZONE_EUROPE') {
+             $('#carHireExcess').prop('disabled', false);
+             $('#optionCarHireExcess small').hide();
+         } else {
+             $('#carHireExcess').prop('disabled', true).prop('checked', false); // Disable and uncheck if zone changes
+              $('#optionCarHireExcess small').show();
+         }
+
+        // Excess Waiver: Fixed rate
+        optionalPrices.excessWaiver = optionalRates.excessWaiver;
+        $('#priceExcessWaiver').text(optionalPrices.excessWaiver.toFixed(2));
+
+        updateTotal(); // Update total price display if options change while on step 2
+    }
+
+    function updateTotal() {
+        if (!selectedPackage) {
+            $('#btnStep2Next').prop('disabled', true);
+            return;
+        }
+
+        let base = selectedPackage.basePrice;
+        let optionalTotal = 0;
+        selectedOptionals = {}; // Reset and rebuild
+
+        if ($('#winterSports').is(':checked')) {
+            optionalTotal += optionalPrices.winterSports;
+            selectedOptionals.winterSports = { name: 'Winter Sports', price: optionalPrices.winterSports };
+        }
+        if ($('#carHireExcess').is(':checked') && !$('#carHireExcess').is(':disabled')) {
+            optionalTotal += optionalPrices.carHireExcess;
+             selectedOptionals.carHireExcess = { name: 'Car Hire Excess', price: optionalPrices.carHireExcess };
+        }
+         if ($('#excessWaiver').is(':checked')) {
+            optionalTotal += optionalPrices.excessWaiver;
+             selectedOptionals.excessWaiver = { name: 'Excess Waiver', price: optionalPrices.excessWaiver };
+        }
+
+        let subTotal = base + optionalTotal;
+        let taxAmount = subTotal * TAX_RATE;
+        let total = subTotal + taxAmount;
+
+         $('#totalPriceSummary').text(total.toFixed(2)); // Also update summary in real-time if needed, though typically done on step 3 load
+         $('#btnStep2Next').prop('disabled', false); // Enable next button once a package is selected
+    }
+
+
+    function populateSummary() {
+        const zoneText = $('#tripZone option:selected').text();
+        const familyText = $('#familyType option:selected').text();
+        const startDateText = $('#startDate').val();
+        const endDateText = $('#endDate').val();
+
+        $('#summaryTripZone').text(zoneText);
+        $('#summaryFamilyType').text(familyText);
+        $('#summaryDates').text(`${startDateText} to ${endDateText}`);
+        $('#summaryPackage').text(selectedPackage.name);
+        $('#summaryBasePrice').text(selectedPackage.basePrice.toFixed(2));
+
+        const $optionalList = $('#summaryOptionalCoverages ul');
+        $optionalList.empty(); // Clear previous items
+        let optionalTotal = 0;
+
+        if (Object.keys(selectedOptionals).length > 0) {
+             $('#summaryOptionalCoverages').show();
+             $.each(selectedOptionals, function(key, item) {
+                 $('<li>').text(`${item.name} (+ € ${item.price.toFixed(2)})`).appendTo($optionalList);
+                 optionalTotal += item.price;
+             });
+        } else {
+             $('#summaryOptionalCoverages').hide();
+        }
+
+         let subTotal = selectedPackage.basePrice + optionalTotal;
+        let taxAmount = subTotal * TAX_RATE;
+        let total = subTotal + taxAmount;
+         $('#totalPriceSummary').text(total.toFixed(2));
+    }
+
+
+    // --- Event Handlers ---
+    $('#btnStep1Next').click(function() {
+        if (validateStep1()) {
+            quoteData = {
+                tripZone: $('#tripZone').val(),
+                familyType: $('#familyType').val(),
+                startDate: $('#startDate').val(),
+                endDate: $('#endDate').val(),
+                noMedicalCondition: $('#noMedicalCondition').is(':checked')
+            };
+             $('#tripInfoSummary').text(`Zone: ${$('#tripZone option:selected').text()}, Travellers: ${$('#familyType option:selected').text()}, Dates: ${quoteData.startDate} to ${quoteData.endDate}`);
+            selectedPackage = null; // Reset package selection
+            $('.btnSelectPackage').prop('disabled', false).text(function() { return $(this).data('package-name') ? `Select ${$(this).data('package-name')}` : 'Select'; }); // Reset button state
+             $('#btnStep2Next').prop('disabled', true); // Disable next until package selected
+             // Uncheck optionals when going back to step 1 and forward again
+             $('#winterSports, #carHireExcess, #excessWaiver').prop('checked', false);
+            calculatePrices(); // Calculate prices based on new inputs
+            navigateToStep(2);
+        }
+    });
+
+    $('#btnStep2Back').click(function() {
+        navigateToStep(1);
+    });
+
+    $('.btnSelectPackage').click(function() {
+        const packageCode = $(this).data('package');
+        const packageName = $(this).data('package-name');
+        let price = 0;
+
+        $('.btnSelectPackage').prop('disabled', false).text(function() { return `Select ${$(this).data('package-name')}`; }); // Reset others
+         $(this).prop('disabled', true).text('Selected'); // Mark as selected
+
+
+        if (packageCode === 'MULTIPERILBASIC') price = packagePrices.basic;
+        else if (packageCode === 'MULTIPERILPLUS') price = packagePrices.plus;
+        else if (packageCode === 'MULTIPERILPREMIUM') price = packagePrices.premium;
+
+        selectedPackage = {
+            code: packageCode,
+            name: packageName,
+            basePrice: price
+        };
+         // Recalculate optional prices based on the *newly selected* package variant
+         calculatePrices();
+         // Update total immediately after selection
+         updateTotal();
+    });
+
+     // Recalculate total when optional coverages are checked/unchecked
+    $('#winterSports, #carHireExcess, #excessWaiver').change(function() {
+       updateTotal();
+    });
+
+     // Also recalculate prices if inputs change (e.g., zone affects car hire enable/disable)
+     $('#tripZone, #familyType, #startDate, #endDate').change(function() {
+         if (currentStep === 2) { // Only recalculate if on step 2
+             quoteData.tripZone = $('#tripZone').val();
+             quoteData.familyType = $('#familyType').val();
+             quoteData.startDate = $('#startDate').val();
+             quoteData.endDate = $('#endDate').val();
+             // Recalculate base and optional prices
+             calculatePrices();
+              // If a package was selected, update its base price and the total
+             if(selectedPackage) {
+                 if (selectedPackage.code === 'MULTIPERILBASIC') selectedPackage.basePrice = packagePrices.basic;
+                 else if (selectedPackage.code === 'MULTIPERILPLUS') selectedPackage.basePrice = packagePrices.plus;
+                 else if (selectedPackage.code === 'MULTIPERILPREMIUM') selectedPackage.basePrice = packagePrices.premium;
+                 updateTotal();
+             }
+         }
+     });
+
+
+    $('#btnStep2Next').click(function() {
+         if (selectedPackage) {
+             populateSummary();
+             navigateToStep(3);
+         } else {
+             alert("Please select a package first."); // Should not happen if button is disabled correctly
+         }
+    });
+
+
+    $('#btnStep3Back').click(function() {
+        navigateToStep(2);
+    });
+
+    $('#btnProceedToPayment').click(function() {
+        // In a real scenario, you would collect more data (policyholder details)
+        // and then send the final quoteData, selectedPackage, selectedOptionals
+        // to your backend server to create the policy and initiate payment.
+        const finalQuote = {
+            ...quoteData,
+            selectedPackage: selectedPackage,
+            selectedOptionals: selectedOptionals,
+            totalPrice: parseFloat($('#totalPriceSummary').text())
+        };
+
+        console.log("Final Quote Data:", finalQuote);
+        alert(`Proceeding to payment (placeholder).\nTotal Price: € ${finalQuote.totalPrice.toFixed(2)}\nCheck console for details.`);
+        // Example redirect: window.location.href = '/your-payment-page-url';
+    });
+
+    // Initial setup - Set min date for date pickers
+    const today = new Date().toISOString().split('T')[0];
+    $('#startDate').attr('min', today);
+    $('#endDate').attr('min', today);
+
+     // Ensure end date is after start date dynamically
+    $('#startDate').change(function() {
+        const startDateVal = $(this).val();
+        if (startDateVal) {
+             $('#endDate').attr('min', startDateVal);
+             // If end date was before new start date, clear it
+             if ($('#endDate').val() < startDateVal) {
+                 $('#endDate').val('');
+             }
+        } else {
+             $('#endDate').attr('min', today); // Reset min if start date is cleared
+        }
+         if (currentStep === 2) calculatePrices(); // Recalculate if on step 2
+    });
+     $('#endDate').change(function() {
+          if (currentStep === 2) calculatePrices(); // Recalculate if on step 2
+     });
+
+
+});
+</script>
+
 </body>
 </html>
