@@ -35,6 +35,206 @@
         .beneficiary-fields legend { font-weight: bold; padding: 0 5px; }
         #loadingIndicator { display: none; margin-top: 10px; color: #555; }
         #apiError { display: none; color: red; margin-top: 10px; font-weight: bold;}
+
+        /* --- General Body and Font --- */
+        body {
+            font-family: 'Open Sans', sans-serif; /* Common, clean sans-serif font. Add Google Font import if needed */
+            color: #333; /* Standard dark grey for text */
+            background-color: #f8f9fa; /* Light grey background, similar to section backgrounds */
+            line-height: 1.6;
+        }
+
+        /* --- Container/Wrapper for the form steps --- */
+        .step-container { /* Assuming you wrap each step's content */
+            background-color: #ffffff; /* White background for content areas */
+            padding: 25px 30px;
+            border-radius: 8px; /* Subtle rounded corners */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            margin-bottom: 20px; /* Spacing between steps if shown together */
+            max-width: 800px; /* Limit width */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* --- Headings --- */
+        h2, h3 {
+            color: #003366; /* Dark blue for headings */
+            font-weight: 600; /* Slightly bolder headings */
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 1px solid #e0e0e0; /* Subtle separator line */
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            margin-top: 25px; /* Space above sub-sections */
+        }
+
+        /* --- Form Elements --- */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555; /* Slightly lighter text for labels */
+            font-size: 0.95em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        input[type="number"],
+        select {
+            width: 100%; /* Full width within their container */
+            padding: 10px 12px;
+            border: 1px solid #ccc; /* Standard grey border */
+            border-radius: 4px; /* Slightly rounded corners */
+            box-sizing: border-box; /* Include padding and border in width */
+            margin-bottom: 15px; /* Space below form fields */
+            font-size: 1em;
+            background-color: #fff; /* Ensure white background */
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #0056b3; /* Highlight with a darker blue on focus */
+            outline: none; /* Remove default browser outline */
+            box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2); /* Subtle glow effect */
+        }
+
+        /* --- Buttons --- */
+        .btn-primary,
+        .btn-secondary,
+        .btn-back { /* Apply a common base style */
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px; /* Consistent rounded corners */
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none; /* Remove underline from links styled as buttons */
+            display: inline-block; /* Proper button alignment */
+            margin-right: 10px; /* Space between adjacent buttons */
+            transition: background-color 0.2s ease, box-shadow 0.2s ease; /* Smooth transitions */
+        }
+
+        .btn-primary { /* Main action buttons (Next, Proceed) */
+            background-color: #003366; /* Trustravel's dark blue */
+            color: #ffffff;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #002244; /* Slightly darker blue on hover */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary, /* Could be used for "Add Beneficiary" or similar */
+        .btn-back { /* Back buttons */
+            background-color: #e9ecef; /* Light grey */
+            color: #333; /* Dark text */
+            border: 1px solid #ced4da; /* Subtle border */
+        }
+
+        .btn-secondary:hover:not(:disabled),
+        .btn-back:hover:not(:disabled) {
+            background-color: #dee2e6; /* Slightly darker grey on hover */
+            border-color: #adb5bd;
+        }
+
+        /* Disabled state for buttons */
+        .btn-primary:disabled,
+        .btn-secondary:disabled,
+        .btn-back:disabled {
+            background-color: #cccccc;
+            color: #666666;
+            cursor: not-allowed;
+            border-color: #cccccc;
+            box-shadow: none;
+        }
+
+
+        /* --- Radio Buttons / Checkboxes --- (Basic styling, can be enhanced) */
+        .form-check { /* Assuming a wrapper div like Bootstrap */
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-check input[type="radio"],
+        .form-check input[type="checkbox"] {
+            margin-right: 8px;
+            width: auto; /* Don't make radios/checkboxes full width */
+            margin-bottom: 0; /* Override default bottom margin */
+            flex-shrink: 0; /* Prevent shrinking if label is long */
+        }
+
+        .form-check label {
+            margin-bottom: 0; /* Remove bottom margin for labels next to inputs */
+            font-weight: normal; /* Normal weight for radio/checkbox labels */
+            color: #333;
+        }
+
+        /* --- Error Messages --- */
+        .error-message {
+            color: #dc3545; /* Standard danger red */
+            font-size: 0.9em;
+            margin-top: -10px; /* Pull up closer to the field */
+            margin-bottom: 10px;
+            display: block; /* Ensure it takes its own line */
+        }
+
+        #generalApiError, #paymentApiError /* Specific API error containers */ {
+             color: #dc3545;
+             background-color: #f8d7da; /* Light red background */
+             border: 1px solid #f5c6cb; /* Reddish border */
+             padding: 10px 15px;
+             border-radius: 4px;
+             margin-top: 15px;
+             margin-bottom: 15px;
+        }
+
+        /* --- Package/Option Selection --- */
+        .package-option, .optional-cover-option {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .package-option.selected, .optional-cover-option.selected {
+            border-color: #003366; /* Dark blue border for selected items */
+            box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.3); /* Highlight shadow */
+            background-color: #e7f0f7; /* Very light blue background */
+        }
+
+        .package-option h4, .optional-cover-option h4 {
+            margin-top: 0;
+            color: #003366;
+        }
+
+        /* --- Loading Indicator --- */
+        .loading-indicator {
+            color: #003366;
+            font-style: italic;
+            margin: 15px 0;
+        }
+
+        /* --- Review Section --- */
+        #reviewDetails p {
+            margin-bottom: 8px;
+        }
+
+        #reviewDetails strong {
+            color: #003366; /* Use the primary blue for emphasis */
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
