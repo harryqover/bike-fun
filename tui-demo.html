@@ -546,7 +546,9 @@ $(document).ready(function() {
                          const optionalCipValue = optCoverage.variants[variantKey]?.premium?.cip;
                          console.log(` -> Optional: ${optCode}, Variant: ${variantKey}, CIP: ${optionalCipValue}`);
                          if(typeof optionalCipValue === 'number' && !isNaN(optionalCipValue)) {
-                              apiPrices.rawOptionals[code][optCode] = optionalCipValue;
+                              // Use camelCase for optional codes if needed, e.g., winterSports
+                              const camelCaseOptCode = optCode.charAt(0).toLowerCase() + optCode.slice(1);
+                              apiPrices.rawOptionals[code][camelCaseOptCode] = optionalCipValue;
                          } else {
                              console.warn(`Invalid or missing CIP for optional coverage ${optCode} in package ${code}`);
                          }
@@ -559,9 +561,21 @@ $(document).ready(function() {
                  console.warn(`Package data missing or invalid for code: ${code}`);
             }
 
-            // Update display for base package prices
-            const displayId = `#price${code.replace('MULTIPERIL', '')}`; // #priceBasic, #pricePlus, #pricePremium
-            const priceElement = $(displayId); // Get the jQuery element
+            // --- *** CORRECTED ID SELECTION LOGIC *** ---
+            let displayId;
+             if (code === 'MULTIPERILBASIC') {
+                 displayId = '#priceBasic'; // Correct ID
+             } else if (code === 'MULTIPERILPLUS') {
+                 displayId = '#pricePlus'; // Correct ID
+             } else if (code === 'MULTIPERILPREMIUM') {
+                 displayId = '#pricePremium'; // Correct ID
+             } else {
+                 console.error(`Unexpected package code: ${code}`);
+                 return; // Skip updating display for this unknown package
+             }
+             // --- *** END CORRECTION *** ---
+
+            const priceElement = $(displayId); // Get the jQuery element using the correct ID
 
             if(priceElement.length) { // Check if the element exists
                  const priceToShow = apiPrices.packages[code];
@@ -573,7 +587,7 @@ $(document).ready(function() {
                       console.warn(`Failed to update HTML element ${displayId} - price is invalid:`, priceToShow);
                  }
             } else {
-                 console.error(`HTML element ${displayId} not found!`); // Log error if element missing
+                 console.error(`HTML element ${displayId} not found! Check HTML structure and ID.`); // Log error if element missing
             }
          });
 
