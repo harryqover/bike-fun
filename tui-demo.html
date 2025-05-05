@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Travel Insurance Information</title>
+    <style>
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="date"], select {
+            width: 200px;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        input[type="checkbox"] {
+            margin-bottom: 10px;
+        }
+        .beneficiary {
+            border: 1px solid #eee;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #addBeneficiary {
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+        #beneficiariesContainer {
+            margin-top: 10px;
+        }
+        .error {
+            color: red;
+            font-size: small;
+        }
+    </style>
+</head>
+<body>
+    <h1>Enter Your Travel Information</h1>
+    <form id="travelInfoForm">
+        <div>
+            <label for="familyType">Family Type:</label>
+            <select id="familyType" name="familyType" required>
+                <option value="">Select Family Type</option>
+                <option value="FAMILY_TYPE_INDIVIDUAL">Individual</option>
+                <option value="FAMILY_TYPE_COUPLE">Couple</option>
+                <option value="FAMILY_TYPE_FAMILY">Family</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="tripZone">Trip Zone:</label>
+            <select id="tripZone" name="tripZone" required>
+                <option value="">Select Trip Zone</option>
+                <option value="ZONE_EUROPE">Europe</option>
+                <option value="ZONE_WORLD_EXCLUDING_USA">World (excluding USA)</option>
+                <option value="ZONE_WORLD_INCLUDING_USA">World (including USA)</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="noMedicalCondition">No Pre-existing Medical Conditions:</label>
+            <input type="checkbox" id="noMedicalCondition" name="noMedicalCondition" required>
+            <small>(You must confirm you have no known medical conditions before the trip)</small>
+        </div>
+
+        <div id="beneficiariesContainer">
+            <h2>Beneficiary Information (Minimum 1)</h2>
+            <div class="beneficiary">
+                <h3>Beneficiary #1</h3>
+                <div>
+                    <label for="firstName_1">First Name:</label>
+                    <input type="text" id="firstName_1" name="extraBeneficiaries[0][firstName]" pattern="^.+$" required>
+                    <div class="error" id="firstName_1_error"></div>
+                </div>
+                <div>
+                    <label for="lastName_1">Last Name:</label>
+                    <input type="text" id="lastName_1" name="extraBeneficiaries[0][lastName]" pattern="^.+$" required>
+                    <div class="error" id="lastName_1_error"></div>
+                </div>
+                <div>
+                    <label for="birthdate_1">Birthdate (YYYY-MM-DD):</label>
+                    <input type="date" id="birthdate_1" name="extraBeneficiaries[0][birthdate]" required>
+                    <div class="error" id="birthdate_1_error"></div>
+                </div>
+                <div>
+                    <label for="type_1">Type:</label>
+                    <select id="type_1" name="extraBeneficiaries[0][type]" required>
+                        <option value="">Select Type</option>
+                        <option value="EXTRA_BENEFICIARY_TYPE_ADULT">Adult</option>
+                        <option value="EXTRA_BENEFICIARY_TYPE_SENIOR">Senior</option>
+                        <option value="EXTRA_BENEFICIARY_TYPE_CHILD">Child</option>
+                    </select>
+                    <div class="error" id="type_1_error"></div>
+                </div>
+            </div>
+            </div>
+
+        <button type="button" id="addBeneficiary">Add Another Beneficiary</button>
+
+        <br>
+        <button type="submit">Submit Information</button>
+    </form>
+
+    <script>
+        const beneficiariesContainer = document.getElementById('beneficiariesContainer');
+        const addBeneficiaryButton = document.getElementById('addBeneficiary');
+        let beneficiaryCount = 1;
+
+        addBeneficiaryButton.addEventListener('click', function() {
+            beneficiaryCount++;
+            const newBeneficiaryDiv = document.createElement('div');
+            newBeneficiaryDiv.classList.add('beneficiary');
+            newBeneficiaryDiv.innerHTML = `
+                <h3>Beneficiary #<span class="math-inline">\{beneficiaryCount\}</h3\>
+<div\>
+<label for\="firstName\_</span>{beneficiaryCount}">First Name:</label>
+                    <input type="text" id="firstName_${beneficiaryCount}" name="extraBeneficiaries[<span class="math-inline">\{beneficiaryCount \- 1\}\]\[firstName\]" pattern\="^\.\+</span>" required>
+                    <div class="error" id="firstName_${beneficiaryCount}_error"></div>
+                </div>
+                <div>
+                    <label for="lastName_${beneficiaryCount}">Last Name:</label>
+                    <input type="text" id="lastName_${beneficiaryCount}" name="extraBeneficiaries[<span class="math-inline">\{beneficiaryCount \- 1\}\]\[lastName\]" pattern\="^\.\+</span>" required>
+                    <div class="error" id="lastName_${beneficiaryCount}_error"></div>
+                </div>
+                <div>
+                    <label for="birthdate_${beneficiaryCount}">Birthdate (YYYY-MM-DD):</label>
+                    <input type="date" id="birthdate_${beneficiaryCount}" name="extraBeneficiaries[<span class="math-inline">\{beneficiaryCount \- 1\}\]\[birthdate\]" required\>
+<div class\="error" id\="birthdate\_</span>{beneficiaryCount}_error"></div>
+                </div>
+                <div>
+                    <label for="type_${beneficiaryCount}">Type:</label>
+                    <select id="type_${beneficiaryCount}" name="extraBeneficiaries[<span class="math-inline">\{beneficiaryCount \- 1\}\]\[type\]" required\>
+<option value\=""\>Select Type</option\>
+<option value\="EXTRA\_BENEFICIARY\_TYPE\_ADULT"\>Adult</option\>
+<option value\="EXTRA\_BENEFICIARY\_TYPE\_SENIOR"\>Senior</option\>
+<option value\="EXTRA\_BENEFICIARY\_TYPE\_CHILD"\>Child</option\>
+</select\>
+<div class\="error" id\="type\_</span>{beneficiaryCount}_error"></div>
