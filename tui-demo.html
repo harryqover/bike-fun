@@ -38,24 +38,25 @@
     </style>
 </head>
 <body>
-<script>console.warn("20250505 1502")</script>
-<h1>Get Your Travel Insurance Quote</h1>
+
+<h1>Get Your Annual Travel Insurance Quote</h1>
 
 <div id="step1" class="step active">
-    <h2>Step 1: Tell us about your trip</h2>
+    <h2>Step 1: Tell us about your plan</h2>
     <form id="tripForm">
         <div>
-            <label for="tripZone">Trip Zone:</label>
+            <label for="tripZone">Primary Travel Zone:</label>
             <select id="tripZone" name="tripZone" required>
                 <option value="">-- Select Zone --</option>
                 <option value="ZONE_EUROPE">Europe</option>
                 <option value="ZONE_WORLD_EXCLUDING_USA">Worldwide (excluding USA/Canada)</option>
                 <option value="ZONE_WORLD_INCLUDING_USA">Worldwide (including USA/Canada)</option>
             </select>
+             <small>Select the main region you plan to travel to during the year.</small>
             <div class="error" id="tripZoneError"></div>
         </div>
         <div>
-            <label for="familyType">Who is travelling?</label>
+            <label for="familyType">Who needs cover?</label>
             <select id="familyType" name="familyType" required>
                 <option value="">-- Select Option --</option>
                 <option value="FAMILY_TYPE_INDIVIDUAL">Individual (Just Me)</option>
@@ -64,17 +65,11 @@
             </select>
             <div class="error" id="familyTypeError"></div>
         </div>
-        <div class="input-group">
-            <div>
-                <label for="startDate">Trip Start Date:</label>
-                <input type="date" id="startDate" name="startDate" required>
-                <div class="error" id="startDateError"></div>
-            </div>
-            <div>
-                <label for="endDate">Trip End Date:</label>
-                <input type="date" id="endDate" name="endDate" required>
-                <div class="error" id="endDateError"></div>
-            </div>
+        <div>
+            <label for="startDate">Coverage Start Date:</label>
+            <input type="date" id="startDate" name="startDate" required>
+             <small>Your policy will be valid for 1 year from this date.</small>
+            <div class="error" id="startDateError"></div>
         </div>
         <div id="medicalConditionCheck">
             <label>Medical Condition Declaration:</label>
@@ -250,21 +245,20 @@
     <h2>Step 4: Summary</h2>
     <div class="summary">
         <h3>Your Selection</h3>
-        <p><strong>Trip Zone:</strong> <span id="summaryTripZone"></span></p>
-        <p><strong>Travellers:</strong> <span id="summaryFamilyType"></span></p>
+        <p><strong>Primary Travel Zone:</strong> <span id="summaryTripZone"></span></p>
+        <p><strong>Travellers Covered:</strong> <span id="summaryFamilyType"></span></p>
          <p><strong>Policyholder:</strong> <span id="summaryPolicyholder"></span></p>
          <div id="summaryBeneficiariesList"></div>
-        <p><strong>Dates:</strong> <span id="summaryDates"></span></p>
-        <hr>
+        <p><strong>Coverage Start Date:</strong> <span id="summaryDates"></span> (Valid for 1 year)</p> <hr>
         <p><strong>Selected Plan:</strong> <span id="summaryPackage"></span></p>
-        <p><strong>Base Price:</strong> € <span id="summaryBasePrice"></span></p>
+        <p><strong>Base Price (Annual):</strong> € <span id="summaryBasePrice"></span></p>
         <div id="summaryOptionalCoverages">
-            <p><strong>Optional Coverages:</strong></p>
+            <p><strong>Optional Coverages (Annual):</strong></p>
             <ul>
                 </ul>
         </div>
         <hr>
-        <p><strong>Total Price (inc. Taxes):</strong> € <span id="totalPriceSummary">--</span></p>
+        <p><strong>Total Price (Annual, inc. Taxes):</strong> € <span id="totalPriceSummary">--</span></p>
     </div>
     <button type="button" id="btnStep4Back">Back</button>
     <button type="button" id="btnProceedToPayment">Proceed to Payment</button>
@@ -316,16 +310,15 @@ $(document).ready(function() {
          const tripZone = $('#tripZone').val();
          const familyType = $('#familyType').val();
          const startDate = $('#startDate').val();
-         const endDate = $('#endDate').val();
+         // REMOVED endDate validation
          const noMedical = $('#noMedicalCondition').is(':checked');
          const today = new Date().toISOString().split('T')[0];
 
          if (!tripZone) { $('#tripZoneError').text('Please select a trip zone.'); isValid = false; }
-         if (!familyType) { $('#familyTypeError').text('Please select who is travelling.'); isValid = false; }
+         if (!familyType) { $('#familyTypeError').text('Please select who needs cover.'); isValid = false; }
          if (!startDate) { $('#startDateError').text('Please select a start date.'); isValid = false; }
          else if (startDate < today) { $('#startDateError').text('Start date cannot be in the past.'); isValid = false; }
-         if (!endDate) { $('#endDateError').text('Please select an end date.'); isValid = false; }
-         if (startDate && endDate && endDate < startDate) { $('#endDateError').text('End date cannot be before the start date.'); isValid = false; }
+         // REMOVED end date check vs start date
          if (!noMedical) { $('#noMedicalConditionError').text('You must confirm no pre-existing medical conditions to proceed.'); isValid = false; }
 
          return isValid;
@@ -444,8 +437,9 @@ $(document).ready(function() {
             contractPeriod: {
                  timeZone: "Europe/Brussels", // As per JSON config
                  startDate: startDateValue,
-                 startsAt: startsAtValue // **** ADDED THIS LINE ****
+                 startsAt: startsAtValue
             }
+             // Removed endDate from payload - API expects only start for annual policies
         };
 
         console.log("API Payload:", JSON.stringify(payload, null, 2)); // For debugging
@@ -464,7 +458,7 @@ $(document).ready(function() {
                  if (response && response.packages) {
                      processApiResponse(response.packages);
                      // Update summary text here as inputs are now confirmed
-                     $('#tripInfoSummaryPrices').text(`Zone: ${$('#tripZone option:selected').text()}, Travellers: ${$('#familyType option:selected').text()}, Dates: ${$('#startDate').val()} to ${$('#endDate').val()}`);
+                     $('#tripInfoSummaryPrices').text(`Zone: ${$('#tripZone option:selected').text()}, Travellers: ${$('#familyType option:selected').text()}, Coverage Start: ${$('#startDate').val()}`); // Updated text
                      selectedPackage = null; // Reset package selection
                      $('.btnSelectPackage').prop('disabled', false).text(function() { return $(this).data('package-name') ? `Select ${$(this).data('package-name')}` : 'Select'; }); // Reset button state
                      $('#btnStep3Next').prop('disabled', true); // Disable next until package selected
@@ -595,12 +589,12 @@ $(document).ready(function() {
         const zoneText = $('#tripZone option:selected').text();
         const familyText = $('#familyType option:selected').text();
         const startDateText = $('#startDate').val();
-        const endDateText = $('#endDate').val();
+        // REMOVED endDateText
 
         $('#summaryTripZone').text(zoneText);
         $('#summaryFamilyType').text(familyText);
         $('#summaryPolicyholder').text(`${$('#phFirstName').val()} ${$('#phLastName').val()} (${$('#phEmail').val()})`);
-        $('#summaryDates').text(`${startDateText} to ${endDateText}`);
+        $('#summaryDates').text(`${startDateText}`); // Updated to show only start date
         $('#summaryPackage').text(selectedPackage.name);
         $('#summaryBasePrice').text(selectedPackage.basePrice.toFixed(2));
 
@@ -608,7 +602,7 @@ $(document).ready(function() {
         const $beneficiaryList = $('#summaryBeneficiariesList').empty();
         const beneficiaries = quoteData.beneficiaries || [];
         if (beneficiaries.length > 0) {
-            const $ul = $('<ul></ul>').appendTo($('<p><strong>Other Travellers:</strong></p>').appendTo($beneficiaryList));
+            const $ul = $('<ul></ul>').appendTo($('<p><strong>Other Travellers Covered:</strong></p>').appendTo($beneficiaryList));
             beneficiaries.forEach(b => {
                  $('<li>').text(`${b.firstName} ${b.lastName} (${b.birthdate})`).appendTo($ul);
             });
@@ -665,7 +659,7 @@ $(document).ready(function() {
                  tripZone: $('#tripZone').val(),
                  familyType: $('#familyType').val(),
                  startDate: $('#startDate').val(),
-                 endDate: $('#endDate').val(),
+                 // REMOVED endDate
                  noMedicalCondition: $('#noMedicalCondition').is(':checked')
              };
              // Trigger change to show/hide beneficiary fields correctly before showing step 2
@@ -760,21 +754,15 @@ $(document).ready(function() {
         // Example redirect: window.location.href = '/your-payment-page-url';
     });
 
-    // Initial setup - Set min date for date pickers
+    // Initial setup - Set min/max date for date pickers
     const today = new Date().toISOString().split('T')[0];
     $('#phBirthdate, #b1Birthdate, #b2Birthdate').attr('max', today); // Cannot be born in future
-    $('#startDate').attr('min', today); // Trip cannot start in past
-    $('#endDate').attr('min', today); // Trip cannot end in past
+    $('#startDate').attr('min', today); // Coverage cannot start in past
+     // REMOVED endDate handling
 
-    $('#startDate').change(function() {
-        const startDateVal = $(this).val();
-        if (startDateVal) {
-             $('#endDate').attr('min', startDateVal);
-             if ($('#endDate').val() < startDateVal) { $('#endDate').val(''); }
-        } else {
-             $('#endDate').attr('min', today);
-        }
-    });
+    // Ensure start date updates trigger relevant logic if needed later (currently none specific to removing end date)
+    // $('#startDate').change(function() { ... });
+
 
 });
 </script>
