@@ -33,11 +33,8 @@
         #medicalConditionCheck input { width: auto; margin-right: 5px;}
         .beneficiary-fields { border: 1px dashed #eee; padding: 15px; margin-top: 15px; border-radius: 4px; }
         .beneficiary-fields legend { font-weight: bold; padding: 0 5px; }
-        /* Updated Loading Indicators */
-        #loadingIndicator { display: none; margin-top: 10px; color: #555; font-style: italic;}
-        #quoteLoadingIndicator { display: none; margin-top: 10px; color: #555; font-weight: bold; }
-        #apiError, #quoteApiError { display: none; color: red; margin-top: 10px; font-weight: bold;}
-        #quoteSuccess { display: none; color: green; margin-top: 10px; font-weight: bold;} /* Kept for potential future use */
+        #loadingIndicator { display: none; margin-top: 10px; color: #555; }
+        #apiError { display: none; color: red; margin-top: 10px; font-weight: bold;}
     </style>
 </head>
 <body>
@@ -88,46 +85,113 @@
     <h2>Step 2: Policyholder Details</h2>
     <form id="policyholderForm">
          <div class="input-group">
-            <div><label for="phFirstName">First Name:</label><input type="text" id="phFirstName" name="phFirstName" required><div class="error" id="phFirstNameError"></div></div>
-            <div><label for="phLastName">Last Name:</label><input type="text" id="phLastName" name="phLastName" required><div class="error" id="phLastNameError"></div></div>
+            <div>
+                <label for="phFirstName">First Name:</label>
+                <input type="text" id="phFirstName" name="phFirstName" required>
+                <div class="error" id="phFirstNameError"></div>
+            </div>
+            <div>
+                <label for="phLastName">Last Name:</label>
+                <input type="text" id="phLastName" name="phLastName" required>
+                <div class="error" id="phLastNameError"></div>
+            </div>
         </div>
          <div class="input-group">
-             <div><label for="phBirthdate">Birthdate:</label><input type="date" id="phBirthdate" name="phBirthdate" required><div class="error" id="phBirthdateError"></div></div>
-             <div><label for="phEmail">Email:</label><input type="email" id="phEmail" name="phEmail" required><div class="error" id="phEmailError"></div></div>
+             <div>
+                <label for="phBirthdate">Birthdate:</label>
+                <input type="date" id="phBirthdate" name="phBirthdate" required>
+                <div class="error" id="phBirthdateError"></div>
+            </div>
+             <div>
+                <label for="phEmail">Email:</label>
+                <input type="email" id="phEmail" name="phEmail" required>
+                <div class="error" id="phEmailError"></div>
+            </div>
         </div>
-         <div><label for="phPhone">Phone:</label><input type="tel" id="phPhone" name="phPhone" placeholder="+32..." required><div class="error" id="phPhoneError"></div></div>
+         <div>
+            <label for="phPhone">Phone:</label>
+            <input type="tel" id="phPhone" name="phPhone" placeholder="+32..." required>
+            <div class="error" id="phPhoneError"></div>
+        </div>
         <fieldset>
             <legend>Address</legend>
             <div class="input-group">
-                 <div><label for="phStreet">Street:</label><input type="text" id="phStreet" name="phStreet" required><div class="error" id="phStreetError"></div></div>
-                 <div><label for="phNumber">Number:</label><input type="text" id="phNumber" name="phNumber" required><div class="error" id="phNumberError"></div></div>
+                 <div>
+                     <label for="phStreet">Street:</label>
+                     <input type="text" id="phStreet" name="phStreet" required>
+                     <div class="error" id="phStreetError"></div>
+                 </div>
+                 <div>
+                    <label for="phNumber">Number:</label>
+                    <input type="text" id="phNumber" name="phNumber" required>
+                    <div class="error" id="phNumberError"></div>
+                </div>
             </div>
             <div class="input-group">
-                 <div><label for="phZip">Zip Code:</label><input type="text" id="phZip" name="phZip" required><div class="error" id="phZipError"></div></div>
-                 <div><label for="phCity">City:</label><input type="text" id="phCity" name="phCity" required><div class="error" id="phCityError"></div></div>
-                 <div><label for="phCountry">Country:</label><select id="phCountry" name="phCountry" required><option value="BE">Belgium</option></select><div class="error" id="phCountryError"></div></div>
+                 <div>
+                     <label for="phZip">Zip Code:</label>
+                     <input type="text" id="phZip" name="phZip" required>
+                     <div class="error" id="phZipError"></div>
+                 </div>
+                 <div>
+                    <label for="phCity">City:</label>
+                    <input type="text" id="phCity" name="phCity" required>
+                     <div class="error" id="phCityError"></div>
+                </div>
+                 <div>
+                    <label for="phCountry">Country:</label>
+                    <select id="phCountry" name="phCountry" required>
+                         <option value="BE">Belgium</option>
+                         </select>
+                     <div class="error" id="phCountryError"></div>
+                </div>
             </div>
         </fieldset>
+
         <div id="beneficiarySection" style="display: none;">
             <h3>Other Travellers</h3>
             <div id="beneficiary1" class="beneficiary-fields">
                  <legend>Partner Details</legend>
                  <div class="input-group">
-                    <div><label for="b1FirstName">First Name:</label><input type="text" id="b1FirstName" name="b1FirstName"><div class="error" id="b1FirstNameError"></div></div>
-                    <div><label for="b1LastName">Last Name:</label><input type="text" id="b1LastName" name="b1LastName"><div class="error" id="b1LastNameError"></div></div>
-                    <div><label for="b1Birthdate">Birthdate:</label><input type="date" id="b1Birthdate" name="b1Birthdate"><div class="error" id="b1BirthdateError"></div></div>
+                    <div>
+                        <label for="b1FirstName">First Name:</label>
+                        <input type="text" id="b1FirstName" name="b1FirstName">
+                        <div class="error" id="b1FirstNameError"></div>
+                    </div>
+                    <div>
+                        <label for="b1LastName">Last Name:</label>
+                        <input type="text" id="b1LastName" name="b1LastName">
+                        <div class="error" id="b1LastNameError"></div>
+                    </div>
+                     <div>
+                        <label for="b1Birthdate">Birthdate:</label>
+                        <input type="date" id="b1Birthdate" name="b1Birthdate">
+                        <div class="error" id="b1BirthdateError"></div>
+                    </div>
                 </div>
             </div>
              <div id="beneficiary2" class="beneficiary-fields" style="display: none;">
                  <legend>Child Details</legend>
                  <div class="input-group">
-                    <div><label for="b2FirstName">First Name:</label><input type="text" id="b2FirstName" name="b2FirstName"><div class="error" id="b2FirstNameError"></div></div>
-                    <div><label for="b2LastName">Last Name:</label><input type="text" id="b2LastName" name="b2LastName"><div class="error" id="b2LastNameError"></div></div>
-                    <div><label for="b2Birthdate">Birthdate:</label><input type="date" id="b2Birthdate" name="b2Birthdate"><div class="error" id="b2BirthdateError"></div></div>
+                    <div>
+                        <label for="b2FirstName">First Name:</label>
+                        <input type="text" id="b2FirstName" name="b2FirstName">
+                        <div class="error" id="b2FirstNameError"></div>
+                    </div>
+                    <div>
+                        <label for="b2LastName">Last Name:</label>
+                        <input type="text" id="b2LastName" name="b2LastName">
+                        <div class="error" id="b2LastNameError"></div>
+                    </div>
+                     <div>
+                        <label for="b2Birthdate">Birthdate:</label>
+                        <input type="date" id="b2Birthdate" name="b2Birthdate">
+                        <div class="error" id="b2BirthdateError"></div>
+                    </div>
                 </div>
-            </div>
+                 </div>
         </div>
-        <button type="button" id="btnStep2Back">Back</button>
+         <button type="button" id="btnStep2Back">Back</button>
         <button type="button" id="btnStep2Next">Get Prices</button>
         <div id="loadingIndicator">Fetching prices... <img src="https://cdnjs.cloudflare.com/ajax/libs/galleriffic/2.0.1/css/loader.gif" alt="loading" width="16"></div>
         <div id="apiError"></div>
@@ -155,12 +219,24 @@
              <button type="button" class="btnSelectPackage" data-package="MULTIPERILPREMIUM" data-package-name="Premium">Select Premium</button>
         </div>
     </div>
+
     <div class="optional-coverages">
         <h3>Optional Coverages</h3>
-        <div id="optionWinterSports"><input type="checkbox" id="winterSports" name="winterSports"><label for="winterSports">Winter Sports (+ € <span id="priceWinterSports">--</span>)</label></div>
-        <div id="optionCarHireExcess"><input type="checkbox" id="carHireExcess" name="carHireExcess" disabled><label for="carHireExcess">Car Hire Excess (+ € <span id="priceCarHireExcess">--</span>)</label><small id="carHireMsg">(Only available for Europe Zone)</small></div>
-        <div id="optionExcessWaiver"><input type="checkbox" id="excessWaiver" name="excessWaiver"><label for="excessWaiver">Excess Waiver (+ € <span id="priceExcessWaiver">--</span>)</label></div>
+        <div id="optionWinterSports">
+            <input type="checkbox" id="winterSports" name="winterSports">
+            <label for="winterSports">Winter Sports (+ € <span id="priceWinterSports">--</span>)</label>
+        </div>
+         <div id="optionCarHireExcess">
+            <input type="checkbox" id="carHireExcess" name="carHireExcess" disabled>
+            <label for="carHireExcess">Car Hire Excess (+ € <span id="priceCarHireExcess">--</span>)</label>
+            <small id="carHireMsg">(Only available for Europe Zone)</small>
+        </div>
+        <div id="optionExcessWaiver">
+             <input type="checkbox" id="excessWaiver" name="excessWaiver">
+             <label for="excessWaiver">Excess Waiver (+ € <span id="priceExcessWaiver">--</span>)</label>
+        </div>
     </div>
+
     <button type="button" id="btnStep3Back">Back</button>
     <button type="button" id="btnStep3Next" disabled>Next: Summary</button>
 </div>
@@ -171,73 +247,65 @@
         <h3>Your Selection</h3>
         <p><strong>Primary Travel Zone:</strong> <span id="summaryTripZone"></span></p>
         <p><strong>Travellers Covered:</strong> <span id="summaryFamilyType"></span></p>
-        <p><strong>Policyholder:</strong> <span id="summaryPolicyholder"></span></p>
-        <div id="summaryBeneficiariesList"></div>
+         <p><strong>Policyholder:</strong> <span id="summaryPolicyholder"></span></p>
+         <div id="summaryBeneficiariesList"></div>
         <p><strong>Coverage Start Date:</strong> <span id="summaryDates"></span> (Valid for 1 year)</p>
         <hr>
         <p><strong>Selected Plan:</strong> <span id="summaryPackage"></span></p>
         <p><strong>Base Price (Annual):</strong> € <span id="summaryBasePrice"></span></p>
         <div id="summaryOptionalCoverages">
             <p><strong>Optional Coverages (Annual):</strong></p>
-            <ul></ul>
+            <ul>
+                </ul>
         </div>
         <hr>
         <p><strong>Total Price (Annual, inc. Taxes):</strong> € <span id="totalPriceSummary">--</span></p>
     </div>
     <button type="button" id="btnStep4Back">Back</button>
-    <button type="button" id="btnProceedToPayment">Create Quote & Proceed to Payment</button>
-     <div id="quoteLoadingIndicator">Creating your quote and preparing payment link... <img src="https://cdnjs.cloudflare.com/ajax/libs/galleriffic/2.0.1/css/loader.gif" alt="loading" width="16"></div> <div id="quoteApiError"></div>
-     <div id="quoteSuccess"></div> </div>
+    <button type="button" id="btnProceedToPayment">Proceed to Payment</button>
+</div>
 
 <script>
 $(document).ready(function() {
 
     // --- Configuration ---
-    const PRICE_API_ENDPOINT = 'https://api.sbx.qover.io/policies/v1/product-configurations/tui-demo-multi/versions/effective/packages';
-    const QUOTE_API_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwoXRnQGpQOMDyRGGS4z5RrKeB-a1KT5hTWx9J3G-cpt3MOeDqootMdPny6L6FrbQaM/exec'; // Your Apps Script URL
-    const PRICE_API_KEY = 'sk_B4B9BB9B72E44E264D40'; // SECURITY RISK - Use backend proxy
-    const PARTNER_ID = "6810e8b75bc1edd801534d9d";
+    const API_ENDPOINT = 'https://api.sbx.qover.io/policies/v1/product-configurations/tui-demo-multi/versions/effective/packages';
+    // IMPORTANT: Storing API keys client-side is insecure. Use a backend proxy in production.
+    const API_KEY = 'sk_B4B9BB9B72E44E264D40';
+    const PARTNER_ID = "6810e8b75bc1edd801534d9d"; // From your example
 
-    // Package Definitions (derived from tui-product-config.json)
-    const packageDefinitions = {
-        'MULTIPERILBASIC': {
-            coverages: { "cancellation": "basic", "assistance": "basic", "medicalExpenses": "basic", "hospitalBenefit": "basic", "personalAccident": "basic", "baggages": "basic", "moneyAndDocuments": "basic", "personalLiability": "basic", "missedDeparture": "basic", "delayedDeparture": "basic" },
-            optionalCoverages: { "winterSports": "basic", "carHireExcess": "basic", "excessWaiver": "default" }
-        },
-        'MULTIPERILPLUS': {
-             coverages: { "cancellation": "plus", "assistance": "plus", "medicalExpenses": "plus", "hospitalBenefit": "plus", "personalAccident": "plus", "baggages": "plus", "moneyAndDocuments": "plus", "personalLiability": "plus", "hijack": "plus", "missedDeparture": "plus", "catastrophe": "plus", "delayedDeparture": "plus", "holidayAbandonment": "plus", "creditCardFraud": "plus", "legalExpenses": "plus", "strike": "plus" },
-            optionalCoverages: { "winterSports": "plus", "carHireExcess": "plus", "excessWaiver": "default" }
-        },
-        'MULTIPERILPREMIUM': {
-             coverages: { "cancellation": "premium", "assistance": "premium", "medicalExpenses": "premium", "hospitalBenefit": "premium", "personalAccident": "premium", "baggages": "premium", "moneyAndDocuments": "premium", "personalLiability": "premium", "hijack": "premium", "missedDeparture": "premium", "catastrophe": "premium", "delayedDeparture": "premium", "holidayAbandonment": "premium", "creditCardFraud": "premium", "legalExpenses": "premium", "strike": "premium" },
-             optionalCoverages: { "winterSports": "premium", "carHireExcess": "premium", "excessWaiver": "default" }
-        }
-    };
-
-    // State variables
     let currentStep = 1;
-    let quoteData = {};
-    let apiPrices = { packages: {}, optionals: {}, rawOptionals: {} };
-    let selectedPackage = null;
-    let selectedOptionals = {};
+    let quoteData = {}; // Will hold trip, policyholder, beneficiaries
+    let apiPrices = { // Store prices fetched from API
+        packages: {
+            'MULTIPERILBASIC': 0,
+            'MULTIPERILPLUS': 0,
+            'MULTIPERILPREMIUM': 0
+        },
+        optionals: {
+            'winterSports': 0,
+            'carHireExcess': 0,
+            'excessWaiver': 0
+        },
+         // Store raw optional data keyed by package name for lookup
+         rawOptionals: {}
+    };
+    let selectedPackage = null; // { code: '', name: '', basePrice: 0 }
+    let selectedOptionals = {}; // { winterSports: { name: '', price: 0 }, ... }
 
-    // --- Core Functions (navigateToStep, clearErrors, Validation, API calls, etc.) ---
-    function navigateToStep(step) { /* ... (keep as before) ... */
+    function navigateToStep(step) {
         $('.step').removeClass('active');
         $('#step' + step).addClass('active');
         currentStep = step;
-         if (step !== 4) {
-             $('#quoteLoadingIndicator').hide();
-             $('#quoteApiError').hide().text('');
-             $('#quoteSuccess').hide().text('');
-         }
-     }
-    function clearErrors() { /* ... (keep as before) ... */
-        $('.error').text('');
-        $('#apiError').hide().text('');
-        $('#quoteApiError').hide().text('');
     }
-    function validateStep1() { /* ... (keep as before) ... */
+
+    function clearErrors() {
+         $('.error').text('');
+         $('#apiError').hide().text('');
+    }
+
+     // --- Validation Functions ---
+     function validateStep1() {
          let isValid = true;
          clearErrors();
          const tripZone = $('#tripZone').val();
@@ -245,282 +313,558 @@ $(document).ready(function() {
          const startDate = $('#startDate').val();
          const noMedical = $('#noMedicalCondition').is(':checked');
          const today = new Date().toISOString().split('T')[0];
+
          if (!tripZone) { $('#tripZoneError').text('Please select a trip zone.'); isValid = false; }
          if (!familyType) { $('#familyTypeError').text('Please select who needs cover.'); isValid = false; }
          if (!startDate) { $('#startDateError').text('Please select a start date.'); isValid = false; }
          else if (startDate < today) { $('#startDateError').text('Start date cannot be in the past.'); isValid = false; }
          if (!noMedical) { $('#noMedicalConditionError').text('You must confirm no pre-existing medical conditions to proceed.'); isValid = false; }
+
          return isValid;
      }
-    function getAge(birthDateString) { /* ... (keep as before) ... */
+
+    function getAge(birthDateString) {
         if (!birthDateString) return 0;
         try {
             const today = new Date();
             const birthDate = new Date(birthDateString);
             let age = today.getFullYear() - birthDate.getFullYear();
             const m = today.getMonth() - birthDate.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) { age--; }
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
             return age;
-        } catch (e) { return 0; }
+        } catch (e) {
+            return 0; // Handle invalid date format
+        }
     }
-    function validateStep2() { /* ... (keep as before) ... */
+
+
+     function validateStep2() {
          let isValid = true;
          clearErrors();
-         const familyType = $('#familyType').val();
+         const familyType = $('#familyType').val(); // Needed for beneficiary validation
+
+         // Policyholder fields
          if (!$('#phFirstName').val()) { $('#phFirstNameError').text('First name required.'); isValid = false; }
          if (!$('#phLastName').val()) { $('#phLastNameError').text('Last name required.'); isValid = false; }
          if (!$('#phEmail').val()) { $('#phEmailError').text('Email required.'); isValid = false; }
-          else if (!/^\S+@\S+\.\S+$/.test($('#phEmail').val())) { $('#phEmailError').text('Invalid email format.'); isValid = false;}
+          else if (!/^\S+@\S+\.\S+$/.test($('#phEmail').val())) { $('#phEmailError').text('Invalid email format.'); isValid = false;} // Basic email format check
          if (!$('#phPhone').val()) { $('#phPhoneError').text('Phone number required.'); isValid = false; }
-         if (!$('#phBirthdate').val()) { $('#phBirthdateError').text('Birthdate required.'); isValid = false; }
-         else { const age = getAge($('#phBirthdate').val()); if (age < 18) { $('#phBirthdateError').text('Must be 18+.'); isValid = false; } if (age >= 76) { $('#phBirthdateError').text('Must be under 76.'); isValid = false; } }
+         if (!$('#phBirthdate').val()) {
+              $('#phBirthdateError').text('Birthdate required.'); isValid = false;
+         } else {
+             const age = getAge($('#phBirthdate').val());
+             if (age < 18) { $('#phBirthdateError').text('Policyholder must be at least 18 years old.'); isValid = false; }
+             if (age >= 76) { $('#phBirthdateError').text('Policyholder must be under 76 years old.'); isValid = false; }
+         }
          if (!$('#phStreet').val()) { $('#phStreetError').text('Street required.'); isValid = false; }
          if (!$('#phNumber').val()) { $('#phNumberError').text('Number required.'); isValid = false; }
          if (!$('#phZip').val()) { $('#phZipError').text('Zip code required.'); isValid = false; }
          if (!$('#phCity').val()) { $('#phCityError').text('City required.'); isValid = false; }
          if (!$('#phCountry').val()) { $('#phCountryError').text('Country required.'); isValid = false; }
+
+         // Beneficiary fields (only if applicable)
          if (familyType === 'FAMILY_TYPE_COUPLE' || familyType === 'FAMILY_TYPE_FAMILY') {
               if (!$('#b1FirstName').val()) { $('#b1FirstNameError').text('First name required.'); isValid = false; }
               if (!$('#b1LastName').val()) { $('#b1LastNameError').text('Last name required.'); isValid = false; }
               if (!$('#b1Birthdate').val()) { $('#b1BirthdateError').text('Birthdate required.'); isValid = false; }
          }
          if (familyType === 'FAMILY_TYPE_FAMILY') {
+             // Assuming only one child for now, matching API example
              if (!$('#b2FirstName').val()) { $('#b2FirstNameError').text('First name required.'); isValid = false; }
              if (!$('#b2LastName').val()) { $('#b2LastNameError').text('Last name required.'); isValid = false; }
              if (!$('#b2Birthdate').val()) { $('#b2BirthdateError').text('Birthdate required.'); isValid = false; }
          }
+
          return isValid;
      }
-    function callPricingAPI() { /* ... (keep as before) ... */
+
+     // --- API Call and Price Handling ---
+    function callPricingAPI() {
         clearErrors();
         $('#loadingIndicator').show();
         $('#btnStep2Next').prop('disabled', true);
+
+        // 1. Construct Beneficiaries Array
         const extraBeneficiaries = [];
         const familyType = $('#familyType').val();
-        if (familyType === 'FAMILY_TYPE_COUPLE' || familyType === 'FAMILY_TYPE_FAMILY') { extraBeneficiaries.push({ firstName: $('#b1FirstName').val(), lastName: $('#b1LastName').val(), birthdate: $('#b1Birthdate').val() }); }
-        if (familyType === 'FAMILY_TYPE_FAMILY') { extraBeneficiaries.push({ firstName: $('#b2FirstName').val(), lastName: $('#b2LastName').val(), birthdate: $('#b2Birthdate').val() }); }
-        const startDateValue = $('#startDate').val();
-        const startsAtValue = `${startDateValue}T00:00:00.000Z`;
-        const payload = { partnerId: PARTNER_ID, policyholder: { email: $('#phEmail').val(), entityType: "ENTITY_TYPE_PERSON", phone: $('#phPhone').val(), firstName: $('#phFirstName').val(), lastName: $('#phLastName').val(), birthdate: $('#phBirthdate').val(), address: { street: $('#phStreet').val(), number: $('#phNumber').val(), zip: $('#phZip').val(), city: $('#phCity').val(), country: $('#phCountry').val() } }, country: $('#phCountry').val(), subject: { familyType: familyType, tripZone: $('#tripZone').val(), noMedicalCondition: $('#noMedicalCondition').is(':checked'), ...(extraBeneficiaries.length > 0 && { extraBeneficiaries: extraBeneficiaries }) }, contractPeriod: { timeZone: "Europe/Brussels", startDate: startDateValue, startsAt: startsAtValue } };
-        console.log("Price API Payload:", JSON.stringify(payload, null, 2));
-        $.ajax({ url: `${PRICE_API_ENDPOINT}?apikey=${PRICE_API_KEY}`, type: 'POST', contentType: 'application/json', data: JSON.stringify(payload),
+        if (familyType === 'FAMILY_TYPE_COUPLE' || familyType === 'FAMILY_TYPE_FAMILY') {
+             extraBeneficiaries.push({
+                 firstName: $('#b1FirstName').val(),
+                 lastName: $('#b1LastName').val(),
+                 birthdate: $('#b1Birthdate').val()
+             });
+        }
+         if (familyType === 'FAMILY_TYPE_FAMILY') {
+             extraBeneficiaries.push({
+                 firstName: $('#b2FirstName').val(),
+                 lastName: $('#b2LastName').val(),
+                 birthdate: $('#b2Birthdate').val()
+             });
+         }
+
+        // 2. Construct Payload
+        const startDateValue = $('#startDate').val(); // YYYY-MM-DD
+        const startsAtValue = `${startDateValue}T00:00:00.000Z`; // Combine date with time for ISO string
+
+        const payload = {
+            partnerId: PARTNER_ID,
+            policyholder: {
+                email: $('#phEmail').val(),
+                entityType: "ENTITY_TYPE_PERSON",
+                phone: $('#phPhone').val(),
+                firstName: $('#phFirstName').val(),
+                lastName: $('#phLastName').val(),
+                birthdate: $('#phBirthdate').val(),
+                address: {
+                    street: $('#phStreet').val(),
+                    number: $('#phNumber').val(),
+                    zip: $('#phZip').val(),
+                    city: $('#phCity').val(),
+                    country: $('#phCountry').val()
+                }
+            },
+            country: $('#phCountry').val(), // Typically same as policyholder country
+            subject: {
+                familyType: familyType,
+                tripZone: $('#tripZone').val(),
+                noMedicalCondition: $('#noMedicalCondition').is(':checked'),
+                 // Only include if there are beneficiaries
+                 ...(extraBeneficiaries.length > 0 && { extraBeneficiaries: extraBeneficiaries })
+            },
+            contractPeriod: {
+                 timeZone: "Europe/Brussels", // As per JSON config
+                 startDate: startDateValue,
+                 startsAt: startsAtValue
+            }
+        };
+
+        console.log("API Payload:", JSON.stringify(payload, null, 2)); // For debugging
+
+         // 3. Make AJAX Call
+         $.ajax({
+            url: `${API_ENDPOINT}?apikey=${API_KEY}`,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
             success: function(response) {
-                console.log("Price API Response:", response); $('#loadingIndicator').hide(); $('#btnStep2Next').prop('disabled', false);
-                if (response && response.packages) { processApiResponse(response.packages); $('#tripInfoSummaryPrices').text(`Zone: ${$('#tripZone option:selected').text()}, Travellers: ${$('#familyType option:selected').text()}, Coverage Start: ${$('#startDate').val()}`); selectedPackage = null; $('.btnSelectPackage').prop('disabled', false).text(function() { return $(this).data('package-name') ? `Select ${$(this).data('package-name')}` : 'Select'; }); $('#btnStep3Next').prop('disabled', true); $('#winterSports, #carHireExcess, #excessWaiver').prop('checked', false); navigateToStep(3); }
-                else { $('#apiError').text('Invalid response received from pricing API.').show(); }
+                console.log("API Response:", response); // For debugging
+                 $('#loadingIndicator').hide();
+                 $('#btnStep2Next').prop('disabled', false);
+
+                 if (response && response.packages) {
+                     processApiResponse(response.packages);
+                     // Update summary text here as inputs are now confirmed
+                     $('#tripInfoSummaryPrices').text(`Zone: ${$('#tripZone option:selected').text()}, Travellers: ${$('#familyType option:selected').text()}, Coverage Start: ${$('#startDate').val()}`);
+                     selectedPackage = null; // Reset package selection
+                     $('.btnSelectPackage').prop('disabled', false).text(function() { return $(this).data('package-name') ? `Select ${$(this).data('package-name')}` : 'Select'; }); // Reset button state
+                     $('#btnStep3Next').prop('disabled', true); // Disable next until package selected
+                     // Uncheck optionals before showing step 3
+                    $('#winterSports, #carHireExcess, #excessWaiver').prop('checked', false);
+                     navigateToStep(3);
+                 } else {
+                     $('#apiError').text('Invalid response received from pricing API.').show();
+                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                console.error("Price API Error:", textStatus, errorThrown, jqXHR.responseText); $('#loadingIndicator').hide(); $('#btnStep2Next').prop('disabled', false); let errorMsg = 'Failed to fetch prices. Please try again.'; if (jqXHR.responseJSON && jqXHR.responseJSON.message) { errorMsg = jqXHR.responseJSON.message; } else if (jqXHR.responseText) { try { const errData = JSON.parse(jqXHR.responseText); if(errData.message && errData.message.includes("JSON schema validation failed")){ errorMsg = `API Error: ${errData.message} (Details: ${errData.errors?.[0]?.message || 'Unknown validation issue'})`; } else if (errData.message) { errorMsg = `API Error: ${errData.message}`; } } catch(e) { /* ignore */ } } $('#apiError').text(errorMsg).show();
+                console.error("API Error:", textStatus, errorThrown, jqXHR.responseText);
+                 $('#loadingIndicator').hide();
+                 $('#btnStep2Next').prop('disabled', false);
+                 let errorMsg = 'Failed to fetch prices. Please try again.';
+                 if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                     errorMsg = jqXHR.responseJSON.message; // Use API error if available
+                 } else if (jqXHR.responseText) {
+                    // Try to parse plain text error
+                    try {
+                        const errData = JSON.parse(jqXHR.responseText);
+                         // Specific check for the schema validation error
+                         if(errData.message && errData.message.includes("JSON schema validation failed")){
+                            errorMsg = `API Error: ${errData.message} (Details: ${errData.errors?.[0]?.message || 'Unknown validation issue'})`;
+                         } else if (errData.message) {
+                            errorMsg = `API Error: ${errData.message}`;
+                         }
+                    } catch(e) { /* ignore parsing error if it's not JSON */ }
+                 }
+                 $('#apiError').text(errorMsg).show();
             }
         });
-     }
-    function processApiResponse(packagesData) { /* ... (keep as before) ... */
-         console.log("Processing API Response Data:", packagesData);
-         apiPrices = { packages: { 'MULTIPERILBASIC': 0, 'MULTIPERILPLUS': 0, 'MULTIPERILPREMIUM': 0 }, optionals: { 'winterSports': 0, 'carHireExcess': 0, 'excessWaiver': 0 }, rawOptionals: {} };
+    }
+
+    function processApiResponse(packagesData) {
+         console.log("Processing API Response Data:", packagesData); // Log the raw data received
+
+         // Reset stored prices
+         apiPrices = {
+            packages: { 'MULTIPERILBASIC': 0, 'MULTIPERILPLUS': 0, 'MULTIPERILPREMIUM': 0 },
+            optionals: { 'winterSports': 0, 'carHireExcess': 0, 'excessWaiver': 0 },
+            rawOptionals: {}
+        };
+
          const packageCodes = ['MULTIPERILBASIC', 'MULTIPERILPLUS', 'MULTIPERILPREMIUM'];
+
          packageCodes.forEach(code => {
-            let totalCip = 0; const packageInfo = packagesData[code]; console.log(`--- Processing Package: ${code} ---`);
+            let totalCip = 0;
+            const packageInfo = packagesData[code];
+            console.log(`--- Processing Package: ${code} ---`); // Log which package is being processed
+
             if (packageInfo && packageInfo.coverages) {
-                Object.entries(packageInfo.coverages).forEach(([coverageCode, coverage]) => {
-                     const variantKey = Object.keys(coverage.variants)[0]; if (!variantKey) { console.warn(`No variant key for ${coverageCode} in ${code}`); return; }
-                     const cipValue = coverage.variants[variantKey]?.premium?.cip; console.log(` -> Coverage: ${coverageCode}, Variant: ${variantKey}, CIP: ${cipValue}`);
-                     if (typeof cipValue === 'number' && !isNaN(cipValue)) { totalCip += cipValue; } else { console.warn(`Invalid CIP for ${coverageCode} in ${code}`); } });
-                console.log(`Total CIP for ${code}: ${totalCip}`); apiPrices.packages[code] = totalCip;
+                // Sum CIP for all base coverages in the package
+                Object.entries(packageInfo.coverages).forEach(([coverageCode, coverage]) => { // Use entries to get code and object
+                     // Determine the variant key ('basic', 'plus', or 'premium')
+                     const variantKey = Object.keys(coverage.variants)[0];
+                     if (!variantKey) {
+                         console.warn(`No variant key found for coverage ${coverageCode} in package ${code}`);
+                         return; // Skip this coverage if no variant key
+                     }
+
+                     const cipValue = coverage.variants[variantKey]?.premium?.cip;
+                     console.log(` -> Coverage: ${coverageCode}, Variant: ${variantKey}, CIP: ${cipValue}`); // Log each coverage CIP found
+
+                     if (typeof cipValue === 'number' && !isNaN(cipValue)) {
+                         totalCip += cipValue;
+                     } else {
+                          console.warn(`Invalid or missing CIP for coverage ${coverageCode} in package ${code}`);
+                     }
+                });
+
+                console.log(`Calculated Total CIP for ${code}: ${totalCip}`); // Log the final sum for the package
+                apiPrices.packages[code] = totalCip;
+
+                 // Store optional coverage prices for this package
                 if (packageInfo.optionalCoverages) {
-                    apiPrices.rawOptionals[code] = {}; console.log(`Optional for ${code}:`, packageInfo.optionalCoverages);
+                    apiPrices.rawOptionals[code] = {};
+                    console.log(`Processing Optional Coverages for ${code}:`, packageInfo.optionalCoverages);
                      Object.entries(packageInfo.optionalCoverages).forEach(([optCode, optCoverage]) => {
-                         const variantKey = Object.keys(optCoverage.variants)[0]; if (!variantKey) { console.warn(`No variant key for optional ${optCode} in ${code}`); return; }
-                         const optionalCipValue = optCoverage.variants[variantKey]?.premium?.cip; console.log(` -> Optional: ${optCode}, Variant: ${variantKey}, CIP: ${optionalCipValue}`);
-                         if(typeof optionalCipValue === 'number' && !isNaN(optionalCipValue)) { apiPrices.rawOptionals[code][optCode] = optionalCipValue; }
-                         else { console.warn(`Invalid CIP for optional ${optCode} in ${code}`); } });
-                     console.log(`Stored Optional for ${code}:`, apiPrices.rawOptionals[code]);
-                } else { console.log(`No Optional found for ${code}`); }
-            } else { console.warn(`Package data missing/invalid: ${code}`); }
-            let displayId; if (code === 'MULTIPERILBASIC') displayId = '#priceBasic'; else if (code === 'MULTIPERILPLUS') displayId = '#pricePlus'; else if (code === 'MULTIPERILPREMIUM') displayId = '#pricePremium'; else { console.error(`Unexpected code: ${code}`); return; }
-            const priceElement = $(displayId);
-            if(priceElement.length) { const priceToShow = apiPrices.packages[code]; if (typeof priceToShow === 'number' && !isNaN(priceToShow)) { priceElement.text(priceToShow.toFixed(2)); console.log(`Updated ${displayId}: ${priceToShow.toFixed(2)}`); } else { priceElement.text('--'); console.warn(`Invalid price for ${displayId}:`, priceToShow); } }
-            else { console.error(`Element ${displayId} not found!`); }
+                         const variantKey = Object.keys(optCoverage.variants)[0]; // basic, plus, premium, or default
+                          if (!variantKey) {
+                            console.warn(`No variant key found for optional coverage ${optCode} in package ${code}`);
+                            return;
+                         }
+                         const optionalCipValue = optCoverage.variants[variantKey]?.premium?.cip;
+                         console.log(` -> Optional: ${optCode}, Variant: ${variantKey}, CIP: ${optionalCipValue}`);
+                         if(typeof optionalCipValue === 'number' && !isNaN(optionalCipValue)) {
+                              // Store using the code from the API response (e.g., 'winterSports')
+                              apiPrices.rawOptionals[code][optCode] = optionalCipValue;
+                         } else {
+                             console.warn(`Invalid or missing CIP for optional coverage ${optCode} in package ${code}`);
+                         }
+                     });
+                     console.log(`Stored Optional Prices for ${code}:`, apiPrices.rawOptionals[code]);
+                } else {
+                     console.log(`No Optional Coverages found for ${code}`);
+                }
+            } else {
+                 console.warn(`Package data missing or invalid for code: ${code}`);
+            }
+
+            // --- Corrected ID Selection ---
+            let displayId;
+             if (code === 'MULTIPERILBASIC') {
+                 displayId = '#priceBasic';
+             } else if (code === 'MULTIPERILPLUS') {
+                 displayId = '#pricePlus';
+             } else if (code === 'MULTIPERILPREMIUM') {
+                 displayId = '#pricePremium';
+             } else {
+                 console.error(`Unexpected package code: ${code}`);
+                 return;
+             }
+             // --- End Correction ---
+
+            const priceElement = $(displayId); // Get the jQuery element using the correct ID
+
+            if(priceElement.length) { // Check if the element exists
+                 const priceToShow = apiPrices.packages[code];
+                 if (typeof priceToShow === 'number' && !isNaN(priceToShow)) {
+                     priceElement.text(priceToShow.toFixed(2));
+                      console.log(`Updated HTML element ${displayId} with price: ${priceToShow.toFixed(2)}`);
+                 } else {
+                      priceElement.text('--');
+                      console.warn(`Failed to update HTML element ${displayId} - price is invalid:`, priceToShow);
+                 }
+            } else {
+                 console.error(`HTML element ${displayId} not found! Check HTML structure and ID.`); // Log error if element missing
+            }
          });
-        updateOptionalPriceDisplay(packageCodes[0]);
-        if ($('#tripZone').val() === 'ZONE_EUROPE') { $('#carHireExcess').prop('disabled', false); $('#carHireMsg').hide(); } else { $('#carHireExcess').prop('disabled', true).prop('checked', false); $('#carHireMsg').show(); }
-        console.log("--- Finished processing API response ---"); console.log("Stored API Prices:", apiPrices);
-     }
-    function updateOptionalPriceDisplay(selectedPackageCode) { /* ... (keep as before) ... */
-         const optionalsForPackage = apiPrices.rawOptionals[selectedPackageCode] || {}; console.log(`Updating optionals display for ${selectedPackageCode}:`, optionalsForPackage);
+
+        // Update display for optional prices based on the 'basic' package by default
+        updateOptionalPriceDisplay(packageCodes[0]); // Use first package code as default
+
+         // Handle Car Hire Excess availability based on zone
+        if ($('#tripZone').val() === 'ZONE_EUROPE') {
+            $('#carHireExcess').prop('disabled', false);
+            $('#carHireMsg').hide();
+        } else {
+            $('#carHireExcess').prop('disabled', true).prop('checked', false);
+            $('#carHireMsg').show();
+        }
+
+        console.log("--- Finished processing API response ---");
+        console.log("Stored API Prices:", apiPrices); // Log the final stored prices object
+    }
+
+     function updateOptionalPriceDisplay(selectedPackageCode) {
+         const optionalsForPackage = apiPrices.rawOptionals[selectedPackageCode] || {};
+         console.log(`Updating optional prices display based on package ${selectedPackageCode}:`, optionalsForPackage);
+
+         // Use the codes exactly as they appear in the API response / rawOptionals keys
          apiPrices.optionals.winterSports = optionalsForPackage['winterSports'] ?? 0;
          apiPrices.optionals.carHireExcess = optionalsForPackage['carHireExcess'] ?? 0;
          apiPrices.optionals.excessWaiver = optionalsForPackage['excessWaiver'] ?? 0;
+
          $('#priceWinterSports').text(apiPrices.optionals.winterSports.toFixed(2));
          $('#priceCarHireExcess').text(apiPrices.optionals.carHireExcess.toFixed(2));
          $('#priceExcessWaiver').text(apiPrices.optionals.excessWaiver.toFixed(2));
-         console.log(`Display prices: Winter=${apiPrices.optionals.winterSports.toFixed(2)}, CarHire=${apiPrices.optionals.carHireExcess.toFixed(2)}, Waiver=${apiPrices.optionals.excessWaiver.toFixed(2)}`);
+         console.log(`Updated optional display prices: WinterSports=${apiPrices.optionals.winterSports.toFixed(2)}, CarHire=${apiPrices.optionals.carHireExcess.toFixed(2)}, Waiver=${apiPrices.optionals.excessWaiver.toFixed(2)}`);
      }
-    function updateTotal() { /* ... (keep as before) ... */
-        if (!selectedPackage) { $('#btnStep3Next').prop('disabled', true); return; }
-        let base = selectedPackage.basePrice; let optionalTotal = 0; selectedOptionals = {};
-        if ($('#winterSports').is(':checked')) { optionalTotal += apiPrices.optionals.winterSports; selectedOptionals.winterSports = { name: 'Winter Sports', price: apiPrices.optionals.winterSports }; }
-        if ($('#carHireExcess').is(':checked') && !$('#carHireExcess').is(':disabled')) { optionalTotal += apiPrices.optionals.carHireExcess; selectedOptionals.carHireExcess = { name: 'Car Hire Excess', price: apiPrices.optionals.carHireExcess }; }
-        if ($('#excessWaiver').is(':checked')) { optionalTotal += apiPrices.optionals.excessWaiver; selectedOptionals.excessWaiver = { name: 'Excess Waiver', price: apiPrices.optionals.excessWaiver }; }
-        let total = base + optionalTotal;
-        $('#totalPriceSummary').text(total.toFixed(2)); $('#btnStep3Next').prop('disabled', false);
-     }
-    function populateSummary() { /* ... (keep as before) ... */
-        const zoneText = $('#tripZone option:selected').text(); const familyText = $('#familyType option:selected').text(); const startDateText = $('#startDate').val();
-        $('#summaryTripZone').text(zoneText); $('#summaryFamilyType').text(familyText); $('#summaryPolicyholder').text(`${$('#phFirstName').val()} ${$('#phLastName').val()} (${$('#phEmail').val()})`); $('#summaryDates').text(`${startDateText}`); $('#summaryPackage').text(selectedPackage.name); $('#summaryBasePrice').text(selectedPackage.basePrice.toFixed(2));
-        const $beneficiaryList = $('#summaryBeneficiariesList').empty(); const beneficiaries = quoteData.beneficiaries || [];
-        if (beneficiaries.length > 0) { const $ul = $('<ul></ul>').appendTo($('<p><strong>Other Travellers Covered:</strong></p>').appendTo($beneficiaryList)); beneficiaries.forEach(b => { $('<li>').text(`${b.firstName} ${b.lastName} (${b.birthdate})`).appendTo($ul); }); }
-        const $optionalList = $('#summaryOptionalCoverages ul'); $optionalList.empty(); let optionalTotal = 0;
-        if (Object.keys(selectedOptionals).length > 0) { $('#summaryOptionalCoverages').show(); $.each(selectedOptionals, function(key, item) { $('<li>').text(`${item.name} (+ € ${item.price.toFixed(2)})`).appendTo($optionalList); optionalTotal += item.price; }); }
-        else { $('#summaryOptionalCoverages').hide(); }
-        let total = selectedPackage.basePrice + optionalTotal; $('#totalPriceSummary').text(total.toFixed(2));
-     }
-    function getUrlParameter(name) { /* ... (keep as before) ... */
-        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]'); var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'); var results = regex.exec(location.search); return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-    }
-    function getTomorrowDate() { /* ... (keep as before) ... */
-        const today = new Date(); const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1); const year = tomorrow.getFullYear(); const month = String(tomorrow.getMonth() + 1).padStart(2, '0'); const day = String(tomorrow.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`;
-    }
-    function prefillTestData() { /* ... (keep as before) ... */
-        console.log("Prefilling test data..."); $('#tripZone').val('ZONE_EUROPE'); $('#familyType').val('FAMILY_TYPE_INDIVIDUAL'); $('#startDate').val(getTomorrowDate()); $('#noMedicalCondition').prop('checked', true); $('#phFirstName').val('John'); $('#phLastName').val('Doe'); $('#phBirthdate').val('1988-03-31'); $('#phEmail').val('harry+test@qover.com'); $('#phPhone').val('+32486910819'); $('#phStreet').val('Rue du Commerce'); $('#phNumber').val('31'); $('#phZip').val('1000'); $('#phCity').val('Brussels'); $('#phCountry').val('BE'); $('#familyType').trigger('change'); console.log("Test data prefilled.");
-    }
 
-     // --- Event Handlers (keep as before, except #btnProceedToPayment) ---
-     $('#familyType').change(function() { /* ... */ });
-     $('#btnStep1Next').click(function() { /* ... */ });
-     $('#btnStep2Back').click(function() { navigateToStep(1); });
-     $('#btnStep2Next').click(function() { /* ... */ });
-     $('#btnStep3Back').click(function() { navigateToStep(2); });
-     $('.btnSelectPackage').click(function() { /* ... */ });
-     $('#winterSports, #carHireExcess, #excessWaiver').change(function() { updateTotal(); });
-     $('#btnStep3Next').click(function() { if (selectedPackage) { populateSummary(); navigateToStep(4); } });
-     $('#btnStep4Back').click(function() { navigateToStep(3); });
 
-    // --- *** UPDATED #btnProceedToPayment Handler *** ---
-    $('#btnProceedToPayment').click(function() {
-        if (!selectedPackage || !quoteData.trip || !quoteData.policyholder) {
-            alert("Cannot proceed. Please ensure you have selected a package and filled all details.");
+    function updateTotal() {
+        if (!selectedPackage) {
+            $('#btnStep3Next').prop('disabled', true);
             return;
         }
 
-        // Show loading indicator and disable button
-        $('#quoteLoadingIndicator').show(); // Show specific loading message
-        $('#quoteApiError').hide().text('');
-        $('#quoteSuccess').hide().text('');
-        $(this).prop('disabled', true);
+        let base = selectedPackage.basePrice;
+        let optionalTotal = 0;
+        selectedOptionals = {}; // Reset and rebuild
 
-        // 1. Determine the coverages object for the payload
-        const coveragesForPayload = {};
-        const basePackageDef = packageDefinitions[selectedPackage.code];
-
-        if (!basePackageDef) {
-             console.error("Could not find package definition for:", selectedPackage.code);
-             $('#quoteApiError').text('Internal error: Package definition not found.').show();
-             $('#quoteLoadingIndicator').hide();
-             $(this).prop('disabled', false);
-             return;
+        // Use the stored optional prices for calculation
+        if ($('#winterSports').is(':checked')) {
+            optionalTotal += apiPrices.optionals.winterSports;
+            selectedOptionals.winterSports = { name: 'Winter Sports', price: apiPrices.optionals.winterSports };
+        }
+        if ($('#carHireExcess').is(':checked') && !$('#carHireExcess').is(':disabled')) {
+            optionalTotal += apiPrices.optionals.carHireExcess;
+            selectedOptionals.carHireExcess = { name: 'Car Hire Excess', price: apiPrices.optionals.carHireExcess };
+        }
+         if ($('#excessWaiver').is(':checked')) {
+            optionalTotal += apiPrices.optionals.excessWaiver;
+            selectedOptionals.excessWaiver = { name: 'Excess Waiver', price: apiPrices.optionals.excessWaiver };
         }
 
-         // Add base coverages with correct variant
-         Object.assign(coveragesForPayload, basePackageDef.coverages);
+        let total = base + optionalTotal; // API prices (CIP) already include tax
 
-        // Add selected optional coverages with correct variant
-        // Use the *keys* from selectedOptionals ('winterSports', 'carHireExcess', 'excessWaiver')
-        $.each(selectedOptionals, (optKey) => {
-             if (basePackageDef.optionalCoverages.hasOwnProperty(optKey)) {
-                 coveragesForPayload[optKey] = basePackageDef.optionalCoverages[optKey]; // Get the variant ('basic', 'plus', 'premium', 'default')
-             } else {
-                 console.warn(`Optional coverage key '${optKey}' selected but not found in package definition for ${selectedPackage.code}`);
-             }
-        });
+        $('#totalPriceSummary').text(total.toFixed(2));
+        $('#btnStep3Next').prop('disabled', false);
+    }
 
-        console.log("Coverages for Quote Payload:", coveragesForPayload);
+    function populateSummary() {
+        const zoneText = $('#tripZone option:selected').text();
+        const familyText = $('#familyType option:selected').text();
+        const startDateText = $('#startDate').val();
 
-         // 2. Construct the final payload for the quote API
-        const finalPayload = {
-             action: "createQuote",
-             env: "sbx", // Assuming 'sbx' based on your example
-             payload: {
-                productConfigurationId: "tui-demo-multi",
-                partnerId: PARTNER_ID,
-                package: {
-                    name: selectedPackage.code,
-                    coverages: coveragesForPayload
-                },
-                policyholder: {
-                    ...quoteData.policyholder,
-                    entityType: "ENTITY_TYPE_PERSON"
-                },
-                country: quoteData.policyholder.address.country,
-                language: "en", // Assuming English
-                subject: {
-                    familyType: quoteData.trip.familyType,
-                    tripZone: quoteData.trip.tripZone,
-                    noMedicalCondition: quoteData.trip.noMedicalCondition,
-                    ...(quoteData.beneficiaries && quoteData.beneficiaries.length > 0 && { extraBeneficiaries: quoteData.beneficiaries })
-                },
-                contractPeriod: {
-                    timeZone: "Europe/Brussels",
-                    startDate: quoteData.trip.startDate
-                }
-             }
+        $('#summaryTripZone').text(zoneText);
+        $('#summaryFamilyType').text(familyText);
+        $('#summaryPolicyholder').text(`${$('#phFirstName').val()} ${$('#phLastName').val()} (${$('#phEmail').val()})`);
+        $('#summaryDates').text(`${startDateText}`);
+        $('#summaryPackage').text(selectedPackage.name);
+        $('#summaryBasePrice').text(selectedPackage.basePrice.toFixed(2));
+
+        // Populate Beneficiaries in Summary
+        const $beneficiaryList = $('#summaryBeneficiariesList').empty();
+        const beneficiaries = quoteData.beneficiaries || [];
+        if (beneficiaries.length > 0) {
+            const $ul = $('<ul></ul>').appendTo($('<p><strong>Other Travellers Covered:</strong></p>').appendTo($beneficiaryList));
+            beneficiaries.forEach(b => {
+                 $('<li>').text(`${b.firstName} ${b.lastName} (${b.birthdate})`).appendTo($ul);
+            });
+        }
+
+
+        const $optionalList = $('#summaryOptionalCoverages ul');
+        $optionalList.empty();
+        let optionalTotal = 0;
+
+        if (Object.keys(selectedOptionals).length > 0) {
+             $('#summaryOptionalCoverages').show();
+             $.each(selectedOptionals, function(key, item) {
+                 $('<li>').text(`${item.name} (+ € ${item.price.toFixed(2)})`).appendTo($optionalList);
+                 optionalTotal += item.price;
+             });
+        } else {
+             $('#summaryOptionalCoverages').hide();
+        }
+
+        let total = selectedPackage.basePrice + optionalTotal;
+        $('#totalPriceSummary').text(total.toFixed(2));
+    }
+
+     // --- Helper Functions for Prefill ---
+     function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    };
+
+    function getTomorrowDate() {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const year = tomorrow.getFullYear();
+        const month = String(tomorrow.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const day = String(tomorrow.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function prefillTestData() {
+        console.log("Prefilling test data...");
+        $('#tripZone').val('ZONE_EUROPE');
+        $('#familyType').val('FAMILY_TYPE_INDIVIDUAL');
+        $('#startDate').val(getTomorrowDate());
+        $('#noMedicalCondition').prop('checked', true);
+
+        $('#phFirstName').val('John');
+        $('#phLastName').val('Doe');
+        $('#phBirthdate').val('1988-03-31'); // YYYY-MM-DD format
+        $('#phEmail').val('harry+test@qover.com');
+        $('#phPhone').val('+32486910819');
+        $('#phStreet').val('Rue du Commerce');
+        $('#phNumber').val('31');
+        $('#phZip').val('1000');
+        $('#phCity').val('Brussels');
+        $('#phCountry').val('BE');
+
+        // Trigger change for family type to ensure beneficiary fields are hidden
+        $('#familyType').trigger('change');
+        console.log("Test data prefilled.");
+    }
+
+     // --- Event Handlers ---
+
+     // Dynamic Beneficiary Fields
+     $('#familyType').change(function() {
+         const type = $(this).val();
+         if (type === 'FAMILY_TYPE_COUPLE') {
+             $('#beneficiarySection').show();
+             $('#beneficiary1').show().find('legend').text('Partner Details');
+             $('#beneficiary2').hide();
+              // Clear potential child fields if switching from family
+             $('#b2FirstName, #b2LastName, #b2Birthdate').val('');
+         } else if (type === 'FAMILY_TYPE_FAMILY') {
+              $('#beneficiarySection').show();
+              $('#beneficiary1').show().find('legend').text('Partner Details');
+              $('#beneficiary2').show();
+         } else {
+              $('#beneficiarySection').hide();
+              $('#beneficiary1').hide();
+              $('#beneficiary2').hide();
+               // Clear all beneficiary fields if switching to individual
+              $('#b1FirstName, #b1LastName, #b1Birthdate, #b2FirstName, #b2LastName, #b2Birthdate').val('');
+         }
+         clearErrors(); // Clear errors when type changes
+     });
+
+    $('#btnStep1Next').click(function() {
+        if (validateStep1()) {
+            // Store trip data
+             quoteData.trip = {
+                 tripZone: $('#tripZone').val(),
+                 familyType: $('#familyType').val(),
+                 startDate: $('#startDate').val(),
+                 noMedicalCondition: $('#noMedicalCondition').is(':checked')
+             };
+             // Trigger change to show/hide beneficiary fields correctly before showing step 2
+             $('#familyType').trigger('change');
+            navigateToStep(2);
+        }
+    });
+
+     $('#btnStep2Back').click(function() {
+         navigateToStep(1);
+     });
+
+      $('#btnStep2Next').click(function() {
+         if (validateStep2()) {
+             // Store policyholder & beneficiary data just before API call
+             quoteData.policyholder = {
+                 firstName: $('#phFirstName').val(), lastName: $('#phLastName').val(),
+                 email: $('#phEmail').val(), phone: $('#phPhone').val(),
+                 birthdate: $('#phBirthdate').val(),
+                 address: {
+                     street: $('#phStreet').val(), number: $('#phNumber').val(),
+                     zip: $('#phZip').val(), city: $('#phCity').val(), country: $('#phCountry').val()
+                 }
+             };
+             const beneficiaries = [];
+             const familyType = $('#familyType').val();
+              if (familyType === 'FAMILY_TYPE_COUPLE' || familyType === 'FAMILY_TYPE_FAMILY') {
+                  beneficiaries.push({
+                      firstName: $('#b1FirstName').val(), lastName: $('#b1LastName').val(), birthdate: $('#b1Birthdate').val()
+                  });
+              }
+              if (familyType === 'FAMILY_TYPE_FAMILY') {
+                  beneficiaries.push({
+                       firstName: $('#b2FirstName').val(), lastName: $('#b2LastName').val(), birthdate: $('#b2Birthdate').val()
+                  });
+              }
+             quoteData.beneficiaries = beneficiaries;
+
+             callPricingAPI();
+         }
+     });
+
+
+    $('#btnStep3Back').click(function() {
+        navigateToStep(2);
+    });
+
+    $('.btnSelectPackage').click(function() {
+        const packageCode = $(this).data('package');
+        const packageName = $(this).data('package-name');
+        const price = apiPrices.packages[packageCode] ?? 0;
+
+        $('.btnSelectPackage').prop('disabled', false).text(function() { return `Select ${$(this).data('package-name')}`; });
+        $(this).prop('disabled', true).text('Selected');
+
+        selectedPackage = { code: packageCode, name: packageName, basePrice: price };
+
+        // Update optional prices display based on the selected package variant
+        updateOptionalPriceDisplay(packageCode);
+
+        // Update total
+        updateTotal();
+    });
+
+    $('#winterSports, #carHireExcess, #excessWaiver').change(function() {
+       updateTotal();
+    });
+
+    $('#btnStep3Next').click(function() {
+         if (selectedPackage) {
+             populateSummary();
+             navigateToStep(4);
+         }
+    });
+
+    $('#btnStep4Back').click(function() {
+        navigateToStep(3);
+    });
+
+    $('#btnProceedToPayment').click(function() {
+        const finalQuote = {
+            ...quoteData.trip, // Spread trip details
+            policyholder: quoteData.policyholder,
+            beneficiaries: quoteData.beneficiaries,
+            selectedPackage: selectedPackage,
+            selectedOptionals: selectedOptionals,
+            totalPrice: parseFloat($('#totalPriceSummary').text())
         };
 
-        console.log("Quote API Payload:", JSON.stringify(finalPayload, null, 2));
-
-        // 3. Make the API call to Google Apps Script
-        $.ajax({
-             url: QUOTE_API_ENDPOINT,
-             type: 'POST',
-             contentType: 'application/json',
-             data: JSON.stringify(finalPayload),
-             success: function(response) {
-                 console.log("Quote API Response:", response);
-                 $('#quoteLoadingIndicator').hide();
-                 // Keep button disabled on success before redirect
-
-                 // --- SUCCESS HANDLING & REDIRECT ---
-                 if (response && response.status === "success" && response.payUrl) {
-                     console.log("Quote created successfully. Redirecting to:", response.payUrl);
-                     // Optional: show a very brief success message before redirect
-                     // $('#quoteSuccess').text('Quote created! Redirecting to payment...').show();
-                     // Redirect to the payment URL
-                     window.location.href = response.payUrl;
-                     // No need to re-enable button as we are leaving the page
-                 } else {
-                     // Handle cases where status is not success or payUrl is missing
-                     const errorDetail = response?.message || `Status: ${response?.status}, PayURL missing: ${!response?.payUrl}`;
-                     $('#quoteApiError').text(`Quote creation failed or response invalid. Details: ${errorDetail}`).show();
-                     console.error("Quote API Response indicates failure or missing payUrl:", response);
-                      $('#btnProceedToPayment').prop('disabled', false); // Re-enable button on failure
-                 }
-             },
-             error: function(jqXHR, textStatus, errorThrown) {
-                 console.error("Quote API Error:", textStatus, errorThrown, jqXHR.responseText);
-                 $('#quoteLoadingIndicator').hide();
-                 $('#btnProceedToPayment').prop('disabled', false); // Re-enable button on error
-                 let errorMsg = 'Failed to create quote. Please try again.';
-                 if (jqXHR.responseText) {
-                    try {
-                         if (jqXHR.responseText.toLowerCase().includes("scripterror") || jqXHR.responseText.toLowerCase().includes("exception")) {
-                             errorMsg = "An error occurred while creating the quote via the script.";
-                         } else {
-                             const errData = JSON.parse(jqXHR.responseText);
-                             if (errData.message) { errorMsg = `Quote API Error: ${errData.message}`; }
-                              else if (jqXHR.responseText.length < 200) { errorMsg = `Quote API Error: ${jqXHR.responseText}`; }
-                         }
-                    } catch (e) { if (jqXHR.responseText.length < 200) { errorMsg = `Quote API Error: ${jqXHR.responseText}`; } }
-                 }
-                  $('#quoteApiError').text(errorMsg).show();
-             }
-         });
+        console.log("Final Quote Data for Submission:", finalQuote);
+        alert(`Proceeding to payment (placeholder).\nTotal Price: € ${finalQuote.totalPrice.toFixed(2)}\nCheck console for details.`);
+        // Example redirect: window.location.href = '/your-payment-page-url';
     });
-    // --- *** END UPDATED #btnProceedToPayment Handler *** ---
 
     // --- Initial Setup ---
+    // Set min/max date for date pickers
     const today = new Date().toISOString().split('T')[0];
-    $('#phBirthdate, #b1Birthdate, #b2Birthdate').attr('max', today);
-    $('#startDate').attr('min', today);
+    $('#phBirthdate, #b1Birthdate, #b2Birthdate').attr('max', today); // Cannot be born in future
+    $('#startDate').attr('min', today); // Coverage cannot start in past
 
+    // Check for test parameter on page load
     if (getUrlParameter('test') === 'true') {
         prefillTestData();
     }
