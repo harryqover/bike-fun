@@ -494,44 +494,92 @@ $(document).ready(function() {
     }
 
     function processApiResponse(packagesData) {
+         console.log("Processing API Response Data:", packagesData); // Log the raw data received
+
          // Reset stored prices
-         apiPrices = { packages: {}, optionals: {}, rawOptionals: {} };
+         apiPrices = {
+            packages: { 'MULTIPERILBASIC': 0, 'MULTIPERILPLUS': 0, 'MULTIPERILPREMIUM': 0 },
+            optionals: { 'winterSports': 0, 'carHireExcess': 0, 'excessWaiver': 0 },
+            rawOptionals: {}
+        };
 
          const packageCodes = ['MULTIPERILBASIC', 'MULTIPERILPLUS', 'MULTIPERILPREMIUM'];
 
          packageCodes.forEach(code => {
             let totalCip = 0;
             const packageInfo = packagesData[code];
+            console.log(`--- Processing Package: ${code} ---`); // Log which package is being processed
+
             if (packageInfo && packageInfo.coverages) {
                 // Sum CIP for all base coverages in the package
-                Object.values(packageInfo.coverages).forEach(coverage => {
-                     const variantKey = Object.keys(coverage.variants)[0]; // basic, plus, or premium
-                     if (coverage.variants[variantKey]?.premium?.cip) {
-                         totalCip += coverage.variants[variantKey].premium.cip;
+                Object.entries(packageInfo.coverages).forEach(([coverageCode, coverage]) => { // Use entries to get code and object
+                     // Determine the variant key ('basic', 'plus', or 'premium')
+                     const variantKey = Object.keys(coverage.variants)[0];
+                     if (!variantKey) {
+                         console.warn(`No variant key found for coverage ${coverageCode} in package ${code}`);
+                         return; // Skip this coverage if no variant key
+                     }
+
+                     const cipValue = coverage.variants[variantKey]?.premium?.cip;
+                     console.log(` -> Coverage: ${coverageCode}, Variant: ${variantKey}, CIP: ${cipValue}`); // Log each coverage CIP found
+
+                     if (typeof cipValue === 'number' && !isNaN(cipValue)) {
+                         totalCip += cipValue;
+                     } else {
+                          console.warn(`Invalid or missing CIP for coverage ${coverageCode} in package ${code}`);
                      }
                 });
+
+                console.log(`Calculated Total CIP for ${code}: ${totalCip}`); // Log the final sum for the package
                 apiPrices.packages[code] = totalCip;
 
                  // Store optional coverage prices for this package
                 if (packageInfo.optionalCoverages) {
                     apiPrices.rawOptionals[code] = {};
+                    console.log(`Processing Optional Coverages for ${code}:`, packageInfo.optionalCoverages);
                      Object.entries(packageInfo.optionalCoverages).forEach(([optCode, optCoverage]) => {
                          const variantKey = Object.keys(optCoverage.variants)[0]; // basic, plus, premium, or default
-                         if(optCoverage.variants[variantKey]?.premium?.cip) {
-                              apiPrices.rawOptionals[code][optCode] = optCoverage.variants[variantKey].premium.cip;
+                          if (!variantKey) {
+                            console.warn(`No variant key found for optional coverage ${optCode} in package ${code}`);
+                            return;
+                         }
+                         const optionalCipValue = optCoverage.variants[variantKey]?.premium?.cip;
+                         console.log(` -> Optional: ${optCode}, Variant: ${variantKey}, CIP: ${optionalCipValue}`);
+                         if(typeof optionalCipValue === 'number' && !isNaN(optionalCipValue)) {
+                              apiPrices.rawOptionals[code][optCode] = optionalCipValue;
+                         } else {
+                             console.warn(`Invalid or missing CIP for optional coverage ${optCode} in package ${code}`);
                          }
                      });
+                     console.log(`Stored Optional Prices for ${code}:`, apiPrices.rawOptionals[code]);
+                } else {
+                     console.log(`No Optional Coverages found for ${code}`);
                 }
+            } else {
+                 console.warn(`Package data missing or invalid for code: ${code}`);
             }
 
             // Update display for base package prices
             const displayId = `#price${code.replace('MULTIPERIL', '')}`; // #priceBasic, #pricePlus, #pricePremium
-            $(displayId).text(apiPrices.packages[code]?.toFixed(2) ?? '--');
+            const priceElement = $(displayId); // Get the jQuery element
+
+            if(priceElement.length) { // Check if the element exists
+                 const priceToShow = apiPrices.packages[code];
+                 if (typeof priceToShow === 'number' && !isNaN(priceToShow)) {
+                     priceElement.text(priceToShow.toFixed(2));
+                      console.log(`Updated HTML element ${displayId} with price: ${priceToShow.toFixed(2)}`);
+                 } else {
+                      priceElement.text('--');
+                      console.warn(`Failed to update HTML element ${displayId} - price is invalid:`, priceToShow);
+                 }
+            } else {
+                 console.error(`HTML element ${displayId} not found!`); // Log error if element missing
+            }
          });
 
         // Update display for optional prices (will be updated again when package is selected)
-        // Display the price for the 'basic' package variant initially
-        updateOptionalPriceDisplay('MULTIPERILBASIC');
+        // Display the price for the 'basic' package variant initially if available
+        updateOptionalPriceDisplay(packageCodes[0]); // Use first package code as default
 
          // Handle Car Hire Excess availability based on zone
         if ($('#tripZone').val() === 'ZONE_EUROPE') {
@@ -541,6 +589,9 @@ $(document).ready(function() {
             $('#carHireExcess').prop('disabled', true).prop('checked', false);
             $('#carHireMsg').show();
         }
+
+        console.log("--- Finished processing API response ---");
+        console.log("Stored API Prices:", apiPrices); // Log the final stored prices object
     }
 
      function updateOptionalPriceDisplay(selectedPackageCode) {
