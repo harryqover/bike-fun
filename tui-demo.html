@@ -249,7 +249,8 @@
         <p><strong>Travellers Covered:</strong> <span id="summaryFamilyType"></span></p>
          <p><strong>Policyholder:</strong> <span id="summaryPolicyholder"></span></p>
          <div id="summaryBeneficiariesList"></div>
-        <p><strong>Coverage Start Date:</strong> <span id="summaryDates"></span> (Valid for 1 year)</p> <hr>
+        <p><strong>Coverage Start Date:</strong> <span id="summaryDates"></span> (Valid for 1 year)</p>
+        <hr>
         <p><strong>Selected Plan:</strong> <span id="summaryPackage"></span></p>
         <p><strong>Base Price (Annual):</strong> € <span id="summaryBasePrice"></span></p>
         <div id="summaryOptionalCoverages">
@@ -310,7 +311,6 @@ $(document).ready(function() {
          const tripZone = $('#tripZone').val();
          const familyType = $('#familyType').val();
          const startDate = $('#startDate').val();
-         // REMOVED endDate validation
          const noMedical = $('#noMedicalCondition').is(':checked');
          const today = new Date().toISOString().split('T')[0];
 
@@ -318,7 +318,6 @@ $(document).ready(function() {
          if (!familyType) { $('#familyTypeError').text('Please select who needs cover.'); isValid = false; }
          if (!startDate) { $('#startDateError').text('Please select a start date.'); isValid = false; }
          else if (startDate < today) { $('#startDateError').text('Start date cannot be in the past.'); isValid = false; }
-         // REMOVED end date check vs start date
          if (!noMedical) { $('#noMedicalConditionError').text('You must confirm no pre-existing medical conditions to proceed.'); isValid = false; }
 
          return isValid;
@@ -439,7 +438,6 @@ $(document).ready(function() {
                  startDate: startDateValue,
                  startsAt: startsAtValue
             }
-             // Removed endDate from payload - API expects only start for annual policies
         };
 
         console.log("API Payload:", JSON.stringify(payload, null, 2)); // For debugging
@@ -458,7 +456,7 @@ $(document).ready(function() {
                  if (response && response.packages) {
                      processApiResponse(response.packages);
                      // Update summary text here as inputs are now confirmed
-                     $('#tripInfoSummaryPrices').text(`Zone: ${$('#tripZone option:selected').text()}, Travellers: ${$('#familyType option:selected').text()}, Coverage Start: ${$('#startDate').val()}`); // Updated text
+                     $('#tripInfoSummaryPrices').text(`Zone: ${$('#tripZone option:selected').text()}, Travellers: ${$('#familyType option:selected').text()}, Coverage Start: ${$('#startDate').val()}`);
                      selectedPackage = null; // Reset package selection
                      $('.btnSelectPackage').prop('disabled', false).text(function() { return $(this).data('package-name') ? `Select ${$(this).data('package-name')}` : 'Select'; }); // Reset button state
                      $('#btnStep3Next').prop('disabled', true); // Disable next until package selected
@@ -546,9 +544,8 @@ $(document).ready(function() {
                          const optionalCipValue = optCoverage.variants[variantKey]?.premium?.cip;
                          console.log(` -> Optional: ${optCode}, Variant: ${variantKey}, CIP: ${optionalCipValue}`);
                          if(typeof optionalCipValue === 'number' && !isNaN(optionalCipValue)) {
-                              // Use camelCase for optional codes if needed, e.g., winterSports
-                              const camelCaseOptCode = optCode.charAt(0).toLowerCase() + optCode.slice(1);
-                              apiPrices.rawOptionals[code][camelCaseOptCode] = optionalCipValue;
+                              // Store using the code from the API response (e.g., 'winterSports')
+                              apiPrices.rawOptionals[code][optCode] = optionalCipValue;
                          } else {
                              console.warn(`Invalid or missing CIP for optional coverage ${optCode} in package ${code}`);
                          }
@@ -561,19 +558,19 @@ $(document).ready(function() {
                  console.warn(`Package data missing or invalid for code: ${code}`);
             }
 
-            // --- *** CORRECTED ID SELECTION LOGIC *** ---
+            // --- Corrected ID Selection ---
             let displayId;
              if (code === 'MULTIPERILBASIC') {
-                 displayId = '#priceBasic'; // Correct ID
+                 displayId = '#priceBasic';
              } else if (code === 'MULTIPERILPLUS') {
-                 displayId = '#pricePlus'; // Correct ID
+                 displayId = '#pricePlus';
              } else if (code === 'MULTIPERILPREMIUM') {
-                 displayId = '#pricePremium'; // Correct ID
+                 displayId = '#pricePremium';
              } else {
                  console.error(`Unexpected package code: ${code}`);
-                 return; // Skip updating display for this unknown package
+                 return;
              }
-             // --- *** END CORRECTION *** ---
+             // --- End Correction ---
 
             const priceElement = $(displayId); // Get the jQuery element using the correct ID
 
@@ -591,8 +588,7 @@ $(document).ready(function() {
             }
          });
 
-        // Update display for optional prices (will be updated again when package is selected)
-        // Display the price for the 'basic' package variant initially if available
+        // Update display for optional prices based on the 'basic' package by default
         updateOptionalPriceDisplay(packageCodes[0]); // Use first package code as default
 
          // Handle Car Hire Excess availability based on zone
@@ -610,14 +606,17 @@ $(document).ready(function() {
 
      function updateOptionalPriceDisplay(selectedPackageCode) {
          const optionalsForPackage = apiPrices.rawOptionals[selectedPackageCode] || {};
+         console.log(`Updating optional prices display based on package ${selectedPackageCode}:`, optionalsForPackage);
 
+         // Use the codes exactly as they appear in the API response / rawOptionals keys
          apiPrices.optionals.winterSports = optionalsForPackage['winterSports'] ?? 0;
          apiPrices.optionals.carHireExcess = optionalsForPackage['carHireExcess'] ?? 0;
-         apiPrices.optionals.excessWaiver = optionalsForPackage['excessWaiver'] ?? 0; // Assumes code is 'excessWaiver'
+         apiPrices.optionals.excessWaiver = optionalsForPackage['excessWaiver'] ?? 0;
 
          $('#priceWinterSports').text(apiPrices.optionals.winterSports.toFixed(2));
          $('#priceCarHireExcess').text(apiPrices.optionals.carHireExcess.toFixed(2));
          $('#priceExcessWaiver').text(apiPrices.optionals.excessWaiver.toFixed(2));
+         console.log(`Updated optional display prices: WinterSports=${apiPrices.optionals.winterSports.toFixed(2)}, CarHire=${apiPrices.optionals.carHireExcess.toFixed(2)}, Waiver=${apiPrices.optionals.excessWaiver.toFixed(2)}`);
      }
 
 
@@ -631,6 +630,7 @@ $(document).ready(function() {
         let optionalTotal = 0;
         selectedOptionals = {}; // Reset and rebuild
 
+        // Use the stored optional prices for calculation
         if ($('#winterSports').is(':checked')) {
             optionalTotal += apiPrices.optionals.winterSports;
             selectedOptionals.winterSports = { name: 'Winter Sports', price: apiPrices.optionals.winterSports };
@@ -654,12 +654,11 @@ $(document).ready(function() {
         const zoneText = $('#tripZone option:selected').text();
         const familyText = $('#familyType option:selected').text();
         const startDateText = $('#startDate').val();
-        // REMOVED endDateText
 
         $('#summaryTripZone').text(zoneText);
         $('#summaryFamilyType').text(familyText);
         $('#summaryPolicyholder').text(`${$('#phFirstName').val()} ${$('#phLastName').val()} (${$('#phEmail').val()})`);
-        $('#summaryDates').text(`${startDateText}`); // Updated to show only start date
+        $('#summaryDates').text(`${startDateText}`);
         $('#summaryPackage').text(selectedPackage.name);
         $('#summaryBasePrice').text(selectedPackage.basePrice.toFixed(2));
 
@@ -690,6 +689,47 @@ $(document).ready(function() {
 
         let total = selectedPackage.basePrice + optionalTotal;
         $('#totalPriceSummary').text(total.toFixed(2));
+    }
+
+     // --- Helper Functions for Prefill ---
+     function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    };
+
+    function getTomorrowDate() {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const year = tomorrow.getFullYear();
+        const month = String(tomorrow.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const day = String(tomorrow.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function prefillTestData() {
+        console.log("Prefilling test data...");
+        $('#tripZone').val('ZONE_EUROPE');
+        $('#familyType').val('FAMILY_TYPE_INDIVIDUAL');
+        $('#startDate').val(getTomorrowDate());
+        $('#noMedicalCondition').prop('checked', true);
+
+        $('#phFirstName').val('John');
+        $('#phLastName').val('Doe');
+        $('#phBirthdate').val('1988-03-31'); // YYYY-MM-DD format
+        $('#phEmail').val('harry+test@qover.com');
+        $('#phPhone').val('+32486910819');
+        $('#phStreet').val('Rue du Commerce');
+        $('#phNumber').val('31');
+        $('#phZip').val('1000');
+        $('#phCity').val('Brussels');
+        $('#phCountry').val('BE');
+
+        // Trigger change for family type to ensure beneficiary fields are hidden
+        $('#familyType').trigger('change');
+        console.log("Test data prefilled.");
     }
 
      // --- Event Handlers ---
@@ -724,7 +764,6 @@ $(document).ready(function() {
                  tripZone: $('#tripZone').val(),
                  familyType: $('#familyType').val(),
                  startDate: $('#startDate').val(),
-                 // REMOVED endDate
                  noMedicalCondition: $('#noMedicalCondition').is(':checked')
              };
              // Trigger change to show/hide beneficiary fields correctly before showing step 2
@@ -819,15 +858,16 @@ $(document).ready(function() {
         // Example redirect: window.location.href = '/your-payment-page-url';
     });
 
-    // Initial setup - Set min/max date for date pickers
+    // --- Initial Setup ---
+    // Set min/max date for date pickers
     const today = new Date().toISOString().split('T')[0];
     $('#phBirthdate, #b1Birthdate, #b2Birthdate').attr('max', today); // Cannot be born in future
     $('#startDate').attr('min', today); // Coverage cannot start in past
-     // REMOVED endDate handling
 
-    // Ensure start date updates trigger relevant logic if needed later (currently none specific to removing end date)
-    // $('#startDate').change(function() { ... });
-
+    // Check for test parameter on page load
+    if (getUrlParameter('test') === 'true') {
+        prefillTestData();
+    }
 
 });
 </script>
