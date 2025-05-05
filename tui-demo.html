@@ -1028,7 +1028,7 @@ $(document).ready(function() {
         $.ajax({
             url: CREATE_QUOTE_ENDPOINT,
             type: 'POST',
-            contentType: 'application/json',
+            contentType: 'text/plain;charset=utf-8',
             data: JSON.stringify(requestData),
             success: function(response) {
                 console.log("Create Quote API Response:", response);
