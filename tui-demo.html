@@ -413,6 +413,9 @@ $(document).ready(function() {
          }
 
         // 2. Construct Payload
+        const startDateValue = $('#startDate').val(); // YYYY-MM-DD
+        const startsAtValue = `${startDateValue}T00:00:00.000Z`; // Combine date with time for ISO string
+
         const payload = {
             partnerId: PARTNER_ID,
             policyholder: {
@@ -440,9 +443,8 @@ $(document).ready(function() {
             },
             contractPeriod: {
                  timeZone: "Europe/Brussels", // As per JSON config
-                 startDate: $('#startDate').val()
-                 // startsAt is not needed for pricing, only startDate
-                 // endDate is also typically not needed for pricing annual policies, but depends on API
+                 startDate: startDateValue,
+                 startsAt: startsAtValue // **** ADDED THIS LINE ****
             }
         };
 
@@ -484,10 +486,15 @@ $(document).ready(function() {
                     // Try to parse plain text error
                     try {
                         const errData = JSON.parse(jqXHR.responseText);
-                        if (errData.message) errorMsg = errData.message;
-                    } catch(e) { /* ignore parsing error */ }
+                         // Specific check for the schema validation error
+                         if(errData.message && errData.message.includes("JSON schema validation failed")){
+                            errorMsg = `API Error: ${errData.message} (Details: ${errData.errors?.[0]?.message || 'Unknown validation issue'})`;
+                         } else if (errData.message) {
+                            errorMsg = `API Error: ${errData.message}`;
+                         }
+                    } catch(e) { /* ignore parsing error if it's not JSON */ }
                  }
-                 $('#apiError').text(`API Error: ${errorMsg}`).show();
+                 $('#apiError').text(errorMsg).show();
             }
         });
     }
@@ -755,7 +762,7 @@ $(document).ready(function() {
 
     // Initial setup - Set min date for date pickers
     const today = new Date().toISOString().split('T')[0];
-    $('#startDate, #phBirthdate, #b1Birthdate, #b2Birthdate').attr('max', today); // Cannot be born in future
+    $('#phBirthdate, #b1Birthdate, #b2Birthdate').attr('max', today); // Cannot be born in future
     $('#startDate').attr('min', today); // Trip cannot start in past
     $('#endDate').attr('min', today); // Trip cannot end in past
 
