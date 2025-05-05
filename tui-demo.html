@@ -112,28 +112,35 @@
             const newBeneficiaryDiv = document.createElement('div');
             newBeneficiaryDiv.classList.add('beneficiary');
             newBeneficiaryDiv.innerHTML = `
-                <h3>Beneficiary #<span class="math-inline">\{beneficiaryCount\}</h3\>
-<div\>
-<label for\="firstName\_</span>{beneficiaryCount}">First Name:</label>
-                    <input type="text" id="firstName_${beneficiaryCount}" name="extraBeneficiaries[<span class="math-inline">\{beneficiaryCount \- 1\}\]\[firstName\]" pattern\="^\.\+</span>" required>
+                <h3>Beneficiary #${beneficiaryCount}</h3>
+                <div>
+                    <label for="firstName_${beneficiaryCount}">First Name:</label>
+                    <input type="text" id="firstName_${beneficiaryCount}" name="extraBeneficiaries[${beneficiaryCount - 1}][firstName]" pattern="^.+$" required>
                     <div class="error" id="firstName_${beneficiaryCount}_error"></div>
                 </div>
                 <div>
                     <label for="lastName_${beneficiaryCount}">Last Name:</label>
-                    <input type="text" id="lastName_${beneficiaryCount}" name="extraBeneficiaries[<span class="math-inline">\{beneficiaryCount \- 1\}\]\[lastName\]" pattern\="^\.\+</span>" required>
+                    <input type="text" id="lastName_${beneficiaryCount}" name="extraBeneficiaries[${beneficiaryCount - 1}][lastName]" pattern="^.+$" required>
                     <div class="error" id="lastName_${beneficiaryCount}_error"></div>
                 </div>
                 <div>
                     <label for="birthdate_${beneficiaryCount}">Birthdate (YYYY-MM-DD):</label>
-                    <input type="date" id="birthdate_${beneficiaryCount}" name="extraBeneficiaries[<span class="math-inline">\{beneficiaryCount \- 1\}\]\[birthdate\]" required\>
-<div class\="error" id\="birthdate\_</span>{beneficiaryCount}_error"></div>
+                    <input type="date" id="birthdate_${beneficiaryCount}" name="extraBeneficiaries[${beneficiaryCount - 1}][birthdate]" required>
+                    <div class="error" id="birthdate_${beneficiaryCount}_error"></div>
                 </div>
                 <div>
                     <label for="type_${beneficiaryCount}">Type:</label>
-                    <select id="type_${beneficiaryCount}" name="extraBeneficiaries[<span class="math-inline">\{beneficiaryCount \- 1\}\]\[type\]" required\>
-<option value\=""\>Select Type</option\>
-<option value\="EXTRA\_BENEFICIARY\_TYPE\_ADULT"\>Adult</option\>
-<option value\="EXTRA\_BENEFICIARY\_TYPE\_SENIOR"\>Senior</option\>
-<option value\="EXTRA\_BENEFICIARY\_TYPE\_CHILD"\>Child</option\>
-</select\>
-<div class\="error" id\="type\_</span>{beneficiaryCount}_error"></div>
+                    <select id="type_${beneficiaryCount}" name="extraBeneficiaries[${beneficiaryCount - 1}][type]" required>
+                        <option value="">Select Type</option>
+                        <option value="EXTRA_BENEFICIARY_TYPE_ADULT">Adult</option>
+                        <option value="EXTRA_BENEFICIARY_TYPE_SENIOR">Senior</option>
+                        <option value="EXTRA_BENEFICIARY_TYPE_CHILD">Child</option>
+                    </select>
+                    <div class="error" id="type_${beneficiaryCount}_error"></div>
+                </div>
+            `;
+            beneficiariesContainer.appendChild(newBeneficiaryDiv);
+        });
+    </script>
+</body>
+</html>
