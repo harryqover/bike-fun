@@ -1274,6 +1274,66 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
         
       }
       $("#loadingOverlay").hide(500);
+
+      //START TEST ERROR BANNER
+      const $messageContainer = $("#message");
+      $messageContainer.empty(); // Clear previous messages
+
+      if (response.payload && response.payload.id) {
+          // Success Case
+          const $successP = $('<p>').text('Quote created successfully!').css({
+              'color': 'green',
+              'border': '1px solid green',
+              'padding': '10px',
+              'background-color': '#e6ffe6',
+              'margin': '0' // Reset default margin for p
+          });
+          $messageContainer.append($successP);
+
+          if (domain == "webflow.io") {
+              const $pre = $('<pre>').text(JSON.stringify(response.payload.id, null, 2));
+              stylePreTag($pre); // Apply dynamic styling
+              $messageContainer.append($pre);
+          }
+
+          // Hide error banner if it was somehow visible
+          const $errorBanner = getOrCreateErrorBanner(); // Ensure it's created if needed, then hide
+          $errorBanner.fadeOut();
+
+      } else {
+          // Error Case
+          const $errorP = $('<p>').text('An error occurred while creating the quote!').css({
+              'color': 'red',
+              'border': '1px solid red',
+              'padding': '10px',
+              'background-color': '#ffe6e6',
+              'margin': '0' // Reset default margin for p
+          });
+          $messageContainer.append($errorP);
+
+          if (domain == "webflow.io") {
+              const $pre = $('<pre>').text(JSON.stringify(response, null, 2));
+              stylePreTag($pre); // Apply dynamic styling
+              $messageContainer.append($pre);
+          }
+
+          // --- Banner Logic ---
+          const $errorBanner = getOrCreateErrorBanner(); // Get or create the banner
+          let bannerErrorMessage = "An unexpected error occurred."; // Default message
+
+          if (response.payload && response.payload.message) {
+              bannerErrorMessage = response.payload.message;
+          } else if (response.message) { // Fallback if message is at the root of response
+              bannerErrorMessage = response.message;
+          }
+
+          $errorBanner
+              .text(bannerErrorMessage)
+              .fadeIn()
+              .delay(5000) // Show for 5 seconds
+              .fadeOut();
+      }
+      //END TEST ERROR BANNER
       
 
     }).fail(function(jqXHR, textStatus, errorThrown) {
@@ -1327,3 +1387,42 @@ const urlParams = new URLSearchParams(window.location.search);
       console.log('Form auto-filled after 3s delay without waiting for DOMContentLoaded');
     }, 1000);
   }
+
+  function getOrCreateErrorBanner() {
+    let $banner = $('#dynamic-error-banner-unique-id'); // Use a unique ID
+    if ($banner.length === 0) {
+        // Banner doesn't exist, so create and style it
+        $banner = $('<div>')
+            .attr('id', 'dynamic-error-banner-unique-id')
+            .css({
+                'display': 'none', // Hidden by default
+                'position': 'fixed',
+                'top': '20px',
+                'right': '20px',
+                'background-color': '#f8d7da',
+                'color': '#721c24',
+                'padding': '10px 15px',
+                'border': '1px solid #f5c6cb',
+                'border-radius': '5px', // jQuery handles vendor prefixes for border-radius if needed
+                'z-index': '10000', // High z-index
+                'box-shadow': '0 2px 5px rgba(0,0,0,0.1)',
+                'font-family': 'Arial, sans-serif', // Specify a common font
+                'font-size': '0.9em'
+            });
+        $('body').append($banner); // Append it to the body
+    }
+    return $banner;
+}
+
+function stylePreTag($preElement) {
+    $preElement.css({
+        'background-color': '#f0f0f0',
+        'padding': '10px',
+        'border': '1px solid #ccc',
+        'border-radius': '4px',
+        'white-space': 'pre-wrap',
+        'word-break': 'break-all',
+        'margin-top': '10px'
+    });
+    return $preElement;
+}
