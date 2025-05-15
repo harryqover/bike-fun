@@ -39,7 +39,7 @@ const redirectConfig = [
   { product: "MIC", claimProcess: "MIC", Redirect: "https://forms.qover.com/233112828692357?product=microlino&ref_country=AT&tpa_name=Van%20Ameyde&policy_reference={{cigarId}}" },
   { product: "VDM", claimProcess: "VDM", Redirect: "https://forms.qover.com/233112828692357?product=volvo&ref_country=IE&tpa_name=RedClick&policy_reference={{cigarId}}" },
   { product: "BMM", claimProcess: "BMM", Redirect: "https://forms.qover.com/233112828692357?product=bmwmini&ref_country=IE&tpa_name=Crawford&policy_reference={{cigarId}}" },
-  { product: "ASG", claimProcess: "ASG", Redirect: "https://forms.qover.com/242413491528961/prefill/67fe4f60393237229158d3c207e1" }
+  { product: "ASG", claimProcess: "ASG", Redirect: "https://forms.qover.com/242413491528961/prefill/67fe4f60393237229158d3c207e1?claimant_email={{email}}&policy_reference={{cigarId}}" }
 ];
 
 const modalContent = {
@@ -165,7 +165,8 @@ function translate(key, lang = "en") {
 function extractPrefix(contractRef) {
   const match = contractRef.match(/^([A-Z]{2}\d{2})/);
   if (match) return match[1];
-  const policyMatch = contractRef.match(/^(P\-[A-Z]+)/);
+  //const policyMatch = contractRef.match(/^(P\-[A-Z]+)/);
+  const policyMatch = contractRef.match(/^([PM]\-[A-Z]+)/);
   return policyMatch ? policyMatch[1] : null;
 }
 
