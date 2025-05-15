@@ -13,7 +13,8 @@ const productPattern = [
   { PatternPrefix: "BE07", Product: "TENANT" },
   { PatternPrefix: "P-MICAT", Product: "MIC" },
   { PatternPrefix: "P-VDMIE", Product: "VDM" },
-  { PatternPrefix: "P-BMMIE", Product: "BMM" }
+  { PatternPrefix: "P-BMMIE", Product: "BMM" },
+  { PatternPrefix: "M-ASG", Product: "ASG" }
 ];
 
 const cowboyAlteosIds = [
@@ -37,7 +38,8 @@ const redirectConfig = [
   { product: "IAB", claimProcess: "iabHelvetia", Redirect: "https://forms.qover.com/233112828692357?product=IAB&language={{lang}}&variant={{variant}}&email={{email}}&policy_reference={{cigarId}}&tpa_name=Van%20Ameyde" },
   { product: "MIC", claimProcess: "MIC", Redirect: "https://forms.qover.com/233112828692357?product=microlino&ref_country=AT&tpa_name=Van%20Ameyde&policy_reference={{cigarId}}" },
   { product: "VDM", claimProcess: "VDM", Redirect: "https://forms.qover.com/233112828692357?product=volvo&ref_country=IE&tpa_name=RedClick&policy_reference={{cigarId}}" },
-  { product: "BMM", claimProcess: "BMM", Redirect: "https://forms.qover.com/233112828692357?product=bmwmini&ref_country=IE&tpa_name=Crawford&policy_reference={{cigarId}}" }
+  { product: "BMM", claimProcess: "BMM", Redirect: "https://forms.qover.com/233112828692357?product=bmwmini&ref_country=IE&tpa_name=Crawford&policy_reference={{cigarId}}" },
+  { product: "ASG", claimProcess: "ASG", Redirect: "https://forms.qover.com/242413491528961/prefill/67fe4f60393237229158d3c207e1" }
 ];
 
 const modalContent = {
