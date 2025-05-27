@@ -353,18 +353,18 @@ function updatePrice() {
   
   // If customer opts not to set start date, use default price.
   if(!$("#setStartDateNow").is(":checked") || !startDateInput.value) {
-    priceValueEl.textContent = "€590.00";
-    taxValueEl.textContent = "€59.37";
+    priceValueEl.textContent = "669.00";
+    taxValueEl.textContent = "€137.46";
     return;
   }
   
   const startDateStr = startDateInput.value;
   const ageAtStart = getAgeAtStart(driverBirthdateStr, startDateStr);
-  let price = 590;
-  let taxPrice =  59.37;
+  let price = 669;
+  let taxPrice =  137.46;
   if (ageAtStart < 21) {
-    price = 915;
-    taxPrice =  92.07;
+    price = 989;
+    taxPrice =  169.66;
     $(".info-message").show(250);
   } else {
     $(".info-message").hide(250);
