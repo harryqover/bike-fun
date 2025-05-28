@@ -1,4 +1,4 @@
-console.log("20250528 locale use")
+console.log("20250528 line 423")
 console.debug("20250528 locale use")
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
@@ -422,7 +422,8 @@ $(document).ready(function(){
 
 
         // 2. Apply Vehicle Info changes
-        const $vehicleInfoContent = $('div[data-step="vehicle-info"] .section-content');
+        //const $vehicleInfoContent = $('div[data-step="vehicle-info"] .section-content');
+        const $vehicleInfoContent = $('[data-step="vehicle-info"]');
         if (config.vehicleInfo) {
             // Add new fields for DE
             if (countryCode === "DE" && config.vehicleInfo.add) {
