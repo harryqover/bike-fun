@@ -408,7 +408,7 @@ $(document).ready(function(){
     // --- Main Update Function ---
     function updateFormForCountry(countryCode) {
         const config = formConfig[countryCode];
-        console(config)
+        console.log(config);
         if (!config) {
             console.error("No configuration found for country:", countryCode);
             return;
