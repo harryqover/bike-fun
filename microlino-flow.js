@@ -16,6 +16,20 @@ function getRootDomain(hostname) {
 }
 
 const domain = getRootDomain(window.location.hostname);
+const urlParams = new URLSearchParams(window.location.search);
+
+const localeRegex = /^[a-z]{2}-[A-Z]{2}$/;  
+  if (urlParams.has('locale')) {
+    const urlLocale = urlParams.get('locale');
+
+    // Validate the format of the locale from the URL
+    if (localeRegex.test(urlLocale)) {
+      locale = urlLocale; // Update locale if it's valid
+    } else {
+      console.warn(`Invalid locale format "${urlLocale}" found in URL. Keeping default locale "${locale}". Expected format: xx-YY (e.g., de-AT).`);
+    }
+  }
+  console.log("locale: ", locale);
 
 var fieldMapping = {
   "subject.underwriting.atFaultClaimsLast3Years": "claims",
@@ -90,7 +104,6 @@ $(document).ready(function(){
   $("input[name='startDate']").val(formattedToday);
   
   // If URL contains test=true, prefill form with fake data for testing
-  const urlParams = new URLSearchParams(window.location.search);
   if(urlParams.get("test") === "true"){
     $("input[name='model'][value='lite']").prop("checked", true);
     $("input[name='vin']").val("TESTVIN1234567890");
@@ -118,6 +131,7 @@ $(document).ready(function(){
     $("input[name='terms']").prop("checked", true);
     updatePrice();
   }
+
   // If URL contains action=pay and id call API to redirect to payment
   if(urlParams.get("action") === "pay"){
   	$("#loadingOverlay").show();
@@ -353,7 +367,7 @@ function updatePrice() {
   
   // If customer opts not to set start date, use default price.
   if(!$("#setStartDateNow").is(":checked") || !startDateInput.value) {
-    priceValueEl.textContent = "669.00";
+    priceValueEl.textContent = "€669.00";
     taxValueEl.textContent = "€137.46";
     return;
   }
@@ -369,11 +383,11 @@ function updatePrice() {
   } else {
     $(".info-message").hide(250);
   }
-  priceValueEl.textContent = price.toLocaleString('de-DE', {
+  priceValueEl.textContent = price.toLocaleString('de-AT', {
     style: 'currency',
     currency: 'EUR'
   });
-  taxValueEl.textContent = taxPrice.toLocaleString('de-DE', {
+  taxValueEl.textContent = taxPrice.toLocaleString('de-AT', {
     style: 'currency',
     currency: 'EUR'
   });
