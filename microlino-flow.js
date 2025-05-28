@@ -429,6 +429,7 @@ $(document).ready(function(){
             if (countryCode === "DE" && config.vehicleInfo.add) {
                  // Iterate in reverse if inserting before the same element multiple times
                 [...config.vehicleInfo.add].reverse().forEach(item => {
+                  console.log("item to add ", item);
                     const fieldHtml = createFieldHtml(item);
                     if (item.insertBefore) {
                         $vehicleInfoContent.find(item.insertBefore).before(fieldHtml);
