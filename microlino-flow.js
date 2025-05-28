@@ -1,4 +1,4 @@
-console.log("20250528 pricing locale split")
+console.log("20250528 locale use")
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
   const parts = hostname.split('.');
@@ -192,10 +192,10 @@ $(document).ready(function(){
   	      if (response.payload && response.payload.payment && response.payload.payment.id) {
             if(domain == "webflow.io"){
                var redirectUrl1 = "https://appqoverme-ui.sbx.qover.io/payout/pay";
-               var redirectUrl2 = "?locale=de-AT&id=" + response.payload.id + "&appId=q809unxlpt18fzf20zgb9vqu";
+               var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId=q809unxlpt18fzf20zgb9vqu";
             } else {
              var redirectUrl1 = "https://app.qover.com/payout/pay";
-             var redirectUrl2 = "?locale=de-AT&id=" + response.payload.id + "&appId=iw702hil7q0ejwxkt23hdya8";
+             var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId=iw702hil7q0ejwxkt23hdya8";
             } 
             //var redirectUrl2 = "?locale=de-AT&id=" + response.payload.id + "&paymentId=" + response.payload.payment.id + "&appId=q809unxlpt18fzf20zgb9vqu";
   	        /*var redirectUrl = "https://appqoverme-ui.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" 
@@ -250,7 +250,7 @@ $(document).ready(function(){
         //$("input[name='houseNumber']").val(response.payload.policyholder.address.number);
         $("input[name='city']").val(response.payload.policyholder.address.city);
         $("input[name='zip']").val(response.payload.policyholder.address.zip);
-        $("input[name='country']").val("AT");
+        $("input[name='country']").val(country);
         // Set as company for testing and prefill company fields.
         if(response.payload.policyholder.entityType == "ENTITY_TYPE_COMPANY"){
           $("input[name='isCompany'][value='yes']").prop("checked", true).trigger("change");
@@ -382,27 +382,27 @@ function updatePrice() {
   
   // If customer opts not to set start date, use default price.
   if(!$("#setStartDateNow").is(":checked") || !startDateInput.value) {
-    priceValueEl.textContent = "€669.00";
-    taxValueEl.textContent = "€137.46";
+    priceValueEl.textContent = pricing[country].gt21.price.toLocaleString(locale, {style: 'currency',currency: 'EUR'});;
+    taxValueEl.textContent = pricing[country].gt21.tax.toLocaleString(locale, {style: 'currency',currency: 'EUR'});;
     return;
   }
   
   const startDateStr = startDateInput.value;
   const ageAtStart = getAgeAtStart(driverBirthdateStr, startDateStr);
-  let price = 669;
-  let taxPrice =  137.46;
+  let price = pricing[country].gt21.price;
+  let taxPrice =  pricing[country].gt21.tax;
   if (ageAtStart < 21) {
-    price = 989;
-    taxPrice =  169.66;
+    price = pricing[country].lt21.price;
+    taxPrice =  pricing[country].lt21.tax;
     $(".info-message").show(250);
   } else {
     $(".info-message").hide(250);
   }
-  priceValueEl.textContent = price.toLocaleString('de-AT', {
+  priceValueEl.textContent = price.toLocaleString(locale, {
     style: 'currency',
     currency: 'EUR'
   });
-  taxValueEl.textContent = taxPrice.toLocaleString('de-AT', {
+  taxValueEl.textContent = taxPrice.toLocaleString(locale, {
     style: 'currency',
     currency: 'EUR'
   });
@@ -471,7 +471,7 @@ $("#quoteForm").on("submit", function(e) {
   const houseNumber = " ";
   const city = formData.get("city").trim();
   const zip = formData.get("zip").trim();
-  const country = "AT";
+  //const country = "AT";
   const isCompany = formData.get("isCompany");
   const companyName = formData.get("companyName") ? formData.get("companyName").trim() : "";
   const companyNumber = formData.get("companyNumber") ? formData.get("companyNumber").trim() : "";
@@ -550,8 +550,8 @@ $("#quoteForm").on("submit", function(e) {
   const payload = {
     productConfigurationId: "microlino",
     partnerId: "67a9f3824ce2c52c73463db6",
-    country: "AT",
-    language: "de",
+    country: country,
+    language: language,
     renewal: {
       type: "RENEWAL_TYPE_OPT_OUT"
     },
@@ -688,10 +688,10 @@ $("#quoteForm").on("submit", function(e) {
       if (response.payload && response.payload.payment && response.payload.payment.id) {
         if(domain == "webflow.io"){
            var redirectUrl1 = "https://appqoverme-ui.sbx.qover.io/payout/pay";
-           var redirectUrl2 = "?locale=de-AT&id=" + response.payload.id + "&appId=q809unxlpt18fzf20zgb9vqu";
+           var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId=q809unxlpt18fzf20zgb9vqu";
         } else {
          var redirectUrl1 = "https://app.qover.com/payout/pay";
-         var redirectUrl2 = "?locale=de-AT&id=" + response.payload.id + "&appId=iw702hil7q0ejwxkt23hdya8";
+         var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId=iw702hil7q0ejwxkt23hdya8";
         } 
         //var redirectUrl2 = "?locale=de-AT&id=" + response.payload.id + "&paymentId=" + response.payload.payment.id + "&appId=q809unxlpt18fzf20zgb9vqu";
         /*var redirectUrl = "https://appqoverme-ui.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" 
