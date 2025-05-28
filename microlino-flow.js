@@ -35,7 +35,6 @@ console.log("Current locale:", locale);
 console.log("Language:", language);
 console.log("Country:", country);
 
-
 const pricing = {
   "AT": {
     "gt21": {"price":669, "tax": 137.46},
@@ -98,9 +97,9 @@ $("#setStartDateNow").on("change", function() {
   updateSubmitButtonText();
 });
 // Trigger check on VIN input change
-  $("input[name='vin']").on("input", function () {
-    updateSubmitButtonText();
-  });
+$("input[name='vin']").on("input", function () {
+  updateSubmitButtonText();
+});
 
 
 // Collapse all sections except the first one on load.
@@ -291,6 +290,229 @@ $(document).ready(function(){
         $("#loadingOverlay").hide();
         $("#message").html('<p class="error">Beim Erstellen des Angebots ist ein Fehler aufgetreten.</p>');
       });
+  }
+
+  if(urlParams.get("test") === "trueDE"){
+    const formConfig = {
+        "AT": {
+            vehicleInfo: {
+                add: [], // AT is the base, so nothing to add here
+                removeSelectors: ['.js-de-field'] // Remove any DE fields if switching back
+            },
+            eligibilityCheck: {
+                showSelectors: [ // Elements specific to AT, ensure they are visible
+                    '[data-question-id="diplomaticCar"]',
+                    '[data-question-id="interchangeableLicensePlate"]'
+                ],
+                removeSelectors: ['.js-de-field'] // Remove any DE fields
+            },
+            legalBlockHTML: `
+                <label class="w-checkbox"><input type="checkbox" id="acceptance" name="acceptance" data-name="acceptance" class="w-checkbox-input" required=""><span class="w-form-label" for="acceptance">Ich bestätige, dass ich die Vereinbarung über die on <a href="https://app.qover.com/modules/dam/assets/67dbecce77819eea1123dd2e/content" data-document="electronic-communication" target="_blank">elektronische Kommunikation</a> gelesen habe, damit einverstanden bin und sie gespeichert habe.</span></label>
+                <label class="w-checkbox"><input type="checkbox" id="important" name="important" data-name="important" class="w-checkbox-input" required=""><span class="w-form-label" for="important">Ich bin damit einverstanden, diese <a href="https://app.qover.com/modules/dam/assets/67dbecda77819eea1123dd2f/content" data-document="additional-info" target="_blank">Informationen</a> von Qover per E-Mail inklusive PDF-Anhängen zu erhalten.</span></label>
+                <label class="w-checkbox"><input type="checkbox" id="eligibility" name="eligibility" data-name="eligibility" class="w-checkbox-input" required=""><span class="w-form-label" for="eligibility">Ich bestätige, dass ich die Allgemeinen Versicherungsbedingungen der <a href="https://app.qover.com/modules/dam/assets/67dbece5094ce3d3a56f557a/content" data-document="terms-and-conditions-tpl" target="_blank">Kfz-Haftpflichtversicherung</a> und der <a href="https://app.qover.com/modules/dam/assets/67dbecdf56c8d85c8a498740/content" data-document="terms-and-conditions-mod" target="_blank">Kaskoversicherung</a> gelesen und akzeptiert habe, und bestätige, dass ich die Voraussetzungen für diese Versicherung erfülle. Ich akzeptiere die <a href="https://www.helvetia.com/ch/web/de/ueber-uns/services/kontakt/datenschutz.html" target="_blank">Datenschutzerklärung</a> und erkläre mich damit einverstanden, dass meine persönlichen Daten in Übereinstimmung mit dieser Datenschutzerklärung gespeichert werden. Ich bestätige ferner, dass ich keine andere Versicherung habe, die das gleiche versicherte Risiko abdeckt, und dass der Inhalt des gewählten Versicherungsvertrags meinen Anforderungen und Bedürfnissen entspricht. Weitere Informationen entnehmen Sie bitte dem Informationsblatt zu den Versicherungsprodukten für die <a href="https://app.qover.com/modules/dam/assets/67dbee2456c8d85c8a498745/content" data-document="ipid-tpl" target="_blank">Kfz-Haftpflichtversicherung</a> und für die <a href="https://app.qover.com/modules/dam/assets/67dbee1e56c8d85c8a498744/content" data-document="ipid-mod" target="_blank">Kaskoversicherung</a>.</span></label>
+                <label class="w-checkbox"><input type="checkbox" id="general" name="general" data-name="important" class="w-checkbox-input" style="border: 1px solid rgb(226, 226, 226);" required=""><span class="w-form-label" for="general">Ich stimme zu, dass der Versicherungsschutz vor Ablauf der Rücktrittsfrist beginnt..</span></label>
+            `,
+            policyholder: {
+                country: "Österreich",
+                zipPlaceholder: "1234",
+                zipPattern: "\\d{4}",
+                zipMaxlength: "4"
+            }
+        },
+        "DE": {
+            vehicleInfo: {
+                add: [
+                    {
+                        type: 'radio', name: 'conditionAtPurchase', label: 'Zustand bei Kauf (Condition at Purchase)',
+                        options: [{value: 'VEHICLE_CONDITION_NEW', text: 'Neu (New)'}, {value: 'VEHICLE_CONDITION_USED', text: 'Gebraucht (Used)'}],
+                        insertBefore: 'label[data-original-for-at]:contains("Fahrzeug-Identifikationsnummer")' // Insert before VIN
+                    },
+                    {
+                        type: 'date', name: 'firstRegistrationDate', label: 'Erstzulassungsdatum (First Registration Date)',
+                        placeholder: 'YYYY-MM-DD',
+                        insertBefore: 'label[data-original-for-at]:contains("Fahrzeug-Identifikationsnummer")'
+                    },
+                    {
+                        type: 'radio', name: 'carIsReadyToBeRegistred', label: 'Fahrzeug ist zulassungsfertig (Car is ready to be registered)',
+                        options: [{value: 'true', text: 'Ja (Yes)'}, {value: 'false', text: 'Nein (No)'}],
+                        insertBefore: 'label[data-original-for-at]:contains("Fahrzeug-Identifikationsnummer")'
+                    }
+                ],
+                removeSelectors: [] // Nothing to remove from AT base for this section
+            },
+            eligibilityCheck: {
+                hideSelectors: [ // Elements specific to AT, hide them for DE
+                    '[data-question-id="diplomaticCar"]',
+                    '[data-question-id="interchangeableLicensePlate"]'
+                ],
+                add: [
+                    {
+                        type: 'dropdown', name: 'sfClassTpl', label: 'SF-Klasse TPL (SF klass tpl)',
+                        options: [
+                            {value: '', text: 'Bitte wählen (Please select)'},
+                            {value: 'SF0', text: 'SF0'}, {value: 'SF1/2', text: 'SF1/2'}, {value: 'SF1', text: 'SF1'}, 
+                            {value: 'SF2', text: 'SF2'}, {value: 'SF3', text: 'SF3'} // Add more as needed
+                        ],
+                        // Insert after the "claims" question's radio group
+                        insertAfter: 'div[data-step="eligibility-check"] .section-content .radio-group[data-question-marker="claims-question"]'
+                    },
+                    {
+                        type: 'dropdown', name: 'sfClassMod', label: 'SF-Klasse MOD (SF klass mod)',
+                        options: [
+                            {value: '', text: 'Bitte wählen (Please select)'},
+                            {value: 'SF0', text: 'SF0'}, {value: 'SF1/2', text: 'SF1/2'}, {value: 'SF1', text: 'SF1'},
+                            {value: 'SF2', text: 'SF2'}, {value: 'SF3', text: 'SF3'} // Add more as needed
+                        ],
+                         insertAfter: 'div[data-step="eligibility-check"] .section-content .radio-group[data-question-marker="claims-question"]' // Sibling to the one above
+                    }
+                ],
+                removeSelectors: [] // We are hiding AT specific, not removing the containers
+            },
+            legalBlockHTML: `
+                <label class="w-checkbox js-de-field"><input type="checkbox" name="de_terms_1" class="w-checkbox-input" required=""><span class="w-form-label">DE Specific Term 1: I agree to the German terms and conditions.</span></label>
+                <label class="w-checkbox js-de-field"><input type="checkbox" name="de_terms_2" class="w-checkbox-input" required=""><span class="w-form-label">DE Specific Term 2: I acknowledge the German privacy policy.</span></label>
+                <label class="w-checkbox js-de-field"><input type="checkbox" name="de_terms_3" class="w-checkbox-input" required=""><span class="w-form-label">DE Specific Term 3: I confirm I am eligible for insurance in Germany.</span></label>
+            `,
+            policyholder: {
+                country: "Deutschland",
+                zipPlaceholder: "12345",
+                zipPattern: "\\d{5}",
+                zipMaxlength: "5"
+            }
+        }
+    };
+
+    // --- Helper function to create form elements ---
+    function createFieldHtml(item) {
+        let html = `<div class="js-dynamic-field js-de-field">`; // Mark as dynamic and DE-specific
+        html += `<label for="${item.name}">${item.label}</label>`;
+        if (item.type === 'radio') {
+            html += `<div class="radio-group" id="rg-${item.name}">`;
+            item.options.forEach(opt => {
+                html += `<label><input class="radio-circle" type="radio" name="${item.name}" value="${opt.value}" required> ${opt.text}</label>`;
+            });
+            html += `</div>`;
+        } else if (item.type === 'date') {
+            html += `<input class="field date w-input" type="date" name="${item.name}" placeholder="${item.placeholder || ''}" required>`;
+        } else if (item.type === 'dropdown') {
+            html += `<select class="field" name="${item.name}" id="${item.name}" required>`;
+            item.options.forEach(opt => {
+                html += `<option value="${opt.value}">${opt.text}</option>`;
+            });
+            html += `</select>`;
+        }
+        html += `</div>`;
+        return html;
+    }
+
+    // --- Main Update Function ---
+    function updateFormForCountry(countryCode) {
+        const config = formConfig[countryCode];
+        if (!config) {
+            console.error("No configuration found for country:", countryCode);
+            return;
+        }
+
+        // 1. Reset: Remove all dynamically added DE fields first
+        $('.js-de-field').remove();
+        // Reset AT specific visibility (show all initially marked for AT)
+        $('[data-original-for-at]').removeClass('js-removed-placeholder');
+        $('[data-question-id]').removeClass('js-removed-placeholder');
+
+
+        // 2. Apply Vehicle Info changes
+        const $vehicleInfoContent = $('div[data-step="vehicle-info"] .section-content');
+        if (config.vehicleInfo) {
+            // Add new fields for DE
+            if (countryCode === "DE" && config.vehicleInfo.add) {
+                 // Iterate in reverse if inserting before the same element multiple times
+                [...config.vehicleInfo.add].reverse().forEach(item => {
+                    const fieldHtml = createFieldHtml(item);
+                    if (item.insertBefore) {
+                        $vehicleInfoContent.find(item.insertBefore).before(fieldHtml);
+                    } else {
+                        $vehicleInfoContent.append(fieldHtml); // Fallback
+                    }
+                });
+            }
+        }
+
+        // 3. Apply Eligibility Check changes
+        const $eligibilityCheckContent = $('div[data-step="eligibility-check"] .section-content');
+        if (config.eligibilityCheck) {
+            // Hide/Show AT specific questions
+            if (countryCode === "DE" && config.eligibilityCheck.hideSelectors) {
+                config.eligibilityCheck.hideSelectors.forEach(selector => {
+                    $eligibilityCheckContent.find(selector).addClass('js-removed-placeholder');
+                });
+            } else if (countryCode === "AT" && formConfig.AT.eligibilityCheck.showSelectors) {
+                 formConfig.AT.eligibilityCheck.showSelectors.forEach(selector => {
+                    $eligibilityCheckContent.find(selector).removeClass('js-removed-placeholder');
+                });
+            }
+
+            // Add new DE fields
+            if (countryCode === "DE" && config.eligibilityCheck.add) {
+                // Add in reverse order to maintain specified order if insertAfter is the same element
+                [...config.eligibilityCheck.add].reverse().forEach(item => {
+                    const fieldHtml = createFieldHtml(item);
+                    if (item.insertAfter) {
+                         $eligibilityCheckContent.find(item.insertAfter).after(fieldHtml);
+                    } else {
+                         $eligibilityCheckContent.find('.toggle-icon').before(fieldHtml); // Default before confirm
+                    }
+                });
+            }
+        }
+
+        // 4. Update Legal Block
+        const $legalBlock = $('.legal-block');
+        const $submitButton = $legalBlock.find('#submitButton');
+        // Remove existing legal checkboxes (but not the button or message div)
+        $legalBlock.find('label.w-checkbox').remove();
+        if (config.legalBlockHTML) {
+            $submitButton.before(config.legalBlockHTML);
+        }
+
+        // 5. Update Policyholder section (Country field, ZIP validation)
+        if (config.policyholder) {
+            $('input[name="country"]').val(config.policyholder.country);
+            const $zipInput = $('input[name="zip"]');
+            $zipInput.attr('placeholder', config.policyholder.zipPlaceholder);
+            $zipInput.attr('pattern', config.policyholder.zipPattern);
+            $zipInput.attr('maxlength', config.policyholder.zipMaxlength);
+        }
+
+
+        // Simple collapsible functionality (if you want to keep it)
+        $('.collapsible').off('click').on('click', function() {
+            $(this).next('.section-content').slideToggle();
+        }).first().next('.section-content').show(); // Open first section by default
+
+        // Toggle company fields
+        $('input[name="isCompany"]').off('change').on('change', function() {
+            if (this.value === 'yes') {
+                $('#companyFields').slideDown();
+            } else {
+                $('#companyFields').slideUp();
+            }
+        }).trigger('change'); // Trigger on load to set initial state
+
+         // Toggle start date field visibility
+        $('#setStartDateNow').off('change').on('change', function() {
+            if ($(this).is(':checked')) {
+                $('#startDateContainer').slideDown();
+            } else {
+                $('#startDateContainer').slideUp();
+            }
+        }).trigger('change');
+
+    }
+
+
+    // --- Initial Form Build ---
+    updateFormForCountry(country); // Initialize with the default selected country
+
   }
 });
 
