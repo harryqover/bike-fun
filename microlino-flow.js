@@ -1,4 +1,4 @@
-console.log("20250528 pricing")
+console.log("20250528 pricing locale split")
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
   const parts = hostname.split('.');
@@ -29,7 +29,11 @@ if (urlParams.has('locale')) {
     console.warn(`Invalid locale format "${urlLocale}" found in URL. Keeping default locale "${locale}". Expected format: xx-YY (e.g., de-AT).`);
   }
 }
-console.log("locale: ", locale);
+const [language, country] = locale.split('-');
+console.log("Current locale:", locale);
+console.log("Language:", language);
+console.log("Country:", country);
+
 
 const pricing = {
   "AT": {
