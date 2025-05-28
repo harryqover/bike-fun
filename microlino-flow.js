@@ -19,17 +19,28 @@ const domain = getRootDomain(window.location.hostname);
 const urlParams = new URLSearchParams(window.location.search);
 
 const localeRegex = /^[a-z]{2}-[A-Z]{2}$/;  
-  if (urlParams.has('locale')) {
-    const urlLocale = urlParams.get('locale');
+if (urlParams.has('locale')) {
+  const urlLocale = urlParams.get('locale');
 
-    // Validate the format of the locale from the URL
-    if (localeRegex.test(urlLocale)) {
-      locale = urlLocale; // Update locale if it's valid
-    } else {
-      console.warn(`Invalid locale format "${urlLocale}" found in URL. Keeping default locale "${locale}". Expected format: xx-YY (e.g., de-AT).`);
-    }
+  // Validate the format of the locale from the URL
+  if (localeRegex.test(urlLocale)) {
+    locale = urlLocale; // Update locale if it's valid
+  } else {
+    console.warn(`Invalid locale format "${urlLocale}" found in URL. Keeping default locale "${locale}". Expected format: xx-YY (e.g., de-AT).`);
   }
-  console.log("locale: ", locale);
+}
+console.log("locale: ", locale);
+
+const pricing = {
+  "AT": {
+    "gt21": {"price":669, "tax": 137.46},
+    "lt21": {"price":989, "tax": 169.66}
+  },
+  "DE": {
+    "gt21": {"price":594, "tax": 94.84},
+    "lt21": {"price":920, "tax": 146.89}
+  }
+}
 
 var fieldMapping = {
   "subject.underwriting.atFaultClaimsLast3Years": "claims",
