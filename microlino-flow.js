@@ -119,7 +119,7 @@ $(document).ready(function(){
   $("input[name='startDate']").val(formattedToday);
   
   // If URL contains test=true, prefill form with fake data for testing
-  if(urlParams.get("test") === "true"){
+  if(urlParams.get("test") === "trueDE"){
     $("input[name='model'][value='lite']").prop("checked", true);
     $("input[name='vin']").val("TESTVIN1234567890");
     //$("input[name='vrn']").val("TESTVRN123");
@@ -129,7 +129,7 @@ $(document).ready(function(){
     $("input[name='policyCancelled'][value='no']").prop("checked", true);
     $("input[name='claims'][value='0']").prop("checked", true);
     $("input[name='firstName']").val("John");
-    $("input[name='lastName']").val("Doe");
+    $("input[name='lastName']").val("debug");
     $("input[name='policyholderBirthdate']").val("1980-01-01");
     $("input[name='email']").val("harry+test@qover.com");
     $("input[name='phone']").val("+43123456789");
