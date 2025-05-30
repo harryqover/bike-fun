@@ -1,4 +1,4 @@
-console.log("20250528 line 422")
+console.log("20250528 line currentcountry")
 
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
