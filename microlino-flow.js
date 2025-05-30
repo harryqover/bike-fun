@@ -325,17 +325,17 @@ $(document).ready(function(){
                     {
                         type: 'radio', name: 'conditionAtPurchase', label: 'Zustand bei Kauf',
                         options: [{value: 'VEHICLE_CONDITION_NEW', text: 'Neu'}, {value: 'VEHICLE_CONDITION_USED', text: 'Gebraucht'}],
-                        insertBefore: 'span.toggle-icon[data-original-for-at]'
+                        insertBefore: 'span.toggle-icon[data-confirm-vehicle]'
                     },
                     {
                         type: 'date', name: 'firstRegistrationDate', label: 'Erstzulassungsdatum',
                         placeholder: 'YYYY-MM-DD',
-                        insertBefore: 'span.toggle-icon[data-original-for-at]'
+                        insertBefore: 'span.toggle-icon[data-confirm-vehicle]'
                     },
                     {
                         type: 'radio', name: 'carIsReadyToBeRegistred', label: 'Fahrzeug ist zulassungsfertig',
                         options: [{value: 'true', text: 'Ja'}, {value: 'false', text: 'Nein'}],
-                        insertBefore: 'span.toggle-icon[data-original-for-at]'
+                        insertBefore: 'span.toggle-icon[data-confirm-vehicle]'
                     }
                 ],
                 removeSelectors: [] // Nothing to remove from AT base for this section
@@ -354,7 +354,7 @@ $(document).ready(function(){
                             {value: 'SF2', text: 'SF2'}, {value: 'SF3', text: 'SF3'} // Add more as needed
                         ],
                         // Insert after the "claims" question's radio group
-                        insertAfter: 'div[data-step="eligibility-check"] .section-content .radio-group[data-question-marker="claims-question"]'
+                        insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
                     },
                     {
                         type: 'dropdown', name: 'sfClassMod', label: 'SF-Klasse MOD (SF klass mod)',
@@ -363,7 +363,7 @@ $(document).ready(function(){
                             {value: 'SF0', text: 'SF0'}, {value: 'SF1/2', text: 'SF1/2'}, {value: 'SF1', text: 'SF1'},
                             {value: 'SF2', text: 'SF2'}, {value: 'SF3', text: 'SF3'} // Add more as needed
                         ],
-                         insertAfter: 'div[data-step="eligibility-check"] .section-content .radio-group[data-question-marker="claims-question"]' // Sibling to the one above
+                        insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
                     }
                 ],
                 removeSelectors: [] // We are hiding AT specific, not removing the containers
@@ -466,9 +466,10 @@ $(document).ready(function(){
                     console.log("fieldHtml ", item.name);
                     console.log(fieldHtml);
                     if (item.insertAfter) {
-                         $eligibilityCheckContent.find(item.insertAfter).after(fieldHtml);
+                        //$eligibilityCheckContent.find(item.insertAfter).after(fieldHtml);
+                        $vehicleInfoContent.find(item.insertBefore).before(fieldHtml);
                     } else {
-                         $eligibilityCheckContent.find('.toggle-icon').before(fieldHtml); // Default before confirm
+                        $eligibilityCheckContent.find('.toggle-icon').before(fieldHtml); // Default before confirm
                     }
                 });
             }
