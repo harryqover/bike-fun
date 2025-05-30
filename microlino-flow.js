@@ -473,9 +473,38 @@ $(document).ready(function(){
                 removeSelectors: [] // We are hiding AT specific, not removing the containers
             },
             legalBlockHTML: `
-                <label class="w-checkbox js-de-field"><input type="checkbox" name="de_terms_1" class="w-checkbox-input" required=""><span class="w-form-label">DE Specific Term 1: I agree to the German terms and conditions.</span></label>
-                <label class="w-checkbox js-de-field"><input type="checkbox" name="de_terms_2" class="w-checkbox-input" required=""><span class="w-form-label">DE Specific Term 2: I acknowledge the German privacy policy.</span></label>
-                <label class="w-checkbox js-de-field"><input type="checkbox" name="de_terms_3" class="w-checkbox-input" required=""><span class="w-form-label">DE Specific Term 3: I confirm I am eligible for insurance in Germany.</span></label>
+                <label class="w-checkbox js-de-field">
+                    <input type="checkbox" id="de_terms_important" name="de_terms_important" data-name="important" class="w-checkbox-input" required="">
+                    <span class="w-form-label" for="de_terms_important">Ich habe die <a href="https://api.prd.qover.io/documents/download?apikey=pk_8608895FC72565DF474D&productReference=IAB&country=DE&language=de&type=preContract" target="_blank"><strong>vorvertragliche Unterlage</strong></a> und die <a href="https://www.qover.com/terms-and-policies#complaints" target="_blank"><strong>Belehrung</strong></a> nach § 19 Abs. 5 VVG über die Folgen einer Verletzung der vorvertraglichen Anzeigepflicht gelesen und akzeptiere sie.</span>
+                </label>
+                <label class="w-checkbox js-de-field">
+                    <input type="checkbox" id="de_terms_acceptance" name="de_terms_acceptance" data-name="acceptance" class="w-checkbox-input" required="">
+                    <span class="w-form-label" for="de_terms_acceptance">Ich erkläre hiermit, dass ich auf die Beratung nach § 6 Abs. 3 und 5 VVG verzichte. Dieser <strong>Beratungsverzicht</strong> kann zu folgende rechtlichen Konsequenzen führen.<br><br>Sollten Sie bei Antragstellung auf eine Beratung und Dokumentation verzichten, kann sich dieser Verzicht nachteilig auf Ihre Möglichkeit auswirken, gegen den Versicherer Helvetia Global Solutions Ltd. oder den Versicherungsvermittler Qover S.A. Schadensersatzansprüche geltend zu machen, weil das von Ihnen ausgewählte Produkt möglicherweise Ihren Wünschen und individuellen Bedürfnissen nicht entspricht.</span>
+                </label>
+                <label class="w-checkbox js-de-field">
+                    <input type="checkbox" id="de_terms_eligibility" name="de_terms_eligibility" data-name="eligibility" class="w-checkbox-input" required="">
+                    <span class="w-form-label" for="de_terms_eligibility">Ich bestätige, dass ich die <a href="https://api.prd.qover.io/documents/download?apikey=pk_8608895FC72565DF474D&productReference=IAB&country=DE&language=de&type=generalConditions" target="_blank"><strong>Allgemeinen Versicherungsbedingungen</strong></a> gelesen und akzeptiert habe, und bestätige, dass ich die Voraussetzungen für diese Versicherung erfülle. Ich bestätige ferner, dass ich keine andere Versicherung habe, die das gleiche versicherte Risiko abdeckt, und dass der Inhalt des gewählten Versicherungsvertrags meinen Anforderungen und Bedürfnissen entspricht. Weitere Informationen entnehmen Sie bitte dem <a href="https://api.prd.qover.io/documents/download?apikey=pk_8608895FC72565DF474D&productReference=IAB&country=DE&language=de&type=IPID" target="_blank"><strong>Informationsblatt zu den Versicherungsprodukten</strong></a>.</span>
+                </label>
+                <label class="w-checkbox js-de-field">
+                    <input type="checkbox" id="de_terms_commercial" name="de_terms_commercial" data-name="commercial" class="w-checkbox-input" required="">
+                    <span class="w-form-label" for="de_terms_commercial">Ich bestätige, dass ich das Fahrzeug nicht zur gewerblichen <strong>Personenbeförderung</strong> (Taxi) oder zur gewerblichen Vermietung nutze.</span>
+                </label>
+                <label class="w-checkbox js-de-field">
+                    <input type="checkbox" id="de_terms_diplomat" name="de_terms_diplomat" data-name="diplomat" class="w-checkbox-input" required="">
+                    <span class="w-form-label" for="de_terms_diplomat">Ich bestätige, dass das versicherte Fahrzeug kein <strong>Diplomatenkennzeichen</strong> hat.</span>
+                </label>
+                <label class="w-checkbox js-de-field">
+                    <input type="checkbox" id="de_terms_interchangeable_plate" name="de_terms_interchangeable_plate" data-name="interchangeable_plate" class="w-checkbox-input" required="">
+                    <span class="w-form-label" for="de_terms_interchangeable_plate">Ich bestätige, dass das Fahrzeug nicht mit einem Wechselkennzeichen ausgestattet ist.</span>
+                </label>
+                <label class="w-checkbox js-de-field">
+                    <input type="checkbox" id="de_terms_general" name="de_terms_general" data-name="general" class="w-checkbox-input" required="">
+                    <span class="w-form-label" for="de_terms_general">Ich bestätige ferner, dass ich keine andere Versicherung habe, die das gleiche versicherte Risiko abdeckt, und dass der Inhalt des gewählten Versicherungsvertrags meinen Anforderungen und Bedürfnissen entspricht. Weitere Informationen entnehmen Sie bitte dem <a href="https://api.prd.qover.io/documents/download?apikey=pk_8608895FC72565DF474D&productReference=IAB&country=DE&language=de&type=IPID" target="_blank"><strong>Informationsblatt zu den Versicherungsprodukten.</strong></a></span>
+                </label>
+                <label class="w-checkbox js-de-field">
+                    <input type="checkbox" id="de_terms_privacypolicy" name="de_terms_privacypolicy" data-name="privacypolicy" class="w-checkbox-input" required="">
+                    <span class="w-form-label" for="de_terms_privacypolicy">Ich habe die Datenschutzerklärung zur Kenntnis genommen und bin darüber informiert, dass meine persönlichen Daten gemäß dieser <a href="https://www.helvetia.com/ch/web/de/ueber-uns/services/kontakt/datenschutz.html" target="_blank"><strong>Datenschutzerklärung</strong></a> verarbeitet werden.</span>
+                </label>
             `,
             policyholder: {
                 country: "Deutschland",
