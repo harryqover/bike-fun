@@ -435,8 +435,8 @@ $(document).ready(function(){
                     console.log("fieldHtml ", item.name);
                     console.log(fieldHtml);
                     if (item.insertBefore) {
-                        //$vehicleInfoContent.find(item.insertBefore).before(fieldHtml);
-                        $vehicleInfoContent.append(fieldHtml);
+                        $vehicleInfoContent.find(item.insertBefore).before(fieldHtml);
+                        //$vehicleInfoContent.append(fieldHtml);
                     } else {
                         $vehicleInfoContent.append(fieldHtml); // Fallback
                     }
