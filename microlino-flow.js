@@ -1020,7 +1020,7 @@ $("#quoteForm").on("submit", function(e) {
       payload.subject.firstRegistrationDate = firstRegistrationDate;
       payload.subject.carIsReadyToBeRegistred = carIsReadyToBeRegistred;
       payload.subject.underwriting.bonusMalusTpl = sfClassTpl;
-      payload.subject.underwriting.bonusMalusMod = sfClassMod;
+      payload.subject.underwriting.bonusMalusOmium = sfClassMod;
   }
 
   // Dynamically build metadata.terms
