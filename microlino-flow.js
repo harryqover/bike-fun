@@ -423,7 +423,8 @@ $(document).ready(function(){
 
         // 2. Apply Vehicle Info changes
         //const $vehicleInfoContent = $('div[data-step="vehicle-info"] .section-content');
-        const $vehicleInfoContent = $('[data-step="vehicle-info"]');
+        const $vehicleInfoContent = $('h2[data-step="vehicle-info"]').next('.section-content');
+        //const $vehicleInfoContent = $('[data-step="vehicle-info"]');
         if (config.vehicleInfo) {
             // Add new fields for DE
             if (countryCode === "DE" && config.vehicleInfo.add) {
@@ -444,7 +445,7 @@ $(document).ready(function(){
         }
 
         // 3. Apply Eligibility Check changes
-        const $eligibilityCheckContent = $('div[data-step="eligibility-check"] .section-content');
+        const $eligibilityCheckContent = $('div[data-step="eligibility-check"]').next('.section-content');
         if (config.eligibilityCheck) {
             // Hide/Show AT specific questions
             if (countryCode === "DE" && config.eligibilityCheck.hideSelectors) {
