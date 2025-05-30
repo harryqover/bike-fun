@@ -348,67 +348,6 @@ $(document).ready(function(){
                 ],
                 add: [
                     {
-                        type: 'dropdown', name: 'sfClassTpl', label: 'SF-Klasse TPL',
-                        options: [
-                            { value: '', text: 'Bitte wählen' },
-                            { value: '0', text: 'SF 0 (Anfänger)' },
-                            { value: 'M', text: 'SF M (Malusklasse)' },
-                            { value: 'S', text: 'SF S (Nach Rückstufung)' },
-                            { value: 'SF1/2', text: 'SF 1/2' },
-                            { value: 'SF1', text: 'SF 1' },
-                            { value: 'SF2', text: 'SF 2' },
-                            { value: 'SF3', text: 'SF 3' },
-                            { value: 'SF4', text: 'SF 4' },
-                            { value: 'SF5', text: 'SF 5' },
-                            { value: 'SF6', text: 'SF 6' },
-                            { value: 'SF7', text: 'SF 7' },
-                            { value: 'SF8', text: 'SF 8' },
-                            { value: 'SF9', text: 'SF 9' },
-                            { value: 'SF10', text: 'SF 10' },
-                            { value: 'SF11', text: 'SF 11' },
-                            { value: 'SF12', text: 'SF 12' },
-                            { value: 'SF13', text: 'SF 13' },
-                            { value: 'SF14', text: 'SF 14' },
-                            { value: 'SF15', text: 'SF 15' },
-                            { value: 'SF16', text: 'SF 16' },
-                            { value: 'SF17', text: 'SF 17' },
-                            { value: 'SF18', text: 'SF 18' },
-                            { value: 'SF19', text: 'SF 19' },
-                            { value: 'SF20', text: 'SF 20' },
-                            { value: 'SF21', text: 'SF 21' },
-                            { value: 'SF22', text: 'SF 22' },
-                            { value: 'SF23', text: 'SF 23' },
-                            { value: 'SF24', text: 'SF 24' },
-                            { value: 'SF25', text: 'SF 25' },
-                            { value: 'SF26', text: 'SF 26' },
-                            { value: 'SF27', text: 'SF 27' },
-                            { value: 'SF28', text: 'SF 28' },
-                            { value: 'SF29', text: 'SF 29' },
-                            { value: 'SF30', text: 'SF 30' },
-                            { value: 'SF31', text: 'SF 31' },
-                            { value: 'SF32', text: 'SF 32' },
-                            { value: 'SF33', text: 'SF 33' },
-                            { value: 'SF34', text: 'SF 34' },
-                            { value: 'SF35', text: 'SF 35' },
-                            { value: 'SF36', text: 'SF 36' },
-                            { value: 'SF37', text: 'SF 37' },
-                            { value: 'SF38', text: 'SF 38' },
-                            { value: 'SF39', text: 'SF 39' },
-                            { value: 'SF40', text: 'SF 40' },
-                            { value: 'SF41', text: 'SF 41' },
-                            { value: 'SF42', text: 'SF 42' },
-                            { value: 'SF43', text: 'SF 43' },
-                            { value: 'SF44', text: 'SF 44' },
-                            { value: 'SF45', text: 'SF 45' },
-                            { value: 'SF46', text: 'SF 46' },
-                            { value: 'SF47', text: 'SF 47' },
-                            { value: 'SF48', text: 'SF 48' },
-                            { value: 'SF49', text: 'SF 49' },
-                            { value: 'SF50', text: 'SF 50 (oder mehr)' }
-                        ],
-                        insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
-                    },
-                    {
                         type: 'dropdown', name: 'sfClassMod', label: 'SF-Klasse MOD',
                         options: [
                           { value: '', text: 'Bitte wählen' },
@@ -467,6 +406,67 @@ $(document).ready(function(){
                           { value: 'SF49', text: 'SF 49' },
                           { value: 'SF50', text: 'SF 50 (oder mehr)' }
                       ],
+                        insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
+                    },
+                    {
+                        type: 'dropdown', name: 'sfClassTpl', label: 'SF-Klasse TPL',
+                        options: [
+                            { value: '', text: 'Bitte wählen' },
+                            { value: '0', text: 'SF 0 (Anfänger)' },
+                            { value: 'M', text: 'SF M (Malusklasse)' },
+                            { value: 'S', text: 'SF S (Nach Rückstufung)' },
+                            { value: 'SF1/2', text: 'SF 1/2' },
+                            { value: 'SF1', text: 'SF 1' },
+                            { value: 'SF2', text: 'SF 2' },
+                            { value: 'SF3', text: 'SF 3' },
+                            { value: 'SF4', text: 'SF 4' },
+                            { value: 'SF5', text: 'SF 5' },
+                            { value: 'SF6', text: 'SF 6' },
+                            { value: 'SF7', text: 'SF 7' },
+                            { value: 'SF8', text: 'SF 8' },
+                            { value: 'SF9', text: 'SF 9' },
+                            { value: 'SF10', text: 'SF 10' },
+                            { value: 'SF11', text: 'SF 11' },
+                            { value: 'SF12', text: 'SF 12' },
+                            { value: 'SF13', text: 'SF 13' },
+                            { value: 'SF14', text: 'SF 14' },
+                            { value: 'SF15', text: 'SF 15' },
+                            { value: 'SF16', text: 'SF 16' },
+                            { value: 'SF17', text: 'SF 17' },
+                            { value: 'SF18', text: 'SF 18' },
+                            { value: 'SF19', text: 'SF 19' },
+                            { value: 'SF20', text: 'SF 20' },
+                            { value: 'SF21', text: 'SF 21' },
+                            { value: 'SF22', text: 'SF 22' },
+                            { value: 'SF23', text: 'SF 23' },
+                            { value: 'SF24', text: 'SF 24' },
+                            { value: 'SF25', text: 'SF 25' },
+                            { value: 'SF26', text: 'SF 26' },
+                            { value: 'SF27', text: 'SF 27' },
+                            { value: 'SF28', text: 'SF 28' },
+                            { value: 'SF29', text: 'SF 29' },
+                            { value: 'SF30', text: 'SF 30' },
+                            { value: 'SF31', text: 'SF 31' },
+                            { value: 'SF32', text: 'SF 32' },
+                            { value: 'SF33', text: 'SF 33' },
+                            { value: 'SF34', text: 'SF 34' },
+                            { value: 'SF35', text: 'SF 35' },
+                            { value: 'SF36', text: 'SF 36' },
+                            { value: 'SF37', text: 'SF 37' },
+                            { value: 'SF38', text: 'SF 38' },
+                            { value: 'SF39', text: 'SF 39' },
+                            { value: 'SF40', text: 'SF 40' },
+                            { value: 'SF41', text: 'SF 41' },
+                            { value: 'SF42', text: 'SF 42' },
+                            { value: 'SF43', text: 'SF 43' },
+                            { value: 'SF44', text: 'SF 44' },
+                            { value: 'SF45', text: 'SF 45' },
+                            { value: 'SF46', text: 'SF 46' },
+                            { value: 'SF47', text: 'SF 47' },
+                            { value: 'SF48', text: 'SF 48' },
+                            { value: 'SF49', text: 'SF 49' },
+                            { value: 'SF50', text: 'SF 50 (oder mehr)' }
+                        ],
                         insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
                     }
                 ],
@@ -854,10 +854,10 @@ $("#quoteForm").on("submit", function(e) {
   let diplomaticCar, interchangeableLicensePlate; // AT specific
   let conditionAtPurchase, firstRegistrationDate, carIsReadyToBeRegistred, sfClassTpl, sfClassMod; // DE specific
 
-  if (currentCountry === "AT") {
+  if (country === "AT") {
       diplomaticCar = formData.get("diplomaticCar");
       interchangeableLicensePlate = formData.get("interchangeableLicensePlate");
-  } else if (currentCountry === "DE") {
+  } else if (country === "DE") {
       conditionAtPurchase = formData.get("conditionAtPurchase");
       firstRegistrationDate = formData.get("firstRegistrationDate");
       // Ensure boolean conversion for radio button values like "true"/"false"
@@ -1012,10 +1012,10 @@ $("#quoteForm").on("submit", function(e) {
   }
 
   // Add country-specific fields to payload.subject and payload.subject.underwriting
-  if (currentCountry === "AT") {
+  if (country === "AT") {
       payload.subject.underwriting.diplomaticCar = diplomaticCar === "yes";
       payload.subject.underwriting.interchangeableLicensePlate = interchangeableLicensePlate === "yes";
-  } else if (currentCountry === "DE") {
+  } else if (country === "DE") {
       payload.subject.conditionAtPurchase = conditionAtPurchase;
       payload.subject.firstRegistrationDate = firstRegistrationDate;
       payload.subject.carIsReadyToBeRegistred = carIsReadyToBeRegistred;
