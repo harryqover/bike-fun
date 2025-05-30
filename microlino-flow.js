@@ -119,7 +119,7 @@ $(document).ready(function(){
   $("input[name='startDate']").val(formattedToday);
   
   // If URL contains test=true, prefill form with fake data for testing
-  if(urlParams.get("test") === "trueDE"){
+  if(["trueDE","true"].includes(urlParams.get("test")){
     $("input[name='model'][value='lite']").prop("checked", true);
     $("input[name='vin']").val("TESTVIN1234567890");
     //$("input[name='vrn']").val("TESTVRN123");
@@ -597,8 +597,8 @@ $(document).ready(function(){
                 // Add in reverse order to maintain specified order if insertAfter is the same element
                 [...config.eligibilityCheck.add].reverse().forEach(item => {
                     const fieldHtml = createFieldHtml(item);
-                    console.log("fieldHtml ", item.name);
-                    console.log(fieldHtml);
+                    //console.log("fieldHtml ", item.name);
+                    //console.log(fieldHtml);
                     if (item.insertAfter) {
                         //$eligibilityCheckContent.find(item.insertAfter).after(fieldHtml);
                         $vehicleInfoContent.find(item.insertBefore).before(fieldHtml);
