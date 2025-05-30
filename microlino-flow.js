@@ -463,6 +463,8 @@ $(document).ready(function(){
                 // Add in reverse order to maintain specified order if insertAfter is the same element
                 [...config.eligibilityCheck.add].reverse().forEach(item => {
                     const fieldHtml = createFieldHtml(item);
+                    console.log("fieldHtml ", item.name);
+                    console.log(fieldHtml);
                     if (item.insertAfter) {
                          $eligibilityCheckContent.find(item.insertAfter).after(fieldHtml);
                     } else {
