@@ -119,7 +119,7 @@ $(document).ready(function(){
   $("input[name='startDate']").val(formattedToday);
   
   // If URL contains test=true, prefill form with fake data for testing
-  if(["trueDE","true"].includes(urlParams.get("test")){
+  if(["trueDE","true"].includes(urlParams.get("test"))){
     $("input[name='model'][value='lite']").prop("checked", true);
     $("input[name='vin']").val("TESTVIN1234567890");
     //$("input[name='vrn']").val("TESTVRN123");
