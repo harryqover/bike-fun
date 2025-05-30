@@ -323,7 +323,7 @@ $(document).ready(function(){
             vehicleInfo: {
                 add: [
                     {
-                        type: 'radio', name: 'conditionAtPurchase', label: 'Zustand bei Kauf (Condition at Purchase)',
+                        type: 'radio', name: 'conditionAtPurchase', label: 'Zustand bei Kauf',
                         options: [{value: 'VEHICLE_CONDITION_NEW', text: 'Neu'}, {value: 'VEHICLE_CONDITION_USED', text: 'Gebraucht'}],
                         insertBefore: 'span.toggle-icon[data-original-for-at]'
                     },
@@ -445,7 +445,7 @@ $(document).ready(function(){
         }
 
         // 3. Apply Eligibility Check changes
-        const $eligibilityCheckContent = $('div[data-step="eligibility-check"]').next('.section-content');
+        const $eligibilityCheckContent = $('h2[data-step="eligibility-check"]').next('.section-content');
         if (config.eligibilityCheck) {
             // Hide/Show AT specific questions
             if (countryCode === "DE" && config.eligibilityCheck.hideSelectors) {
