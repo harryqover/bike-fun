@@ -324,18 +324,18 @@ $(document).ready(function(){
                 add: [
                     {
                         type: 'radio', name: 'conditionAtPurchase', label: 'Zustand bei Kauf (Condition at Purchase)',
-                        options: [{value: 'VEHICLE_CONDITION_NEW', text: 'Neu (New)'}, {value: 'VEHICLE_CONDITION_USED', text: 'Gebraucht (Used)'}],
-                        insertBefore: 'label[data-original-for-at]:contains("Fahrzeug-Identifikationsnummer")' // Insert before VIN
+                        options: [{value: 'VEHICLE_CONDITION_NEW', text: 'Neu'}, {value: 'VEHICLE_CONDITION_USED', text: 'Gebraucht'}],
+                        insertBefore: 'span.toggle-icon[data-original-for-at]'
                     },
                     {
-                        type: 'date', name: 'firstRegistrationDate', label: 'Erstzulassungsdatum (First Registration Date)',
+                        type: 'date', name: 'firstRegistrationDate', label: 'Erstzulassungsdatum',
                         placeholder: 'YYYY-MM-DD',
-                        insertBefore: 'label[data-original-for-at]:contains("Fahrzeug-Identifikationsnummer")'
+                        insertBefore: 'span.toggle-icon[data-original-for-at]'
                     },
                     {
-                        type: 'radio', name: 'carIsReadyToBeRegistred', label: 'Fahrzeug ist zulassungsfertig (Car is ready to be registered)',
-                        options: [{value: 'true', text: 'Ja (Yes)'}, {value: 'false', text: 'Nein (No)'}],
-                        insertBefore: 'label[data-original-for-at]:contains("Fahrzeug-Identifikationsnummer")'
+                        type: 'radio', name: 'carIsReadyToBeRegistred', label: 'Fahrzeug ist zulassungsfertig',
+                        options: [{value: 'true', text: 'Ja'}, {value: 'false', text: 'Nein'}],
+                        insertBefore: 'span.toggle-icon[data-original-for-at]'
                     }
                 ],
                 removeSelectors: [] // Nothing to remove from AT base for this section
@@ -430,10 +430,10 @@ $(document).ready(function(){
             if (countryCode === "DE" && config.vehicleInfo.add) {
                  // Iterate in reverse if inserting before the same element multiple times
                 [...config.vehicleInfo.add].reverse().forEach(item => {
-                  console.log("item to add ", item);
+                  //console.log("item to add ", item);
                     const fieldHtml = createFieldHtml(item);
-                    console.log("fieldHtml ", item.name);
-                    console.log(fieldHtml);
+                    //console.log("fieldHtml ", item.name);
+                    //console.log(fieldHtml);
                     if (item.insertBefore) {
                         $vehicleInfoContent.find(item.insertBefore).before(fieldHtml);
                         //$vehicleInfoContent.append(fieldHtml);
