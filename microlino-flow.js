@@ -823,15 +823,20 @@ $("#quoteForm").on("submit", function(e) {
   // Show loading overlay
   $("#loadingOverlay").show();
 
+  // --- Collect Common Data ---
   const formData = new FormData(this);
   const model = formData.get("model");
-  const vin = formData.get("vin").trim();
-  const vrn = formData.get("vrn").trim();
+  const vin = formData.get("vin") ? formData.get("vin").trim() : "";
+  const vrn = formData.get("vrn") ? formData.get("vrn").trim() : "";
   const driverBirthdate = formData.get("driverBirthdate");
-  const diplomaticCar = formData.get("diplomaticCar");
-  const interchangeableLicensePlate = formData.get("interchangeableLicensePlate");
   const policyCancelled = formData.get("policyCancelled");
-  const claims = formData.get("claims");
+
+  let claims = formData.get("claims"); // Will be processed later
+  
+  const isCompany = formData.get("isCompany");
+  const companyName = (isCompany === "yes" && formData.get("companyName")) ? formData.get("companyName").trim() : "";
+  const companyNumber = (isCompany === "yes" && formData.get("companyNumber")) ? formData.get("companyNumber").trim() : "";
+
   const firstName = formData.get("firstName").trim();
   const lastName = formData.get("lastName").trim();
   const policyholderBirthdate = formData.get("policyholderBirthdate");
@@ -839,14 +844,29 @@ $("#quoteForm").on("submit", function(e) {
   const phone = formData.get("phone").trim();
   const street = formData.get("street").trim();
   const houseNumber = " ";
-  const city = formData.get("city").trim();
-  const zip = formData.get("zip").trim();
-  //const country = "AT";
-  const isCompany = formData.get("isCompany");
-  const companyName = formData.get("companyName") ? formData.get("companyName").trim() : "";
-  const companyNumber = formData.get("companyNumber") ? formData.get("companyNumber").trim() : "";
+  const city = formData.get("city") ? formData.get("city").trim() : "";
+  const zip = formData.get("zip") ? formData.get("zip").trim() : "";
+  
   const setStart = $("#setStartDateNow").is(":checked");
   const startDate = setStart ? formData.get("startDate") : "";
+
+  // --- Country-Specific Data Collection ---
+  let diplomaticCar, interchangeableLicensePlate; // AT specific
+  let conditionAtPurchase, firstRegistrationDate, carIsReadyToBeRegistred, sfClassTpl, sfClassMod; // DE specific
+
+  if (currentCountry === "AT") {
+      diplomaticCar = formData.get("diplomaticCar");
+      interchangeableLicensePlate = formData.get("interchangeableLicensePlate");
+  } else if (currentCountry === "DE") {
+      conditionAtPurchase = formData.get("conditionAtPurchase");
+      firstRegistrationDate = formData.get("firstRegistrationDate");
+      // Ensure boolean conversion for radio button values like "true"/"false"
+      const carIsReadyVal = formData.get("carIsReadyToBeRegistred");
+      carIsReadyToBeRegistred = carIsReadyVal === "true";
+
+      sfClassTpl = formData.get("sfClassTpl");
+      sfClassMod = formData.get("sfClassMod");
+  }
   
   // If start date is to be set, validate it.
   if(setStart) {
@@ -884,26 +904,39 @@ $("#quoteForm").on("submit", function(e) {
       return;
     }
   }
-  if (!/^\d{4}$/.test(zip)) {
-    $("#message").html('<p class="error">Bitte geben Sie eine gültige österreichische Postleitzahl (4 Ziffern) ein.</p>');
-    $("#loadingOverlay").hide();
-    return;
+  if (country === "AT") {
+      if (!/^\d{4}$/.test(zip)) {
+          $("#message").html('<p class="error">Bitte geben Sie eine gültige österreichische Postleitzahl (4 Ziffern) ein.</p>');
+          $("#loadingOverlay").hide(); return;
+      }
+      if (diplomaticCar === "yes") {
+          $("#message").html('<p class="error">Anträge für Diplomatenfahrzeuge können nicht bearbeitet werden.</p>');
+          $("#loadingOverlay").hide(); return;
+      }
+      if (interchangeableLicensePlate === "yes") {
+          $("#message").html('<p class="error">Anträge für Wechselkennzeichen sind nicht zulässig.</p>');
+          $("#loadingOverlay").hide(); return;
+      }
+  } else if (country === "DE") {
+      if (!/^\d{5}$/.test(zip)) {
+          $("#message").html('<p class="error">Bitte geben Sie eine gültige deutsche Postleitzahl (5 Ziffern) ein.</p>');
+          $("#loadingOverlay").hide(); return;
+      }
+      // Add DE specific validations, e.g., for SF classes if they are mandatory and not empty
+      if (!sfClassTpl) {
+           $("#message").html('<p class="error">Bitte wählen Sie eine SF-Klasse TPL.</p>');
+           $("#loadingOverlay").hide(); return;
+      }
+      if (!sfClassMod) {
+           $("#message").html('<p class="error">Bitte wählen Sie eine SF-Klasse MOD.</p>');
+           $("#loadingOverlay").hide(); return;
+      }
   }
   
   if (!vin) {
     $("#message").html('<p class="warning">Wir haben Ihnen das Angebot per E-Mail zugesendet. Für den Abschluss des Versicherungsvertrags benötigen wir jedoch noch Ihre Fahrzeug-Identifikationsnummer (FIN). Bitte reichen Sie diese nach, damit wir den Prozess fortsetzen können.</p>');
     //$("#loadingOverlay").hide();
     //return;
-  }
-  if (diplomaticCar === "yes") {
-    $("#message").html('<p class="error">Anträge für Diplomatenfahrzeuge können nicht bearbeitet werden.</p>');
-    $("#loadingOverlay").hide();
-    return;
-  }
-  if (interchangeableLicensePlate === "yes") {
-    $("#message").html('<p class="error">Anträge für Wechselkennzeichen sind nicht zulässig.</p>');
-    $("#loadingOverlay").hide();
-    return;
   }
   if (policyCancelled === "yes") {
     $("#message").html('<p class="error">Anträge mit einer gekündigten oder beendeten Versicherungspolice können nicht bearbeitet werden.</p>');
@@ -955,19 +988,15 @@ $("#quoteForm").on("submit", function(e) {
       underwriting: {
         birthdateYoungestDriver: driverBirthdate,
         anyDriverInsuranceProposalDeclinedOrPolicyCancelled: policyCancelled === "yes",
-        interchangeableLicensePlate: interchangeableLicensePlate === "yes",
-        diplomaticCar: diplomaticCar === "yes",
         atFaultClaimsLast3Years: claims
       }
     },
     metadata:{
-    	terms: "acceptance,important,eligibility,general,interchangeablePlate",
-      lastStepUrl: "http://microlino-insurance.qover.com/subscription?"
+    	//terms: "acceptance,important,eligibility,general,interchangeablePlate",
+      lastStepUrl: (domain == "webflow.io") ? "http://microlino-aa147b.webflow.io/subscription?" : "http://microlino-insurance.qover.com/subscription?"
     }
   };
-  if(domain == "webflow.io"){
-    payload.metadata.lastStepUrl = "http://microlino-aa147b.webflow.io/subscription?"
-  }
+
   if(setStart) {
     payload.contractPeriod = {
       startDate: startDate,
@@ -981,6 +1010,28 @@ $("#quoteForm").on("submit", function(e) {
       payload.policyholder.vatIn = companyNumber;
     }
   }
+
+  // Add country-specific fields to payload.subject and payload.subject.underwriting
+  if (currentCountry === "AT") {
+      payload.subject.underwriting.diplomaticCar = diplomaticCar === "yes";
+      payload.subject.underwriting.interchangeableLicensePlate = interchangeableLicensePlate === "yes";
+  } else if (currentCountry === "DE") {
+      payload.subject.conditionAtPurchase = conditionAtPurchase;
+      payload.subject.firstRegistrationDate = firstRegistrationDate;
+      payload.subject.carIsReadyToBeRegistred = carIsReadyToBeRegistred;
+      payload.subject.underwriting.sfClassTpl = sfClassTpl;
+      payload.subject.underwriting.sfClassMod = sfClassMod;
+  }
+
+  // Dynamically build metadata.terms
+  const checkedTerms = [];
+  $('.legal-block input[type="checkbox"]:checked').each(function() {
+      const termIdentifier = $(this).data('name') || $(this).attr('name'); // Prefer data-name
+      if (termIdentifier) {
+          checkedTerms.push(termIdentifier.replace(/de_terms_/g, '')); // Clean up prefix if needed
+      }
+  });
+  payload.metadata.terms = checkedTerms.join(',');
 
   // Remove keys with empty string values from payload
   removeEmpty(payload);
@@ -996,6 +1047,9 @@ $("#quoteForm").on("submit", function(e) {
     });
     return obj;
   }
+
+  console.log("Final Payload:", JSON.stringify(payload, null, 2)); // For debugging
+
 
   // AJAX settings (using jQuery)
   var settings = {
