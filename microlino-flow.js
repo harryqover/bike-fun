@@ -314,6 +314,7 @@ $(document).ready(function(){
             `,
             policyholder: {
                 country: "Österreich",
+                cityPlaceholder: "Vienna",
                 zipPlaceholder: "1234",
                 zipPattern: "\\d{4}",
                 zipMaxlength: "4"
@@ -405,7 +406,6 @@ $(document).ready(function(){
                             { value: 'SF49', text: 'SF 49' },
                             { value: 'SF50', text: 'SF 50 (oder mehr)' }
                         ],
-                        // Insert after the "claims" question's radio group
                         insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
                     },
                     {
@@ -508,7 +508,8 @@ $(document).ready(function(){
             `,
             policyholder: {
                 country: "Deutschland",
-                zipPlaceholder: "12345",
+                cityPlaceholder: "Berlin",
+                zipPlaceholder: "10115",
                 zipPattern: "\\d{5}",
                 zipMaxlength: "5"
             }
@@ -620,6 +621,9 @@ $(document).ready(function(){
         // 5. Update Policyholder section (Country field, ZIP validation)
         if (config.policyholder) {
             $('input[name="country"]').val(config.policyholder.country);
+            const $cityInput = $('input[name="city"]');
+            $cityInput.attr('placeholder', config.policyholder.cityPlaceholder);
+
             const $zipInput = $('input[name="zip"]');
             $zipInput.attr('placeholder', config.policyholder.zipPlaceholder);
             $zipInput.attr('pattern', config.policyholder.zipPattern);
