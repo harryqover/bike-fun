@@ -431,8 +431,11 @@ $(document).ready(function(){
                 [...config.vehicleInfo.add].reverse().forEach(item => {
                   console.log("item to add ", item);
                     const fieldHtml = createFieldHtml(item);
+                    console.log("fieldHtml ", item.name);
+                    console.log(fieldHtml);
                     if (item.insertBefore) {
-                        $vehicleInfoContent.find(item.insertBefore).before(fieldHtml);
+                        //$vehicleInfoContent.find(item.insertBefore).before(fieldHtml);
+                        $vehicleInfoContent.append(fieldHtml);
                     } else {
                         $vehicleInfoContent.append(fieldHtml); // Fallback
                     }
