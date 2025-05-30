@@ -1,4 +1,4 @@
-console.log("20250528 line 423")
+console.log("20250528 line 422")
 console.debug("20250528 locale use")
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
