@@ -331,13 +331,15 @@ $(document).ready(function(){
                     {
                         type: 'date', name: 'policyholderRegistrationDate', label: 'Zulassung auf Halter',
                         placeholder: 'YYYY-MM-DD',
-                        insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
+                        //insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
+                        insertBefore: 'label[data-vehicle-vin]',
                         explanation: 'Bitte tragen Sie das Datum ein, zu dem das Fahrzeug erstmals auf Sie oder den abweichenden Fahrzeughalter zugelassen wurde oder wann es voraussichtlich auf Sie angemeldet wird. Das Datum der aktuellen Zulassung finden Sie auf der Zulassungsbescheinigung unter Position I.'
                     },
                     {
                         type: 'date', name: 'firstRegistrationDate', label: 'Erstzulassung des Fahrzeugs',
                         placeholder: 'YYYY-MM-DD',
-                        insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
+                        //insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
+                        insertBefore: 'label[data-vehicle-vin]',
                         explanation: 'An diesem Datum (Monat und Jahr) wurde Ihr Fahrzeug erstmals zum öffentlichen Verkehr zugelassen. Sie finden dieses in der Zulassungsbescheinigung Ihres Fahrzeugs (ehemals Fahrzeugschein) unter Position B. Haben Sie einen alten Fahrzeugschein, finden Sie die Information unter Position 32.'
                     },
                     /*{
@@ -348,7 +350,8 @@ $(document).ready(function(){
                     {
                         type: 'radio', name: 'registeredCar', label: 'Wofür benötigen Sie die Versicherung?',
                         options: [{value: 'false', text: 'Neu erworbenes Fahrzeug zulassen und versichern'}, {value: 'true', text: 'Versicherung wechseln mit bereits auf mich versichertem Fahrzeug'}],
-                        insertBefore: 'span.toggle-icon[data-confirm-vehicle]'
+                        //insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
+                        insertBefore: 'label[data-vehicle-vin]'
                     }
                 ],
                 removeSelectors: [] // Nothing to remove from AT base for this section
