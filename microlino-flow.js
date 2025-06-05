@@ -1,4 +1,4 @@
-console.log("20250605 remove conditionAtPurchase")
+console.log("20250605 line 538 explanation")
 
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
@@ -535,6 +535,9 @@ $(document).ready(function(){
     function createFieldHtml(item) {
         let html = `<div class="js-dynamic-field js-de-field">`; // Mark as dynamic and DE-specific
         html += `<label for="${item.name}">${item.label}</label>`;
+        if(item.explanation){
+          html += `<span style="font-size:0.8rem">${item.explanation}</span>`;
+        }
         if (item.type === 'radio') {
             html += `<div class="radio-group" id="rg-${item.name}">`;
             item.options.forEach(opt => {
