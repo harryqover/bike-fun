@@ -1,4 +1,4 @@
-console.log("20250605 registeredCar")
+console.log("20250605 policyholderRegistrationDate")
 
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
@@ -329,15 +329,22 @@ $(document).ready(function(){
                         insertBefore: 'span.toggle-icon[data-confirm-vehicle]'
                     },
                     {
-                        type: 'date', name: 'firstRegistrationDate', label: 'Erstzulassungsdatum',
+                        type: 'date', name: 'firstRegistrationDate', label: 'Erstzulassung des Fahrzeugs',
                         placeholder: 'YYYY-MM-DD',
-                        insertBefore: 'span.toggle-icon[data-confirm-vehicle]'
+                        insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
+                        explanation: 'An diesem Datum (Monat und Jahr) wurde Ihr Fahrzeug erstmals zum öffentlichen Verkehr zugelassen. Sie finden dieses in der Zulassungsbescheinigung Ihres Fahrzeugs (ehemals Fahrzeugschein) unter Position B. Haben Sie einen alten Fahrzeugschein, finden Sie die Information unter Position 32.'
                     },
                     {
+                        type: 'date', name: 'policyholderRegistrationDate', label: 'Zulassung auf Halter',
+                        placeholder: 'YYYY-MM-DD',
+                        insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
+                        explanation: 'Bitte tragen Sie das Datum ein, zu dem das Fahrzeug erstmals auf Sie oder den abweichenden Fahrzeughalter zugelassen wurde oder wann es voraussichtlich auf Sie angemeldet wird. Das Datum der aktuellen Zulassung finden Sie auf der Zulassungsbescheinigung unter Position I.'
+                    },
+                    /*{
                         type: 'radio', name: 'carIsReadyToBeRegistred', label: 'Fahrzeug ist zulassungsfertig',
                         options: [{value: 'true', text: 'Ja'}, {value: 'false', text: 'Nein'}],
                         insertBefore: 'span.toggle-icon[data-confirm-vehicle]'
-                    },
+                    },*/
                     {
                         type: 'radio', name: 'registeredCar', label: 'Wofür benötigen Sie die Versicherung?',
                         options: [{value: 'false', text: 'Neu erworbenes Fahrzeug zulassen und versichern'}, {value: 'true', text: 'Versicherung wechseln mit bereits auf mich versichertem Fahrzeug'}],
@@ -857,7 +864,7 @@ $("#quoteForm").on("submit", function(e) {
 
   // --- Country-Specific Data Collection ---
   let diplomaticCar, interchangeableLicensePlate; // AT specific
-  let conditionAtPurchase, firstRegistrationDate, carIsReadyToBeRegistred, registeredCar, sfClassTpl, sfClassMod; // DE specific
+  let conditionAtPurchase, firstRegistrationDate, policyholderRegistrationDate, /*carIsReadyToBeRegistred*/, registeredCar, sfClassTpl, sfClassMod; // DE specific
 
   if (country === "AT") {
       diplomaticCar = formData.get("diplomaticCar");
@@ -865,9 +872,10 @@ $("#quoteForm").on("submit", function(e) {
   } else if (country === "DE") {
       conditionAtPurchase = formData.get("conditionAtPurchase");
       firstRegistrationDate = formData.get("firstRegistrationDate");
+      policyholderRegistrationDate = formData.get("policyholderRegistrationDate");
       // Ensure boolean conversion for radio button values like "true"/"false"
-      const carIsReadyVal = formData.get("carIsReadyToBeRegistred");
-      carIsReadyToBeRegistred = carIsReadyVal === "true";
+      /*const carIsReadyVal = formData.get("carIsReadyToBeRegistred");
+      carIsReadyToBeRegistred = carIsReadyVal === "true";*/
 
       const registeredCarVal = formData.get("registeredCar");
       registeredCar = registeredCarVal === "true";
@@ -1026,7 +1034,8 @@ $("#quoteForm").on("submit", function(e) {
   } else if (country === "DE") {
       payload.subject.conditionAtPurchase = conditionAtPurchase;
       payload.subject.firstRegistrationDate = firstRegistrationDate;
-      payload.subject.carIsReadyToBeRegistred = carIsReadyToBeRegistred;
+      payload.subject.policyholderRegistrationDate = policyholderRegistrationDate;
+      //payload.subject.carIsReadyToBeRegistred = carIsReadyToBeRegistred;
       payload.subject.registeredCar = registeredCar;
       payload.subject.underwriting.bonusMalusTpl = sfClassTpl;
       payload.subject.underwriting.bonusMalusOmium = sfClassMod;
