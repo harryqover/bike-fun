@@ -593,7 +593,7 @@ $(document).ready(function(){
                           {value: "XL Insurance Company SE Direktion für Deutschland", text: "XL Insurance Company SE Direktion für Deutschland"},
                           {value: "Zenith Versicherung Aktiengesellschaft", text: "Zenith Versicherung Aktiengesellschaft"},
                           {value: "Zurich Insurance Europe AG Niederlassung für Deutschland Zurich Kunden Service", text: "Zurich Insurance Europe AG Niederlassung für Deutschland Zurich Kunden Service"},
-                          {value: "Zürich Versicherungs-Aktiengesellschaf t, text: "Zürich Versicherungs-Aktiengesellschaf t},
+                          {value: "Zürich Versicherungs-Aktiengesellschaf", text: "Zürich Versicherungs-Aktiengesellschaf"}
                         ],
                         insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
                     },
