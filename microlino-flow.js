@@ -909,6 +909,60 @@ $(document).ready(function(){
             }
         }).trigger('change');
 
+        //Toggle insurer ref and name if SF Klass is adapted
+        if(country == "DE"){
+          const sfTplSelect = $('#sfClassTpl');
+          const sfModSelect = $('#sfClassMod');
+          const previousInsurerFieldContainer = $('select[name="previousInsurerName"]').closest('.js-dynamic-field');
+          const previousInsurerReferenceFieldContainer = $('input[name="previousInsurerReference"]').closest('.js-dynamic-field');
+
+          const previousInsurerSelect = $('#previousInsurerName');
+          const previousInsurerReferenceInput = $('#previousInsurerReference');
+
+          function togglePreviousInsurerFields() {
+              const tplValue = sfTplSelect.val();
+              const modValue = sfModSelect.val();
+              if (
+                  (tplValue === '0' && modValue === '0') ||
+                  (tplValue === '' && modValue === '')
+                 ) {
+                  previousInsurerFieldContainer.slideUp(function() {
+                      previousInsurerSelect.prop('required', false).val('');
+                  });
+                  previousInsurerReferenceFieldContainer.slideUp(function() {
+                      previousInsurerReferenceInput.prop('required', false).val('');
+                  });
+              } else {
+                  previousInsurerFieldContainer.slideDown(function() {
+                      previousInsurerSelect.prop('required', true);
+                  });
+                  previousInsurerReferenceFieldContainer.slideDown(function() {
+                      previousInsurerReferenceInput.prop('required', true);
+                  });
+              }
+          }
+
+          sfTplSelect.add(sfModSelect).on('change', function() {
+              togglePreviousInsurerFields();
+          });
+
+          togglePreviousInsurerFields(); // Initial check
+          /*$('.collapsible').on('click', function() {
+            $(this).toggleClass('active');
+            var content = $(this).next('.section-content');
+            if (content.css('display') === "block") {
+                content.slideUp();
+            } else {
+                content.slideDown();
+            }
+        });
+        */
+
+        }
+        
+
+        
+
     }
 
 
