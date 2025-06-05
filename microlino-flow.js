@@ -1,4 +1,4 @@
-console.log("20250528 sfklassomnium")
+console.log("20250605 registeredCar")
 
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
@@ -336,6 +336,11 @@ $(document).ready(function(){
                     {
                         type: 'radio', name: 'carIsReadyToBeRegistred', label: 'Fahrzeug ist zulassungsfertig',
                         options: [{value: 'true', text: 'Ja'}, {value: 'false', text: 'Nein'}],
+                        insertBefore: 'span.toggle-icon[data-confirm-vehicle]'
+                    },
+                    {
+                        type: 'radio', name: 'registeredCar', label: 'Wofür benötigen Sie die Versicherung?',
+                        options: [{value: 'false', text: 'Neu erworbenes Fahrzeug zulassen und versichern'}, {value: 'true', text: 'Versicherung wechseln mit bereits auf mich versichertem Fahrzeug'}],
                         insertBefore: 'span.toggle-icon[data-confirm-vehicle]'
                     }
                 ],
@@ -852,7 +857,7 @@ $("#quoteForm").on("submit", function(e) {
 
   // --- Country-Specific Data Collection ---
   let diplomaticCar, interchangeableLicensePlate; // AT specific
-  let conditionAtPurchase, firstRegistrationDate, carIsReadyToBeRegistred, sfClassTpl, sfClassMod; // DE specific
+  let conditionAtPurchase, firstRegistrationDate, carIsReadyToBeRegistred, registeredCar, sfClassTpl, sfClassMod; // DE specific
 
   if (country === "AT") {
       diplomaticCar = formData.get("diplomaticCar");
@@ -863,6 +868,9 @@ $("#quoteForm").on("submit", function(e) {
       // Ensure boolean conversion for radio button values like "true"/"false"
       const carIsReadyVal = formData.get("carIsReadyToBeRegistred");
       carIsReadyToBeRegistred = carIsReadyVal === "true";
+
+      const registeredCarVal = formData.get("registeredCar");
+      registeredCar = registeredCarVal === "true";
 
       sfClassTpl = formData.get("sfClassTpl");
       sfClassMod = formData.get("sfClassMod");
@@ -1019,6 +1027,7 @@ $("#quoteForm").on("submit", function(e) {
       payload.subject.conditionAtPurchase = conditionAtPurchase;
       payload.subject.firstRegistrationDate = firstRegistrationDate;
       payload.subject.carIsReadyToBeRegistred = carIsReadyToBeRegistred;
+      payload.subject.registeredCar = registeredCar;
       payload.subject.underwriting.bonusMalusTpl = sfClassTpl;
       payload.subject.underwriting.bonusMalusOmium = sfClassMod;
   }
