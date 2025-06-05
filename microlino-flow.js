@@ -363,6 +363,18 @@ $(document).ready(function(){
                 ],
                 add: [
                     {
+                        type: 'dropdown', name: 'previousInsurerName', label: 'Vorheriger Versicherer',
+                        options: [
+                            { value: '', text: 'n/a' },
+                            { value: '0', text: 'Allianz' }
+                        ],
+                        insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
+                    },
+                    {
+                        type: 'text', name: 'previousInsurerReference', label: 'Vorheriger Versicherer',
+                        insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
+                    },
+                    {
                         type: 'dropdown', name: 'sfClassMod', label: 'SF-Klasse MOD',
                         options: [
                           { value: '', text: 'Bitte wählen' },
@@ -546,6 +558,8 @@ $(document).ready(function(){
             html += `</div>`;
         } else if (item.type === 'date') {
             html += `<input class="field date w-input" type="date" name="${item.name}" placeholder="${item.placeholder || ''}" required>`;
+        } else if (item.type === 'text') {
+            html += `<input class="field date w-input" type="text" name="${item.name}" placeholder="${item.placeholder || ''}" required>`;
         } else if (item.type === 'dropdown') {
             html += `<select class="field" name="${item.name}" id="${item.name}" required>`;
             item.options.forEach(opt => {
