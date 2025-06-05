@@ -864,7 +864,7 @@ $("#quoteForm").on("submit", function(e) {
 
   // --- Country-Specific Data Collection ---
   let diplomaticCar, interchangeableLicensePlate; // AT specific
-  let /*conditionAtPurchase,*/ firstRegistrationDate, policyholderRegistrationDate, /*carIsReadyToBeRegistred*/, registeredCar, sfClassTpl, sfClassMod; // DE specific
+  let /*conditionAtPurchase,*/ firstRegistrationDate, policyholderRegistrationDate, /*carIsReadyToBeRegistred,*/ registeredCar, sfClassTpl, sfClassMod; // DE specific
 
   if (country === "AT") {
       diplomaticCar = formData.get("diplomaticCar");
