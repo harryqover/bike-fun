@@ -362,16 +362,17 @@ $(document).ready(function(){
                     '[data-question-id="interchangeableLicensePlate"]'
                 ],
                 add: [
+                    
+                    {
+                        type: 'text', name: 'previousInsurerReference', label: 'Vertragsreferenz des Vorversicherers',
+                        insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
+                    },
                     {
                         type: 'dropdown', name: 'previousInsurerName', label: 'Vorheriger Versicherer',
                         options: [
                             { value: '', text: 'n/a' },
                             { value: '0', text: 'Allianz' }
                         ],
-                        insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
-                    },
-                    {
-                        type: 'text', name: 'previousInsurerReference', label: 'Vorheriger Versicherer',
                         insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
                     },
                     {
