@@ -1,4 +1,4 @@
-console.log("20250605 policyholderRegistrationDate")
+console.log("20250605 remove conditionAtPurchase")
 
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
@@ -323,11 +323,11 @@ $(document).ready(function(){
         "DE": {
             vehicleInfo: {
                 add: [
-                    {
+                    /*{
                         type: 'radio', name: 'conditionAtPurchase', label: 'Zustand bei Kauf',
                         options: [{value: 'VEHICLE_CONDITION_NEW', text: 'Neu'}, {value: 'VEHICLE_CONDITION_USED', text: 'Gebraucht'}],
                         insertBefore: 'span.toggle-icon[data-confirm-vehicle]'
-                    },
+                    },*/
                     {
                         type: 'date', name: 'firstRegistrationDate', label: 'Erstzulassung des Fahrzeugs',
                         placeholder: 'YYYY-MM-DD',
@@ -864,13 +864,13 @@ $("#quoteForm").on("submit", function(e) {
 
   // --- Country-Specific Data Collection ---
   let diplomaticCar, interchangeableLicensePlate; // AT specific
-  let conditionAtPurchase, firstRegistrationDate, policyholderRegistrationDate, /*carIsReadyToBeRegistred*/, registeredCar, sfClassTpl, sfClassMod; // DE specific
+  let /*conditionAtPurchase,*/ firstRegistrationDate, policyholderRegistrationDate, /*carIsReadyToBeRegistred*/, registeredCar, sfClassTpl, sfClassMod; // DE specific
 
   if (country === "AT") {
       diplomaticCar = formData.get("diplomaticCar");
       interchangeableLicensePlate = formData.get("interchangeableLicensePlate");
   } else if (country === "DE") {
-      conditionAtPurchase = formData.get("conditionAtPurchase");
+      //conditionAtPurchase = formData.get("conditionAtPurchase");
       firstRegistrationDate = formData.get("firstRegistrationDate");
       policyholderRegistrationDate = formData.get("policyholderRegistrationDate");
       // Ensure boolean conversion for radio button values like "true"/"false"
@@ -1032,7 +1032,7 @@ $("#quoteForm").on("submit", function(e) {
       payload.subject.underwriting.diplomaticCar = diplomaticCar === "yes";
       payload.subject.underwriting.interchangeableLicensePlate = interchangeableLicensePlate === "yes";
   } else if (country === "DE") {
-      payload.subject.conditionAtPurchase = conditionAtPurchase;
+      //payload.subject.conditionAtPurchase = conditionAtPurchase;
       payload.subject.firstRegistrationDate = firstRegistrationDate;
       payload.subject.policyholderRegistrationDate = policyholderRegistrationDate;
       //payload.subject.carIsReadyToBeRegistred = carIsReadyToBeRegistred;
