@@ -349,7 +349,7 @@ $(document).ready(function(){
                     },*/
                     {
                         type: 'radio', name: 'registeredCar', label: 'Wofür benötigen Sie die Versicherung?',
-                        options: [{value: 'false', text: 'Neu erworbenes Fahrzeug zulassen und versichern'}, {value: 'true', text: 'Versicherung wechseln mit bereits auf mich versichertem Fahrzeug'}],
+                        options: [{value: 'false', text: '<strong>Neu erworbenes Fahrzeug</strong> zulassen und versichern'}, {value: 'true', text: '<strong>Versicherung wechseln</strong> mit bereits auf mich versichertem Fahrzeug'}],
                         //insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
                         insertBefore: 'label[data-vehicle-vin]'
                     }
