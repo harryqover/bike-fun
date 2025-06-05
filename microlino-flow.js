@@ -135,14 +135,20 @@ $(document).ready(function(){
     $("input[name='phone']").val("+43123456789");
     $("input[name='street']").val("Main Street");
     //$("input[name='houseNumber']").val("10");
-    $("input[name='city']").val("Vienna");
-    $("input[name='zip']").val("1234");
+    if(country == "DE"){
+      $("input[name='city']").val("Berlin");
+      $("input[name='zip']").val("10115");  
+    } else {
+      $("input[name='city']").val("Vienna");
+      $("input[name='zip']").val("1234");  
+    }
+    
     //$("input[name='country']").val("AT");
     // Set as company for testing and prefill company fields.
     //$("input[name='isCompany'][value='yes']").prop("checked", true).trigger("change");
     //$("input[name='companyName']").val("Test Company");
     //$("input[name='companyNumber']").val("123456789");
-    $("input[name='startDate']").val("2025-04-15");
+    $("input[name='startDate']").val("2025-06-15");
     $("input[name='terms']").prop("checked", true);
     updatePrice();
   }
