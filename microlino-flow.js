@@ -1,4 +1,4 @@
-console.log("20250606 previousInsurerReference")
+console.log("20250606 previousInsurerReference 2")
 
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
@@ -1167,7 +1167,7 @@ $("#quoteForm").on("submit", function(e) {
 
   // --- Country-Specific Data Collection ---
   let diplomaticCar, interchangeableLicensePlate; // AT specific
-  let /*conditionAtPurchase,*/ firstRegistrationDate, policyholderRegistrationDate, /*carIsReadyToBeRegistred,*/ registeredCar, sfClassTpl, sfClassMod; // DE specific
+  let /*conditionAtPurchase,*/ firstRegistrationDate, policyholderRegistrationDate, /*carIsReadyToBeRegistred,*/ registeredCar, sfClassTpl, sfClassMod, previousInsurerName, previousInsurerReference; // DE specific
 
   if (country === "AT") {
       diplomaticCar = formData.get("diplomaticCar");
@@ -1176,6 +1176,9 @@ $("#quoteForm").on("submit", function(e) {
       //conditionAtPurchase = formData.get("conditionAtPurchase");
       firstRegistrationDate = formData.get("firstRegistrationDate");
       policyholderRegistrationDate = formData.get("policyholderRegistrationDate");
+      previousInsurerName = formData.get("previousInsurerName");
+      previousInsurerReference = formData.get("previousInsurerReference");
+
       // Ensure boolean conversion for radio button values like "true"/"false"
       /*const carIsReadyVal = formData.get("carIsReadyToBeRegistred");
       carIsReadyToBeRegistred = carIsReadyVal === "true";*/
