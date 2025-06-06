@@ -1140,6 +1140,8 @@ $("#quoteForm").on("submit", function(e) {
 
   // --- Collect Common Data ---
   const formData = new FormData(this);
+  console.log("formData");
+  console.log(formData);
   const model = formData.get("model");
   const vin = formData.get("vin") ? formData.get("vin").trim() : "";
   const vrn = formData.get("vrn") ? formData.get("vrn").trim() : "";
