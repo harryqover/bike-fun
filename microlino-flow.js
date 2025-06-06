@@ -1,4 +1,4 @@
-console.log("20250605 line 538 explanation")
+console.log("20250606 previousInsurerReference")
 
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
@@ -1342,6 +1342,8 @@ $("#quoteForm").on("submit", function(e) {
       payload.subject.registeredCar = registeredCar;
       payload.subject.underwriting.bonusMalusTpl = sfClassTpl;
       payload.subject.underwriting.bonusMalusOmium = sfClassMod;
+      payload.subject.previousInsurer.insurerName = previousInsurerName;
+      payload.subject.previousInsurer.reference = previousInsurerReference;
   }
 
   // Dynamically build metadata.terms
