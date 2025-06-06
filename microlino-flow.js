@@ -1,6 +1,6 @@
 console.log("20250606 previousInsurerReference log 1352")
 
-
+//https://appqoverme-ui.sbx.qover.io/payout/pay?locale=de-DE&id=yo7inpxgamqlj64re4q1g4rt&appId=egf710aj4kzoe1ikycy8ddrl
 const appId = {
   sbx: {
     DE: "egf710aj4kzoe1ikycy8ddrl",
