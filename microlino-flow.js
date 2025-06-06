@@ -1,4 +1,4 @@
-console.log("20250606 previousInsurerReference 2")
+console.log("20250606 previousInsurerReference log")
 
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
