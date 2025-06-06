@@ -1,5 +1,17 @@
 console.log("20250606 previousInsurerReference log 1352")
 
+
+const appId = {
+  sbx: {
+    DE: "egf710aj4kzoe1ikycy8ddrl",
+    AT: "q809unxlpt18fzf20zgb9vqu"
+  },
+  prd: {
+    DE: "iw702hil7q0ejwxkt23hdya8",//wrong to adapt
+    AT: "iw702hil7q0ejwxkt23hdya8"
+  }
+}
+
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
   const parts = hostname.split('.');
@@ -196,6 +208,8 @@ $(document).ready(function(){
   	    } else {
   	      // If payment object exists and contains an id, redirect to payment page.
   	      if (response.payload && response.payload.payment && response.payload.payment.id) {
+            console.log("appId sbx: ", appId.sbx[country]);
+            console.log("appId prd: ", appId.sbx[country]);
             if(domain == "webflow.io"){
                var redirectUrl1 = "https://appqoverme-ui.sbx.qover.io/payout/pay";
                var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId=q809unxlpt18fzf20zgb9vqu";
