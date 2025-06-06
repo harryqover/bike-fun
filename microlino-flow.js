@@ -1,4 +1,4 @@
-console.log("20250606 previousInsurerReference log")
+console.log("20250606 previousInsurerReference log 2")
 
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
@@ -1140,8 +1140,8 @@ $("#quoteForm").on("submit", function(e) {
 
   // --- Collect Common Data ---
   const formData = new FormData(this);
-  console.log("formData");
-  console.log(formData);
+  console.log("formDatagetAll");
+  console.log(formData.getAll());
   const model = formData.get("model");
   const vin = formData.get("vin") ? formData.get("vin").trim() : "";
   const vrn = formData.get("vrn") ? formData.get("vrn").trim() : "";
@@ -1179,6 +1179,8 @@ $("#quoteForm").on("submit", function(e) {
       firstRegistrationDate = formData.get("firstRegistrationDate");
       policyholderRegistrationDate = formData.get("policyholderRegistrationDate");
       previousInsurerName = formData.get("previousInsurerName");
+      console.log('formData.get("previousInsurerName")')
+      console.log(formData.get("previousInsurerName"))
       previousInsurerReference = formData.get("previousInsurerReference");
 
       // Ensure boolean conversion for radio button values like "true"/"false"
