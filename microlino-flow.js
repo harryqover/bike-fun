@@ -913,6 +913,11 @@ $(document).ready(function(){
             $zipInput.attr('maxlength', config.policyholder.zipMaxlength);
         }
 
+        //6. Update content
+        if(country == "DE"){
+          $('[data-startDate-explanation]').text('adapt text to mention that if they are not sure when they need to go to EVB we will update start date based on EVB information');
+        }
+
 
         // Simple collapsible functionality (if you want to keep it)
         $('.collapsible').off('click').on('click', function() {
