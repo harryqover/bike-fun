@@ -1,4 +1,4 @@
-console.log("20250606 previousInsurerReference log 2")
+console.log("20250606 previousInsurerReference log 4")
 
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
@@ -1140,8 +1140,7 @@ $("#quoteForm").on("submit", function(e) {
 
   // --- Collect Common Data ---
   const formData = new FormData(this);
-  console.log("formDatagetAll");
-  console.log(formData.getAll());
+
   const model = formData.get("model");
   const vin = formData.get("vin") ? formData.get("vin").trim() : "";
   const vrn = formData.get("vrn") ? formData.get("vrn").trim() : "";
