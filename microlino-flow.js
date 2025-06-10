@@ -1,4 +1,4 @@
-console.log("20250610 previousInsurerVRN slideDown")
+console.log("20250610 zullasung")
 
 //https://appqoverme-ui.sbx.qover.io/payout/pay?locale=de-DE&id=yo7inpxgamqlj64re4q1g4rt&appId=egf710aj4kzoe1ikycy8ddrl
 const appId = {
@@ -921,7 +921,7 @@ $(document).ready(function(){
 
         //6. Update content
         if(country == "DE"){
-          $('[data-startDate-explanation]').text('adapt text to mention that if they are not sure when they need to go to EVB we will update start date based on EVB information');
+          $('[data-startDate-explanation]').text('Zulassungsdatum noch unsicher? Kein Problem. Wählen Sie einfach das heutige Datum aus. Ihr Versicherungsschutz startet dann automatisch am Tag der tatsächlichen Zulassung.');
         }
 
 
