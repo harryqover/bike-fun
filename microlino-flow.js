@@ -1,4 +1,4 @@
-console.log("20250610 previousInsurerVRN")
+console.log("20250610 previousInsurerVRN slideDown")
 
 //https://appqoverme-ui.sbx.qover.io/payout/pay?locale=de-DE&id=yo7inpxgamqlj64re4q1g4rt&appId=egf710aj4kzoe1ikycy8ddrl
 const appId = {
@@ -973,7 +973,7 @@ $(document).ready(function(){
                   previousInsurerReferenceFieldContainer.slideUp(function() {
                       previousInsurerReferenceInput.prop('required', false).val('');
                   });
-                  previousInsurerVRNFieldContainer.slideUp.slideUp(function() {
+                  previousInsurerVRNFieldContainer.slideUp(function() {
                       previousInsurerVRNInput.prop('required', false).val('');
                   });
 
@@ -984,7 +984,7 @@ $(document).ready(function(){
                   previousInsurerReferenceFieldContainer.slideDown(function() {
                       previousInsurerReferenceInput.prop('required', true);
                   });
-                  previousInsurerVRNFieldContainer.slideUp.slideUp(function() {
+                  previousInsurerVRNFieldContainer.slideDown(function() {
                       previousInsurerVRNInput.prop('required', false).val('');
                   });
               }
