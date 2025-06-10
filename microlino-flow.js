@@ -1,4 +1,4 @@
-console.log("20250606 tooltip")
+console.log("20250610 previousInsurerVRN")
 
 //https://appqoverme-ui.sbx.qover.io/payout/pay?locale=de-DE&id=yo7inpxgamqlj64re4q1g4rt&appId=egf710aj4kzoe1ikycy8ddrl
 const appId = {
@@ -383,7 +383,10 @@ $(document).ready(function(){
                     '[data-question-id="interchangeableLicensePlate"]'
                 ],
                 add: [
-                    
+                    {
+                        type: 'text', name: 'previousInsurerVRN', label: 'Kennzeichen des Vorversicherer',
+                        insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
+                    },
                     {
                         type: 'text', name: 'previousInsurerReference', label: 'Vertragsreferenz des Vorversicherers',
                         insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
@@ -947,9 +950,11 @@ $(document).ready(function(){
           const sfTplSelect = $('#sfClassTpl');
           const sfModSelect = $('#sfClassMod');
           const previousInsurerFieldContainer = $('select[name="previousInsurerName"]').closest('.js-dynamic-field');
+          const previousInsurerVRNFieldContainer = $('input[name="previousInsurerVRN"]').closest('.js-dynamic-field');
           const previousInsurerReferenceFieldContainer = $('input[name="previousInsurerReference"]').closest('.js-dynamic-field');
 
           const previousInsurerSelect = $('#previousInsurerName');
+          const previousInsurerVRNInput = $('#previousInsurerVRN');previousInsurerVRN
           const previousInsurerReferenceInput = $('#previousInsurerReference');
 
           function togglePreviousInsurerFields() {
@@ -965,12 +970,19 @@ $(document).ready(function(){
                   previousInsurerReferenceFieldContainer.slideUp(function() {
                       previousInsurerReferenceInput.prop('required', false).val('');
                   });
+                  previousInsurerVRNFieldContainer.slideUp.slideUp(function() {
+                      previousInsurerVRNInput.prop('required', false).val('');
+                  });
+
               } else {
                   previousInsurerFieldContainer.slideDown(function() {
                       previousInsurerSelect.prop('required', true);
                   });
                   previousInsurerReferenceFieldContainer.slideDown(function() {
                       previousInsurerReferenceInput.prop('required', true);
+                  });
+                  previousInsurerVRNFieldContainer.slideUp.slideUp(function() {
+                      previousInsurerVRNInput.prop('required', false).val('');
                   });
               }
           }
@@ -1195,7 +1207,7 @@ $("#quoteForm").on("submit", function(e) {
 
   // --- Country-Specific Data Collection ---
   let diplomaticCar, interchangeableLicensePlate; // AT specific
-  let /*conditionAtPurchase,*/ firstRegistrationDate, policyholderRegistrationDate, /*carIsReadyToBeRegistred,*/ registeredCar, sfClassTpl, sfClassMod, previousInsurerName, previousInsurerReference; // DE specific
+  let /*conditionAtPurchase,*/ firstRegistrationDate, policyholderRegistrationDate, /*carIsReadyToBeRegistred,*/ registeredCar, sfClassTpl, sfClassMod, previousInsurerName, previousInsurerReference, previousInsurerVRN; // DE specific
 
   if (country === "AT") {
       diplomaticCar = formData.get("diplomaticCar");
@@ -1209,6 +1221,7 @@ $("#quoteForm").on("submit", function(e) {
       console.log(formData.get("previousInsurerName"));
       console.log(previousInsurerName);
       previousInsurerReference = formData.get("previousInsurerReference");
+      previousInsurerVRN = formData.get("previousInsurerVRN");
 
       // Ensure boolean conversion for radio button values like "true"/"false"
       /*const carIsReadyVal = formData.get("carIsReadyToBeRegistred");
@@ -1379,6 +1392,7 @@ $("#quoteForm").on("submit", function(e) {
       payload.subject.previousInsurer = {};
       payload.subject.previousInsurer.insurerName = previousInsurerName;
       payload.subject.previousInsurer.reference = previousInsurerReference;
+      payload.subject.previousInsurer.vrn = previousInsurerVRN;
   }
 
   // Dynamically build metadata.terms
