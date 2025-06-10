@@ -625,6 +625,7 @@ $(document).ready(function(){
                         type: 'dropdown', name: 'sfClassMod', label: 'SF-Klasse MOD',
                         options: [
                           { value: '', text: 'Bitte wählen' },
+                          { value: '0', text: 'Keine SF-Klasse vorhanden' },
                           { value: '0', text: 'SF 0 (Anfänger)' },
                           { value: 'M', text: 'SF M (Malusklasse)' },
                           { value: 'S', text: 'SF S (Nach Rückstufung)' },
@@ -686,6 +687,7 @@ $(document).ready(function(){
                         type: 'dropdown', name: 'sfClassTpl', label: 'SF-Klasse TPL',
                         options: [
                             { value: '', text: 'Bitte wählen' },
+                            { value: '0', text: 'Keine SF-Klasse vorhanden' },
                             { value: '0', text: 'SF 0 (Anfänger)' },
                             { value: 'M', text: 'SF M (Malusklasse)' },
                             { value: 'S', text: 'SF S (Nach Rückstufung)' },
@@ -741,7 +743,8 @@ $(document).ready(function(){
                             { value: 'SF49', text: 'SF 49' },
                             { value: 'SF50', text: 'SF 50 (oder mehr)' }
                         ],
-                        insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
+                        insertBefore: 'span.toggle-icon[data-confirm-underwriting]',
+                        tooltip: '<strong>Neu erworbenes als Zweitfahrzeug.</strong> Möchten Sie ein neu erworbenes als Zweitfahrzeug zu Ihrem bisherigen Fahrzeug hinzufügen, dann erfolgt auf Basis des bisherigen Vertrags eine bessere Einstufung des Schadenfreiheitsrabatts für das neue Zweitfahrzeug. Wählen Sie bitte „Keine SF-Klasse vorhanden“ aus.'
                     }
                 ],
                 removeSelectors: [] // We are hiding AT specific, not removing the containers
