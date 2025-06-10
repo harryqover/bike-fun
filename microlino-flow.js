@@ -957,7 +957,7 @@ $(document).ready(function(){
           const previousInsurerReferenceFieldContainer = $('input[name="previousInsurerReference"]').closest('.js-dynamic-field');
 
           const previousInsurerSelect = $('#previousInsurerName');
-          const previousInsurerVRNInput = $('#previousInsurerVRN');previousInsurerVRN
+          const previousInsurerVRNInput = $('#previousInsurerVRN');
           const previousInsurerReferenceInput = $('#previousInsurerReference');
 
           function togglePreviousInsurerFields() {
