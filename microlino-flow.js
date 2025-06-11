@@ -348,18 +348,18 @@ $(document).ready(function(){
                         insertBefore: 'span.toggle-icon[data-confirm-vehicle]'
                     },*/
                     {
-                        type: 'month-year', name: 'policyholderRegistrationDate', label: 'Zulassung auf Halter',
+                        type: 'month-year', name: 'policyholderRegistrationDate', label: 'Datum dieser Zulassung (I)',
                         placeholder: 'YYYY-MM',
                         //insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
                         insertBefore: 'label[data-vehicle-vin]',
                         tooltip: 'Bitte tragen Sie das Datum ein, zu dem das Fahrzeug erstmals auf Sie oder den abweichenden Fahrzeughalter zugelassen wurde oder wann es voraussichtlich auf Sie angemeldet wird. Das Datum der aktuellen Zulassung finden Sie auf der Zulassungsbescheinigung unter Position I.'
                     },
                     {
-                        type: 'month-year', name: 'firstRegistrationDate', label: 'Erstzulassung des Fahrzeugs',
+                        type: 'month-year', name: 'firstRegistrationDate', label: 'Datum der Erstzulassung (B)',
                         placeholder: 'YYYY-MM',
                         //insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
                         insertBefore: 'label[data-vehicle-vin]',
-                        tooltip: 'An diesem Datum (Monat und Jahr) wurde Ihr Fahrzeug erstmals zum öffentlichen Verkehr zugelassen. Sie finden dieses in der Zulassungsbescheinigung Ihres Fahrzeugs (ehemals Fahrzeugschein) unter Position B. Haben Sie einen alten Fahrzeugschein, finden Sie die Information unter Position 32.'
+                        tooltip: 'An diesem Datum (Monat und Jahr) wurde Ihr Fahrzeug erstmals zum öffentlichen Verkehr zugelassen. Sie finden dieses in der Zulassungsbescheinigung Ihres Fahrzeugs (ehemals Fahrzeugschein) unter Position B.'
                     },
                     /*{
                         type: 'radio', name: 'carIsReadyToBeRegistred', label: 'Fahrzeug ist zulassungsfertig',
