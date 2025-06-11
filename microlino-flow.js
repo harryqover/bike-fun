@@ -135,8 +135,6 @@ $(document).ready(function(){
     $("input[name='vin']").val("TESTVIN1234567890");
     //$("input[name='vrn']").val("TESTVRN123");
     $("input[name='driverBirthdate']").val("2000-01-01");
-    $("input[name='diplomaticCar'][value='no']").prop("checked", true);
-    $("input[name='interchangeableLicensePlate'][value='no']").prop("checked", true);
     $("input[name='policyCancelled'][value='no']").prop("checked", true);
     $("input[name='claims'][value='0']").prop("checked", true);
     $("input[name='firstName']").val("John");
@@ -151,9 +149,11 @@ $(document).ready(function(){
       $("input[name='zip']").val("10115");  
     } else {
       $("input[name='city']").val("Vienna");
-      $("input[name='zip']").val("1234");  
+      $("input[name='zip']").val("1234");
+      $("input[name='diplomaticCar'][value='no']").prop("checked", true);
+      $("input[name='interchangeableLicensePlate'][value='no']").prop("checked", true);
     }
-    
+    $("input[name='isCompany'][value='no']").prop("checked", true).trigger("change");
     //$("input[name='country']").val("AT");
     // Set as company for testing and prefill company fields.
     //$("input[name='isCompany'][value='yes']").prop("checked", true).trigger("change");
