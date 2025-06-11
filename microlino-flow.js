@@ -1,4 +1,4 @@
-console.log("20250611 company")
+console.log("20250611 314 1037")
 
 const appId = {
   sbx: {
@@ -311,7 +311,7 @@ $(document).ready(function(){
       });
   }
 
-  if(urlParams.get("test") === "trueDE"){
+  //if(urlParams.get("test") === "trueDE"){
     const formConfig = {
         "AT": {
             vehicleInfo: {
@@ -1026,12 +1026,7 @@ $(document).ready(function(){
         */
 
         }
-        
-
-        
-
     }
-
 
     // --- Initial Form Build ---
     updateFormForCountry(country); // Initialize with the default selected country
@@ -1039,7 +1034,7 @@ $(document).ready(function(){
   }
   console.log("locale before translateAll ", locale);
   translateAll(locale);
-});
+//});
 
 
 // Collapsible sections: When one section is opened, collapse all others.
