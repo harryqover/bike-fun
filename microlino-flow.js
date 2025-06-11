@@ -1,4 +1,4 @@
-console.log("20250611 translateAll")
+console.log("20250611 month-year")
 
 const appId = {
   sbx: {
@@ -348,15 +348,15 @@ $(document).ready(function(){
                         insertBefore: 'span.toggle-icon[data-confirm-vehicle]'
                     },*/
                     {
-                        type: 'date', name: 'policyholderRegistrationDate', label: 'Zulassung auf Halter',
-                        placeholder: 'YYYY-MM-DD',
+                        type: 'month-year', name: 'policyholderRegistrationDate', label: 'Zulassung auf Halter',
+                        placeholder: 'YYYY-MM',
                         //insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
                         insertBefore: 'label[data-vehicle-vin]',
                         tooltip: 'Bitte tragen Sie das Datum ein, zu dem das Fahrzeug erstmals auf Sie oder den abweichenden Fahrzeughalter zugelassen wurde oder wann es voraussichtlich auf Sie angemeldet wird. Das Datum der aktuellen Zulassung finden Sie auf der Zulassungsbescheinigung unter Position I.'
                     },
                     {
-                        type: 'date', name: 'firstRegistrationDate', label: 'Erstzulassung des Fahrzeugs',
-                        placeholder: 'YYYY-MM-DD',
+                        type: 'month-year', name: 'firstRegistrationDate', label: 'Erstzulassung des Fahrzeugs',
+                        placeholder: 'YYYY-MM',
                         //insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
                         insertBefore: 'label[data-vehicle-vin]',
                         tooltip: 'An diesem Datum (Monat und Jahr) wurde Ihr Fahrzeug erstmals zum öffentlichen Verkehr zugelassen. Sie finden dieses in der Zulassungsbescheinigung Ihres Fahrzeugs (ehemals Fahrzeugschein) unter Position B. Haben Sie einen alten Fahrzeugschein, finden Sie die Information unter Position 32.'
@@ -816,6 +816,25 @@ $(document).ready(function(){
             html += `<input class="field date w-input" type="date" name="${item.name}" placeholder="${item.placeholder || ''}" required>`;
         } else if (item.type === 'text') {
             html += `<input class="field date w-input" type="text" name="${item.name}" placeholder="${item.placeholder || ''}" required>`;
+        } else if (item.type === 'month-year') {
+          // This creates two inputs: a visible one for the user and a hidden one for the form data.
+          // The 'updateMonthYearField' function (defined below) is required for this to work.
+          
+          // 1. The visible text input for the user (MM/YYYY). It has no 'name' attribute.
+          html += `<input class="field w-input" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;" 
+              type="text" 
+              placeholder="MM/YYYY" 
+              maxlength="7" 
+              pattern="^(0[1-9]|1[0-2])\/([0-9]{4})$"
+              onkeyup="updateMonthYearField(event)"
+              onchange="updateMonthYearField(event)"
+              data-hidden-field-id="${item.name}"
+              title="Please enter the date in MM/YYYY format."
+              >`;
+
+          // 2. The hidden input that stores the formatted date (YYYY-MM-01) for submission.
+          html += `<input type="hidden" id="${item.name}" name="${item.name}" required>`;
+      
         } else if (item.type === 'dropdown') {
             html += `<select class="field" name="${item.name}" id="${item.name}" required>`;
             item.options.forEach(opt => {
@@ -1494,11 +1513,7 @@ $("#quoteForm").on("submit", function(e) {
         } else {
          var redirectUrl1 = "https://app.qover.com/payout/pay";
          var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId=iw702hil7q0ejwxkt23hdya8";
-        } 
-        //var redirectUrl2 = "?locale=de-AT&id=" + response.payload.id + "&paymentId=" + response.payload.payment.id + "&appId=q809unxlpt18fzf20zgb9vqu";
-        /*var redirectUrl = "https://appqoverme-ui.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" 
-          + response.payload.id + "&paymentId=" + response.payload.payment.id + "&appId=q809unxlpt18fzf20zgb9vqu";
-          */
+        }
         window.location.href = redirectUrl1 + redirectUrl2;
       } else {
         $("#message").html('<p class="success">Angebot erfolgreich erstellt!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
@@ -1532,4 +1547,32 @@ function translateAll(locale){
         }
     };
     xhrLocales.send();
+}
+
+function updateMonthYearField(event) {
+    const visibleInput = event.target;
+    // Find the hidden input using the data attribute we set
+    const hiddenInput = document.getElementById(visibleInput.dataset.hiddenFieldId);
+
+    // Auto-add the '/' for better user experience, avoiding it on backspace/delete
+    if (visibleInput.value.length === 2 && event.key && !['Backspace', 'Delete', 'Tab'].includes(event.key)) {
+        if (!visibleInput.value.includes('/')) {
+            visibleInput.value += '/';
+        }
+    }
+
+    // Use regex to validate the MM/YYYY format and extract its parts
+    const match = visibleInput.value.match(/^(0[1-9]|1[0-2])\/(\d{4})$/);
+
+    if (match) {
+        // If it matches, format the date as YYYY-MM-01 and update the hidden input
+        const month = match[1];
+        const year = match[2];
+        hiddenInput.value = `${year}-${month}-01`;
+        visibleInput.setCustomValidity(''); // Mark as valid
+    } else {
+        // If it doesn't match, clear the hidden input's value and mark visible input as invalid
+        hiddenInput.value = '';
+        visibleInput.setCustomValidity('Please enter a valid date in MM/YYYY format.');
+    }
 }
