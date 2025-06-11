@@ -1317,7 +1317,7 @@ $("#quoteForm").on("submit", function(e) {
            $("#loadingOverlay").hide(); return;
       }
       if(registeredCar && vrn === ""){
-        $("#message").html('<p class="error">VRN missing</p>');
+        $("#message").html('<p class="error">Wenn Sie die Option "Versicherung wechseln mit bereits auf mich versichertem Fahrzeug" wählen, geben Sie bitte das Kennzeichen des Fahrzeugs an.</p>');
         $("#loadingOverlay").hide(); return;
       }
   }
