@@ -1,4 +1,4 @@
-console.log("20250611 month-year 2")
+console.log("20250611 NoSFClass")
 
 const appId = {
   sbx: {
@@ -624,10 +624,10 @@ $(document).ready(function(){
                         type: 'dropdown', name: 'sfClassMod', label: 'SF-Klasse MOD',
                         options: [
                           { value: '', text: 'Bitte wählen' },
-                          { value: '0', text: 'Keine SF-Klasse vorhanden' },
-                          { value: '0', text: 'SF 0 (Anfänger)' },
-                          { value: 'M', text: 'SF M (Malusklasse)' },
-                          { value: 'S', text: 'SF S (Nach Rückstufung)' },
+                          { value: 'NoSFClass', text: 'Keine SF-Klasse vorhanden' },
+                          { value: 'SF0', text: 'SF 0 (Anfänger)' },
+                          { value: 'SFM', text: 'SF M (Malusklasse)' },
+                          //{ value: 'S', text: 'SF S (Nach Rückstufung)' }, not supported with current enum
                           { value: 'SF1/2', text: 'SF 1/2' },
                           { value: 'SF1', text: 'SF 1' },
                           { value: 'SF2', text: 'SF 2' },
@@ -686,10 +686,10 @@ $(document).ready(function(){
                         type: 'dropdown', name: 'sfClassTpl', label: 'SF-Klasse TPL',
                         options: [
                             { value: '', text: 'Bitte wählen' },
-                            { value: '0', text: 'Keine SF-Klasse vorhanden' },
-                            { value: '0', text: 'SF 0 (Anfänger)' },
-                            { value: 'M', text: 'SF M (Malusklasse)' },
-                            { value: 'S', text: 'SF S (Nach Rückstufung)' },
+                            { value: 'NoSFClass', text: 'Keine SF-Klasse vorhanden' },
+                            { value: 'SF0', text: 'SF 0 (Anfänger)' },
+                            { value: 'SFM', text: 'SF M (Malusklasse)' },
+                            //{ value: 'S', text: 'SF S (Nach Rückstufung)' }, not supported with current enum
                             { value: 'SF1/2', text: 'SF 1/2' },
                             { value: 'SF1', text: 'SF 1' },
                             { value: 'SF2', text: 'SF 2' },
@@ -981,9 +981,10 @@ $(document).ready(function(){
           function togglePreviousInsurerFields() {
               const tplValue = sfTplSelect.val();
               const modValue = sfModSelect.val();
+              const sfValuesNoPrevInsurerNeeded = ['SF0', 'NoSFClass']
               if (
-                  (tplValue === '0' && modValue === '0') ||
-                  (tplValue === '' && modValue === '')
+                  //(tplValue === 'SF0' && modValue === 'SF0') || (tplValue === '' && modValue === '')
+                  (sfValuesNoPrevInsurerNeeded.includes(tplValue) && sfValuesNoPrevInsurerNeeded.includes(modValue))
                  ) {
                   previousInsurerFieldContainer.slideUp(function() {
                       previousInsurerSelect.prop('required', false).val('');
