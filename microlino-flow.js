@@ -1,4 +1,4 @@
-console.log("20250611 NoSFClass")
+console.log("20250611 NoSFClass and empty")
 
 const appId = {
   sbx: {
@@ -981,7 +981,7 @@ $(document).ready(function(){
           function togglePreviousInsurerFields() {
               const tplValue = sfTplSelect.val();
               const modValue = sfModSelect.val();
-              const sfValuesNoPrevInsurerNeeded = ['SF0', 'NoSFClass']
+              const sfValuesNoPrevInsurerNeeded = ['SF0', 'NoSFClass', '']
               if (
                   //(tplValue === 'SF0' && modValue === 'SF0') || (tplValue === '' && modValue === '')
                   (sfValuesNoPrevInsurerNeeded.includes(tplValue) && sfValuesNoPrevInsurerNeeded.includes(modValue))
