@@ -1,4 +1,4 @@
-console.log("20250610 zullasung")
+console.log("20250611 appid")
 
 //https://appqoverme-ui.sbx.qover.io/payout/pay?locale=de-DE&id=yo7inpxgamqlj64re4q1g4rt&appId=egf710aj4kzoe1ikycy8ddrl
 const appId = {
@@ -1485,6 +1485,8 @@ $("#quoteForm").on("submit", function(e) {
         'eventLabel': 'goToPayment'
       });
       if (response.payload && response.payload.payment && response.payload.payment.id) {
+        console.log("appId sbx: ", appId.sbx[country]);
+        console.log("appId prd: ", appId.sbx[country]);
         if(domain == "webflow.io"){
            var redirectUrl1 = "https://appqoverme-ui.sbx.qover.io/payout/pay";
            var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId=q809unxlpt18fzf20zgb9vqu";
