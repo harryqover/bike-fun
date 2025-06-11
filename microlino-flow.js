@@ -1031,10 +1031,10 @@ $(document).ready(function(){
     // --- Initial Form Build ---
     updateFormForCountry(country); // Initialize with the default selected country
 
-  }
+  //}
   console.log("locale before translateAll ", locale);
   translateAll(locale);
-//});
+  });
 
 
 // Collapsible sections: When one section is opened, collapse all others.
