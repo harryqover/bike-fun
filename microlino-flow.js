@@ -1,4 +1,4 @@
-console.log("20250611 314 1037 2")
+console.log("20250611 VRN missing")
 
 const appId = {
   sbx: {
@@ -1315,6 +1315,10 @@ $("#quoteForm").on("submit", function(e) {
       if (!sfClassMod) {
            $("#message").html('<p class="error">Bitte wählen Sie eine SF-Klasse MOD.</p>');
            $("#loadingOverlay").hide(); return;
+      }
+      if(registeredCar && vrn === ""){
+        $("#message").html('<p class="error">VRN missing</p>');
+        $("#loadingOverlay").hide(); return;
       }
   }
   
