@@ -1,4 +1,4 @@
-console.log("20250611 appid 2")
+console.log("20250611 translateAll")
 
 const appId = {
   sbx: {
@@ -1017,6 +1017,8 @@ $(document).ready(function(){
     updateFormForCountry(country); // Initialize with the default selected country
 
   }
+  console.log("locale before translateAll ", locale);
+  translateAll(locale);
 });
 
 
@@ -1508,3 +1510,26 @@ $("#quoteForm").on("submit", function(e) {
     $("#message").html('<p class="error">Beim Erstellen des Angebots ist ein Fehler aufgetreten.</p>');
   });
 });
+
+
+function translateAll(locale){
+    let xhrLocales = new XMLHttpRequest();
+    var content = "";
+    xhrLocales.open("get", "https://api.prd.qover.io/i18n/v1/projects/client-motor-microlino/" + locale + ".json?refresh=007", true);
+    xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
+
+    xhrLocales.onreadystatechange = function() {
+        if (xhrLocales.readyState == 4) {
+            if (xhrLocales.status >= 200 && xhrLocales.status < 300 || xhrLocales.status == 304) {
+                content = JSON.parse(xhrLocales.responseText);
+                window.translations = content;
+                console.log(window.translations);
+                $("[data-trans]").each(function(index) {
+                    $(this).html(content[$(this).data("trans")]);
+                    var text = $(this).html();
+                });
+            }
+        }
+    };
+    xhrLocales.send();
+}
