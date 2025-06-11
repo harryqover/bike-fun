@@ -1,6 +1,5 @@
-console.log("20250611 appid")
+console.log("20250611 appid 2")
 
-//https://appqoverme-ui.sbx.qover.io/payout/pay?locale=de-DE&id=yo7inpxgamqlj64re4q1g4rt&appId=egf710aj4kzoe1ikycy8ddrl
 const appId = {
   sbx: {
     DE: "egf710aj4kzoe1ikycy8ddrl",
@@ -209,10 +208,10 @@ $(document).ready(function(){
   	      // If payment object exists and contains an id, redirect to payment page.
   	      if (response.payload && response.payload.payment && response.payload.payment.id) {
             console.log("appId sbx: ", appId.sbx[country]);
-            console.log("appId prd: ", appId.sbx[country]);
+            console.log("appId prd: ", appId.prd[country]);
             if(domain == "webflow.io"){
                var redirectUrl1 = "https://appqoverme-ui.sbx.qover.io/payout/pay";
-               var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId=q809unxlpt18fzf20zgb9vqu";
+               var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId="+appId.sbx[country];
             } else {
              var redirectUrl1 = "https://app.qover.com/payout/pay";
              var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId=iw702hil7q0ejwxkt23hdya8";
@@ -1486,10 +1485,10 @@ $("#quoteForm").on("submit", function(e) {
       });
       if (response.payload && response.payload.payment && response.payload.payment.id) {
         console.log("appId sbx: ", appId.sbx[country]);
-        console.log("appId prd: ", appId.sbx[country]);
+        console.log("appId prd: ", appId.prd[country]);
         if(domain == "webflow.io"){
            var redirectUrl1 = "https://appqoverme-ui.sbx.qover.io/payout/pay";
-           var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId=q809unxlpt18fzf20zgb9vqu";
+           var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId="+appId.sbx[country];
         } else {
          var redirectUrl1 = "https://app.qover.com/payout/pay";
          var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId=iw702hil7q0ejwxkt23hdya8";
