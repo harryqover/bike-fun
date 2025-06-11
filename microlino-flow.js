@@ -1,4 +1,4 @@
-console.log("20250611 NoSFClass and empty")
+console.log("20250611 company")
 
 const appId = {
   sbx: {
