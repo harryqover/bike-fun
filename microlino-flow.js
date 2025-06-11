@@ -1,4 +1,4 @@
-console.log("20250611 month-year")
+console.log("20250611 month-year 2")
 
 const appId = {
   sbx: {
@@ -975,8 +975,8 @@ $(document).ready(function(){
           const previousInsurerReferenceFieldContainer = $('input[name="previousInsurerReference"]').closest('.js-dynamic-field');
 
           const previousInsurerSelect = $('#previousInsurerName');
-          const previousInsurerVRNInput = $('#previousInsurerVRN');
-          const previousInsurerReferenceInput = $('#previousInsurerReference');
+          const previousInsurerVRNInput = $('[name="previousInsurerVRN"]')
+          const previousInsurerReferenceInput = $('[name="previousInsurerReference"]');
 
           function togglePreviousInsurerFields() {
               const tplValue = sfTplSelect.val();
@@ -1003,7 +1003,7 @@ $(document).ready(function(){
                       previousInsurerReferenceInput.prop('required', true);
                   });
                   previousInsurerVRNFieldContainer.slideDown(function() {
-                      previousInsurerVRNInput.prop('required', false).val('');
+                      previousInsurerVRNInput.prop('required', true);
                   });
               }
           }
