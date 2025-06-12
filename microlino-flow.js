@@ -621,7 +621,7 @@ $(document).ready(function(){
                         insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
                     },
                     {
-                        type: 'dropdown', name: 'sfClassMod', label: 'SF-Klasse MOD',
+                        type: 'dropdown', name: 'sfClassMod', label: 'SF-Klasse Kaskoversicherung',
                         options: [
                           { value: '', text: 'Bitte wählen' },
                           { value: 'NoSFClass', text: 'Keine SF-Klasse vorhanden' },
@@ -683,7 +683,7 @@ $(document).ready(function(){
                         insertBefore: 'span.toggle-icon[data-confirm-underwriting]'
                     },
                     {
-                        type: 'dropdown', name: 'sfClassTpl', label: 'SF-Klasse TPL',
+                        type: 'dropdown', name: 'sfClassTpl', label: 'SF-Klasse Kfz-Haftpflichtversicherung',
                         options: [
                             { value: '', text: 'Bitte wählen' },
                             { value: 'NoSFClass', text: 'Keine SF-Klasse vorhanden' },
