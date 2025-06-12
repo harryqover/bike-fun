@@ -744,6 +744,7 @@ $(document).ready(function(){
                             { value: 'SF50', text: 'SF 50 (oder mehr)' }
                         ],
                         insertBefore: 'span.toggle-icon[data-confirm-underwriting]',
+                        explanation: 'Bitte beachten Sie, dass Ihre SF-Klasse (Schadenfreiheitsklasse) keinen Einfluss auf die Berechnung Ihrer Versicherungsprämie hat. Wir erfassen diese Information ausschließlich zur Dokumentation der Schadenhistorie.',
                         tooltip: '<strong>Neu erworbenes als Zweitfahrzeug.</strong> Möchten Sie ein neu erworbenes als Zweitfahrzeug zu Ihrem bisherigen Fahrzeug hinzufügen, dann erfolgt auf Basis des bisherigen Vertrags eine bessere Einstufung des Schadenfreiheitsrabatts für das neue Zweitfahrzeug. Wählen Sie bitte „Keine SF-Klasse vorhanden“ aus.'
                     }
                 ],
