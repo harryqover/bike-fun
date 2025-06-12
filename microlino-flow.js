@@ -394,9 +394,9 @@ $(document).ready(function(){
                         type: 'dropdown', name: 'previousInsurerName', label: 'Vorheriger Versicherer',
                         options: [
                           {value: '', text: 'n/a' },
-                          {value:"\"Schweiz Allgemeine\" Direkt Vers. AG", text: "\"Schweiz Allgemeine\" Direkt Vers. AG"},
-                          {value: "\"Winterthur\" Schweizerische Vers.-Ges.", text: "\"Winterthur\" Schweizerische Vers.-Ges."},
-                          {value: "\"Zürich\" Versicherungs-Gesellschaft, F rankfurt/M.", text: "\"Zürich\" Versicherungs-Gesellschaft, F rankfurt/M."},
+                          {value:"Schweiz Allgemeine - Direkt Vers. AG", text: "Schweiz Allgemeine - Direkt Vers. AG"},
+                          {value: "Winterthur - Schweizerische Vers.-Ges.", text: "Winterthur - Schweizerische Vers.-Ges."},
+                          {value: "Zürich - Versicherungs-Gesellschaft, F rankfurt/M.", text: "Zürich - Versicherungs-Gesellschaft, F rankfurt/M."},
                           {value: "(ehemals Württembergische und Badische Versicherungs-Aktiengesellschaft)", text:  "(ehemals Württembergische und Badische Versicherungs-Aktiengesellschaft)"},
                           {value: "A&O Autoversicherung Oldenburg AG", text: "A&O Autoversicherung Oldenburg AG"},
                           {value: "ADAC Autoversicherung AG", text: "ADAC Autoversicherung AG"},
