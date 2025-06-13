@@ -1,4 +1,4 @@
-console.log("20250612 false")
+console.log("20250612 registeredOwnerisCompany 1289")
 
 const appId = {
   sbx: {
@@ -1281,8 +1281,12 @@ $("#quoteForm").on("submit", function(e) {
       policyholderIsRegisteredOwnerVal = formData.get("policyholderIsRegisteredOwner");
       policyholderIsRegisteredOwner = policyholderIsRegisteredOwnerVal === "true"
 
+      console.log("policyholderIsRegisteredOwnerVal ", policyholderIsRegisteredOwnerVal);
+      console.log("policyholderIsRegisteredOwner ", policyholderIsRegisteredOwner);
+
       if(policyholderIsRegisteredOwner === false){
         const registeredOwnerisCompany= formData.get("registeredOwnerisCompany");
+        console.log("registeredOwnerisCompany ", registeredOwnerisCompany);
         const registeredOwnerfirstName = formData.get("registeredOwnerfirstName");
         const registeredOwnerlastName = formData.get("registeredOwnerlastName");
         const registeredOwnerstreet = formData.get("registeredOwnerstreet");
