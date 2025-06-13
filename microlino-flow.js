@@ -1,4 +1,4 @@
-console.log("20250612 954 965 962")
+console.log("20250612 954 965 962 -- 91")
 
 const appId = {
   sbx: {
@@ -88,6 +88,7 @@ function updateSubmitButtonText() {
     }
 }
 // On Policyholder Details, show/hide company fields based on "Are you a company?" selection.
+/*
 $("input[name='isCompany']").on("change", function() {
   if ($(this).val() === "yes") {
     $("#companyFields").slideDown();
@@ -95,6 +96,7 @@ $("input[name='isCompany']").on("change", function() {
     $("#companyFields").slideUp();
   }
 });
+*/
 
 // Insurance Start Date: toggle start date input and button text.
 $("#setStartDateNow").on("change", function() {
