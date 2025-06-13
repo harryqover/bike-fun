@@ -1,4 +1,4 @@
-console.log("20250612 registeredOwnerisCompany 1289")
+console.log("20250612 registeredOwnerisCompany 1289 2")
 
 const appId = {
   sbx: {
@@ -1265,8 +1265,7 @@ $("#quoteForm").on("submit", function(e) {
 
   // --- Country-Specific Data Collection ---
   let diplomaticCar, interchangeableLicensePlate; // AT specific
-  let /*conditionAtPurchase,*/ firstRegistrationDate, policyholderRegistrationDate, /*carIsReadyToBeRegistred,*/ registeredCar, sfClassTpl, sfClassMod, previousInsurerName, previousInsurerReference, previousInsurerVRN, policyholderIsRegisteredOwner; // DE specific
-
+  let firstRegistrationDate, policyholderRegistrationDate, registeredCar, sfClassTpl, sfClassMod, previousInsurerName, previousInsurerReference, previousInsurerVRN, policyholderIsRegisteredOwner, registeredOwnerisCompany, registeredOwnerfirstName, registeredOwnerlastName, registeredOwnerstreet, registeredOwnerzip, registeredOwnercity, registeredOwnercountry; //DE specific
   if (country === "AT") {
       diplomaticCar = formData.get("diplomaticCar");
       interchangeableLicensePlate = formData.get("interchangeableLicensePlate");
@@ -1281,18 +1280,14 @@ $("#quoteForm").on("submit", function(e) {
       policyholderIsRegisteredOwnerVal = formData.get("policyholderIsRegisteredOwner");
       policyholderIsRegisteredOwner = policyholderIsRegisteredOwnerVal === "true"
 
-      console.log("policyholderIsRegisteredOwnerVal ", policyholderIsRegisteredOwnerVal);
-      console.log("policyholderIsRegisteredOwner ", policyholderIsRegisteredOwner);
-
       if(policyholderIsRegisteredOwner === false){
-        const registeredOwnerisCompany= formData.get("registeredOwnerisCompany");
-        console.log("registeredOwnerisCompany ", registeredOwnerisCompany);
-        const registeredOwnerfirstName = formData.get("registeredOwnerfirstName");
-        const registeredOwnerlastName = formData.get("registeredOwnerlastName");
-        const registeredOwnerstreet = formData.get("registeredOwnerstreet");
-        const registeredOwnerzip = formData.get("registeredOwnerzip");
-        const registeredOwnercity = formData.get("registeredOwnercity");
-        const registeredOwnercountry = formData.get("registeredOwnercountry");
+        registeredOwnerisCompany= formData.get("registeredOwnerisCompany");
+        registeredOwnerfirstName = formData.get("registeredOwnerfirstName");
+        registeredOwnerlastName = formData.get("registeredOwnerlastName");
+        registeredOwnerstreet = formData.get("registeredOwnerstreet");
+        registeredOwnerzip = formData.get("registeredOwnerzip");
+        registeredOwnercity = formData.get("registeredOwnercity");
+        registeredOwnercountry = formData.get("registeredOwnercountry");
       }
       
 
@@ -1471,7 +1466,7 @@ $("#quoteForm").on("submit", function(e) {
 
       if(policyholderIsRegisteredOwner === false){
         payload.subject.registeredOwner = {};
-        payload.subject.registeredOwner.entityType = (registeredOwnerisCompany === "yes") ? "ENTITY_TYPE_COMPANY" : "ENTITY_TYPE_PERSON"
+        payload.subject.registeredOwner.entityType = (registeredOwnerisCompany === "yes") ? "ENTITY_TYPE_COMPANY" : "ENTITY_TYPE_PERSON";
         payload.subject.registeredOwner.firstName = registeredOwnerfirstName;
         payload.subject.registeredOwner.lastName = registeredOwnerlastName;
         payload.subject.registeredOwner.address = {};
