@@ -1,4 +1,4 @@
-console.log("20250612 954 965 962 -- 973")
+console.log("20250612 954 965 962 -- 982")
 
 const appId = {
   sbx: {
@@ -979,7 +979,7 @@ $(document).ready(function(){
           } else {
               $('#companyFields').slideUp(); // slideUp will set display to none at the end
           }
-      });
+      }).trigger('change');
 
         if(country == "AT"){
           $("#registeredOwnerSection").remove();
