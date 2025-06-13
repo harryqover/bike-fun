@@ -961,7 +961,7 @@ $(document).ready(function(){
               console.log("policyholderIsRegisteredOwner ", this.value)
               if (this.value == 'false') {
                 $('.registeredOwnerSectionForm').slideDown(function() {
-                  $(this).css('display', 'flex');
+                  $(this).css('display', 'block');
                 });
               } else {
                 $('.registeredOwnerSectionForm').slideUp();
