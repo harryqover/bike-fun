@@ -1246,6 +1246,7 @@ $("#quoteForm").on("submit", function(e) {
   let claims = formData.get("claims"); // Will be processed later
   
   const isCompany = formData.get("isCompany");
+
   const companyName = (isCompany === "yes" && formData.get("companyName")) ? formData.get("companyName").trim() : "";
   const companyNumber = (isCompany === "yes" && formData.get("companyNumber")) ? formData.get("companyNumber").trim() : "";
 
@@ -1274,14 +1275,22 @@ $("#quoteForm").on("submit", function(e) {
       firstRegistrationDate = formData.get("firstRegistrationDate");
       policyholderRegistrationDate = formData.get("policyholderRegistrationDate");
       previousInsurerName = formData.get("previousInsurerName");
-      console.log('formData.get("previousInsurerName")');
-      console.log(formData.get("previousInsurerName"));
-      console.log(previousInsurerName);
       previousInsurerReference = formData.get("previousInsurerReference");
       previousInsurerVRN = formData.get("previousInsurerVRN");
       
       policyholderIsRegisteredOwnerVal = formData.get("policyholderIsRegisteredOwner");
       policyholderIsRegisteredOwner = policyholderIsRegisteredOwnerVal === "true"
+
+      if(policyholderIsRegisteredOwner){
+        const registeredOwnerisCompany= formData.get("registeredOwnerisCompany");
+        const registeredOwnerfirstName = formData.get("registeredOwnerfirstName");
+        const registeredOwnerlastName = formData.get("registeredOwnerlastName");
+        const registeredOwnerstreet = formData.get("registeredOwnerstreet");
+        const registeredOwnerzip = formData.get("registeredOwnerzip");
+        const registeredOwnercity = formData.get("registeredOwnercity");
+        const registeredOwnercountry = formData.get("registeredOwnercountry");
+      }
+      
 
       // Ensure boolean conversion for radio button values like "true"/"false"
       /*const carIsReadyVal = formData.get("carIsReadyToBeRegistred");
@@ -1446,10 +1455,8 @@ $("#quoteForm").on("submit", function(e) {
       payload.subject.underwriting.diplomaticCar = diplomaticCar === "yes";
       payload.subject.underwriting.interchangeableLicensePlate = interchangeableLicensePlate === "yes";
   } else if (country === "DE") {
-      //payload.subject.conditionAtPurchase = conditionAtPurchase;
       payload.subject.firstRegistrationDate = firstRegistrationDate;
       payload.subject.policyholderRegistrationDate = policyholderRegistrationDate;
-      //payload.subject.carIsReadyToBeRegistred = carIsReadyToBeRegistred;
       payload.subject.registeredCar = registeredCar;
       payload.subject.underwriting.bonusMalusTpl = sfClassTpl;
       payload.subject.underwriting.bonusMalusOmium = sfClassMod;
@@ -1458,6 +1465,19 @@ $("#quoteForm").on("submit", function(e) {
       payload.subject.previousInsurer.reference = previousInsurerReference;
       payload.subject.previousInsurer.vrn = previousInsurerVRN;
       payload.subject.policyholderIsRegisteredOwner = policyholderIsRegisteredOwner;
+
+      if(policyholderIsRegisteredOwner){
+        payload.subject.registeredOwner = {};
+        payload.subject.registeredOwner.entityType = (registeredOwnerisCompany === "yes") ? "ENTITY_TYPE_COMPANY" : "ENTITY_TYPE_PERSON"
+        payload.subject.registeredOwner.firstName = registeredOwnerfirstName;
+        payload.subject.registeredOwner.lastName = registeredOwnerlastName;
+        payload.subject.registeredOwner.address = {};
+        payload.subject.registeredOwner.address.street = registeredOwnerstreet;
+        payload.subject.registeredOwner.address.number = ' ';
+        payload.subject.registeredOwner.address.zip = registeredOwnerzip;
+        payload.subject.registeredOwner.address.city = registeredOwnercity;
+        payload.subject.registeredOwner.address.country = registeredOwnercountry;
+      }
 
   }
 
