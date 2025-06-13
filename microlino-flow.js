@@ -983,9 +983,11 @@ $(document).ready(function(){
 
           $('input[name="registeredOwnerisCompany"]').off('change').on('change', function() {
               if (this.value === 'yes') {
-                  $('#registeredOwnercompanyFields').slideDown();
+                //$('#registeredOwnercompanyFields').slideDown();
+                $('#registeredOwnercompanyFields').removeClass('hidden-fields');
               } else {
-                  $('#registeredOwnercompanyFields').slideUp();
+                //$('#registeredOwnercompanyFields').slideUp();
+                $('#registeredOwnercompanyFields').addClass('hidden-fields');
               }
           })//.trigger('change');
         }
