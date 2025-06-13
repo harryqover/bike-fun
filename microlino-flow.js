@@ -1,4 +1,4 @@
-console.log("20250612 954 965 962 -- 983")
+console.log("20250612 full toggle")
 
 const appId = {
   sbx: {
@@ -6,7 +6,7 @@ const appId = {
     AT: "q809unxlpt18fzf20zgb9vqu"
   },
   prd: {
-    DE: "iw702hil7q0ejwxkt23hdya8",//wrong to adapt
+    DE: "emnyw0tvs3fkqyfb8ah58qvj",
     AT: "iw702hil7q0ejwxkt23hdya8"
   }
 }
@@ -87,16 +87,6 @@ function updateSubmitButtonText() {
       $("#submitButton").text("Angebot für später speichern");
     }
 }
-// On Policyholder Details, show/hide company fields based on "Are you a company?" selection.
-/*
-$("input[name='isCompany']").on("change", function() {
-  if ($(this).val() === "yes") {
-    $("#companyFields").slideDown();
-  } else {
-    $("#companyFields").slideUp();
-  }
-});
-*/
 
 // Insurance Start Date: toggle start date input and button text.
 $("#setStartDateNow").on("change", function() {
@@ -953,27 +943,9 @@ $(document).ready(function(){
         }).first().next('.section-content').show(); // Open first section by default
 
         // Toggle company fields
-        /*
-        $('input[name="isCompany"]').off('change').on('change', function() {
-            if (this.value === 'yes') {
-                $('#companyFields').slideDown();
-            } else {
-                $('#companyFields').slideUp();
-            }
-        })*///.trigger('change');
-        /*$('input[name="isCompany"]').off('change').on('change', function() {
-          if (this.value === 'yes') {
-            $('#companyFields').removeClass('hidden-fields');
-           } else {
-            $('#companyFields').addClass('hidden-fields');
-          }
-        }).trigger('change');
-        */
-
         $('input[name="isCompany"]').off('change').on('change', function() {
           if (this.value === 'yes') {
             $('#companyFields').slideDown(function() {
-              // After slideDown completes, ensure display is flex
               $(this).css('display', 'flex');
             });
           } else {
@@ -986,25 +958,29 @@ $(document).ready(function(){
           $("#registeredOwnerSection").remove();
         } else {
           $('input[name="policyholderIsRegisteredOwner"]').off('change').on('change', function() {
-              console.log(this.value)
+              console.log("policyholderIsRegisteredOwner ", this.value)
               if (this.value == 'false') {
-                  $('.registeredOwnerSectionForm').slideDown();
+                $('.registeredOwnerSectionForm').slideDown(function() {
+                  $(this).css('display', 'flex');
+                });
               } else {
-                  $('.registeredOwnerSectionForm').slideUp();
+                $('.registeredOwnerSectionForm').slideUp();
               }
-          })
+          });
+          $('.registeredOwnerSectionForm').slideUp();
 
           $('input[name="registeredOwnerisCompany"]').off('change').on('change', function() {
               if (this.value === 'yes') {
-                //$('#registeredOwnercompanyFields').slideDown();
-                $('#registeredOwnercompanyFields').removeClass('hidden-fields');
+                $('#registeredOwnercompanyFields').slideDown(function() {
+                  $(this).css('display', 'flex');
+                });
               } else {
-                //$('#registeredOwnercompanyFields').slideUp();
-                $('#registeredOwnercompanyFields').addClass('hidden-fields');
+                $('#registeredOwnercompanyFields').slideUp();
               }
-          })//.trigger('change');
+          });
+          $('#registeredOwnercompanyFields').slideUp();
         }
-         // Toggle start date field visibility
+        // Toggle start date field visibility
         $('#setStartDateNow').off('change').on('change', function() {
             if ($(this).is(':checked')) {
                 $('#startDateContainer').slideDown();
