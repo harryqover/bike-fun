@@ -959,14 +959,17 @@ $(document).ready(function(){
             }
         })//.trigger('change');
 
-        $('input[name="registeredOwnerisCompany"]').off('change').on('change', function() {
-            if (this.value === 'yes') {
-                $('#registeredOwnercompanyFields').slideDown();
-            } else {
-                $('#registeredOwnercompanyFields').slideUp();
-            }
-        })//.trigger('change');
-
+        if(country == "AT"){
+          $("#registeredOwnerSection").remove();
+        } else {
+          $('input[name="registeredOwnerisCompany"]').off('change').on('change', function() {
+              if (this.value === 'yes') {
+                  $('#registeredOwnercompanyFields').slideDown();
+              } else {
+                  $('#registeredOwnercompanyFields').slideUp();
+              }
+          })//.trigger('change');
+        }
          // Toggle start date field visibility
         $('#setStartDateNow').off('change').on('change', function() {
             if ($(this).is(':checked')) {
