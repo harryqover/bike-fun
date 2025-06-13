@@ -141,7 +141,12 @@ $(document).ready(function(){
     //$("input[name='houseNumber']").val("10");
     if(country == "DE"){
       $("input[name='city']").val("Berlin");
-      $("input[name='zip']").val("10115");  
+      $("input[name='zip']").val("10115");
+      $("input[name='firstRegistrationDate']").val("06/2025");
+      $("[data-hidden-field-id='firstRegistrationDate']").val("06/2025");
+      $("input[name='policyholderRegistrationDate']").val("06/2025");
+      $("[data-hidden-field-id='policyholderRegistrationDate']").val("06/2025");
+      
     } else {
       $("input[name='city']").val("Vienna");
       $("input[name='zip']").val("1234");
@@ -925,13 +930,20 @@ $(document).ready(function(){
         // 5. Update Policyholder section (Country field, ZIP validation)
         if (config.policyholder) {
             $('input[name="country"]').val(config.policyholder.country);
+            $('input[name="registeredOwnercountry"]').val(config.policyholder.country);
             const $cityInput = $('input[name="city"]');
             $cityInput.attr('placeholder', config.policyholder.cityPlaceholder);
+            const $registeredOwnercity = $('input[name="registeredOwnercity"]');
+            $registeredOwnercity.attr('placeholder', config.policyholder.cityPlaceholder);
 
             const $zipInput = $('input[name="zip"]');
             $zipInput.attr('placeholder', config.policyholder.zipPlaceholder);
             $zipInput.attr('pattern', config.policyholder.zipPattern);
             $zipInput.attr('maxlength', config.policyholder.zipMaxlength);
+            const $registeredOwnerzip = $('input[name="registeredOwnerzip"]');
+            $registeredOwnerzip.attr('placeholder', config.policyholder.zipPlaceholder);
+            $registeredOwnerzip.attr('pattern', config.policyholder.zipPattern);
+            $registeredOwnerzip.attr('maxlength', config.policyholder.zipMaxlength);
         }
 
         //6. Update content
