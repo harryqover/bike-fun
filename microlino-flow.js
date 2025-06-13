@@ -1,4 +1,4 @@
-console.log("20250612 954 965")
+console.log("20250612 954 965 962")
 
 const appId = {
   sbx: {
@@ -951,13 +951,21 @@ $(document).ready(function(){
         }).first().next('.section-content').show(); // Open first section by default
 
         // Toggle company fields
+        /*
         $('input[name="isCompany"]').off('change').on('change', function() {
             if (this.value === 'yes') {
                 $('#companyFields').slideDown();
             } else {
                 $('#companyFields').slideUp();
             }
-        })//.trigger('change');
+        })*///.trigger('change');
+        $('input[name="isCompany"]').off('change').on('change', function() {
+          if (this.value === 'yes') {
+            $('#companyFields').removeClass('hidden-fields');
+           } else {
+            $('#companyFields').addClass('hidden-fields');
+          }
+        });
 
         if(country == "AT"){
           $("#registeredOwnerSection").remove();
