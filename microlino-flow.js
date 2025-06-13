@@ -1431,7 +1431,6 @@ $("#quoteForm").on("submit", function(e) {
       }
     },
     metadata:{
-    	//terms: "acceptance,important,eligibility,general,interchangeablePlate",
       lastStepUrl: (domain == "webflow.io") ? "http://microlino-aa147b.webflow.io/subscription?" : "http://microlino-insurance.qover.com/subscription?"
     }
   };
