@@ -1,4 +1,4 @@
-console.log("20250612 policyholderIsRegisteredOwner")
+console.log("20250612 policyholderIsRegisteredOwnerVal")
 
 const appId = {
   sbx: {
@@ -1267,7 +1267,9 @@ $("#quoteForm").on("submit", function(e) {
       console.log(previousInsurerName);
       previousInsurerReference = formData.get("previousInsurerReference");
       previousInsurerVRN = formData.get("previousInsurerVRN");
-      policyholderIsRegisteredOwner = formData.get("policyholderIsRegisteredOwner");
+      
+      policyholderIsRegisteredOwnerVal = formData.get("policyholderIsRegisteredOwner");
+      policyholderIsRegisteredOwner = policyholderIsRegisteredOwnerVal === "true"
 
       // Ensure boolean conversion for radio button values like "true"/"false"
       /*const carIsReadyVal = formData.get("carIsReadyToBeRegistred");
