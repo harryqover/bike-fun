@@ -1,4 +1,4 @@
-console.log("20250612 full toggle")
+console.log("20250612 policyholderIsRegisteredOwner")
 
 const appId = {
   sbx: {
@@ -1249,7 +1249,7 @@ $("#quoteForm").on("submit", function(e) {
 
   // --- Country-Specific Data Collection ---
   let diplomaticCar, interchangeableLicensePlate; // AT specific
-  let /*conditionAtPurchase,*/ firstRegistrationDate, policyholderRegistrationDate, /*carIsReadyToBeRegistred,*/ registeredCar, sfClassTpl, sfClassMod, previousInsurerName, previousInsurerReference, previousInsurerVRN; // DE specific
+  let /*conditionAtPurchase,*/ firstRegistrationDate, policyholderRegistrationDate, /*carIsReadyToBeRegistred,*/ registeredCar, sfClassTpl, sfClassMod, previousInsurerName, previousInsurerReference, previousInsurerVRN, policyholderIsRegisteredOwner; // DE specific
 
   if (country === "AT") {
       diplomaticCar = formData.get("diplomaticCar");
@@ -1264,6 +1264,7 @@ $("#quoteForm").on("submit", function(e) {
       console.log(previousInsurerName);
       previousInsurerReference = formData.get("previousInsurerReference");
       previousInsurerVRN = formData.get("previousInsurerVRN");
+      policyholderIsRegisteredOwner = formData.get("policyholderIsRegisteredOwner");
 
       // Ensure boolean conversion for radio button values like "true"/"false"
       /*const carIsReadyVal = formData.get("carIsReadyToBeRegistred");
@@ -1439,7 +1440,10 @@ $("#quoteForm").on("submit", function(e) {
       payload.subject.previousInsurer.insurerName = previousInsurerName;
       payload.subject.previousInsurer.reference = previousInsurerReference;
       payload.subject.previousInsurer.vrn = previousInsurerVRN;
+      payload.subject.policyholderIsRegisteredOwner = policyholderIsRegisteredOwner;
+
   }
+
 
   // Dynamically build metadata.terms
   const checkedTerms = [];
