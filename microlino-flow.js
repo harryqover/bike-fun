@@ -64,8 +64,8 @@ var fieldMapping = {
   "subject.underwriting.birthdateYoungestDriver": "driverBirthdate",
   "subject.firstRegistrationDate": "firstRegistrationDate",
   "subject.policyholderRegistrationDate": "policyholderRegistrationDate",
-  "subject.underwriting.bonusMalusTpl" = "sfClassTpl",
-  "subject.underwriting.bonusMalusOmium" = "sfClassMod"
+  "subject.underwriting.bonusMalusTpl": "sfClassTpl",
+  "subject.underwriting.bonusMalusOmium": "sfClassMod"
 };
 
 // Helper function: Remove keys with empty string values from an object recursively.
