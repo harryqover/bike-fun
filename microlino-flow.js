@@ -1,4 +1,4 @@
-console.log("20250612 policyholderIsRegisteredOwnerVal")
+console.log("20250612 false")
 
 const appId = {
   sbx: {
@@ -1281,7 +1281,7 @@ $("#quoteForm").on("submit", function(e) {
       policyholderIsRegisteredOwnerVal = formData.get("policyholderIsRegisteredOwner");
       policyholderIsRegisteredOwner = policyholderIsRegisteredOwnerVal === "true"
 
-      if(policyholderIsRegisteredOwner){
+      if(policyholderIsRegisteredOwner === false){
         const registeredOwnerisCompany= formData.get("registeredOwnerisCompany");
         const registeredOwnerfirstName = formData.get("registeredOwnerfirstName");
         const registeredOwnerlastName = formData.get("registeredOwnerlastName");
@@ -1465,7 +1465,7 @@ $("#quoteForm").on("submit", function(e) {
       payload.subject.previousInsurer.vrn = previousInsurerVRN;
       payload.subject.policyholderIsRegisteredOwner = policyholderIsRegisteredOwner;
 
-      if(policyholderIsRegisteredOwner){
+      if(policyholderIsRegisteredOwner === false){
         payload.subject.registeredOwner = {};
         payload.subject.registeredOwner.entityType = (registeredOwnerisCompany === "yes") ? "ENTITY_TYPE_COMPANY" : "ENTITY_TYPE_PERSON"
         payload.subject.registeredOwner.firstName = registeredOwnerfirstName;
