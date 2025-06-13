@@ -1,4 +1,4 @@
-console.log("20250612 954 965 962 -- 982")
+console.log("20250612 954 965 962 -- 983")
 
 const appId = {
   sbx: {
@@ -972,14 +972,15 @@ $(document).ready(function(){
 
         $('input[name="isCompany"]').off('change').on('change', function() {
           if (this.value === 'yes') {
-              $('#companyFields').slideDown(function() {
-                  // After slideDown completes, ensure display is flex
-                  $(this).css('display', 'flex');
-              });
+            $('#companyFields').slideDown(function() {
+              // After slideDown completes, ensure display is flex
+              $(this).css('display', 'flex');
+            });
           } else {
-              $('#companyFields').slideUp(); // slideUp will set display to none at the end
+            $('#companyFields').slideUp(); // slideUp will set display to none at the end
           }
-      }).trigger('change');
+        });
+        $('#companyFields').slideUp();
 
         if(country == "AT"){
           $("#registeredOwnerSection").remove();
