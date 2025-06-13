@@ -961,13 +961,25 @@ $(document).ready(function(){
                 $('#companyFields').slideUp();
             }
         })*///.trigger('change');
-        $('input[name="isCompany"]').off('change').on('change', function() {
+        /*$('input[name="isCompany"]').off('change').on('change', function() {
           if (this.value === 'yes') {
             $('#companyFields').removeClass('hidden-fields');
            } else {
             $('#companyFields').addClass('hidden-fields');
           }
-        });
+        }).trigger('change');
+        */
+
+        $('input[name="isCompany"]').off('change').on('change', function() {
+          if (this.value === 'yes') {
+              $('#companyFields').slideDown(function() {
+                  // After slideDown completes, ensure display is flex
+                  $(this).css('display', 'flex');
+              });
+          } else {
+              $('#companyFields').slideUp(); // slideUp will set display to none at the end
+          }
+      });
 
         if(country == "AT"){
           $("#registeredOwnerSection").remove();
