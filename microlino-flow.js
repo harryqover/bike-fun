@@ -1,4 +1,4 @@
-console.log("20250611 VRN missing")
+console.log("20250612 954")
 
 const appId = {
   sbx: {
@@ -957,7 +957,15 @@ $(document).ready(function(){
             } else {
                 $('#companyFields').slideUp();
             }
-        }).trigger('change'); // Trigger on load to set initial state
+        })//.trigger('change');
+
+        $('input[name="registeredOwnerisCompany"]').off('change').on('change', function() {
+            if (this.value === 'yes') {
+                $('#registeredOwnercompanyFields').slideDown();
+            } else {
+                $('#registeredOwnercompanyFields').slideUp();
+            }
+        })//.trigger('change');
 
          // Toggle start date field visibility
         $('#setStartDateNow').off('change').on('change', function() {
