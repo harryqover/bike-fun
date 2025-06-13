@@ -962,6 +962,15 @@ $(document).ready(function(){
         if(country == "AT"){
           $("#registeredOwnerSection").remove();
         } else {
+          $('input[name="policyholderIsRegisteredOwner"]').off('change').on('change', function() {
+              console.log(this.value)
+              if (this.value == 'false') {
+                  $('.registeredOwnerSectionForm').slideDown();
+              } else {
+                  $('.registeredOwnerSectionForm').slideUp();
+              }
+          })
+
           $('input[name="registeredOwnerisCompany"]').off('change').on('change', function() {
               if (this.value === 'yes') {
                   $('#registeredOwnercompanyFields').slideDown();
