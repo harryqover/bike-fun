@@ -1458,10 +1458,12 @@ $("#quoteForm").on("submit", function(e) {
       payload.subject.registeredCar = registeredCar;
       payload.subject.underwriting.bonusMalusTpl = sfClassTpl;
       payload.subject.underwriting.bonusMalusOmium = sfClassMod;
-      payload.subject.previousInsurer = {};
-      payload.subject.previousInsurer.insurerName = previousInsurerName;
-      payload.subject.previousInsurer.reference = previousInsurerReference;
-      payload.subject.previousInsurer.vrn = previousInsurerVRN;
+      if(!policyholderIsRegisteredOwner){
+        payload.subject.previousInsurer = {};
+        payload.subject.previousInsurer.insurerName = previousInsurerName;
+        payload.subject.previousInsurer.reference = previousInsurerReference;
+        payload.subject.previousInsurer.vrn = previousInsurerVRN;
+      }
       payload.subject.policyholderIsRegisteredOwner = policyholderIsRegisteredOwner;
 
       if(policyholderIsRegisteredOwner === false){
