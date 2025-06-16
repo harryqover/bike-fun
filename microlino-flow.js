@@ -1,4 +1,4 @@
-console.log("20250612 registeredOwnerisCompany 1289 2")
+console.log("20250616 policyholderIsRegisteredOwner")
 
 const appId = {
   sbx: {
