@@ -1,4 +1,4 @@
-console.log("20250616 policyholderIsRegisteredOwner 222")
+console.log("20250616 registeredOwner postalCode")
 
 const appId = {
   sbx: {
@@ -1473,7 +1473,7 @@ $("#quoteForm").on("submit", function(e) {
           address: {
             street: registeredOwnerstreet,
             number: ' ',
-            zip: registeredOwnerzip,
+            postalCode: registeredOwnerzip,
             city: registeredOwnercity,
             country: registeredOwnercountry,
           },
