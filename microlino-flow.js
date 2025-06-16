@@ -1,4 +1,4 @@
-console.log("20250616 policyholderIsRegisteredOwner")
+console.log("20250616 policyholderIsRegisteredOwner 222")
 
 const appId = {
   sbx: {
@@ -10,6 +10,9 @@ const appId = {
     AT: "iw702hil7q0ejwxkt23hdya8"
   }
 }
+
+//define which SF values don't need previous insurer object
+const sfValuesNoPrevInsurerNeeded = ['SF0', 'NoSFClass', ''];
 
 // Mapping API error field names to form input names
 function getRootDomain(hostname) {
@@ -159,7 +162,7 @@ $(document).ready(function(){
     //$("input[name='isCompany'][value='yes']").prop("checked", true).trigger("change");
     //$("input[name='companyName']").val("Test Company");
     //$("input[name='companyNumber']").val("123456789");
-    $("input[name='startDate']").val("2025-06-15");
+    $("input[name='startDate']").val("2025-06-30");
     $("input[name='terms']").prop("checked", true);
     updatePrice();
   }
@@ -1019,11 +1022,7 @@ $(document).ready(function(){
           function togglePreviousInsurerFields() {
               const tplValue = sfTplSelect.val();
               const modValue = sfModSelect.val();
-              const sfValuesNoPrevInsurerNeeded = ['SF0', 'NoSFClass', '']
-              if (
-                  //(tplValue === 'SF0' && modValue === 'SF0') || (tplValue === '' && modValue === '')
-                  (sfValuesNoPrevInsurerNeeded.includes(tplValue) && sfValuesNoPrevInsurerNeeded.includes(modValue))
-                 ) {
+              if (sfValuesNoPrevInsurerNeeded.includes(tplValue) && sfValuesNoPrevInsurerNeeded.includes(modValue)) {
                   previousInsurerFieldContainer.slideUp(function() {
                       previousInsurerSelect.prop('required', false).val('');
                   });
@@ -1033,7 +1032,6 @@ $(document).ready(function(){
                   previousInsurerVRNFieldContainer.slideUp(function() {
                       previousInsurerVRNInput.prop('required', false).val('');
                   });
-
               } else {
                   previousInsurerFieldContainer.slideDown(function() {
                       previousInsurerSelect.prop('required', true);
@@ -1458,25 +1456,28 @@ $("#quoteForm").on("submit", function(e) {
       payload.subject.registeredCar = registeredCar;
       payload.subject.underwriting.bonusMalusTpl = sfClassTpl;
       payload.subject.underwriting.bonusMalusOmium = sfClassMod;
-      if(!policyholderIsRegisteredOwner){
-        payload.subject.previousInsurer = {};
-        payload.subject.previousInsurer.insurerName = previousInsurerName;
-        payload.subject.previousInsurer.reference = previousInsurerReference;
-        payload.subject.previousInsurer.vrn = previousInsurerVRN;
+      if (!sfValuesNoPrevInsurerNeeded.includes(sfClassTpl) || !sfValuesNoPrevInsurerNeeded.includes(sfClassMod)) {
+        payload.subject.previousInsurer = {
+          insurerName: previousInsurerName,
+          reference: previousInsurerReference,
+          vrn: previousInsurerVRN,
+        };
       }
+      
       payload.subject.policyholderIsRegisteredOwner = policyholderIsRegisteredOwner;
-
-      if(policyholderIsRegisteredOwner === false){
-        payload.subject.registeredOwner = {};
-        payload.subject.registeredOwner.entityType = (registeredOwnerisCompany === "yes") ? "ENTITY_TYPE_COMPANY" : "ENTITY_TYPE_PERSON";
-        payload.subject.registeredOwner.firstName = registeredOwnerfirstName;
-        payload.subject.registeredOwner.lastName = registeredOwnerlastName;
-        payload.subject.registeredOwner.address = {};
-        payload.subject.registeredOwner.address.street = registeredOwnerstreet;
-        payload.subject.registeredOwner.address.number = ' ';
-        payload.subject.registeredOwner.address.zip = registeredOwnerzip;
-        payload.subject.registeredOwner.address.city = registeredOwnercity;
-        payload.subject.registeredOwner.address.country = registeredOwnercountry;
+      if (policyholderIsRegisteredOwner === false) {
+      payload.subject.registeredOwner = {
+          entityType: (registeredOwnerisCompany === "yes") ? "ENTITY_TYPE_COMPANY" : "ENTITY_TYPE_PERSON",
+          firstName: registeredOwnerfirstName,
+          lastName: registeredOwnerlastName,
+          address: {
+            street: registeredOwnerstreet,
+            number: ' ',
+            zip: registeredOwnerzip,
+            city: registeredOwnercity,
+            country: registeredOwnercountry,
+          },
+        };
       }
 
   }
