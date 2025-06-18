@@ -356,6 +356,7 @@ $(document).ready(function(){
                         placeholder: 'YYYY-MM',
                         //insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
                         insertBefore: 'label[data-vehicle-vin]',
+                        isRequired: '',
                         tooltip: 'Bitte tragen Sie das Datum ein, zu dem das Fahrzeug erstmals auf Sie oder den abweichenden Fahrzeughalter zugelassen wurde oder wann es voraussichtlich auf Sie angemeldet wird. Das Datum der aktuellen Zulassung finden Sie auf der Zulassungsbescheinigung unter Position I.'
                     },
                     {
@@ -363,6 +364,7 @@ $(document).ready(function(){
                         placeholder: 'YYYY-MM',
                         //insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
                         insertBefore: 'label[data-vehicle-vin]',
+                        isRequired: '',
                         tooltip: 'An diesem Datum (Monat und Jahr) wurde Ihr Fahrzeug erstmals zum öffentlichen Verkehr zugelassen. Sie finden dieses in der Zulassungsbescheinigung Ihres Fahrzeugs (ehemals Fahrzeugschein) unter Position B.'
                     },
                     /*{
@@ -375,6 +377,7 @@ $(document).ready(function(){
                         options: [{value: 'false', text: '<strong>Neu erworbenes Fahrzeug</strong> zulassen und versichern'}, {value: 'true', text: '<strong>Versicherung wechseln</strong> mit bereits auf mich versichertem Fahrzeug'}],
                         //insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
                         insertBefore: 'label[data-vehicle-vin]',
+                        isRequired: 'required',
                         tooltip: 'Die eVB (Elektronische Versicherungsbestätigung) zur Zulassung Ihres Fahrzeugs erhalten Sie direkt nach Antragsabschluss per E-Mail.'
                     }
                 ],
@@ -1040,13 +1043,13 @@ $(document).ready(function(){
         if (item.type === 'radio') {
             html += `<div class="radio-group" id="rg-${item.name}">`;
             item.options.forEach(opt => {
-                html += `<label><input class="radio-circle" type="radio" name="${item.name}" value="${opt.value}" required> ${opt.text}</label>`;
+                html += `<label><input class="radio-circle" type="radio" name="${item.name}" value="${opt.value}" ${item.isRequired}> ${opt.text}</label>`;
             });
             html += `</div>`;
         } else if (item.type === 'date') {
-            html += `<input class="field date w-input" type="date" name="${item.name}" placeholder="${item.placeholder || ''}" required>`;
+            html += `<input class="field date w-input" type="date" name="${item.name}" placeholder="${item.placeholder || ''}" ${item.isRequired}>`;
         } else if (item.type === 'text') {
-            html += `<input class="field date w-input" type="text" name="${item.name}" placeholder="${item.placeholder || ''}" required>`;
+            html += `<input class="field date w-input" type="text" name="${item.name}" placeholder="${item.placeholder || ''}" ${item.isRequired}>`;
         } else if (item.type === 'month-year') {
           // This creates two inputs: a visible one for the user and a hidden one for the form data.
           // The 'updateMonthYearField' function (defined below) is required for this to work.
@@ -1064,10 +1067,10 @@ $(document).ready(function(){
               >`;
 
           // 2. The hidden input that stores the formatted date (YYYY-MM-01) for submission.
-          html += `<input type="hidden" id="${item.name}" name="${item.name}" required>`;
+          html += `<input type="hidden" id="${item.name}" name="${item.name}" ${item.isRequired}>`;
       
         } else if (item.type === 'dropdown') {
-            html += `<select class="field" name="${item.name}" id="${item.name}" required>`;
+            html += `<select class="field" name="${item.name}" id="${item.name}" ${item.isRequired}>`;
             item.options.forEach(opt => {
                 html += `<option value="${opt.value}">${opt.text}</option>`;
             });
