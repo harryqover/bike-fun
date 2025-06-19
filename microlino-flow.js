@@ -373,7 +373,7 @@ $(document).ready(function(){
                         //insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
                         insertBefore: 'label[data-vehicle-vin]',
                         isRequired: 'required',
-                        tooltip: 'Die eVB (Elektronische Versicherungsbestätigung) zur Zulassung Ihres Fahrzeugs erhalten Sie direkt nach Antragsabschluss per E-Mail.'
+                        tooltip: 'Wenn Sie kürzlich ein Auto (entweder neu oder gebraucht) gekauft haben, das noch nicht auf Ihren Namen zugelassen ist, wählen Sie bitte die Option Neu erworbenes Fahrzeug. Wenn Sie ein bereits auf Sie zugelassenes, bestehendes Auto haben, wählen Sie bitte Versicherung wechseln.'
                     }
                 ],
                 removeSelectors: [] // Nothing to remove from AT base for this section
