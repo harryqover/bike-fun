@@ -1176,6 +1176,7 @@ $(document).ready(function(){
         //6. Update content
         if(country == "DE"){
           $('[data-startDate-explanation]').text('Zulassungsdatum noch unsicher? Kein Problem. Wählen Sie einfach das heutige Datum aus. Ihr Versicherungsschutz startet dann automatisch am Tag der tatsächlichen Zulassung.');
+          $('[data-driverInfo-minAge]').text('Für den Microlino LITE beträgt das Mindestalter 15 Jahre, für den Microlino Edition 18 Jahre.');
         }
 
 
