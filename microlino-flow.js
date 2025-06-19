@@ -346,13 +346,8 @@ $(document).ready(function(){
         "DE": {
             vehicleInfo: {
                 add: [
-                    /*{
-                        type: 'radio', name: 'conditionAtPurchase', label: 'Zustand bei Kauf',
-                        options: [{value: 'VEHICLE_CONDITION_NEW', text: 'Neu'}, {value: 'VEHICLE_CONDITION_USED', text: 'Gebraucht'}],
-                        insertBefore: 'span.toggle-icon[data-confirm-vehicle]'
-                    },*/
                     {
-                        type: 'month-year', name: 'policyholderRegistrationDate', label: 'Datum dieser Zulassung (I)',
+                        type: 'month-year', name: 'policyholderRegistrationDate', label: 'Zulassung auf Halter (I)',
                         placeholder: 'YYYY-MM',
                         //insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
                         insertBefore: 'label[data-vehicle-vin]',
@@ -1028,7 +1023,7 @@ $(document).ready(function(){
 
     // --- Helper function to create form elements ---
     function createFieldHtml(item) {
-        let html = `<div class="js-dynamic-field js-de-field">`; // Mark as dynamic and DE-specific
+        let html = `<div class="js-dynamic-field js-de-field id="id-${item.name}">`; // Mark as dynamic and DE-specific
         html += `<label for="${item.name}">${item.label}`;
         if (item.tooltip) {
           html += `<div class="tooltip-container">`;
