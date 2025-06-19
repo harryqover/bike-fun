@@ -1,4 +1,4 @@
-console.log("20250619 div id")
+console.log("20250619 registeredCar toggle")
 
 const appId = {
   sbx: {
@@ -1210,6 +1210,18 @@ $(document).ready(function(){
               }
           });
           $('.registeredOwnerSectionForm').slideUp();
+
+          $('input[name="registeredCar"]').off('change').on('change', function() {
+            console.log("registeredCar ", this.value)
+            if (this.value == 'true') {
+              $('#div-policyholderRegistrationDate').slideDown(function() {
+                $(this).css('display', 'block');
+              });
+            } else {
+              $('#div-policyholderRegistrationDate').slideUp();
+            }
+          });
+          $('#div-policyholderRegistrationDate').slideUp();
 
           $('input[name="registeredOwnerisCompany"]').off('change').on('change', function() {
               if (this.value === 'yes') {
