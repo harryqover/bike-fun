@@ -1,4 +1,4 @@
-console.log("20250619 registeredCar toggle")
+console.log("20250619 zulassen und versichern")
 
 const appId = {
   sbx: {
@@ -369,7 +369,7 @@ $(document).ready(function(){
                     },*/
                     {
                         type: 'radio', name: 'registeredCar', label: 'Wofür benötigen Sie die Versicherung?',
-                        options: [{value: 'false', text: '<strong>Neu erworbenes Fahrzeug</strong> zulassen und versichern'}, {value: 'true', text: '<strong>Versicherung wechseln</strong> mit bereits auf mich versichertem Fahrzeug'}],
+                        options: [{value: 'false', text: '<strong>Neu erworbenes Fahrzeug</strong> zulassen und versichern <div class="tooltip-container"><span class="tooltip-icon">?</span><div class="tooltip-text">Die eVB (Elektronische Versicherungsbestätigung) zur Zulassung Ihres Fahrzeugs erhalten Sie direkt nach Antragsabschluss per E-Mail.</div></div>'}, {value: 'true', text: '<strong>Versicherung wechseln</strong> mit bereits auf mich versichertem Fahrzeug'}],
                         //insertBefore: 'span.toggle-icon[data-confirm-vehicle]',
                         insertBefore: 'label[data-vehicle-vin]',
                         isRequired: 'required',
