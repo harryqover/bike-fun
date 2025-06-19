@@ -1,4 +1,4 @@
-console.log("20250616 insurerId")
+console.log("20250619 div id")
 
 const appId = {
   sbx: {
@@ -1023,7 +1023,7 @@ $(document).ready(function(){
 
     // --- Helper function to create form elements ---
     function createFieldHtml(item) {
-        let html = `<div class="js-dynamic-field js-de-field id="${item.name}">`; // Mark as dynamic and DE-specific
+        let html = `<div class="js-dynamic-field js-de-field  id="div-${item.name}">`; // Mark as dynamic and DE-specific
         html += `<label for="${item.name}">${item.label}`;
         if (item.tooltip) {
           html += `<div class="tooltip-container">`;
