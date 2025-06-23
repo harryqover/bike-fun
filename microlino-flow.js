@@ -1,4 +1,4 @@
-console.log("20250619 zulassen und versichern")
+console.log("20250623 ageAtStart")
 
 const appId = {
   sbx: {
