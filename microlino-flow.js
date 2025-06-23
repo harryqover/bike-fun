@@ -1,4 +1,4 @@
-console.log("20250623 ageAtStart")
+console.log("20250623 vin validation")
 
 const appId = {
   sbx: {
@@ -1320,7 +1320,7 @@ $("#quoteForm").on("submit", function(e) {
       $("#loadingOverlay").hide();
       return;
     }
-    
+
     const agePolicyHolderAtStart = getAgeAtStart(policyholderBirthdate, startDate);
     if(agePolicyHolderAtStart < 18){
       $("#message").html('<p class="error">Der Versicherungsnehmer muss mindestens 18 Jahre alt sein.</p>');
