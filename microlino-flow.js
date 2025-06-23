@@ -1337,11 +1337,6 @@ $("#quoteForm").on("submit", function(e) {
       $("#loadingOverlay").hide();
       return;
     }
-    if (model === "edition" && ageAtStart < 17) {
-      $("#message").html('<p class="error">Für den Microlino EDITION muss der jüngste Fahrer mindestens 17 Jahre alt sein.</p>');
-      $("#loadingOverlay").hide();
-      return;
-    }
   }
   if (country === "AT") {
       if (!/^\d{4}$/.test(zip)) {
@@ -1355,6 +1350,11 @@ $("#quoteForm").on("submit", function(e) {
       if (interchangeableLicensePlate === "yes") {
           $("#message").html('<p class="error">Anträge für Wechselkennzeichen sind nicht zulässig.</p>');
           $("#loadingOverlay").hide(); return;
+      }
+      if (model === "edition" && ageAtStart < 17) {
+        $("#message").html('<p class="error">Für den Microlino EDITION muss der jüngste Fahrer mindestens 17 Jahre alt sein.</p>');
+        $("#loadingOverlay").hide();
+        return;
       }
   } else if (country === "DE") {
       if (!/^\d{5}$/.test(zip)) {
@@ -1373,6 +1373,11 @@ $("#quoteForm").on("submit", function(e) {
       if(registeredCar && vrn === ""){
         $("#message").html('<p class="error">Wenn Sie die Option "Versicherung wechseln mit bereits auf mich versichertem Fahrzeug" wählen, geben Sie bitte das Kennzeichen des Fahrzeugs an.</p>');
         $("#loadingOverlay").hide(); return;
+      }
+      if (model === "edition" && ageAtStart < 18) {
+        $("#message").html('<p class="error">Für den Microlino EDITION muss der jüngste Fahrer mindestens 18 Jahre alt sein.</p>');
+        $("#loadingOverlay").hide();
+        return;
       }
   }
   
