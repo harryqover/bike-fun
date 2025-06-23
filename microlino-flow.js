@@ -1351,6 +1351,7 @@ $("#quoteForm").on("submit", function(e) {
           $("#message").html('<p class="error">Anträge für Wechselkennzeichen sind nicht zulässig.</p>');
           $("#loadingOverlay").hide(); return;
       }
+      const ageAtStart = getAgeAtStart(driverBirthdate, startDate);
       if (model === "edition" && ageAtStart < 17) {
         $("#message").html('<p class="error">Für den Microlino EDITION muss der jüngste Fahrer mindestens 17 Jahre alt sein.</p>');
         $("#loadingOverlay").hide();
@@ -1374,6 +1375,7 @@ $("#quoteForm").on("submit", function(e) {
         $("#message").html('<p class="error">Wenn Sie die Option "Versicherung wechseln mit bereits auf mich versichertem Fahrzeug" wählen, geben Sie bitte das Kennzeichen des Fahrzeugs an.</p>');
         $("#loadingOverlay").hide(); return;
       }
+      const ageAtStart = getAgeAtStart(driverBirthdate, startDate);
       if (model === "edition" && ageAtStart < 18) {
         $("#message").html('<p class="error">Für den Microlino EDITION muss der jüngste Fahrer mindestens 18 Jahre alt sein.</p>');
         $("#loadingOverlay").hide();
