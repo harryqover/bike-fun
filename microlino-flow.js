@@ -1308,6 +1308,15 @@ $("#quoteForm").on("submit", function(e) {
   }
   
   // If start date is to be set, validate it.
+  // A standard regex for email validation
+  const emailPattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+  if (!email || !emailPattern.test(email)) {
+    $("#message").html('<p class="error">Bitte geben Sie eine gültige E-Mail-Adresse ein.</p>');
+    $("#loadingOverlay").hide();
+    return;
+  }
+
   if(setStart) {
     if (!startDate) {
       $("#message").html('<p class="error">Bitte wählen Sie ein Startdatum.</p>');
