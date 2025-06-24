@@ -988,11 +988,16 @@ $(document).ready(function(){
               $('#div-policyholderRegistrationDate').slideDown(function() {
                 $(this).css('display', 'block');
               });
+              $('#div-vrn').slideDown(function() {
+                $(this).css('display', 'block');
+              });
             } else {
               $('#div-policyholderRegistrationDate').slideUp();
+              $('#div-vrn').slideUp();
             }
           });
           $('#div-policyholderRegistrationDate').slideUp();
+          $('#div-vrn').slideUp();
 
           $('input[name="registeredOwnerisCompany"]').off('change').on('change', function() {
               if (this.value === 'yes') {
@@ -1321,7 +1326,7 @@ $("#quoteForm").on("submit", function(e) {
     $("#loadingOverlay").hide();
     return;
   }
-  
+
   if (!model) {
     $("#message").html('<p class="error">Bitte wählen Sie ein Modell aus.</p>');
     $("#loadingOverlay").hide();
