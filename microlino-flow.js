@@ -1321,6 +1321,13 @@ $("#quoteForm").on("submit", function(e) {
     $("#loadingOverlay").hide();
     return;
   }
+  
+  if (!model) {
+    $("#message").html('<p class="error">Bitte wählen Sie ein Modell aus.</p>');
+    $("#loadingOverlay").hide();
+    return;
+   }
+
   // If start date is to be set, validate it.
   if(setStart) {
     if (!startDate) {
