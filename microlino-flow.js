@@ -45,6 +45,7 @@ if (urlParams.has('locale')) {
   }
 }
 const [language, country] = locale.split('-');
+window.locale = locale;
 console.log("Current locale:", locale);
 console.log("Language:", language);
 console.log("Country:", country);
