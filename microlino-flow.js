@@ -218,7 +218,7 @@ $(document).ready(function(){
                var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId="+appId.sbx[country];
             } else {
              var redirectUrl1 = "https://app.qover.com/payout/pay";
-             var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId=iw702hil7q0ejwxkt23hdya8";
+             var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId="+appId.prd[country];
             } 
             //var redirectUrl2 = "?locale=de-AT&id=" + response.payload.id + "&paymentId=" + response.payload.payment.id + "&appId=q809unxlpt18fzf20zgb9vqu";
   	        /*var redirectUrl = "https://appqoverme-ui.sbx.qover.io/subscription/pay/recurring/sepadd?locale=de-AT&id=" 
@@ -1625,7 +1625,7 @@ $("#quoteForm").on("submit", function(e) {
            var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId="+appId.sbx[country];
         } else {
          var redirectUrl1 = "https://app.qover.com/payout/pay";
-         var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId=iw702hil7q0ejwxkt23hdya8";
+         var redirectUrl2 = "?locale="+locale+"&id=" + response.payload.id + "&appId="+appId.prd[country];
         }
         window.location.href = redirectUrl1 + redirectUrl2;
       } else {
