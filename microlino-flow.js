@@ -1,4 +1,4 @@
-console.log("20250623 vin validation")
+console.log("20250627 correct appid")
 
 const appId = {
   sbx: {
