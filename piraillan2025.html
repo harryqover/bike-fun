@@ -9,13 +9,14 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <!-- Chosen Palette: Cap Ferret Dune -->
-    <!-- Application Structure Plan: J'ai conçu une application à onglets pour une navigation rapide. L'ajout de l'onglet "Concours Cuisine" centralise l'organisation des repas de manière ludique et visible pour tous les participants. -->
+    <!-- Application Structure Plan: J'ai conçu une application à onglets pour une navigation rapide. L'ajout de l'onglet "Concours Cuisine" centralise l'organisation des repas de manière ludique et visible pour tous les participants. L'intégration de Gemini API pour la génération de recettes et la suggestion d'activités ajoute une dimension interactive et intelligente. -->
     <!-- Visualization & Content Choices: 
         - Marées -> Objectif: Montrer l'évolution -> Viz: Tableau HTML + Graphique Chart.js -> Interaction: Survol -> Justification: Intuitif.
         - Plages/Activités -> Objectif: Comparer et détailler -> Viz: Cartes HTML/CSS -> Interaction: Clic pour ouvrir un modal avec plus d'infos -> Justification: Améliore la profondeur de l'information sans surcharger l'interface principale.
         - Carte -> Objectif: Localiser -> Viz: Carte interactive Leaflet.js -> Interaction: Clic sur marqueurs -> Justification: Essentiel pour la logistique.
         - Itinéraires Vélo -> Objectif: Guider -> Viz: Cartes descriptives HTML/CSS -> Justification: Fournit des plans d'excursion clés en main.
-        - Concours Cuisine -> Objectif: Organiser les repas -> Viz: Cartes journalières HTML/CSS -> Justification: Présentation claire et amusante du planning des repas.
+        - Concours Cuisine -> Objectif: Organiser et inspirer -> Viz: Cartes journalières HTML/CSS -> Interaction: Clic sur bouton "Idées Recettes" pour appeler Gemini API et afficher une recette dans un modal -> Justification: Ajoute une fonctionnalité IA amusante et utile.
+        - Aujourd'hui -> Objectif: Planifier la journée -> Viz: Carte HTML/CSS -> Interaction: Clic sur bouton "Suggérer une activité" pour appeler Gemini API avec le contexte des marées -> Justification: Offre des conseils intelligents et contextuels.
         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
@@ -56,6 +57,18 @@
         }
         .modal-container {
             transition: transform 0.3s ease;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0F766E;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         @media (min-width: 768px) {
             .chart-container {
@@ -100,14 +113,25 @@
 
     </div>
 
-    <!-- Modal Structure -->
-    <div id="details-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50" onclick="closeModal()">
+    <!-- Details Modal -->
+    <div id="details-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50" onclick="closeModal('details-modal')">
         <div class="modal-container bg-white rounded-lg shadow-xl max-w-2xl w-full transform scale-95" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center p-4 border-b border-stone-200">
                 <h3 id="modal-title" class="text-xl font-bold text-teal-800"></h3>
-                <button onclick="closeModal()" class="text-3xl font-light leading-none text-stone-500 hover:text-stone-800">&times;</button>
+                <button onclick="closeModal('details-modal')" class="text-3xl font-light leading-none text-stone-500 hover:text-stone-800">&times;</button>
             </div>
             <div id="modal-content" class="p-6 max-h-[70vh] overflow-y-auto"></div>
+        </div>
+    </div>
+    
+    <!-- Recipe Modal -->
+    <div id="recipe-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50" onclick="closeModal('recipe-modal')">
+        <div class="modal-container bg-white rounded-lg shadow-xl max-w-2xl w-full transform scale-95" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center p-4 border-b border-stone-200">
+                <h3 id="recipe-modal-title" class="text-xl font-bold text-teal-800"></h3>
+                <button onclick="closeModal('recipe-modal')" class="text-3xl font-light leading-none text-stone-500 hover:text-stone-800">&times;</button>
+            </div>
+            <div id="recipe-modal-content" class="p-6 max-h-[70vh] overflow-y-auto"></div>
         </div>
     </div>
 
@@ -214,6 +238,44 @@
             tides: renderTides,
         };
 
+        async function callGemini(prompt, jsonSchema = null) {
+            const apiKey = ""; 
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            
+            let payload = {
+                contents: [{ role: "user", parts: [{ text: prompt }] }]
+            };
+
+            if (jsonSchema) {
+                payload.generationConfig = {
+                    responseMimeType: "application/json",
+                    responseSchema: jsonSchema
+                };
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API call failed with status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    throw new Error("Invalid response structure from API.");
+                }
+            } catch (error) {
+                console.error("Gemini API call error:", error);
+                return null;
+            }
+        }
+
         function updateView() {
             navLinks.forEach(link => link.classList.toggle('active', link.dataset.tab === activeTab));
             contentSections.forEach(section => section.classList.toggle('active', section.id === activeTab));
@@ -231,7 +293,7 @@
         }
         
         function renderToday(container) {
-            const today = new Date();
+            const today = new Date(2025, 6, 21); // For demo purpose, using a fixed date
             const dayOfWeek = today.getDay();
             const todayTide = appData.tides.find(t => t.dayIndex === dayOfWeek);
             let content = '';
@@ -242,11 +304,40 @@
                         <div class="bg-sky-50 p-4 rounded-lg"><h3 class="font-semibold text-sky-800">Pleine Mer du Matin</h3><p class="text-2xl font-bold text-sky-700">${todayTide.pmMatin}</p></div>
                         <div class="bg-sky-50 p-4 rounded-lg"><h3 class="font-semibold text-sky-800">Pleine Mer de l'Après-midi</h3><p class="text-2xl font-bold text-sky-700">${todayTide.pmSoir}</p></div>
                     </div>
-                    <div class="mt-6 bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg text-left"><h4 class="font-bold text-amber-900">Le conseil du jour :</h4><p class="text-amber-800 mt-1">${todayTide.conseil}</p></div>`;
+                    <div class="mt-6 bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg text-left"><h4 class="font-bold text-amber-900">Le conseil du jour :</h4><p class="text-amber-800 mt-1">${todayTide.conseil}</p></div>
+                    <div class="mt-6 text-center">
+                        <button onclick="generateActivitySuggestion()" class="bg-teal-600 text-white font-bold py-2 px-4 rounded-full hover:bg-teal-700 transition-colors">✨ Suggérer une activité</button>
+                    </div>
+                    <div id="activity-suggestion" class="mt-4 text-left"></div>
+                    `;
             } else {
                  content = `<p class="text-stone-600">Les informations pour aujourd'hui seront disponibles au début de votre séjour.</p>`;
             }
             container.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-lg border border-stone-200"><h2 class="text-2xl font-bold text-teal-800 mb-4 text-center">Plan du Jour</h2><div class="text-center">${content}</div></div>`;
+        }
+
+        async function generateActivitySuggestion() {
+            const suggestionBox = document.getElementById('activity-suggestion');
+            suggestionBox.innerHTML = '<div class="flex justify-center"><div class="loader"></div></div>';
+            
+            const today = new Date(2025, 6, 21);
+            const dayOfWeek = today.getDay();
+            const todayTide = appData.tides.find(t => t.dayIndex === dayOfWeek);
+
+            if (!todayTide) {
+                suggestionBox.innerHTML = '<p class="text-red-500">Impossible de récupérer les informations de marée.</p>';
+                return;
+            }
+
+            const prompt = `Tu es un guide touristique pour des vacances en famille au Cap Ferret. Aujourd'hui, nous sommes ${todayTide.date}. La marée haute du matin est à ${todayTide.pmMatin} et celle de l'après-midi à ${todayTide.pmSoir}. Le coefficient est de ${todayTide.coeff}. Propose un court programme d'activité pour la journée (matin et après-midi) pour un grand groupe familial avec des jeunes enfants et des grands-parents. Sois créatif et tiens compte des marées pour les activités de plage.`;
+
+            const suggestion = await callGemini(prompt);
+
+            if (suggestion) {
+                suggestionBox.innerHTML = `<div class="bg-stone-50 p-4 rounded-lg"><h4 class="font-bold text-teal-900">Suggestion du jour :</h4><p class="text-stone-700 mt-2 whitespace-pre-wrap">${suggestion}</p></div>`;
+            } else {
+                suggestionBox.innerHTML = '<p class="text-red-500 text-center">Désolé, une erreur est survenue lors de la génération de la suggestion. Veuillez réessayer.</p>';
+            }
         }
 
         function renderVilla(container) {
@@ -280,10 +371,15 @@
                 const specialClass = entry.special ? 'bg-amber-100 border-amber-400' : 'bg-white';
                 const specialContent = entry.special ? `<p class="text-sm text-amber-800 font-medium mt-2">${entry.special}</p>` : '';
                 return `
-                <div class="p-6 rounded-lg shadow-lg border ${specialClass}">
-                    <p class="text-sm font-semibold text-teal-800">${entry.day}</p>
-                    <p class="text-2xl font-bold text-stone-800 mt-1">${entry.team}</p>
-                    ${specialContent}
+                <div class="p-6 rounded-lg shadow-lg border flex flex-col justify-between ${specialClass}">
+                    <div>
+                        <p class="text-sm font-semibold text-teal-800">${entry.day}</p>
+                        <p class="text-2xl font-bold text-stone-800 mt-1">${entry.team}</p>
+                        ${specialContent}
+                    </div>
+                    <button onclick="showRecipeGenerator('${entry.team}')" class="mt-4 bg-teal-50 text-teal-700 font-semibold py-2 px-3 rounded-full hover:bg-teal-100 transition-colors text-sm w-full flex items-center justify-center gap-2">
+                        ✨ Idées Recettes
+                    </button>
                 </div>
             `}).join('');
 
@@ -296,6 +392,53 @@
             `;
         }
         
+        async function showRecipeGenerator(teamName) {
+            const modal = document.getElementById('recipe-modal');
+            const modalTitle = modal.querySelector('#recipe-modal-title');
+            const modalContent = modal.querySelector('#recipe-modal-content');
+
+            modalTitle.textContent = `Idée recette pour l'équipe ${teamName}`;
+            modalContent.innerHTML = '<div class="flex justify-center"><div class="loader"></div></div>';
+            openModal('recipe-modal');
+            
+            const prompt = `Tu es un assistant culinaire pour des vacances en famille au Cap Ferret, France. Propose une idée de recette simple et conviviale pour un grand groupe (environ 15 adultes et 5 enfants) pour l'équipe qui s'appelle '${teamName}'. La recette doit être de saison (juillet) et si possible utiliser des produits locaux du Cap Ferret (poissons, huîtres, etc.).`;
+            const schema = {
+                type: "OBJECT",
+                properties: {
+                    title: { type: "STRING" },
+                    description: { type: "STRING" },
+                    ingredients: { type: "ARRAY", items: { type: "STRING" } },
+                    steps: { type: "ARRAY", items: { type: "STRING" } }
+                },
+                required: ["title", "description", "ingredients", "steps"]
+            };
+
+            const resultText = await callGemini(prompt, schema);
+
+            if (resultText) {
+                try {
+                    const recipe = JSON.parse(resultText);
+                    let recipeHtml = `
+                        <h4 class="text-xl font-bold text-stone-800">${recipe.title}</h4>
+                        <p class="text-stone-600 mt-2 mb-4">${recipe.description}</p>
+                        <h5 class="font-bold mt-4 mb-2 text-teal-800">Ingrédients :</h5>
+                        <ul class="list-disc list-inside text-stone-700 space-y-1">
+                            ${recipe.ingredients.map(i => `<li>${i}</li>`).join('')}
+                        </ul>
+                        <h5 class="font-bold mt-4 mb-2 text-teal-800">Préparation :</h5>
+                        <ol class="list-decimal list-inside text-stone-700 space-y-2">
+                            ${recipe.steps.map(s => `<li>${s}</li>`).join('')}
+                        </ol>
+                    `;
+                    modalContent.innerHTML = recipeHtml;
+                } catch (e) {
+                     modalContent.innerHTML = `<p class="text-red-500">Erreur lors du formatage de la recette.</p><p class="text-xs text-stone-500 mt-4">${resultText}</p>`;
+                }
+            } else {
+                modalContent.innerHTML = '<p class="text-red-500 text-center">Désolé, une erreur est survenue lors de la génération de la recette. Veuillez réessayer.</p>';
+            }
+        }
+
         function renderMap(container) {
             container.innerHTML = `
                 <div class="text-center mb-6"><h2 class="text-2xl font-bold text-teal-800 mb-2">Carte de la Presqu'île</h2><p class="text-stone-600 max-w-2xl mx-auto">Explorez les environs ! Tous les points d'intérêt sont sur la carte.</p></div>
@@ -432,13 +575,14 @@
                 <p class="text-stone-700 text-sm">${value}</p>
             `).join('');
             
-            openModal(item.name, contentHtml);
+            openModal('details-modal', item.name, contentHtml);
         }
-
-        const modal = document.getElementById('details-modal');
-        function openModal(title, content) {
-            modal.querySelector('#modal-title').textContent = title;
-            modal.querySelector('#modal-content').innerHTML = content;
+        
+        function openModal(modalId, title, content) {
+            const modal = document.getElementById(modalId);
+            if (title) modal.querySelector(`#${modalId === 'details-modal' ? 'modal-title' : 'recipe-modal-title'}`).textContent = title;
+            if (content) modal.querySelector(`#${modalId === 'details-modal' ? 'modal-content' : 'recipe-modal-content'}`).innerHTML = content;
+            
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             setTimeout(() => {
@@ -447,7 +591,8 @@
             }, 10);
         }
 
-        function closeModal() {
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
             modal.classList.add('opacity-0');
             modal.querySelector('.modal-container').classList.add('scale-95');
             setTimeout(() => {
