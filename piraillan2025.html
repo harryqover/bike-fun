@@ -9,14 +9,14 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <!-- Chosen Palette: Cap Ferret Dune -->
-    <!-- Application Structure Plan: J'ai conçu une application à onglets pour une navigation rapide. L'ajout de l'onglet "Concours Cuisine" centralise l'organisation des repas de manière ludique et visible pour tous les participants. L'intégration de Gemini API pour la génération de recettes et la suggestion d'activités ajoute une dimension interactive et intelligente. -->
+    <!-- Application Structure Plan: J'ai conçu une application à onglets pour une navigation rapide. L'ajout de l'onglet "Checklist Valises" avec une interaction IA (Gemini) offre un outil pratique et personnalisé pour la préparation du voyage. -->
     <!-- Visualization & Content Choices: 
         - Marées -> Objectif: Montrer l'évolution -> Viz: Tableau HTML + Graphique Chart.js -> Interaction: Survol -> Justification: Intuitif.
         - Plages/Activités -> Objectif: Comparer et détailler -> Viz: Cartes HTML/CSS -> Interaction: Clic pour ouvrir un modal avec plus d'infos -> Justification: Améliore la profondeur de l'information sans surcharger l'interface principale.
         - Carte -> Objectif: Localiser -> Viz: Carte interactive Leaflet.js -> Interaction: Clic sur marqueurs -> Justification: Essentiel pour la logistique.
         - Itinéraires Vélo -> Objectif: Guider -> Viz: Cartes descriptives HTML/CSS -> Justification: Fournit des plans d'excursion clés en main.
         - Concours Cuisine -> Objectif: Organiser et inspirer -> Viz: Cartes journalières HTML/CSS -> Interaction: Clic sur bouton "Idées Recettes" pour appeler Gemini API et afficher une recette dans un modal -> Justification: Ajoute une fonctionnalité IA amusante et utile.
-        - Aujourd'hui -> Objectif: Planifier la journée -> Viz: Carte HTML/CSS -> Interaction: Clic sur bouton "Suggérer une activité" pour appeler Gemini API avec le contexte des marées -> Justification: Offre des conseils intelligents et contextuels.
+        - Checklist Valises -> Objectif: Aider à la préparation -> Viz: Formulaire HTML -> Interaction: Clic sur bouton pour appeler Gemini API avec le contexte du groupe et des équipements fournis, puis affiche une checklist structurée -> Justification: Outil intelligent et personnalisé qui simplifie l'organisation.
         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
@@ -90,6 +90,7 @@
         <nav class="flex justify-center flex-wrap gap-x-3 gap-y-2 md:gap-x-4 border-b border-stone-300 pb-2 mb-8">
             <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="today">Aujourd'hui</button>
             <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="villa">La Villa</button>
+            <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="packing-checklist">Checklist Valises</button>
             <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="kitchen-contest">Concours Cuisine</button>
             <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="map">Carte</button>
             <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="bike-routes">Itinéraires Vélo</button>
@@ -102,6 +103,7 @@
         <main>
             <section id="today" class="content-section"></section>
             <section id="villa" class="content-section"></section>
+            <section id="packing-checklist" class="content-section"></section>
             <section id="kitchen-contest" class="content-section"></section>
             <section id="map" class="content-section"></section>
             <section id="bike-routes" class="content-section"></section>
@@ -151,6 +153,9 @@
                 { lat: 44.7290, lng: -1.2380, name: "Pointe aux Chevaux", type: "plage" },
                 { lat: 44.7850, lng: -1.2500, name: "Plage du Truc Vert", type: "plage" },
                 { lat: 44.6360, lng: -1.2530, name: "Plage de l'Horizon", type: "plage" },
+                { lat: 44.6455, lng: -1.2500, name: "Plage des Américains", type: "plage" },
+                { lat: 44.6388, lng: -1.2415, name: "Plage du Mimbeau", type: "plage" },
+                { lat: 44.7185, lng: -1.2595, name: "Plage de la Garonne", type: "plage" },
                 { lat: 44.7540, lng: -1.2260, name: "Marché de Piraillan", type: "commerce" },
                 { lat: 44.7780, lng: -1.1980, name: "Super U Claouey", type: "commerce" },
                 { lat: 44.7410, lng: -1.2310, name: "Poissonnerie de Piquey", type: "commerce" },
@@ -159,6 +164,8 @@
                 { lat: 44.7040, lng: -1.2430, name: "Village de l'Herbe", type: "activite" },
                 { lat: 44.6320, lng: -1.2460, name: "Chez Boulan", type: "activite" },
                 { lat: 44.6090, lng: -1.2470, name: "Le Phare du Cap Ferret", type: "activite" },
+                { lat: 44.7700, lng: -1.1500, name: "Réserve Naturelle des Prés Salés", type: "activite" },
+                { lat: 44.7450, lng: -1.2280, name: "Tennis Club de Petit Piquey", type: "activite" },
             ],
             villa: {
                 address: "64, avenue de Bellevue, Piraillan – 33950 Lège-Cap-Ferret",
@@ -189,7 +196,10 @@
             beaches: [
                 { type: 'bassin', name: 'Plage de la Truquette', location: 'Petit Piquey', time: '10 min', icon: '👶', description: 'Calme et discrète, idéale pour les familles avec ses tables de pique-nique à l\'ombre des pins.', color: 'bg-sky-100', textColor: 'text-sky-800', details: { conseil: "Parfaite pour les tout-petits à marée haute. L'eau est peu profonde et chaude. À marée basse, prévoyez des chaussures pour marcher sur l'estran.", services: "Tables de pique-nique, ombre des pins. Pas de restauration directe sur la plage mais le village est proche." } },
                 { type: 'bassin', name: 'Pointe aux Chevaux', location: 'Grand Piquey', time: '15 min', icon: '⭐', description: 'Considérée comme la plus belle plage, avec ses cabanes authentiques et une vue imprenable.', color: 'bg-sky-100', textColor: 'text-sky-800', details: { conseil: "Le spot photo par excellence au coucher du soleil. L'accès se mérite par un petit sentier, moins pratique avec une poussette.", services: "Dégustations d'huîtres à proximité. Pas de surveillance." } },
+                { type: 'bassin', name: 'Plage des Américains', location: 'Le Canon', time: '25 min', icon: '⚓', description: 'Reconnaissable à sa longue jetée, elle offre un charme suranné et une vue magnifique.', color: 'bg-sky-100', textColor: 'text-sky-800', details: { conseil: "Idéale pour la pêche à pied à marée basse. La jetée est un super poste d'observation.", services: "Proximité des commerces et restaurants du Canon." } },
+                { type: 'bassin', name: 'Plage du Mimbeau', location: 'Village Cap Ferret', time: '40 min', icon: '🐚', description: 'Une langue de sable unique qui forme une lagune intérieure, face à la Dune du Pilat.', color: 'bg-sky-100', textColor: 'text-sky-800', details: { conseil: "Magnifique balade à faire le long de la conche du Mimbeau. L'eau y est très calme et chaude.", services: "Cabanes de dégustation et restaurants à proximité." } },
                 { type: 'ocean', name: 'Plage du Truc Vert', location: 'Forêt', time: '20-25 min', icon: '🏄', description: 'Cadre sauvage et magnifique, accessible par la forêt. Écoles de surf et restauration.', color: 'bg-indigo-100', textColor: 'text-indigo-800', details: { conseil: "Respectez impérativement les zones de baignade surveillée (entre les drapeaux). Les vagues peuvent être puissantes.", services: "Poste de secours, écoles de surf, location de matériel, snacks/restaurants." } },
+                { type: 'ocean', name: 'Plage de la Garonne', location: 'Entre Le Truc Vert et l\'Horizon', time: '30 min', icon: '🌿', description: 'Moins fréquentée que ses voisines, elle offre un sentiment de solitude et de nature brute.', color: 'bg-indigo-100', textColor: 'text-indigo-800', details: { conseil: "Plage non surveillée, la prudence est de mise. Idéale pour les grandes marches au bord de l'eau.", services: "Aucun service, c'est la nature à l'état pur." } },
                 { type: 'ocean', name: 'Plage de l\'Horizon', location: 'Village Cap Ferret', time: '35-45 min', icon: '🚂', description: 'Accessible par le Petit Train. Proche des commerces et restaurants du village.', color: 'bg-indigo-100', textColor: 'text-indigo-800', details: { conseil: "L'option la plus 'civilisée' des plages océanes. Le trajet en petit train est une attraction en soi pour les enfants.", services: "Poste de secours, restaurants, boutiques, toilettes publiques." } }
             ],
             activities: {
@@ -200,6 +210,10 @@
                 "Excursions & Visites": [
                     { name: 'Sortie en Bateau', location: 'Bassin d\'Arcachon', description: 'Louez une pinasse ou un catamaran pour explorer le bassin.', details: { reservation: "Essentielle, à prévoir bien avant le séjour. Contacter les bateliers locaux.", budget: "Variable. Compter plusieurs centaines d'euros pour la privatisation d'une pinasse pour une demi-journée." } },
                     { name: 'Le Phare du Cap Ferret', location: 'Village Cap Ferret', description: '258 marches pour une vue à 360° inoubliable sur toute la presqu\'île.', details: { reservation: "Pas de réservation nécessaire. Éviter les heures de pointe (11h-16h).", budget: "Tarifs 2024 : 7€/adulte, 4€/enfant. Gratuit pour les moins de 4 ans." } }
+                ],
+                "Sports & Nature": [
+                    { name: 'Réserve Naturelle des Prés Salés', location: 'Arès/Lège', description: 'Explorez à pied ou à vélo cet espace naturel protégé unique, entre terre et mer.', details: { conseil: "Idéal pour l'observation des oiseaux. Prévoir des jumelles. L'accès est libre.", budget: "Gratuit." } },
+                    { name: 'Tennis Club de Petit Piquey', location: 'Petit Piquey', description: 'Pour une partie de tennis ou de padel dans un cadre agréable.', details: { reservation: "Réservation des courts en ligne ou par téléphone indispensable en été.", budget: "Variable selon la location du court." } }
                 ]
             },
             practical: {
@@ -229,6 +243,7 @@
         const pageRenderers = {
             today: renderToday,
             villa: renderVilla,
+            'packing-checklist': renderPackingChecklist,
             'kitchen-contest': renderKitchenContest,
             map: renderMap,
             'bike-routes': renderBikeRoutes,
@@ -364,6 +379,98 @@
                     <div class="bg-white p-6 rounded-lg shadow-lg border border-stone-200 space-y-4">${infoCard}</div>
                     <div class="bg-white p-6 rounded-lg shadow-lg border border-stone-200 space-y-4">${amenitiesHtml}</div>
                 </div>`;
+        }
+        
+        function renderPackingChecklist(container) {
+            container.innerHTML = `
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-teal-800 mb-2">Checklist Valises Intelligente</h2>
+                    <p class="text-stone-600 max-w-2xl mx-auto">Indiquez qui participe au voyage et laissez l'IA vous créer une checklist personnalisée, en tenant compte de ce qui est déjà fourni dans la villa !</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg border border-stone-200 max-w-3xl mx-auto">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                        <div>
+                            <label for="adults-input" class="block text-sm font-medium text-stone-700">Adultes</label>
+                            <input type="number" id="adults-input" value="10" min="0" class="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="children-input" class="block text-sm font-medium text-stone-700">Enfants (2-12 ans)</label>
+                            <input type="number" id="children-input" value="3" min="0" class="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="babies-input" class="block text-sm font-medium text-stone-700">Bébés (0-2 ans)</label>
+                            <input type="number" id="babies-input" value="2" min="0" class="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm">
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button onclick="generatePackingChecklist()" class="bg-teal-600 text-white font-bold py-2 px-4 rounded-full hover:bg-teal-700 transition-colors">✨ Créer ma checklist</button>
+                    </div>
+                    <div id="checklist-result" class="mt-6"></div>
+                </div>
+            `;
+        }
+
+        async function generatePackingChecklist() {
+            const resultDiv = document.getElementById('checklist-result');
+            resultDiv.innerHTML = '<div class="flex justify-center"><div class="loader"></div></div>';
+
+            const adults = document.getElementById('adults-input').value;
+            const children = document.getElementById('children-input').value;
+            const babies = document.getElementById('babies-input').value;
+
+            const providedItems = Object.values(appData.villa.amenities).flat().join(', ');
+
+            const prompt = `Tu es un assistant de voyage expert. Crée une checklist détaillée des choses à ne pas oublier pour des vacances d'une semaine en juillet au Cap Ferret, France, pour un groupe de ${adults} adultes, ${children} enfants (2-12 ans), et ${babies} bébés (0-2 ans). Le groupe a déjà des vélos.
+            IMPORTANT: La villa fournit déjà les éléments suivants, il ne faut donc PAS les inclure dans la checklist : ${providedItems}.
+            Organise la checklist par catégories claires.`;
+
+            const schema = {
+                type: "OBJECT",
+                properties: {
+                    "essentiels": { type: "ARRAY", items: { type: "STRING" }, description: "Documents et articles indispensables" },
+                    "vetements_adultes": { type: "ARRAY", items: { type: "STRING" }, description: "Vêtements et accessoires pour les adultes" },
+                    "vetements_enfants": { type: "ARRAY", items: { type: "STRING" }, description: "Vêtements et accessoires pour les enfants" },
+                    "pour_les_bebes": { type: "ARRAY", items: { type: "STRING" }, description: "Équipement spécifique pour les bébés" },
+                    "pour_la_plage_et_piscine": { type: "ARRAY", items: { type: "STRING" }, description: "Affaires pour la baignade et la plage" },
+                    "pharmacie_et_soins": { type: "ARRAY", items: { type: "STRING" }, description: "Trousse de secours et produits d'hygiène" },
+                    "divers": { type: "ARRAY", items: { type: "STRING" }, description: "Autres objets utiles" }
+                },
+                required: ["essentiels", "vetements_adultes", "vetements_enfants", "pour_les_bebes", "pour_la_plage_et_piscine", "pharmacie_et_soins", "divers"]
+            };
+
+            const resultText = await callGemini(prompt, schema);
+
+            if (resultText) {
+                try {
+                    const checklist = JSON.parse(resultText);
+                    let checklistHtml = '<div class="grid grid-cols-1 md:grid-cols-2 gap-6">';
+                    const categoryTitles = {
+                        essentiels: "📝 Essentiels",
+                        vetements_adultes: "👕 Vêtements Adultes",
+                        vetements_enfants: "👧 Vêtements Enfants",
+                        pour_les_bebes: "🍼 Pour les Bébés",
+                        pour_la_plage_et_piscine: "🏖️ Pour la Plage & Piscine",
+                        pharmacie_et_soins: "🩹 Pharmacie & Soins",
+                        divers: "🔌 Divers"
+                    };
+
+                    for (const category in checklist) {
+                        if (checklist[category] && checklist[category].length > 0) {
+                            checklistHtml += `<div><h4 class="font-bold mb-2 text-teal-800">${categoryTitles[category] || category}</h4><ul class="list-disc list-inside text-stone-700 space-y-1 text-sm">`;
+                            checklist[category].forEach(item => {
+                                checklistHtml += `<li>${item}</li>`;
+                            });
+                            checklistHtml += '</ul></div>';
+                        }
+                    }
+                    checklistHtml += '</div>';
+                    resultDiv.innerHTML = checklistHtml;
+                } catch (e) {
+                    resultDiv.innerHTML = `<p class="text-red-500">Erreur lors du formatage de la checklist.</p>`;
+                }
+            } else {
+                resultDiv.innerHTML = '<p class="text-red-500 text-center">Désolé, une erreur est survenue lors de la génération de la checklist. Veuillez réessayer.</p>';
+            }
         }
         
         function renderKitchenContest(container) {
