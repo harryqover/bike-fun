@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre Itinéraire Interactif : Schaerbeek → Cap Ferret</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Coastal Calm -->
+    <!-- Application Structure Plan: A single-page application designed as an interactive "Trip Dashboard". The structure uses a main top navigation bar to switch between key views (Overview, Leg 1, Interlude, Leg 2, Preparations), rather than a long scroll. This chunking of information prevents overwhelm and allows the user to focus on one part of the trip at a time. The 'Overview' acts as a landing dashboard with key stats and a visual journey flow. Each 'Leg' has a clear timeline and highlights for key stops. This structure was chosen to transform a linear text document into a non-linear, user-driven exploratory tool, making critical information like schedules and costs immediately accessible and digestible for a family preparing for a long drive. -->
+    <!-- Visualization & Content Choices: The application uses a mix of interactive elements to represent the report's data. A bar chart (Chart.js) is used to compare the costs and distances of the two main travel legs, offering a quick visual summary that's more impactful than a simple table. The journey's flow is represented by a responsive HTML/CSS diagram, avoiding external image dependencies. Key information like packing lists are converted into interactive checklists (HTML checkboxes), and essential addresses are placed in contextually relevant cards. This approach aims to make the data not just visible, but usable and engaging, turning passive information into an active planning tool. All quantitative and qualitative data from the report is integrated into these components. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4; /* A warm, very light beige */
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active {
+            border-bottom-color: #3b82f6; /* blue-500 */
+            color: #1e3a8a; /* blue-800 */
+            font-weight: 600;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+        }
+        .flow-line {
+            height: 2px;
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl">
+
+        <!-- HEADER -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-800">Votre Échappée Estivale</h1>
+            <p class="text-lg text-slate-500 mt-2">De Schaerbeek au Cap Ferret : l'itinéraire interactif de votre famille</p>
+        </header>
+
+        <!-- NAVIGATION -->
+        <nav class="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-2 mb-8 sticky top-4 z-10">
+            <ul id="main-nav" class="flex flex-wrap justify-center items-center gap-2 sm:gap-6">
+                <li><a href="#overview" class="nav-link p-2 sm:p-3 text-sm sm:text-base text-slate-600 hover:text-blue-600">Vue d'ensemble</a></li>
+                <li><a href="#preparatifs" class="nav-link p-2 sm:p-3 text-sm sm:text-base text-slate-600 hover:text-blue-600">Préparatifs</a></li>
+                <li><a href="#etape1" class="nav-link p-2 sm:p-3 text-sm sm:text-base text-slate-600 hover:text-blue-600">Étape 1: Vers Luynes</a></li>
+                <li><a href="#interlude" class="nav-link p-2 sm:p-3 text-sm sm:text-base text-slate-600 hover:text-blue-600">Interlude Tourangeau</a></li>
+                <li><a href="#etape2" class="nav-link p-2 sm:p-3 text-sm sm:text-base text-slate-600 hover:text-blue-600">Étape 2: Vers Cap Ferret</a></li>
+            </ul>
+        </nav>
+
+        <!-- CONTENT SECTIONS -->
+        <main id="main-content">
+
+            <!-- Section: Vue d'ensemble -->
+            <section id="overview" class="content-section animate-fade-in">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Votre voyage en un coup d'œil</h2>
+                    <p class="text-slate-600 max-w-3xl mx-auto">Voici le grand schéma de votre aventure. Cet aperçu visuel vous donne les repères essentiels de votre périple, des distances aux destinations. Chaque section peut être explorée en détail via la navigation ci-dessus.</p>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                    <h3 class="text-xl font-bold text-center mb-6 text-slate-700">Flux du Voyage</h3>
+                    <div class="flex items-center w-full">
+                        <div class="flow-step">
+                            <div class="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center text-2xl mb-2">🚗</div>
+                            <p class="font-semibold">Schaerbeek</p>
+                            <p class="text-sm text-slate-500">Départ</p>
+                        </div>
+                        <div class="flow-line bg-slate-300"></div>
+                        <div class="text-2xl text-slate-400 mx-4">🌙</div>
+                        <div class="flow-line bg-slate-300"></div>
+                        <div class="flow-step">
+                            <div class="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center text-2xl mb-2">🏰</div>
+                            <p class="font-semibold">Luynes</p>
+                            <p class="text-sm text-slate-500">17-20 Juillet</p>
+                        </div>
+                        <div class="flow-line bg-slate-300"></div>
+                        <div class="text-2xl text-slate-400 mx-4">☀️</div>
+                        <div class="flow-line bg-slate-300"></div>
+                        <div class="flow-step">
+                            <div class="w-12 h-12 rounded-full bg-amber-500 text-white flex items-center justify-center text-2xl mb-2">🏖️</div>
+                            <p class="font-semibold">Cap Ferret</p>
+                            <p class="text-sm text-slate-500">Arrivée</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-slate-700">Stats Clés du Trajet</h3>
+                        <ul class="space-y-3 text-slate-600">
+                            <li class="flex items-center"><span class="text-xl mr-3">🗺️</span> <strong>Distance Totale:</strong> ~1060 km</li>
+                            <li class="flex items-center"><span class="text-xl mr-3">💰</span> <strong>Coût Total Estimé:</strong> ~227,50 € (Péages & Carburant)</li>
+                            <li class="flex items-center"><span class="text-xl mr-3">📅</span> <strong>Dates Clés:</strong> 16/07 au 20/07/2025 pour les trajets</li>
+                            <li class="flex items-center"><span class="text-xl mr-3">👨‍👩‍👧‍👦</span> <strong>Voyageurs:</strong> 2 adultes, 1 enfant (4 ans), 1 bébé (7 mois)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-slate-700">Comparatif des Étapes</h3>
+                        <div class="chart-container">
+                            <canvas id="tripCompareChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Préparatifs -->
+            <section id="preparatifs" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Les Fondations d'un Voyage Réussi</h2>
+                    <p class="text-slate-600 max-w-3xl mx-auto">Un voyage serein commence par une bonne préparation. Cette section regroupe tous les conseils essentiels pour la sécurité, le confort et l'organisation, afin de partir l'esprit tranquille.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-slate-700 flex items-center"><span class="text-2xl mr-3">🛡️</span> Sécurité & Confort</h3>
+                        <ul class="space-y-2 list-disc list-inside text-slate-600">
+                            <li><strong>Bébé (7m):</strong> Siège dos à la route obligatoire. Harnais bien ajusté.</li>
+                            <li><strong>Enfant (4a):</strong> Réhausseur avec dossier pour protection optimale.</li>
+                            <li><strong>Chaleur:</strong> Utiliser des pare-soleil et des housses de siège respirantes.</li>
+                            <li><strong>Vêtements:</strong> Tenues légères. Pas de manteau dans le siège auto. Prévoir une couverture.</li>
+                            <li>Plage arrière vide et sécurité enfant activée.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 lg:col-span-2">
+                        <h3 class="text-xl font-bold mb-4 text-slate-700 flex items-center"><span class="text-2xl mr-3">🎒</span> Sac de Voyage Essentiel</h3>
+                        <div class="grid sm:grid-cols-2 gap-x-6 text-slate-600">
+                             <ul class="space-y-2">
+                                <li><label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2">Couches & lingettes</label></li>
+                                <li><label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2">Tenues de rechange</label></li>
+                                <li><label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2">Biberons & petits pots</label></li>
+                                <li><label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2">En-cas & eau</label></li>
+                            </ul>
+                            <ul class="space-y-2">
+                                <li><label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2">Jouets & livres</label></li>
+                                <li><label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2">Trousse de secours</label></li>
+                                <li><label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2">Doudous & tétines</label></li>
+                                <li><label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2">Couverture légère</label></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Étape 1 -->
+            <section id="etape1" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Étape 1 : Traversée Nocturne vers la Loire</h2>
+                    <p class="text-slate-600 max-w-3xl mx-auto">La première grande étape est planifiée de nuit pour maximiser le temps de sommeil des enfants. L'itinéraire est optimisé pour éviter Paris et arriver en douceur dans la Vallée de la Loire.</p>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-slate-700">Chronologie du Trajet (16-17 Juillet)</h3>
+                        <div class="relative border-l-2 border-blue-200 ml-4 pl-8 py-4 space-y-8">
+                            <div class="absolute -left-4 top-4 w-8 h-8 bg-white border-2 border-blue-500 rounded-full flex items-center justify-center">🌙</div>
+                            <div>
+                                <p class="font-semibold text-blue-600">02:30 - Départ</p>
+                                <p class="text-slate-600">Début du voyage depuis Schaerbeek. Les enfants dorment déjà.</p>
+                            </div>
+                            <div class="absolute -left-4 top-1/3 w-8 h-8 bg-white border-2 border-blue-500 rounded-full flex items-center justify-center">⛽</div>
+                            <div>
+                                <p class="font-semibold text-blue-600">03:15 - Plein d'essence</p>
+                                <p class="text-slate-600">Arrêt rapide à la station TotalEnergies de Tournai L'Orient (Belgique).</p>
+                            </div>
+                            <div class="absolute -left-4 top-2/3 w-8 h-8 bg-white border-2 border-blue-500 rounded-full flex items-center justify-center">☕</div>
+                            <div>
+                                <p class="font-semibold text-blue-600">06:30 - Pause Café</p>
+                                <p class="text-slate-600">Pause pour les parents sur l'A28. Les enfants dorment toujours.</p>
+                            </div>
+                            <div class="absolute -left-4 bottom-4 w-8 h-8 bg-white border-2 border-emerald-500 rounded-full flex items-center justify-center">🌳</div>
+                             <div>
+                                <p class="font-semibold text-emerald-600">09:30 - Arrivée près de Tours</p>
+                                <p class="text-slate-600">Fin du trajet principal. Direction le Jardin Botanique pour une matinée de détente avant le check-in.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-8">
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-xl font-bold mb-4 text-slate-700">Infos Trajet</h3>
+                             <ul class="space-y-2 text-slate-600">
+                                <li><strong>Distance:</strong> ~650 km</li>
+                                <li><strong>Durée:</strong> 6h30-7h00 (hors pauses)</li>
+                                <li><strong>Itinéraire clé:</strong> Via A29/A28 (Amiens, Rouen, Le Mans) pour éviter Paris.</li>
+                                <li><strong>Destination:</strong> Domaine du Turbais, 37230 Luynes</li>
+                                <li><strong>Check-in:</strong> 14h00</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-xl font-bold mb-4 text-slate-700">Pause Matinale Recommandée</h3>
+                            <p class="font-semibold text-emerald-700">Jardin Botanique de Tours</p>
+                            <p class="text-slate-600 text-sm">Parfait pour attendre le check-in. Aire de jeux, espaces verts, petit parc animalier. Idéal pour que les enfants se dégourdissent les jambes.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section: Interlude -->
+            <section id="interlude" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Interlude en Touraine (17-20 Juillet)</h2>
+                    <p class="text-slate-600 max-w-3xl mx-auto">Profitez de votre séjour pour découvrir la douceur de vivre de la Vallée de la Loire à un rythme adapté aux enfants. Voici quelques suggestions d'activités et adresses utiles.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-slate-700">Jour 1: Découverte Locale</h3>
+                        <p class="text-slate-600">Après la sieste, promenez-vous dans le village de <strong>Luynes</strong>, labellisé "Petite Cité de Caractère®". Parfait pour une balade en poussette et une immersion en douceur.</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-slate-700">Jour 2: Magie des Jardins</h3>
+                        <p class="text-slate-600">Visitez les magnifiques <strong>Jardins de Villandry</strong>. Le potager décoratif et les vastes pelouses enchanteront petits et grands. Praticable en poussette.</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-slate-700">Jour 3: Ambiance Marché</h3>
+                        <p class="text-slate-600">Le samedi matin, ne manquez pas le <strong>marché de Luynes</strong> sous la halle (8h-13h) pour découvrir les produits locaux. L'après-midi, retour au Jardin Botanique de Tours possible.</p>
+                    </div>
+                    <div class="lg:col-span-3 bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-slate-700">Adresses Utiles à Luynes</h3>
+                        <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div>
+                                <p class="font-semibold">Supermarché</p>
+                                <p class="text-slate-600">Super U, Z.I. du Chapelet. Ouvert le dimanche matin.</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold">Boulangerie</p>
+                                <p class="text-slate-600">Plusieurs artisans dans le centre-ville.</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold">Pharmacie</p>
+                                <p class="text-slate-600">12 Rue de la République. Garde via le 3237.</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold">Jour de Pluie</p>
+                                <p class="text-slate-600">Parc de jeux intérieur "La Vallée des Rois" à Ballan-Miré.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Étape 2 -->
+            <section id="etape2" class="content-section">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Étape 2 : Cap sur l'Océan (20 Juillet)</h2>
+                    <p class="text-slate-600 max-w-3xl mx-auto">Après un interlude reposant, il est temps de rejoindre la côte. Ce trajet diurne est ponctué d'une pause déjeuner nature pour arriver détendus au Cap Ferret pour le check-in de 16h.</p>
+                </div>
+                 <div class="grid lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-slate-700">Chronologie du Trajet</h3>
+                        <div class="relative border-l-2 border-amber-200 ml-4 pl-8 py-4 space-y-8">
+                            <div class="absolute -left-4 top-4 w-8 h-8 bg-white border-2 border-amber-500 rounded-full flex items-center justify-center">☀️</div>
+                            <div>
+                                <p class="font-semibold text-amber-600">10:00 - Départ de Luynes</p>
+                                <p class="text-slate-600">Départ tranquille après le petit-déjeuner pour un trajet de jour.</p>
+                            </div>
+                            <div class="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-white border-2 border-amber-500 rounded-full flex items-center justify-center">🥪</div>
+                            <div>
+                                <p class="font-semibold text-amber-600">~12:30/13:00 - Pause Déjeuner</p>
+                                <p class="text-slate-600">Arrêt au <strong>Lac Vert à Canéjan</strong>. Aire de jeux et tables de pique-nique. La pause idéale.</p>
+                            </div>
+                             <div class="absolute -left-4 bottom-4 w-8 h-8 bg-white border-2 border-amber-500 rounded-full flex items-center justify-center">🏖️</div>
+                             <div>
+                                <p class="font-semibold text-amber-600">~16:00 - Arrivée au Cap Ferret</p>
+                                <p class="text-slate-600">Arrivée à Piraillan. Anticiper les ralentissements sur la D106, la route de la presqu'île.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-8">
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-xl font-bold mb-4 text-slate-700">Infos Trajet</h3>
+                             <ul class="space-y-2 text-slate-600">
+                                <li><strong>Distance:</strong> ~410 km</li>
+                                <li><strong>Durée:</strong> 4h00-4h30 (hors pauses)</li>
+                                <li><strong>Itinéraire clé:</strong> Via A85/A10, sortie 10 pour éviter la rocade de Bordeaux.</li>
+                                <li><strong>Destination:</strong> 64 Av. de Bellevue, Piraillan, 33950 Lège-Cap-Ferret</li>
+                                <li><strong>Check-in:</strong> 16h00</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                             <h3 class="text-xl font-bold mb-4 text-slate-700">Adresses Utiles (Cap Ferret)</h3>
+                            <div class="text-sm space-y-2">
+                                <p><strong>Supermarché:</strong> Super U Claouey ou Carrefour Contact Lège.</p>
+                                <p><strong>Marché:</strong> Marché de Piraillan, tous les matins en été.</p>
+                                <p><strong>Plage Famille:</strong> Côté Bassin (Plage des Jacquets) pour le calme, côté Océan (Le Truc Vert) pour les vagues (surveillée).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            function setActiveTab(hash) {
+                const targetHash = hash || '#overview';
+
+                navLinks.forEach(link => {
+                    if (link.getAttribute('href') === targetHash) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+
+                contentSections.forEach(section => {
+                    if (section.getAttribute('id') === targetHash.substring(1)) {
+                        section.classList.add('active');
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.remove('active');
+                        section.classList.add('hidden');
+                    }
+                });
+            }
+            
+            document.getElementById('main-nav').addEventListener('click', (e) => {
+                if (e.target.tagName === 'A') {
+                    e.preventDefault();
+                    const targetHash = e.target.getAttribute('href');
+                    setActiveTab(targetHash);
+                    window.location.hash = targetHash;
+                }
+            });
+
+            setActiveTab(window.location.hash);
+
+            // Chart.js implementation
+            const ctx = document.getElementById('tripCompareChart').getContext('2d');
+            const tripCompareChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Étape 1: Schaerbeek → Luynes', 'Étape 2: Luynes → Cap Ferret'],
+                    datasets: [{
+                        label: 'Distance (km)',
+                        data: [650, 410],
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)', // blue-500
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Coût Total (€)',
+                        data: [133.50, 94.00],
+                        backgroundColor: 'rgba(234, 179, 8, 0.7)', // amber-500
+                        borderColor: 'rgba(234, 179, 8, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        if (context.dataset.label === 'Coût Total (€)') {
+                                            label += new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(context.parsed.y);
+                                        } else {
+                                             label += context.parsed.y + ' km';
+                                        }
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
