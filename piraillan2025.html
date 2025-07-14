@@ -9,12 +9,13 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <!-- Chosen Palette: Cap Ferret Dune -->
-    <!-- Application Structure Plan: J'ai conçu une application à onglets pour une navigation rapide. L'ajout de l'onglet "Itinéraires Vélo" et des modaux de détails pour les plages/activités enrichit l'application en la rendant plus interactive et informative, aidant les utilisateurs à planifier concrètement leurs journées. -->
+    <!-- Application Structure Plan: J'ai conçu une application à onglets pour une navigation rapide. L'ajout de l'onglet "Concours Cuisine" centralise l'organisation des repas de manière ludique et visible pour tous les participants. -->
     <!-- Visualization & Content Choices: 
         - Marées -> Objectif: Montrer l'évolution -> Viz: Tableau HTML + Graphique Chart.js -> Interaction: Survol -> Justification: Intuitif.
         - Plages/Activités -> Objectif: Comparer et détailler -> Viz: Cartes HTML/CSS -> Interaction: Clic pour ouvrir un modal avec plus d'infos -> Justification: Améliore la profondeur de l'information sans surcharger l'interface principale.
         - Carte -> Objectif: Localiser -> Viz: Carte interactive Leaflet.js -> Interaction: Clic sur marqueurs -> Justification: Essentiel pour la logistique.
         - Itinéraires Vélo -> Objectif: Guider -> Viz: Cartes descriptives HTML/CSS -> Justification: Fournit des plans d'excursion clés en main.
+        - Concours Cuisine -> Objectif: Organiser les repas -> Viz: Cartes journalières HTML/CSS -> Justification: Présentation claire et amusante du planning des repas.
         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
@@ -73,9 +74,10 @@
             <p class="text-stone-600 mt-1">20 - 27 Juillet 2025 | Piraillan</p>
         </header>
 
-        <nav class="flex justify-center flex-wrap gap-x-4 gap-y-2 md:gap-x-6 border-b border-stone-300 pb-2 mb-8">
+        <nav class="flex justify-center flex-wrap gap-x-3 gap-y-2 md:gap-x-4 border-b border-stone-300 pb-2 mb-8">
             <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="today">Aujourd'hui</button>
             <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="villa">La Villa</button>
+            <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="kitchen-contest">Concours Cuisine</button>
             <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="map">Carte</button>
             <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="bike-routes">Itinéraires Vélo</button>
             <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="beaches">Les Plages</button>
@@ -87,6 +89,7 @@
         <main>
             <section id="today" class="content-section"></section>
             <section id="villa" class="content-section"></section>
+            <section id="kitchen-contest" class="content-section"></section>
             <section id="map" class="content-section"></section>
             <section id="bike-routes" class="content-section"></section>
             <section id="beaches" class="content-section"></section>
@@ -111,6 +114,13 @@
 
     <script>
         const appData = {
+            kitchenContest: [
+                { day: "Lundi", team: "Benelepan", special: null },
+                { day: "Mardi", team: "Chanorol", special: null },
+                { day: "Mercredi", team: "Nonmygo", special: null },
+                { day: "Jeudi", team: "Louflory", special: null },
+                { day: "Vendredi", team: "Elchigus", special: "Spécial apéro concocté par les enfants ! 🥳" }
+            ],
             locations: [
                 { lat: 44.7550, lng: -1.2250, name: "La Villa", type: "villa" },
                 { lat: 44.7355, lng: -1.2352, name: "Plage de la Truquette", type: "plage" },
@@ -195,6 +205,7 @@
         const pageRenderers = {
             today: renderToday,
             villa: renderVilla,
+            'kitchen-contest': renderKitchenContest,
             map: renderMap,
             'bike-routes': renderBikeRoutes,
             beaches: renderBeaches,
@@ -262,6 +273,27 @@
                     <div class="bg-white p-6 rounded-lg shadow-lg border border-stone-200 space-y-4">${infoCard}</div>
                     <div class="bg-white p-6 rounded-lg shadow-lg border border-stone-200 space-y-4">${amenitiesHtml}</div>
                 </div>`;
+        }
+        
+        function renderKitchenContest(container) {
+            let contestHtml = appData.kitchenContest.map(entry => {
+                const specialClass = entry.special ? 'bg-amber-100 border-amber-400' : 'bg-white';
+                const specialContent = entry.special ? `<p class="text-sm text-amber-800 font-medium mt-2">${entry.special}</p>` : '';
+                return `
+                <div class="p-6 rounded-lg shadow-lg border ${specialClass}">
+                    <p class="text-sm font-semibold text-teal-800">${entry.day}</p>
+                    <p class="text-2xl font-bold text-stone-800 mt-1">${entry.team}</p>
+                    ${specialContent}
+                </div>
+            `}).join('');
+
+            container.innerHTML = `
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-teal-800 mb-2">Concours Cuisine Piraillan</h2>
+                    <p class="text-stone-600 max-w-2xl mx-auto">Le planning des équipes de chefs pour la semaine. Que le meilleur gagne !</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">${contestHtml}</div>
+            `;
         }
         
         function renderMap(container) {
