@@ -169,9 +169,17 @@
                 ]
             },
             practical: {
-                "Marchés & Supermarchés": [ { name: 'Marché de Piraillan', description: 'Le cœur du village. Ouvert tous les matins.', address: 'Piraillan' }, { name: 'Super U Claouey', description: 'Pour le grand ravitaillement d\'arrivée.', address: 'Avenue des Halles, Claouey' } ],
-                "Commerces de Bouche": [ { name: 'Poissonnerie de Piquey', description: 'Poissons et fruits de mer frais.', address: '24 rte de Bordeaux, Petit Piquey' }, { name: 'Chez Patachou', description: 'Pâtissier, traiteur, glacier.', address: '64 rte de Bordeaux, Petit Piquey' } ],
-                "Santé & Services": [ { name: 'Pharmacie de Petit Piquey', description: 'La plus proche.', address: '45 Route de Bordeaux, Petit Piquey' } ]
+                "Marchés & Supermarchés": [ 
+                    { name: 'Marché de Piraillan', description: 'Le cœur du village. Ouvert tous les matins.', address: 'Piraillan', hours: 'Tous les jours : 8h00 - 13h00' }, 
+                    { name: 'Super U Claouey', description: 'Pour le grand ravitaillement d\'arrivée.', address: 'Avenue des Halles, Claouey', hours: 'Lun-Sam : 8h30 - 20h00, Dim : 8h30 - 13h00' } 
+                ],
+                "Commerces de Bouche": [ 
+                    { name: 'Poissonnerie de Piquey', description: 'Poissons et fruits de mer frais.', address: '24 rte de Bordeaux, Petit Piquey', hours: 'Mar-Dim : 9h00 - 13h00 / 17h00 - 19h30' }, 
+                    { name: 'Chez Patachou', description: 'Pâtissier, traiteur, glacier.', address: '64 rte de Bordeaux, Petit Piquey', hours: 'Mer-Lun : 7h00 - 19h45 (fermé le mardi)' } 
+                ],
+                "Santé & Services": [ 
+                    { name: 'Pharmacie de Petit Piquey', description: 'La plus proche.', address: '45 Route de Bordeaux, Petit Piquey', hours: 'Lun-Sam : 8h30 - 12h15 / 14h00 - 19h15' } 
+                ]
             },
             bikeRoutes: [
                 { title: "La Boucle des Villages Ostréicoles", distance: "15 km (A/R)", difficulty: "Facile", description: "Une balade familiale au cœur de la vie de la presqu'île, parfaite pour une matinée.", steps: ["Départ de Piraillan, direction sud sur la piste cyclable principale.", "Arrêt au village du Canon pour admirer les cabanes colorées et la vue sur le bassin.", "Continuez jusqu'au village de l'Herbe. Garez les vélos et perdez-vous dans les ruelles fleuries.", "Visitez la Chapelle de la Villa Algérienne, un joyau architectural.", "Option : terminez par une dégustation d'huîtres à l'Herbe avant de rentrer."] },
@@ -336,7 +344,12 @@
                 practicalHtml += `<div class="bg-white p-4 rounded-lg shadow-sm border border-stone-200">
                     <h3 class="font-bold text-lg text-teal-800 mb-3">${category}</h3>
                     <div class="space-y-3">
-                        ${appData.practical[category].map(item => `<div class="text-sm"><p class="font-semibold">${item.name}</p><p class="text-stone-600">${item.description}</p><p class="text-xs text-stone-500">${item.address}</p></div>`).join('')}
+                        ${appData.practical[category].map(item => `<div class="text-sm">
+                            <p class="font-semibold">${item.name}</p>
+                            <p class="text-stone-600">${item.description}</p>
+                            <p class="text-xs text-stone-500 mt-1">${item.address}</p>
+                            <p class="text-xs text-teal-700 font-medium">${item.hours}</p>
+                        </div>`).join('')}
                     </div>
                 </div>`;
             }
