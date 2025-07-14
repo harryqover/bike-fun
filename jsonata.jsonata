@@ -1,0 +1,1 @@
+$formatNumber((record.coverages[name='TPL'].price.gip - record.coverages[name='TPL'].price.nip - record.coverages[name='TPL'].price.fees[name='qover'].amount)/100, '0.00')
