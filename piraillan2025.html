@@ -149,9 +149,9 @@
             ],
             locations: [
                 { lat: 44.7550, lng: -1.2250, name: "La Villa", type: "villa" },
-                { lat: 44.7355, lng: -1.2352, name: "Plage de la Truquette", type: "plage" },
-                { lat: 44.7290, lng: -1.2380, name: "Pointe aux Chevaux", type: "plage" },
-                { lat: 44.7850, lng: -1.2500, name: "Plage du Truc Vert", type: "plage" },
+                { lat: 44.723593, lng: -1.200065, name: "Plage de la Truquette", type: "plage" },
+                { lat: 44.717779, lng: -1.204482, name: "Pointe aux Chevaux", type: "plage" },
+                { lat: 44.715505, lng: -1.250571, name: "Plage du Truc Vert", type: "plage" },
                 { lat: 44.6360, lng: -1.2530, name: "Plage de l'Horizon", type: "plage" },
                 { lat: 44.6455, lng: -1.2500, name: "Plage des Américains", type: "plage" },
                 { lat: 44.6388, lng: -1.2415, name: "Plage du Mimbeau", type: "plage" },
@@ -508,7 +508,7 @@
             modalContent.innerHTML = '<div class="flex justify-center"><div class="loader"></div></div>';
             openModal('recipe-modal');
             
-            const prompt = `Tu es un assistant culinaire pour des vacances en famille au Cap Ferret, France. Propose une idée de recette simple et conviviale pour un grand groupe (environ 15 adultes et 5 enfants) pour l'équipe qui s'appelle '${teamName}'. La recette doit être de saison (juillet) et si possible utiliser des produits locaux du Cap Ferret (poissons, huîtres, etc.).`;
+            const prompt = `Tu es un assistant culinaire pour des vacances en famille au Cap Ferret, France. Propose une idée de recette simple et conviviale pour un grand groupe (environ 15 adultes et 5 enfants) pour l'équipe qui s'appelle '${teamName}'. La recette doit être de saison (juillet) et si possible utiliser des produits locaux du Cap Ferret. Il faut un plat et un dessert (simple).`;
             const schema = {
                 type: "OBJECT",
                 properties: {
