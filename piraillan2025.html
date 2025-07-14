@@ -6,13 +6,15 @@
     <title>Guide de Vacances | Cap Ferret 2025</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <!-- Chosen Palette: Cap Ferret Dune -->
-    <!-- Application Structure Plan: J'ai conçu une application à onglets (Aujourd'hui, La Villa, Plages, Activités, Vie Pratique, Marées) pour une navigation rapide et thématique. Cette structure est plus fonctionnelle qu'un rapport linéaire pour un usage mobile en vacances. L'onglet "Aujourd'hui" sert de tableau de bord dynamique, offrant les informations les plus pertinentes (marées du jour) dès l'ouverture. L'onglet "La Villa" centralise les informations pratiques sur le logement. Cette approche est orientée vers les tâches de l'utilisateur (que faire aujourd'hui, où se baigner, infos sur la maison), rendant l'information immédiatement exploitable. -->
+    <!-- Application Structure Plan: J'ai conçu une application à onglets pour une navigation rapide. L'ajout de l'onglet "Itinéraires Vélo" et des modaux de détails pour les plages/activités enrichit l'application en la rendant plus interactive et informative, aidant les utilisateurs à planifier concrètement leurs journées. -->
     <!-- Visualization & Content Choices: 
-        - Marées -> Objectif: Montrer l'évolution -> Viz: Tableau HTML pour les détails + Graphique en ligne Chart.js pour la tendance visuelle -> Interaction: Survol des points du graphique -> Justification: Le graphique rend le concept abstrait mais crucial des marées intuitif et facile à planifier.
-        - Plages -> Objectif: Comparer et choisir -> Viz: Cartes interactives HTML/CSS -> Interaction: Boutons pour filtrer par type (Bassin/Océan) -> Justification: Simplifie la décision en fonction du besoin de l'utilisateur (sécurité des enfants vs. vagues).
-        - Activités & Commerces -> Objectif: Informer et organiser -> Viz: Cartes et listes structurées en HTML/CSS -> Justification: Présentation claire et scannable pour une consultation rapide.
-        - Villa -> Objectif: Centraliser les infos du logement -> Viz: Cartes et listes structurées HTML/CSS avec icônes -> Justification: Accès rapide aux détails pratiques (adresse, équipements, règles).
+        - Marées -> Objectif: Montrer l'évolution -> Viz: Tableau HTML + Graphique Chart.js -> Interaction: Survol -> Justification: Intuitif.
+        - Plages/Activités -> Objectif: Comparer et détailler -> Viz: Cartes HTML/CSS -> Interaction: Clic pour ouvrir un modal avec plus d'infos -> Justification: Améliore la profondeur de l'information sans surcharger l'interface principale.
+        - Carte -> Objectif: Localiser -> Viz: Carte interactive Leaflet.js -> Interaction: Clic sur marqueurs -> Justification: Essentiel pour la logistique.
+        - Itinéraires Vélo -> Objectif: Guider -> Viz: Cartes descriptives HTML/CSS -> Justification: Fournit des plans d'excursion clés en main.
         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
@@ -43,6 +45,17 @@
             height: 250px;
             max-height: 300px;
         }
+        #leaflet-map {
+            height: 60vh;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .modal-container {
+            transition: transform 0.3s ease;
+        }
         @media (min-width: 768px) {
             .chart-container {
                 height: 350px;
@@ -60,92 +73,59 @@
             <p class="text-stone-600 mt-1">20 - 27 Juillet 2025 | Piraillan</p>
         </header>
 
-        <nav class="flex justify-center flex-wrap gap-x-4 gap-y-2 md:gap-x-8 border-b border-stone-300 pb-2 mb-8">
+        <nav class="flex justify-center flex-wrap gap-x-4 gap-y-2 md:gap-x-6 border-b border-stone-300 pb-2 mb-8">
             <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="today">Aujourd'hui</button>
             <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="villa">La Villa</button>
+            <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="map">Carte</button>
+            <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="bike-routes">Itinéraires Vélo</button>
             <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="beaches">Les Plages</button>
             <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="activities">Activités</button>
             <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="practical">Vie Pratique</button>
-            <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="tides">Agenda des Marées</button>
+            <button class="nav-link text-stone-600 hover:text-teal-800 px-1 py-2 text-sm md:text-base" data-tab="tides">Marées</button>
         </nav>
 
         <main>
-            <section id="today" class="content-section">
-                <div class="bg-white p-6 rounded-lg shadow-lg border border-stone-200">
-                    <h2 class="text-2xl font-bold text-teal-800 mb-4 text-center">Plan du Jour</h2>
-                    <div id="today-info" class="text-center"></div>
-                </div>
-            </section>
-            
-            <section id="villa" class="content-section">
-                 <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-teal-800 mb-2">Votre Havre de Paix</h2>
-                    <p class="text-stone-600 max-w-2xl mx-auto">Toutes les informations sur votre maison de vacances. Un lieu pensé pour le confort de toute la famille.</p>
-                </div>
-                <div id="villa-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8"></div>
-            </section>
-
-            <section id="beaches" class="content-section">
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-teal-800 mb-2">L'Appel de l'Eau</h2>
-                    <p class="text-stone-600 max-w-2xl mx-auto">Choisissez votre rivage : la quiétude du Bassin pour les enfants, ou la majesté de l'Océan pour les plus grands. N'oubliez pas : la baignade à l'océan se fait uniquement entre les drapeaux.</p>
-                     <div class="mt-4 flex justify-center gap-2">
-                        <button onclick="filterBeaches('all')" class="beach-filter-btn active bg-teal-600 text-white px-4 py-2 rounded-full text-sm">Toutes</button>
-                        <button onclick="filterBeaches('bassin')" class="beach-filter-btn bg-white text-teal-600 px-4 py-2 rounded-full text-sm border border-teal-600">Bassin</button>
-                        <button onclick="filterBeaches('ocean')" class="beach-filter-btn bg-white text-teal-600 px-4 py-2 rounded-full text-sm border border-teal-600">Océan</button>
-                    </div>
-                </div>
-                <div id="beaches-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-            </section>
-
-            <section id="activities" class="content-section">
-                 <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-teal-800 mb-2">Activités & Découvertes</h2>
-                    <p class="text-stone-600 max-w-2xl mx-auto">Des dégustations d'huîtres les pieds dans l'eau aux excursions emblématiques, plongez au cœur de la vie de la presqu'île.</p>
-                </div>
-                <div id="activities-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
-            </section>
-
-            <section id="practical" class="content-section">
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-teal-800 mb-2">Vie Pratique à Piraillan</h2>
-                    <p class="text-stone-600 max-w-2xl mx-auto">Toutes les adresses essentielles pour organiser le quotidien de la tribu, des courses aux plaisirs gourmands.</p>
-                </div>
-                <div id="practical-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-            </section>
-
-            <section id="tides" class="content-section">
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-teal-800 mb-2">Le Rythme des Marées</h2>
-                    <p class="text-stone-600 max-w-2xl mx-auto">L'outil indispensable pour planifier vos journées. Les activités côté Bassin dépendent entièrement des marées. Profitez des pleines mers de l'après-midi pour des baignades idéales !</p>
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow-lg border border-stone-200 mb-8">
-                     <div class="chart-container">
-                        <canvas id="tidesChart"></canvas>
-                    </div>
-                </div>
-                <div class="overflow-x-auto bg-white p-4 rounded-lg shadow-lg border border-stone-200">
-                    <table class="w-full text-sm text-left text-stone-600">
-                        <thead class="text-xs text-teal-800 uppercase bg-stone-50">
-                            <tr>
-                                <th scope="col" class="px-4 py-3">Date</th>
-                                <th scope="col" class="px-4 py-3 text-center">Pleine Mer (Matin)</th>
-                                <th scope="col" class="px-4 py-3 text-center">Pleine Mer (Soir)</th>
-                                <th scope="col" class="px-4 py-3 text-center">Coeff.</th>
-                                <th scope="col" class="px-4 py-3">Conseil du Jour</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tides-table-body">
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+            <section id="today" class="content-section"></section>
+            <section id="villa" class="content-section"></section>
+            <section id="map" class="content-section"></section>
+            <section id="bike-routes" class="content-section"></section>
+            <section id="beaches" class="content-section"></section>
+            <section id="activities" class="content-section"></section>
+            <section id="practical" class="content-section"></section>
+            <section id="tides" class="content-section"></section>
         </main>
 
     </div>
 
+    <!-- Modal Structure -->
+    <div id="details-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50" onclick="closeModal()">
+        <div class="modal-container bg-white rounded-lg shadow-xl max-w-2xl w-full transform scale-95" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center p-4 border-b border-stone-200">
+                <h3 id="modal-title" class="text-xl font-bold text-teal-800"></h3>
+                <button onclick="closeModal()" class="text-3xl font-light leading-none text-stone-500 hover:text-stone-800">&times;</button>
+            </div>
+            <div id="modal-content" class="p-6 max-h-[70vh] overflow-y-auto"></div>
+        </div>
+    </div>
+
+
     <script>
         const appData = {
+            locations: [
+                { lat: 44.7550, lng: -1.2250, name: "La Villa", type: "villa" },
+                { lat: 44.7355, lng: -1.2352, name: "Plage de la Truquette", type: "plage" },
+                { lat: 44.7290, lng: -1.2380, name: "Pointe aux Chevaux", type: "plage" },
+                { lat: 44.7850, lng: -1.2500, name: "Plage du Truc Vert", type: "plage" },
+                { lat: 44.6360, lng: -1.2530, name: "Plage de l'Horizon", type: "plage" },
+                { lat: 44.7540, lng: -1.2260, name: "Marché de Piraillan", type: "commerce" },
+                { lat: 44.7780, lng: -1.1980, name: "Super U Claouey", type: "commerce" },
+                { lat: 44.7410, lng: -1.2310, name: "Poissonnerie de Piquey", type: "commerce" },
+                { lat: 44.7400, lng: -1.2320, name: "Chez Patachou", type: "commerce" },
+                { lat: 44.7530, lng: -1.2240, name: "La Cabane 57", type: "activite" },
+                { lat: 44.7040, lng: -1.2430, name: "Village de l'Herbe", type: "activite" },
+                { lat: 44.6320, lng: -1.2460, name: "Chez Boulan", type: "activite" },
+                { lat: 44.6090, lng: -1.2470, name: "Le Phare du Cap Ferret", type: "activite" },
+            ],
             villa: {
                 address: "64, avenue de Bellevue, Piraillan – 33950 Lège-Cap-Ferret",
                 contact: { name: "Yvan Sibadey", phone: "06 08 46 85 10" },
@@ -173,297 +153,262 @@
                 { date: "Dim 27 Juil.", dayIndex: 7, pmMatin: "08:07 (4.04m)", pmSoir: "20:24 (4.24m)", coeff: "89-87", conseil: "Magnifique pleine mer matinale pour une dernière baignade avant le départ." }
             ],
             beaches: [
-                { type: 'bassin', name: 'Plage de la Truquette', location: 'Petit Piquey', time: '10 min', icon: '👶', description: 'Calme et discrète, idéale pour les familles avec ses tables de pique-nique à l\'ombre des pins.', color: 'bg-sky-100', textColor: 'text-sky-800' },
-                { type: 'bassin', name: 'Pointe aux Chevaux', location: 'Grand Piquey', time: '15 min', icon: '⭐', description: 'Considérée comme la plus belle plage, avec ses cabanes authentiques et une vue imprenable.', color: 'bg-sky-100', textColor: 'text-sky-800' },
-                { type: 'ocean', name: 'Plage du Truc Vert', location: 'Forêt', time: '20-25 min', icon: '🏄', description: 'Cadre sauvage et magnifique, accessible par la forêt. Écoles de surf et restauration.', color: 'bg-indigo-100', textColor: 'text-indigo-800' },
-                { type: 'ocean', name: 'Plage de l\'Horizon', location: 'Village Cap Ferret', time: '35-45 min', icon: '🚂', description: 'Accessible par le Petit Train. Proche des commerces et restaurants du village.', color: 'bg-indigo-100', textColor: 'text-indigo-800' },
-                { type: 'ocean', name: 'Plage du Grand Crohot', location: 'Lège', time: '45-55 min', icon: '🌊', description: 'Très populaire et vaste. L\'option la plus éloignée à vélo depuis Piraillan.', color: 'bg-indigo-100', textColor: 'text-indigo-800' }
+                { type: 'bassin', name: 'Plage de la Truquette', location: 'Petit Piquey', time: '10 min', icon: '👶', description: 'Calme et discrète, idéale pour les familles avec ses tables de pique-nique à l\'ombre des pins.', color: 'bg-sky-100', textColor: 'text-sky-800', details: { conseil: "Parfaite pour les tout-petits à marée haute. L'eau est peu profonde et chaude. À marée basse, prévoyez des chaussures pour marcher sur l'estran.", services: "Tables de pique-nique, ombre des pins. Pas de restauration directe sur la plage mais le village est proche." } },
+                { type: 'bassin', name: 'Pointe aux Chevaux', location: 'Grand Piquey', time: '15 min', icon: '⭐', description: 'Considérée comme la plus belle plage, avec ses cabanes authentiques et une vue imprenable.', color: 'bg-sky-100', textColor: 'text-sky-800', details: { conseil: "Le spot photo par excellence au coucher du soleil. L'accès se mérite par un petit sentier, moins pratique avec une poussette.", services: "Dégustations d'huîtres à proximité. Pas de surveillance." } },
+                { type: 'ocean', name: 'Plage du Truc Vert', location: 'Forêt', time: '20-25 min', icon: '🏄', description: 'Cadre sauvage et magnifique, accessible par la forêt. Écoles de surf et restauration.', color: 'bg-indigo-100', textColor: 'text-indigo-800', details: { conseil: "Respectez impérativement les zones de baignade surveillée (entre les drapeaux). Les vagues peuvent être puissantes.", services: "Poste de secours, écoles de surf, location de matériel, snacks/restaurants." } },
+                { type: 'ocean', name: 'Plage de l\'Horizon', location: 'Village Cap Ferret', time: '35-45 min', icon: '🚂', description: 'Accessible par le Petit Train. Proche des commerces et restaurants du village.', color: 'bg-indigo-100', textColor: 'text-indigo-800', details: { conseil: "L'option la plus 'civilisée' des plages océanes. Le trajet en petit train est une attraction en soi pour les enfants.", services: "Poste de secours, restaurants, boutiques, toilettes publiques." } }
             ],
             activities: {
                 "Dégustations d'Huîtres": [
-                    { name: 'La Cabane 57', location: 'Port de Piraillan', description: 'Cadre idyllique avec vue sur l\'Île aux Oiseaux. Juste à côté de la villa !' },
-                    { name: 'Village de l\'Herbe', location: 'L\'Herbe', description: 'Plusieurs cabanes réputées (Le Ponton, Chez Guillaume...) dans un cadre photogénique. Excursion à vélo parfaite.' },
-                    { name: 'Chez Boulan', location: 'Village Cap Ferret', description: 'Magnifique jardin face à la mer, idéal pour les grands groupes sur réservation.' }
+                    { name: 'La Cabane 57', location: 'Port de Piraillan', description: 'Cadre idyllique avec vue sur l\'Île aux Oiseaux. Juste à côté de la villa !', details: { reservation: "Fortement recommandée, surtout pour un groupe. Appelez en avance.", budget: "Environ 15-25€ par personne pour une douzaine d'huîtres et un verre de vin." } },
+                    { name: 'Village de l\'Herbe', location: 'L\'Herbe', description: 'Plusieurs cabanes réputées (Le Ponton, Chez Guillaume...) dans un cadre photogénique.', details: { reservation: "Indispensable en saison. Chaque cabane a sa propre atmosphère.", budget: "Similaire aux autres cabanes, varie légèrement selon le producteur." } }
                 ],
                 "Excursions & Visites": [
-                    { name: 'Sortie en Bateau', location: 'Bassin d\'Arcachon', description: 'Louez 2 pinasses, un grand semi-rigide ou un catamaran pour tout le groupe. Alternative : navettes UBA depuis Le Canon.' },
-                    { name: 'Le Phare du Cap Ferret', location: 'Village Cap Ferret', description: '258 marches pour une vue à 360° inoubliable sur toute la presqu\'île.' },
-                    { name: 'Le Petit Train', location: 'Village Cap Ferret', description: 'Relie la jetée (Bassin) à la plage de l\'Horizon (Océan). Une attraction charmante pour les enfants.' }
+                    { name: 'Sortie en Bateau', location: 'Bassin d\'Arcachon', description: 'Louez une pinasse ou un catamaran pour explorer le bassin.', details: { reservation: "Essentielle, à prévoir bien avant le séjour. Contacter les bateliers locaux.", budget: "Variable. Compter plusieurs centaines d'euros pour la privatisation d'une pinasse pour une demi-journée." } },
+                    { name: 'Le Phare du Cap Ferret', location: 'Village Cap Ferret', description: '258 marches pour une vue à 360° inoubliable sur toute la presqu\'île.', details: { reservation: "Pas de réservation nécessaire. Éviter les heures de pointe (11h-16h).", budget: "Tarifs 2024 : 7€/adulte, 4€/enfant. Gratuit pour les moins de 4 ans." } }
                 ]
             },
-             practical: {
-                "Marchés & Supermarchés": [
-                    { name: 'Marché de Piraillan', description: 'Le cœur du village. Ouvert tous les matins. Idéal pour les produits frais.', address: 'Piraillan' },
-                    { name: 'Super U Claouey', description: 'Pour le grand ravitaillement d\'arrivée. Ouvert le dimanche.', address: 'Avenue des Halles, Claouey' }
-                ],
-                "Commerces de Bouche": [
-                    { name: 'Poissonnerie de Piquey', description: 'Poissons et fruits de mer frais pour vos planchas.', address: '24 rte de Bordeaux, Petit Piquey' },
-                    { name: 'Chez Patachou', description: 'Pâtissier, traiteur, glacier. Pour les petits-déjeuners et les desserts.', address: '64 rte de Bordeaux, Petit Piquey' },
-                     { name: 'La Casa Pizzeria', description: 'Excellente option pour un dîner familial simple à emporter.', address: '59 rte de Bordeaux, Petit Piquey' }
-                ],
-                 "Santé & Services": [
-                    { name: 'Pharmacie de Petit Piquey', description: 'La plus proche pour tous les besoins de santé.', address: '45 Route de Bordeaux, Petit Piquey' },
-                    { name: 'Pharmacie du Canon', description: 'Une autre option facilement accessible à vélo.', address: '161 route du Cap Ferret, Le Canon' }
-                 ]
-            }
+            practical: {
+                "Marchés & Supermarchés": [ { name: 'Marché de Piraillan', description: 'Le cœur du village. Ouvert tous les matins.', address: 'Piraillan' }, { name: 'Super U Claouey', description: 'Pour le grand ravitaillement d\'arrivée.', address: 'Avenue des Halles, Claouey' } ],
+                "Commerces de Bouche": [ { name: 'Poissonnerie de Piquey', description: 'Poissons et fruits de mer frais.', address: '24 rte de Bordeaux, Petit Piquey' }, { name: 'Chez Patachou', description: 'Pâtissier, traiteur, glacier.', address: '64 rte de Bordeaux, Petit Piquey' } ],
+                "Santé & Services": [ { name: 'Pharmacie de Petit Piquey', description: 'La plus proche.', address: '45 Route de Bordeaux, Petit Piquey' } ]
+            },
+            bikeRoutes: [
+                { title: "La Boucle des Villages Ostréicoles", distance: "15 km (A/R)", difficulty: "Facile", description: "Une balade familiale au cœur de la vie de la presqu'île, parfaite pour une matinée.", steps: ["Départ de Piraillan, direction sud sur la piste cyclable principale.", "Arrêt au village du Canon pour admirer les cabanes colorées et la vue sur le bassin.", "Continuez jusqu'au village de l'Herbe. Garez les vélos et perdez-vous dans les ruelles fleuries.", "Visitez la Chapelle de la Villa Algérienne, un joyau architectural.", "Option : terminez par une dégustation d'huîtres à l'Herbe avant de rentrer."] },
+                { title: "L'Exploration Océane via la Forêt", distance: "20 km (A/R)", difficulty: "Moyen", description: "Une immersion dans la nature sauvage du Cap Ferret, entre forêt de pins et immensité de l'océan.", steps: ["Départ de Piraillan, direction la piste forestière vers le Truc Vert.", "Profitez de l'ombre et des odeurs de la pinède sur ce parcours sécurisé.", "Arrivée à la plage du Truc Vert. Garez les vélos et montez la dune pour une vue spectaculaire.", "Pause baignade (surveillée) et pique-nique sur la plage.", "Retour par le même chemin, en profitant de la lumière de fin d'après-midi."] }
+            ]
         };
 
         let activeTab = 'today';
         const navLinks = document.querySelectorAll('.nav-link');
         const contentSections = document.querySelectorAll('.content-section');
-        const todayInfo = document.getElementById('today-info');
+        let mapInstance = null;
+        
+        const pageRenderers = {
+            today: renderToday,
+            villa: renderVilla,
+            map: renderMap,
+            'bike-routes': renderBikeRoutes,
+            beaches: renderBeaches,
+            activities: renderActivities,
+            practical: renderPractical,
+            tides: renderTides,
+        };
 
         function updateView() {
-            contentSections.forEach(section => {
-                section.classList.remove('active');
-                if (section.id === activeTab) {
-                    section.classList.add('active');
+            navLinks.forEach(link => link.classList.toggle('active', link.dataset.tab === activeTab));
+            contentSections.forEach(section => section.classList.toggle('active', section.id === activeTab));
+            
+            if (pageRenderers[activeTab]) {
+                const section = document.getElementById(activeTab);
+                if (section.innerHTML.trim() === '') {
+                    pageRenderers[activeTab](section);
                 }
-            });
+            }
 
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.dataset.tab === activeTab) {
-                    link.classList.add('active');
-                }
-            });
-        }
-
-        function populateToday() {
-            const today = new Date();
-            const dayOfWeek = today.getDay(); 
-            const todayTide = appData.tides.find(t => t.dayIndex === dayOfWeek);
-
-            if (todayTide) {
-                todayInfo.innerHTML = `
-                    <p class="text-stone-600 mb-4 text-lg">Aujourd'hui, <strong>${todayTide.date}</strong>.</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
-                        <div class="bg-sky-50 p-4 rounded-lg">
-                            <h3 class="font-semibold text-sky-800">Pleine Mer du Matin</h3>
-                            <p class="text-2xl font-bold text-sky-700">${todayTide.pmMatin}</p>
-                        </div>
-                        <div class="bg-sky-50 p-4 rounded-lg">
-                            <h3 class="font-semibold text-sky-800">Pleine Mer de l'Après-midi</h3>
-                            <p class="text-2xl font-bold text-sky-700">${todayTide.pmSoir}</p>
-                        </div>
-                    </div>
-                    <div class="mt-6 bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
-                        <h4 class="font-bold text-amber-900">Le conseil du jour :</h4>
-                        <p class="text-amber-800 mt-1">${todayTide.conseil}</p>
-                    </div>
-                `;
-            } else {
-                 todayInfo.innerHTML = `<p class="text-stone-600">Les informations pour aujourd'hui seront disponibles au début de votre séjour.</p>`;
+            if (activeTab === 'map' && mapInstance) {
+                setTimeout(() => mapInstance.invalidateSize(), 10);
             }
         }
         
-        function populateVilla() {
-            const grid = document.getElementById('villa-grid');
-            const villa = appData.villa;
-            grid.innerHTML = '';
+        function renderToday(container) {
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            const todayTide = appData.tides.find(t => t.dayIndex === dayOfWeek);
+            let content = '';
+            if (todayTide) {
+                content = `
+                    <p class="text-stone-600 mb-4 text-lg">Aujourd'hui, <strong>${todayTide.date}</strong>.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+                        <div class="bg-sky-50 p-4 rounded-lg"><h3 class="font-semibold text-sky-800">Pleine Mer du Matin</h3><p class="text-2xl font-bold text-sky-700">${todayTide.pmMatin}</p></div>
+                        <div class="bg-sky-50 p-4 rounded-lg"><h3 class="font-semibold text-sky-800">Pleine Mer de l'Après-midi</h3><p class="text-2xl font-bold text-sky-700">${todayTide.pmSoir}</p></div>
+                    </div>
+                    <div class="mt-6 bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg text-left"><h4 class="font-bold text-amber-900">Le conseil du jour :</h4><p class="text-amber-800 mt-1">${todayTide.conseil}</p></div>`;
+            } else {
+                 content = `<p class="text-stone-600">Les informations pour aujourd'hui seront disponibles au début de votre séjour.</p>`;
+            }
+            container.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-lg border border-stone-200"><h2 class="text-2xl font-bold text-teal-800 mb-4 text-center">Plan du Jour</h2><div class="text-center">${content}</div></div>`;
+        }
 
-            const infoCard = document.createElement('div');
-            infoCard.className = 'bg-white p-6 rounded-lg shadow-lg border border-stone-200 space-y-4';
-            infoCard.innerHTML = `
+        function renderVilla(container) {
+            const villa = appData.villa;
+            const infoCard = `
                 <div>
                     <h3 class="font-bold text-xl text-teal-800 mb-2">Informations Générales</h3>
                     <p class="font-semibold">${villa.address}</p>
                     <p class="text-sm text-stone-600 mt-2">${villa.description}</p>
                 </div>
-                <div>
-                    <h4 class="font-semibold text-teal-900">Contact Propriétaire :</h4>
-                    <p class="text-stone-700">${villa.contact.name} - ${villa.contact.phone}</p>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-teal-900">Règles & Infos Clés :</h4>
-                    <ul class="list-disc list-inside text-sm text-stone-700 space-y-1 mt-1">
-                        ${villa.rules.map(rule => `<li>${rule}</li>`).join('')}
-                    </ul>
-                </div>
-            `;
-            grid.appendChild(infoCard);
-
-            const amenitiesCard = document.createElement('div');
-            amenitiesCard.className = 'bg-white p-6 rounded-lg shadow-lg border border-stone-200 space-y-4';
+                <div><h4 class="font-semibold text-teal-900">Contact Propriétaire :</h4><p class="text-stone-700">${villa.contact.name} - ${villa.contact.phone}</p></div>
+                <div><h4 class="font-semibold text-teal-900">Règles & Infos Clés :</h4><ul class="list-disc list-inside text-sm text-stone-700 space-y-1 mt-1">${villa.rules.map(rule => `<li>${rule}</li>`).join('')}</ul></div>`;
+            
             let amenitiesHtml = '';
             for (const category in villa.amenities) {
                 amenitiesHtml += `<div>
                     <h3 class="font-bold text-xl text-teal-800 mb-3">${category}</h3>
-                    <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-stone-700">
-                        ${villa.amenities[category].map(item => `<span class="bg-stone-100 px-2 py-1 rounded-full">${item}</span>`).join('')}
+                    <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-stone-700">${villa.amenities[category].map(item => `<span class="bg-stone-100 px-2 py-1 rounded-full">${item}</span>`).join('')}</div>
+                </div>`;
+            }
+            container.innerHTML = `
+                <div class="text-center mb-6"><h2 class="text-2xl font-bold text-teal-800 mb-2">Votre Havre de Paix</h2><p class="text-stone-600 max-w-2xl mx-auto">Toutes les informations sur votre maison de vacances.</p></div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-lg border border-stone-200 space-y-4">${infoCard}</div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg border border-stone-200 space-y-4">${amenitiesHtml}</div>
+                </div>`;
+        }
+        
+        function renderMap(container) {
+            container.innerHTML = `
+                <div class="text-center mb-6"><h2 class="text-2xl font-bold text-teal-800 mb-2">Carte de la Presqu'île</h2><p class="text-stone-600 max-w-2xl mx-auto">Explorez les environs ! Tous les points d'intérêt sont sur la carte.</p></div>
+                <div id="leaflet-map"></div>`;
+            
+            if (mapInstance) mapInstance.remove();
+            mapInstance = L.map('leaflet-map').setView([44.72, -1.23], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(mapInstance);
+            
+            const iconColors = { villa: 'red', plage: 'blue', commerce: 'green', activite: 'purple' };
+            appData.locations.forEach(loc => {
+                const icon = new L.Icon({
+                    iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${iconColors[loc.type]}.png`,
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                    iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+                });
+                L.marker([loc.lat, loc.lng], {icon: icon}).addTo(mapInstance).bindPopup(`<b>${loc.name}</b>`);
+            });
+        }
+
+        function renderBikeRoutes(container) {
+            let routesHtml = appData.bikeRoutes.map(route => `
+                <div class="bg-white p-6 rounded-lg shadow-lg border border-stone-200">
+                    <h3 class="font-bold text-xl text-teal-800">${route.title}</h3>
+                    <div class="flex items-center gap-4 text-sm text-stone-600 my-2">
+                        <span><strong>Distance :</strong> ${route.distance}</span>
+                        <span><strong>Difficulté :</strong> ${route.difficulty}</span>
+                    </div>
+                    <p class="text-stone-700 mb-4">${route.description}</p>
+                    <h4 class="font-semibold mb-2">Étapes suggérées :</h4>
+                    <ul class="list-decimal list-inside space-y-1 text-sm text-stone-600">${route.steps.map(step => `<li>${step}</li>`).join('')}</ul>
+                </div>
+            `).join('');
+            container.innerHTML = `
+                <div class="text-center mb-6"><h2 class="text-2xl font-bold text-teal-800 mb-2">Idées de Balades à Vélo</h2><p class="text-stone-600 max-w-2xl mx-auto">Le vélo est roi sur la presqu'île. Voici deux itinéraires pour découvrir ses différentes facettes.</p></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">${routesHtml}</div>`;
+        }
+
+        function renderBeaches(container) {
+            let beachesHtml = appData.beaches.map((beach, index) => `
+                <div onclick="showDetails('beach', ${index})" class="cursor-pointer border rounded-lg p-4 shadow-sm transition-transform hover:scale-105 ${beach.color} ${beach.textColor}">
+                    <div class="flex items-center justify-between mb-2"><h3 class="font-bold text-lg">${beach.name}</h3><span class="text-3xl">${beach.icon}</span></div>
+                    <p class="text-sm font-semibold opacity-80 mb-3">${beach.location} - <span class="font-normal">Vélo: ~${beach.time}</span></p>
+                    <p class="text-sm">${beach.description}</p>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-teal-800 mb-2">L'Appel de l'Eau</h2>
+                    <p class="text-stone-600 max-w-2xl mx-auto">Cliquez sur une plage pour plus de détails. Bassin pour le calme, Océan pour les vagues.</p>
+                </div>
+                <div id="beaches-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${beachesHtml}</div>`;
+        }
+
+        function renderActivities(container) {
+            let activitiesHtml = '';
+            for (const category in appData.activities) {
+                activitiesHtml += `<div class="bg-white p-6 rounded-lg shadow-lg border border-stone-200">
+                    <h3 class="font-bold text-xl text-teal-800 mb-4 border-b pb-2">${category}</h3>
+                    <ul class="space-y-4">
+                        ${appData.activities[category].map((item, index) => `
+                            <li onclick="showDetails('activity', '${category}', ${index})" class="flex items-start gap-3 cursor-pointer p-2 -m-2 rounded-lg hover:bg-stone-100">
+                               <span class="text-teal-600 mt-1 font-bold">▪</span>
+                               <div><h4 class="font-semibold">${item.name}</h4><p class="text-sm text-stone-600">${item.description}</p></div>
+                            </li>`).join('')}
+                    </ul>
+                </div>`;
+            }
+            container.innerHTML = `
+                <div class="text-center mb-6"><h2 class="text-2xl font-bold text-teal-800 mb-2">Activités & Découvertes</h2><p class="text-stone-600 max-w-2xl mx-auto">Cliquez sur une activité pour obtenir des conseils pratiques.</p></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">${activitiesHtml}</div>`;
+        }
+        
+        function renderPractical(container) {
+            let practicalHtml = '';
+            for (const category in appData.practical) {
+                practicalHtml += `<div class="bg-white p-4 rounded-lg shadow-sm border border-stone-200">
+                    <h3 class="font-bold text-lg text-teal-800 mb-3">${category}</h3>
+                    <div class="space-y-3">
+                        ${appData.practical[category].map(item => `<div class="text-sm"><p class="font-semibold">${item.name}</p><p class="text-stone-600">${item.description}</p><p class="text-xs text-stone-500">${item.address}</p></div>`).join('')}
                     </div>
                 </div>`;
             }
-            amenitiesCard.innerHTML = amenitiesHtml;
-            grid.appendChild(amenitiesCard);
+            container.innerHTML = `
+                <div class="text-center mb-6"><h2 class="text-2xl font-bold text-teal-800 mb-2">Vie Pratique à Piraillan</h2><p class="text-stone-600 max-w-2xl mx-auto">Les adresses essentielles pour le quotidien.</p></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${practicalHtml}</div>`;
         }
-
-        function populateBeaches(filter = 'all') {
-            const grid = document.getElementById('beaches-grid');
-            grid.innerHTML = '';
-            const filteredBeaches = appData.beaches.filter(beach => filter === 'all' || beach.type === filter);
+        
+        function renderTides(container) {
+            const tableRows = appData.tides.map((tide, index) => `<tr class="${index % 2 === 0 ? 'bg-white' : 'bg-stone-50'}">
+                <td class="px-4 py-3 font-semibold">${tide.date}</td><td class="px-4 py-3 text-center">${tide.pmMatin}</td>
+                <td class="px-4 py-3 text-center">${tide.pmSoir}</td><td class="px-4 py-3 text-center font-bold text-teal-700">${tide.coeff}</td>
+                <td class="px-4 py-3 text-stone-700">${tide.conseil}</td></tr>`).join('');
             
-            filteredBeaches.forEach(beach => {
-                const card = document.createElement('div');
-                card.className = `beach-card border rounded-lg p-4 shadow-sm transition-transform hover:scale-105 ${beach.color} ${beach.textColor}`;
-                card.innerHTML = `
-                    <div class="flex items-center justify-between mb-2">
-                        <h3 class="font-bold text-lg">${beach.name}</h3>
-                        <span class="text-3xl">${beach.icon}</span>
-                    </div>
-                    <p class="text-sm font-semibold opacity-80 mb-3">${beach.location} - <span class="font-normal">Vélo: ~${beach.time}</span></p>
-                    <p class="text-sm">${beach.description}</p>
-                `;
-                grid.appendChild(card);
-            });
-        }
-        
-        window.filterBeaches = (filter) => {
-             document.querySelectorAll('.beach-filter-btn').forEach(btn => {
-                btn.classList.remove('active', 'bg-teal-600', 'text-white');
-                btn.classList.add('bg-white', 'text-teal-600');
-            });
-            const activeBtn = document.querySelector(`.beach-filter-btn[onclick="filterBeaches('${filter}')"]`);
-            activeBtn.classList.add('active', 'bg-teal-600', 'text-white');
-            activeBtn.classList.remove('bg-white', 'text-teal-600');
-            populateBeaches(filter);
-        }
-
-        function populateActivities() {
-            const grid = document.getElementById('activities-grid');
-            grid.innerHTML = '';
-            for (const category in appData.activities) {
-                const categoryDiv = document.createElement('div');
-                categoryDiv.className = 'bg-white p-6 rounded-lg shadow-lg border border-stone-200';
-                let itemsHtml = `<h3 class="font-bold text-xl text-teal-800 mb-4 border-b pb-2">${category}</h3><ul class="space-y-4">`;
-                appData.activities[category].forEach(item => {
-                    itemsHtml += `
-                        <li class="flex items-start gap-3">
-                           <span class="text-teal-600 mt-1 font-bold">▪</span>
-                           <div>
-                             <h4 class="font-semibold">${item.name}</h4>
-                             <p class="text-sm text-stone-600">${item.description}</p>
-                           </div>
-                        </li>`;
-                });
-                itemsHtml += '</ul>';
-                categoryDiv.innerHTML = itemsHtml;
-                grid.appendChild(categoryDiv);
-            }
-        }
-        
-        function populatePractical() {
-            const grid = document.getElementById('practical-grid');
-            grid.innerHTML = '';
-            for (const category in appData.practical) {
-                 const categoryDiv = document.createElement('div');
-                 categoryDiv.className = 'bg-white p-4 rounded-lg shadow-sm border border-stone-200';
-                 let itemsHtml = `<h3 class="font-bold text-lg text-teal-800 mb-3">${category}</h3><div class="space-y-3">`;
-                 appData.practical[category].forEach(item => {
-                    itemsHtml += `
-                        <div class="text-sm">
-                           <p class="font-semibold">${item.name}</p>
-                           <p class="text-stone-600">${item.description}</p>
-                           <p class="text-xs text-stone-500">${item.address}</p>
-                        </div>`;
-                });
-                itemsHtml += '</div>';
-                categoryDiv.innerHTML = itemsHtml;
-                grid.appendChild(categoryDiv);
-            }
-        }
-        
-        function populateTidesTable() {
-            const tbody = document.getElementById('tides-table-body');
-            tbody.innerHTML = '';
-            appData.tides.forEach((tide, index) => {
-                const row = document.createElement('tr');
-                row.className = index % 2 === 0 ? 'bg-white' : 'bg-stone-50';
-                row.innerHTML = `
-                    <td class="px-4 py-3 font-semibold">${tide.date}</td>
-                    <td class="px-4 py-3 text-center">${tide.pmMatin}</td>
-                    <td class="px-4 py-3 text-center">${tide.pmSoir}</td>
-                    <td class="px-4 py-3 text-center font-bold text-teal-700">${tide.coeff}</td>
-                    <td class="px-4 py-3 text-stone-700">${tide.conseil}</td>
-                `;
-                tbody.appendChild(row);
-            });
+            container.innerHTML = `
+                <div class="text-center mb-6"><h2 class="text-2xl font-bold text-teal-800 mb-2">Le Rythme des Marées</h2><p class="text-stone-600 max-w-2xl mx-auto">L'outil indispensable pour planifier vos journées côté Bassin.</p></div>
+                <div class="bg-white p-4 rounded-lg shadow-lg border border-stone-200 mb-8"><div class="chart-container"><canvas id="tidesChart"></canvas></div></div>
+                <div class="overflow-x-auto bg-white p-4 rounded-lg shadow-lg border border-stone-200"><table class="w-full text-sm text-left text-stone-600">
+                    <thead class="text-xs text-teal-800 uppercase bg-stone-50"><tr><th scope="col" class="px-4 py-3">Date</th><th scope="col" class="px-4 py-3 text-center">Pleine Mer (Matin)</th><th scope="col" class="px-4 py-3 text-center">Pleine Mer (Soir)</th><th scope="col" class="px-4 py-3 text-center">Coeff.</th><th scope="col" class="px-4 py-3">Conseil du Jour</th></tr></thead>
+                    <tbody>${tableRows}</tbody></table></div>`;
+            
+            createTidesChart();
         }
 
         function createTidesChart() {
             const ctx = document.getElementById('tidesChart').getContext('2d');
-            const labels = appData.tides.map(t => t.date.split(' ')[0] + ' ' + t.date.split(' ')[1]);
-            const pmMatinHeights = appData.tides.map(t => parseFloat(t.pmMatin.match(/\((.*?)\m\)/)[1]));
+            const labels = appData.tides.map(t => t.date.slice(0, -5));
             const pmSoirHeights = appData.tides.map(t => parseFloat(t.pmSoir.match(/\((.*?)\m\)/)[1]));
             const coeffs = appData.tides.map(t => parseInt(t.coeff.split('-')[0]));
 
             new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Pleine Mer (m)',
-                            data: pmSoirHeights,
-                            borderColor: '#0F766E', // teal-700
-                            backgroundColor: 'rgba(15, 118, 110, 0.1)',
-                            fill: true,
-                            tension: 0.3,
-                            yAxisID: 'y'
-                        },
-                        {
-                            label: 'Coefficient',
-                            data: coeffs,
-                            borderColor: '#F97316', // orange-500
-                            backgroundColor: 'transparent',
-                            borderDash: [5, 5],
-                            tension: 0.3,
-                            yAxisID: 'y1'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false,
-                    },
-                    scales: {
-                        y: {
-                            type: 'linear',
-                            display: true,
-                            position: 'left',
-                            title: { display: true, text: 'Hauteur (m)' },
-                             grid: { drawOnChartArea: false }
-                        },
-                        y1: {
-                            type: 'linear',
-                            display: true,
-                            position: 'right',
-                            title: { display: true, text: 'Coefficient' },
-                             grid: { drawOnChartArea: false }
-                        }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        label += context.parsed.y;
-                                        if(context.dataset.yAxisID === 'y') label += 'm';
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    }
-                }
+                type: 'line', data: { labels: labels, datasets: [ { label: 'Pleine Mer (m)', data: pmSoirHeights, borderColor: '#0F766E', backgroundColor: 'rgba(15, 118, 110, 0.1)', fill: true, tension: 0.3, yAxisID: 'y' }, { label: 'Coefficient', data: coeffs, borderColor: '#F97316', backgroundColor: 'transparent', borderDash: [5, 5], tension: 0.3, yAxisID: 'y1' } ] },
+                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false, }, scales: { y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Hauteur (m)' }, grid: { drawOnChartArea: false } }, y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'Coefficient' }, grid: { drawOnChartArea: false } } }, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y}${ctx.dataset.yAxisID === 'y' ? 'm' : ''}` } } } }
             });
+        }
+        
+        function showDetails(type, ...args) {
+            let item;
+            if (type === 'beach') {
+                item = appData.beaches[args[0]];
+            } else if (type === 'activity') {
+                item = appData.activities[args[0]][args[1]];
+            }
+            if (!item || !item.details) return;
+            
+            let contentHtml = Object.entries(item.details).map(([key, value]) => `
+                <h4 class="font-semibold text-teal-900 capitalize mt-4 mb-1">${key.replace(/([A-Z])/g, ' $1')}</h4>
+                <p class="text-stone-700 text-sm">${value}</p>
+            `).join('');
+            
+            openModal(item.name, contentHtml);
+        }
+
+        const modal = document.getElementById('details-modal');
+        function openModal(title, content) {
+            modal.querySelector('#modal-title').textContent = title;
+            modal.querySelector('#modal-content').innerHTML = content;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('.modal-container').classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0');
+            modal.querySelector('.modal-container').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -473,18 +418,9 @@
                     updateView();
                 });
             });
-
-            populateToday();
-            populateVilla();
-            populateBeaches();
-            populateActivities();
-            populatePractical();
-            populateTidesTable();
-            createTidesChart();
             
-            updateView(); // Set initial view
-            document.querySelector('.nav-link[data-tab="today"]').classList.add('active');
-            document.getElementById('today').classList.add('active');
+            // Set initial view
+            document.querySelector('.nav-link[data-tab="today"]').click();
         });
 
     </script>
