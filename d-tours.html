@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide Interactif : La Touraine en Famille</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Nature Tones -->
+    <!-- Application Structure Plan: A dashboard-style SPA is used instead of a linear document. The core architecture is based on a main 'day selector' that dynamically displays the itinerary for a chosen day, preventing information overload. This is complemented by a 'reserve treasures' section with interactive filters, allowing users to discover optional activities based on their interests (Castles, Nature, etc.). This task-oriented structure ('Plan my Day' / 'Find an Extra Activity') is more user-friendly for a family planning their trip than scrolling through a long report. A chart provides a visual summary of the trip's balance. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Main 8-day itinerary -> Goal: Easy daily planning -> Viz/Presentation: Dynamic content panes switched by button clicks -> Interaction: User clicks a 'Day' button to reveal that day's specific plan -> Justification: Breaks down a dense 10-day plan into manageable, focused daily views.
+        - Report Info: Overall activity types -> Goal: Provide a quick overview of the trip's variety -> Viz/Presentation: Chart.js Donut Chart -> Interaction: None (static visual summary) -> Justification: Gives an immediate infographic-style understanding of how time is allocated between culture, nature, and leisure.
+        - Report Info: "Trésors en Réserve" list -> Goal: Enable discovery of optional activities -> Viz/Presentation: A grid of cards -> Interaction: Category filter buttons that show/hide cards -> Justification: Transforms a static list into an interactive tool for personalized trip planning.
+        - Report Info: Practical details (e.g., Villandry checklist) -> Goal: Present key info clearly -> Viz/Presentation: Styled HTML tables and lists -> Interaction: None -> Justification: The most effective and readable format for scannable information.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #3D352E;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #D4A373;
+            color: #FFFFFF;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .content-card {
+            background-color: #FEFDFB;
+            border: 1px solid #EFEAE4;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        .activity-icon {
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#3D352E] mb-2">Touraine, un Royaume pour les Familles</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">Votre guide interactif pour 10 jours de rêve. Cliquez sur un jour pour explorer le programme, ou découvrez nos trésors en réserve.</p>
+        </header>
+
+        <main>
+            <!-- Itinerary Selector -->
+            <section id="itinerary" class="mb-12">
+                <h2 class="text-2xl font-bold text-center mb-6">🗓️ Votre Itinéraire Détaillé</h2>
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                </div>
+            </section>
+            
+            <!-- Dynamic Content Display -->
+            <section id="day-content" class="mb-12">
+            </section>
+
+            <!-- Visualizations & Reserve Treasures -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+                
+                <!-- Chart Section -->
+                <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                    <h2 class="text-2xl font-bold text-center mb-4">📊 L'Équilibre de Votre Séjour</h2>
+                    <p class="text-center text-gray-600 mb-6">Une vue d'ensemble des types d'activités prévues pour les 8 jours principaux.</p>
+                    <div class="chart-container">
+                        <canvas id="activityTypeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Reserve Treasures Section -->
+                <div id="reserve" class="lg:col-span-2">
+                    <h2 class="text-3xl font-bold text-center mb-8">💎 Trésors en Réserve</h2>
+                    <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Composez vos journées supplémentaires ou variez les plaisirs. Sélectionnez une catégorie pour filtrer les activités.</p>
+                    
+                    <div id="reserve-filters" class="flex flex-wrap justify-center gap-3 mb-8">
+                    </div>
+
+                    <div id="reserve-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const itineraryData = [
+            { day: 1, date: "17 juillet 2025", theme: "Arrivée et Douceur Tourangelle", activities: "Balade dans le Vieux-Tours, Dîner à la Guinguette", tip: "Laisser la voiture et explorer le centre piétonnier à pied.", 
+              details: `
+                <p class="mb-4">La première journée est volontairement légère. En fin d'après-midi, explorez le cœur historique de Tours. Commencez par la <strong>Place Jean Jaurès</strong>, puis descendez la rue Nationale avant de bifurquer vers la <strong>Place Plumereau</strong> et ses magnifiques maisons à pans de bois.</p>
+                <p class="mb-4">Pour une pause au calme, cherchez le <strong>Jardin Saint-Pierre-le-Puellier</strong>. Pour le dîner, la <strong>Guinguette de Tours-sur-Loire</strong> est une option idéale, festive et décontractée.</p>
+                <p>À la tombée de la nuit, le <strong>Parcours Lumière</strong> (circuit « Vieux-Tours », 45 min) est une promenade parfaite pour conclure la journée.</p>`,
+              icon: '🏙️', type: 'Urbain' },
+            { day: 2, date: "18 juillet 2025", theme: "Sur les Traces de Léonard", activities: "Clos Lucé, Parc des Mini-Châteaux", tip: "Acheter un billet combiné pour le Parc des Mini-Châteaux et l'Aquarium.", 
+              details: `
+                <p class="mb-4">Journée à Amboise. Le matin, direction le <strong>Château du Clos Lucé</strong>. Le jardin est un parc d'attractions intellectuel avec des maquettes géantes et manipulables des inventions de Léonard de Vinci. Parfait pour un enfant de 4 ans !</p>
+                <p class="mb-4">Pour le déjeuner, pique-niquez sur l'<strong>Île d'Or</strong> après un passage au marché d'Amboise, ou faites une halte gourmande à la <strong>Pâtisserie Bigot</strong>.</p>
+                <p>L'après-midi, amusez-vous au <strong>Parc des Mini-Châteaux</strong>, où votre enfant se sentira comme un géant. Le parc est à taille d'enfant, avec de petites attractions.</p>`,
+              icon: '🏰', type: 'Château' },
+            { day: 3, date: "19 juillet 2025", theme: "Au Royaume de l'Imaginaire", activities: "Château d'Ussé, Jardins du Rivau", tip: "Prévoir un porte-bébé pour Ussé ; déjeuner à 'La Table des Fées' au Rivau.", 
+              details: `
+                <p class="mb-4">Le matin, visitez le <strong>Château d'Ussé</strong>, qui aurait inspiré *La Belle au Bois Dormant*. La reconstitution de scènes du conte dans le donjon fascinera votre fils.</p>
+                <p class="mb-4">Poursuivez au <strong>Château du Rivau</strong> et ses 15 jardins thématiques, conçus comme un parcours merveilleux pour les enfants ("Jardin du Petit Poucet", "Forêt Enchantée").</p>
+                <p>Le restaurant du Rivau, "La Table des Fées", est une excellente option pour le déjeuner.</p>`,
+              icon: '🧚', type: 'Ludique' },
+            { day: 4, date: "20 juillet 2025", theme: "Plongée Fascinante et Départ", activities: "Grand Aquarium de Touraine", tip: "Visite idéale le matin pour une activité calme et climatisée avant le départ.", 
+              details: `
+                <p class="mb-4">Pour cette dernière matinée, optez pour une visite au <strong>Grand Aquarium de Touraine</strong>. C'est une activité parfaite pour tous les âges, entièrement à l'abri et climatisée.</p>
+                <p>Le parcours est conçu pour émerveiller : le bassin tactile avec les carpes koï, le tunnel d'eau douce et le tunnel à 360° avec les requins. L'ensemble du site est accessible en poussette et la visite dure environ 1h30.</p>`,
+              icon: '🐠', type: 'Animalier' },
+            { day: 5, date: "3 août 2025", theme: "Grandeur Nature", activities: "Journée au ZooParc de Beauval", tip: "Arriver avant 9h et planifier 3-4 zones clés avec l'application mobile.", 
+              details: `
+                <p class="mb-4">Une journée complète dans l'un des plus beaux zoos du monde. Arrivez avant l'ouverture de 9h. Utilisez l'application mobile pour planifier un itinéraire réaliste et sélectionnez 3 ou 4 zones d'intérêt majeur (pandas, dôme équatorial...).</p>
+                <p class="mb-4">Le parc est très bien équipé pour les familles (poussettes en location, tables à langer, micro-ondes). Le pique-nique est interdit à l'intérieur, mais vous pouvez sortir déjeuner sur les aires dédiées près des entrées.</p>`,
+              icon: '🐼', type: 'Animalier' },
+            { day: 6, date: "4 août 2025", theme: "Le Château des Dames", activities: "Château de Chenonceau, Balade en bateau sur le Cher", tip: "Visiter le château à l'ouverture, puis admirer ses arches depuis un bateau l'après-midi.", 
+              details: `
+                <p class="mb-4">Visitez le <strong>Château de Chenonceau</strong> dès l'ouverture à 9h. Les principaux attraits pour les enfants sont les vastes jardins et le grand labyrinthe végétal.</p>
+                <p class="mb-4">L'après-midi, louez un bateau électrique sans permis à Chisseaux (2 km) avec <strong>La Bélandre</strong> et naviguez sous les arches majestueuses du château. Une expérience spectaculaire et relaxante.</p>
+                <p>Le soir, la <strong>Guinguette de Rochecorbon</strong> est parfaite, avec son espace de jeux dédié aux enfants.</p>`,
+              icon: '🏰', type: 'Château' },
+            { day: 7, date: "5 août 2025", theme: "L'Art des Jardins", activities: "Jardins de Villandry, Parc de la Gloriette", tip: "Villandry est le château le plus 'zen' pour les familles ; parfait pour une journée détendue.", 
+              details: `
+                <p class="mb-4">Le <strong>Château et les Jardins de Villandry</strong> sont la visite la plus sereine et adaptée aux familles. Le site a mis un accent particulier sur leur accueil, avec un parcours poussette, une aire de jeux et un labyrinthe.</p>
+                <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg mb-4">
+                    <h4 class="font-bold mb-2">Check-list Famille : Villandry</h4>
+                    <ul class="list-disc list-inside text-sm">
+                        <li><strong>Accessibilité Poussette :</strong> ✅ Excellent dans les jardins</li>
+                        <li><strong>Change-Bébé & Chauffe-Biberon :</strong> ✅ Oui</li>
+                        <li><strong>Aire de Jeux & Labyrinthe :</strong> ✅ Oui</li>
+                        <li><strong>Gratuité :</strong> ✅ Moins de 8 ans</li>
+                    </ul>
+                </div>
+                <p>L'après-midi, direction le <strong>Parc de la Gloriette</strong> au sud de Tours pour un moment de détente avec de vastes pelouses et des aires de jeux.</p>`,
+              icon: '🌳', type: 'Nature' },
+            { day: 8, date: "6 août 2025", theme: "Forteresse et Souvenirs Sucrés", activities: "Forteresse de Chinon (HistoPad), Conservatoire de la Confiserie", tip: "L'HistoPad est parfait pour captiver les enfants ; la confiserie est une douce récompense.", 
+              details: `
+                <p class="mb-4">Découvrez la <strong>Forteresse Royale de Chinon</strong>. L'<strong>HistoPad</strong> (inclus) est un outil formidable : cette tablette de réalité augmentée propose une chasse au trésor virtuelle qui saura captiver votre enfant.</p>
+                <p class="mb-4">En cas de météo capricieuse, le parc de jeux couvert <strong>Youpimom'</strong> à Chambray-lès-Tours est une excellente alternative.</p>
+                <p>Terminez sur une note sucrée avec une visite gratuite au <strong>Conservatoire de la Confiserie</strong> à Amboise pour voir la fabrication artisanale de berlingots.</p>`,
+              icon: '🛡️', type: 'Château' }
+        ];
+
+        const reserveData = [
+            { category: "Châteaux", name: "Cité Royale de Loches", description: "Une visite fascinante avec un logis royal et un donjon médiéval. L'HistoPad rend la visite très interactive.", icon: '🏰' },
+            { category: "Châteaux", name: "Château Royal d'Amboise", description: "Offre des panoramas spectaculaires sur la Loire. Dispose également d'un HistoPad pour une visite immersive.", icon: '🏰' },
+            { category: "Châteaux", name: "Château d'Azay-le-Rideau", description: "Un plaisir pour les parents, d'une beauté poétique. Idéal pour une visite courte de l'extérieur.", icon: '🏰' },
+            { category: "Nature", name: "Ferme Pédagogique Les Ani'Maurice", description: "Une expérience immersive avec un contact direct avec les animaux de la ferme et une boutique de produits locaux.", icon: '🐑' },
+            { category: "Nature", name: "Lac de Rillé", description: "Un pôle d'activités nautiques (pédalos, canoës) et de loisirs. Attention, la baignade y est interdite.", icon: '🛶' },
+            { category: "Nature", name: "Balade en Bateau sur le Cher", description: "Une balade calme et contemplative d'1h30 sur un bateau traditionnel au départ de Savonnières. Pique-niques autorisés.", icon: '⛵' },
+            { category: "Villages", name: "Chédigny", description: "Le seul village de France labellisé 'Jardin Remarquable'. Une magnifique balade facile en poussette.", icon: '🌹' },
+            { category: "Villages", name: "Montrésor", description: "Classé 'Plus Beaux Villages de France'. Un décor de carte postale avec son petit château et ses ruelles pittoresques.", icon: '🏘️' },
+            { category: "Villages", name: "Crissay-sur-Manse", description: "Également 'Plus Beaux Villages de France'. Une bulle de tranquillité avec ses belles demeures en pierre de tuffeau.", icon: '🏘️' },
+            { category: "Ludique", name: "Youpimom' (Chambray-lès-Tours)", description: "Votre meilleur allié en cas de météo défavorable. Grand parc de jeux couvert avec des zones bien délimitées par âge.", icon: '🎲' }
+        ];
+
+        const itinerarySelector = document.querySelector('#itinerary .flex');
+        const dayContentContainer = document.getElementById('day-content');
+        const reserveFiltersContainer = document.getElementById('reserve-filters');
+        const reserveGridContainer = document.getElementById('reserve-grid');
+
+        function showDay(dayNum) {
+            const dayData = itineraryData.find(d => d.day === dayNum);
+            if (!dayData) return;
+
+            dayContentContainer.innerHTML = `
+                <div class="content-card rounded-2xl p-6 md:p-8 shadow-lg max-w-4xl mx-auto animate-fade-in">
+                    <div class="flex items-start md:items-center mb-4">
+                        <div class="text-4xl mr-4">${dayData.icon}</div>
+                        <div>
+                            <h3 class="text-2xl md:text-3xl font-bold text-[#D4A373]">${dayData.theme}</h3>
+                            <p class="text-gray-500">${dayData.date}</p>
+                        </div>
+                    </div>
+                    <div class="prose max-w-none prose-p:text-gray-700 prose-strong:text-gray-800">
+                        ${dayData.details}
+                    </div>
+                    <div class="mt-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+                        <p class="font-semibold text-green-800">💡 Conseil d'Expert : <span class="font-normal">${dayData.tip}</span></p>
+                    </div>
+                </div>
+            `;
+            
+            document.querySelectorAll('#itinerary .nav-button').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.day) === dayNum);
+            });
+        }
+        
+        function populateItinerarySelector() {
+            itineraryData.forEach(day => {
+                const button = document.createElement('button');
+                button.className = 'nav-button px-4 py-2 rounded-full font-semibold text-gray-700 bg-white border border-gray-200 shadow-sm';
+                button.textContent = `Jour ${day.day}`;
+                button.dataset.day = day.day;
+                button.addEventListener('click', () => showDay(day.day));
+                itinerarySelector.appendChild(button);
+            });
+        }
+        
+        function populateReserveGrid(filter = 'Tous') {
+            reserveGridContainer.innerHTML = '';
+            const filteredData = filter === 'Tous' ? reserveData : reserveData.filter(item => item.category === filter);
+
+            filteredData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'content-card rounded-xl p-6 flex items-start';
+                card.innerHTML = `
+                    <div class="activity-icon">${item.icon}</div>
+                    <div>
+                        <h4 class="font-bold text-lg text-gray-800">${item.name}</h4>
+                        <p class="text-gray-600 text-sm">${item.description}</p>
+                    </div>
+                `;
+                reserveGridContainer.appendChild(card);
+            });
+        }
+        
+        function populateReserveFilters() {
+            const categories = ['Tous', ...new Set(reserveData.map(item => item.category))];
+            categories.forEach(cat => {
+                const button = document.createElement('button');
+                button.className = 'nav-button px-4 py-2 rounded-full font-semibold text-gray-700 bg-white border border-gray-200 shadow-sm filter-btn';
+                button.textContent = cat;
+                button.dataset.category = cat;
+                button.addEventListener('click', () => {
+                    populateReserveGrid(cat);
+                    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                });
+                reserveFiltersContainer.appendChild(button);
+            });
+            reserveFiltersContainer.querySelector('.filter-btn').classList.add('active');
+        }
+
+        function createActivityChart() {
+            const ctx = document.getElementById('activityTypeChart').getContext('2d');
+            const typeCounts = itineraryData.reduce((acc, day) => {
+                acc[day.type] = (acc[day.type] || 0) + 1;
+                return acc;
+            }, {});
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(typeCounts),
+                    datasets: [{
+                        label: 'Types d\'activités',
+                        data: Object.values(typeCounts),
+                        backgroundColor: [
+                            '#D4A373', // Château (Terracotta)
+                            '#81A1C1', // Urbain (Blue)
+                            '#EBCB8B', // Ludique (Yellow)
+                            '#A3BE8C', // Nature (Green)
+                            '#BF616A', // Animalier (Red)
+                        ],
+                        borderColor: '#FEFDFB',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 14,
+                                    family: 'Inter'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            titleFont: {
+                                size: 16
+                            },
+                            bodyFont: {
+                                size: 14
+                            },
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateItinerarySelector();
+            populateReserveFilters();
+            populateReserveGrid();
+            createActivityChart();
+            showDay(1);
+        });
+    </script>
+</body>
+</html>
