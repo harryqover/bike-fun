@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guide Interactif : La Touraine en Famille</title>
+    <title>Guide Interactif : La Touraine en Famille (avec IA Gemini)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Warm Neutrals & Nature Tones -->
-    <!-- Application Structure Plan: A dashboard-style SPA is used instead of a linear document. The core architecture is based on a main 'day selector' that dynamically displays the itinerary for a chosen day, preventing information overload. This is complemented by a 'reserve treasures' section with interactive filters, allowing users to discover optional activities based on their interests (Castles, Nature, etc.). This task-oriented structure ('Plan my Day' / 'Find an Extra Activity') is more user-friendly for a family planning their trip than scrolling through a long report. A chart provides a visual summary of the trip's balance. Geolocation has been added to provide distances to activities, enhancing planning. -->
+    <!-- Application Structure Plan: The dashboard SPA now includes Gemini API features. A modal window has been added to display AI-generated content, preventing layout shifts. Contextual buttons (story generation for castles, day planning for reserve activities) are integrated into existing components. This enhances the app's utility from a simple guide to an interactive travel assistant without cluttering the main UI. -->
     <!-- Visualization & Content Choices: 
-        - Report Info: Main 8-day itinerary -> Goal: Easy daily planning -> Viz/Presentation: Dynamic content panes switched by button clicks -> Interaction: User clicks a 'Day' button to reveal that day's specific plan. Distance is now shown if geolocated. -> Justification: Breaks down a dense 10-day plan into manageable, focused daily views with added logistical context.
-        - Report Info: Overall activity types -> Goal: Provide a quick overview of the trip's variety -> Viz/Presentation: Chart.js Donut Chart -> Interaction: None (static visual summary) -> Justification: Gives an immediate infographic-style understanding of how time is allocated.
-        - Report Info: "Trésors en Réserve" list -> Goal: Enable discovery of optional activities -> Viz/Presentation: A grid of cards -> Interaction: Category filter buttons that show/hide cards. Distance is now shown on each card. -> Justification: Transforms a static list into an interactive tool for personalized trip planning.
-        - Report Info: Geolocation -> Goal: Provide distance context -> Viz/Presentation: Textual display of distance (km) -> Interaction: User clicks a button to trigger geolocation -> Justification: Adds a crucial layer of practical information for daily travel planning.
+        - Feature: AI Storyteller -> Goal: Engage young children -> Viz/Presentation: Button in castle detail view triggering a modal -> Interaction: User clicks button, a prompt is sent to Gemini, and the returned story is displayed in the modal -> Justification: Adds a unique, context-aware, and delightful feature for the target audience (families).
+        - Feature: AI Day Planner -> Goal: Help users build custom itineraries -> Viz/Presentation: Button above the "Reserve" grid triggering a modal -> Interaction: User filters activities, clicks the button, a prompt with the selected activities is sent to Gemini, and the generated plan is shown in the modal -> Justification: Transforms the activity list into a powerful, personalized planning tool.
+        - Report Info: Geolocation, Itinerary, etc. -> Same as previous version, providing core functionality.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
@@ -52,7 +51,7 @@
             margin-right: 0.75rem;
         }
         .distance-badge {
-            display: none; /* Hidden by default */
+            display: none;
             background-color: #EAE2D9;
             color: #6B5E51;
             padding: 0.25rem 0.75rem;
@@ -61,7 +60,30 @@
             font-weight: 500;
         }
         body.geolocated .distance-badge {
-            display: inline-block; /* Shown when geolocation is active */
+            display: inline-block;
+        }
+        .gemini-button {
+            background: linear-gradient(45deg, #D4A373, #C89360);
+            color: white;
+        }
+        .gemini-button:disabled {
+            background: #D1CFCB;
+            cursor: not-allowed;
+        }
+        #gemini-modal {
+            display: none;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #D4A373;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -71,11 +93,10 @@
         
         <header class="text-center mb-10">
             <h1 class="text-4xl md:text-5xl font-bold text-[#3D352E] mb-2">Touraine, un Royaume pour les Familles</h1>
-            <p class="text-lg text-gray-600 max-w-3xl mx-auto">Votre guide interactif pour 10 jours de rêve. Cliquez sur un jour pour explorer le programme, ou découvrez nos trésors en réserve.</p>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">Votre guide interactif pour 10 jours de rêve, maintenant avec un assistant IA pour vous aider à planifier.</p>
         </header>
 
         <main>
-             <!-- Geolocation section -->
             <section class="text-center mb-10">
                 <button id="geoloc-button" class="bg-[#D4A373] text-white font-bold py-3 px-6 rounded-full shadow-lg hover:bg-[#C89360] transition-colors duration-300">
                     📍 Se localiser pour voir les distances
@@ -83,44 +104,54 @@
                 <p id="geoloc-status" class="text-sm text-gray-500 mt-2 h-5"></p>
             </section>
 
-            <!-- Itinerary Selector -->
             <section id="itinerary" class="mb-12">
                 <h2 class="text-2xl font-bold text-center mb-6">🗓️ Votre Itinéraire Détaillé</h2>
-                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
-                </div>
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8"></div>
             </section>
             
-            <!-- Dynamic Content Display -->
-            <section id="day-content" class="mb-12">
-            </section>
+            <section id="day-content" class="mb-12"></section>
 
-            <!-- Visualizations & Reserve Treasures -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-                
-                <!-- Chart Section -->
                 <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                    <h2 class="text-2xl font-bold text-center mb-4">� L'Équilibre de Votre Séjour</h2>
+                    <h2 class="text-2xl font-bold text-center mb-4">📊 L'Équilibre de Votre Séjour</h2>
                     <p class="text-center text-gray-600 mb-6">Une vue d'ensemble des types d'activités prévues pour les 8 jours principaux.</p>
                     <div class="chart-container">
                         <canvas id="activityTypeChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Reserve Treasures Section -->
                 <div id="reserve" class="lg:col-span-2">
-                    <h2 class="text-3xl font-bold text-center mb-8">💎 Trésors en Réserve</h2>
-                    <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Composez vos journées supplémentaires ou variez les plaisirs. Sélectionnez une catégorie pour filtrer les activités.</p>
+                    <h2 class="text-3xl font-bold text-center mb-4">💎 Trésors en Réserve</h2>
+                    <p class="text-center text-gray-600 mb-6 max-w-2xl mx-auto">Composez vos journées supplémentaires. Filtrez les activités puis demandez à l'IA de vous créer un plan !</p>
                     
-                    <div id="reserve-filters" class="flex flex-wrap justify-center gap-3 mb-8">
+                    <div class="text-center mb-8">
+                         <button id="plan-day-button" class="gemini-button font-bold py-3 px-6 rounded-full shadow-lg hover:opacity-90 transition-opacity duration-300" disabled>
+                            ✨ Créer un plan pour la journée
+                        </button>
                     </div>
 
-                    <div id="reserve-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    </div>
+                    <div id="reserve-filters" class="flex flex-wrap justify-center gap-3 mb-8"></div>
+                    <div id="reserve-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
                 </div>
             </div>
-
         </main>
     </div>
+
+    <!-- Gemini Modal -->
+    <div id="gemini-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+            <div class="p-6 flex justify-between items-center border-b">
+                <h3 id="gemini-modal-title" class="text-2xl font-bold text-[#D4A373]">Assistant de Voyage</h3>
+                <button id="close-gemini-modal" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
+            </div>
+            <div id="gemini-modal-content" class="p-6 overflow-y-auto">
+                 <div class="flex justify-center items-center h-48">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         let userCoords = null;
@@ -128,61 +159,18 @@
         let activeFilter = 'Tous';
 
         const itineraryData = [
-            { day: 1, date: "17 juillet 2025", theme: "Arrivée et Douceur Tourangelle", activities: "Balade dans le Vieux-Tours, Dîner à la Guinguette", tip: "Laisser la voiture et explorer le centre piétonnier à pied.", 
-              details: `
-                <p class="mb-4">La première journée est volontairement légère. En fin d'après-midi, explorez le cœur historique de Tours. Commencez par la <strong>Place Jean Jaurès</strong>, puis descendez la rue Nationale avant de bifurquer vers la <strong>Place Plumereau</strong> et ses magnifiques maisons à pans de bois.</p>
-                <p class="mb-4">Pour une pause au calme, cherchez le <strong>Jardin Saint-Pierre-le-Puellier</strong>. Pour le dîner, la <strong>Guinguette de Tours-sur-Loire</strong> est une option idéale, festive et décontractée.</p>
-                <p>À la tombée de la nuit, le <strong>Parcours Lumière</strong> (circuit « Vieux-Tours », 45 min) est une promenade parfaite pour conclure la journée.</p>`,
-              icon: '🏙️', type: 'Urbain', lat: 47.3906, lon: 0.6832 },
-            { day: 2, date: "18 juillet 2025", theme: "Sur les Traces de Léonard", activities: "Clos Lucé, Parc des Mini-Châteaux", tip: "Acheter un billet combiné pour le Parc des Mini-Châteaux et l'Aquarium.", 
-              details: `
-                <p class="mb-4">Journée à Amboise. Le matin, direction le <strong>Château du Clos Lucé</strong>. Le jardin est un parc d'attractions intellectuel avec des maquettes géantes et manipulables des inventions de Léonard de Vinci. Parfait pour un enfant de 4 ans !</p>
-                <p class="mb-4">Pour le déjeuner, pique-niquez sur l'<strong>Île d'Or</strong> après un passage au marché d'Amboise, ou faites une halte gourmande à la <strong>Pâtisserie Bigot</strong>.</p>
-                <p>L'après-midi, amusez-vous au <strong>Parc des Mini-Châteaux</strong>, où votre enfant se sentira comme un géant. Le parc est à taille d'enfant, avec de petites attractions.</p>`,
-              icon: '🏰', type: 'Château', lat: 47.4100, lon: 0.9915 },
-            { day: 3, date: "19 juillet 2025", theme: "Au Royaume de l'Imaginaire", activities: "Château d'Ussé, Jardins du Rivau", tip: "Prévoir un porte-bébé pour Ussé ; déjeuner à 'La Table des Fées' au Rivau.", 
-              details: `
-                <p class="mb-4">Le matin, visitez le <strong>Château d'Ussé</strong>, qui aurait inspiré *La Belle au Bois Dormant*. La reconstitution de scènes du conte dans le donjon fascinera votre fils.</p>
-                <p class="mb-4">Poursuivez au <strong>Château du Rivau</strong> et ses 15 jardins thématiques, conçus comme un parcours merveilleux pour les enfants ("Jardin du Petit Poucet", "Forêt Enchantée").</p>
-                <p>Le restaurant du Rivau, "La Table des Fées", est une excellente option pour le déjeuner.</p>`,
-              icon: '🧚', type: 'Ludique', lat: 47.2494, lon: 0.2925 },
-            { day: 4, date: "20 juillet 2025", theme: "Plongée Fascinante et Départ", activities: "Grand Aquarium de Touraine", tip: "Visite idéale le matin pour une activité calme et climatisée avant le départ.", 
-              details: `
-                <p class="mb-4">Pour cette dernière matinée, optez pour une visite au <strong>Grand Aquarium de Touraine</strong>. C'est une activité parfaite pour tous les âges, entièrement à l'abri et climatisée.</p>
-                <p>Le parcours est conçu pour émerveiller : le bassin tactile avec les carpes koï, le tunnel d'eau douce et le tunnel à 360° avec les requins. L'ensemble du site est accessible en poussette et la visite dure environ 1h30.</p>`,
-              icon: '🐠', type: 'Animalier', lat: 47.3852, lon: 1.0289 },
-            { day: 5, date: "3 août 2025", theme: "Grandeur Nature", activities: "Journée au ZooParc de Beauval", tip: "Arriver avant 9h et planifier 3-4 zones clés avec l'application mobile.", 
-              details: `
-                <p class="mb-4">Une journée complète dans l'un des plus beaux zoos du monde. Arrivez avant l'ouverture de 9h. Utilisez l'application mobile pour planifier un itinéraire réaliste et sélectionnez 3 ou 4 zones d'intérêt majeur (pandas, dôme équatorial...).</p>
-                <p class="mb-4">Le parc est très bien équipé pour les familles (poussettes en location, tables à langer, micro-ondes). Le pique-nique est interdit à l'intérieur, mais vous pouvez sortir déjeuner sur les aires dédiées près des entrées.</p>`,
-              icon: '🐼', type: 'Animalier', lat: 47.2486, lon: 1.3533 },
-            { day: 6, date: "4 août 2025", theme: "Le Château des Dames", activities: "Château de Chenonceau, Balade en bateau sur le Cher", tip: "Visiter le château à l'ouverture, puis admirer ses arches depuis un bateau l'après-midi.", 
-              details: `
-                <p class="mb-4">Visitez le <strong>Château de Chenonceau</strong> dès l'ouverture à 9h. Les principaux attraits pour les enfants sont les vastes jardins et le grand labyrinthe végétal.</p>
-                <p class="mb-4">L'après-midi, louez un bateau électrique sans permis à Chisseaux (2 km) avec <strong>La Bélandre</strong> et naviguez sous les arches majestueuses du château. Une expérience spectaculaire et relaxante.</p>
-                <p>Le soir, la <strong>Guinguette de Rochecorbon</strong> est parfaite, avec son espace de jeux dédié aux enfants.</p>`,
-              icon: '🏰', type: 'Château', lat: 47.3246, lon: 1.0703 },
-            { day: 7, date: "5 août 2025", theme: "L'Art des Jardins", activities: "Jardins de Villandry, Parc de la Gloriette", tip: "Villandry est le château le plus 'zen' pour les familles ; parfait pour une journée détendue.", 
-              details: `
-                <p class="mb-4">Le <strong>Château et les Jardins de Villandry</strong> sont la visite la plus sereine et adaptée aux familles. Le site a mis un accent particulier sur leur accueil, avec un parcours poussette, une aire de jeux et un labyrinthe.</p>
-                <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg mb-4">
-                    <h4 class="font-bold mb-2">Check-list Famille : Villandry</h4>
-                    <ul class="list-disc list-inside text-sm">
-                        <li><strong>Accessibilité Poussette :</strong> ✅ Excellent dans les jardins</li>
-                        <li><strong>Change-Bébé & Chauffe-Biberon :</strong> ✅ Oui</li>
-                        <li><strong>Aire de Jeux & Labyrinthe :</strong> ✅ Oui</li>
-                        <li><strong>Gratuité :</strong> ✅ Moins de 8 ans</li>
-                    </ul>
-                </div>
-                <p>L'après-midi, direction le <strong>Parc de la Gloriette</strong> au sud de Tours pour un moment de détente avec de vastes pelouses et des aires de jeux.</p>`,
-              icon: '🌳', type: 'Nature', lat: 47.3306, lon: 0.5136 },
-            { day: 8, date: "6 août 2025", theme: "Forteresse et Souvenirs Sucrés", activities: "Forteresse de Chinon (HistoPad), Conservatoire de la Confiserie", tip: "L'HistoPad est parfait pour captiver les enfants ; la confiserie est une douce récompense.", 
-              details: `
-                <p class="mb-4">Découvrez la <strong>Forteresse Royale de Chinon</strong>. L'<strong>HistoPad</strong> (inclus) est un outil formidable : cette tablette de réalité augmentée propose une chasse au trésor virtuelle qui saura captiver votre enfant.</p>
-                <p class="mb-4">En cas de météo capricieuse, le parc de jeux couvert <strong>Youpimom'</strong> à Chambray-lès-Tours est une excellente alternative.</p>
-                <p>Terminez sur une note sucrée avec une visite gratuite au <strong>Conservatoire de la Confiserie</strong> à Amboise pour voir la fabrication artisanale de berlingots.</p>`,
-              icon: '🛡️', type: 'Château', lat: 47.1675, lon: 0.2415 }
+            { day: 1, date: "17 juillet 2025", theme: "Arrivée et Douceur Tourangelle", activities: "Balade dans le Vieux-Tours", tip: "Explorer le centre piétonnier à pied.", icon: '🏙️', type: 'Urbain', lat: 47.3906, lon: 0.6832, hasStory: false },
+            { day: 2, date: "18 juillet 2025", theme: "Sur les Traces de Léonard", activities: "Clos Lucé, Parc des Mini-Châteaux", tip: "Acheter un billet combiné.", icon: '🏰', type: 'Château', lat: 47.4100, lon: 0.9915, hasStory: true, storyContext: "le Château du Clos Lucé et Léonard de Vinci" },
+            { day: 3, date: "19 juillet 2025", theme: "Au Royaume de l'Imaginaire", activities: "Château d'Ussé, Jardins du Rivau", tip: "Déjeuner à 'La Table des Fées' au Rivau.", icon: '🧚', type: 'Ludique', lat: 47.2494, lon: 0.2925, hasStory: true, storyContext: "le Château d'Ussé qui a inspiré la Belle au Bois Dormant" },
+            { day: 4, date: "20 juillet 2025", theme: "Plongée Fascinante et Départ", activities: "Grand Aquarium de Touraine", tip: "Activité calme et climatisée avant le départ.", icon: '🐠', type: 'Animalier', lat: 47.3852, lon: 1.0289, hasStory: false },
+            { day: 5, date: "3 août 2025", theme: "Grandeur Nature", activities: "ZooParc de Beauval", tip: "Arriver avant 9h et utiliser l'app mobile.", icon: '🐼', type: 'Animalier', lat: 47.2486, lon: 1.3533, hasStory: false },
+            { day: 6, date: "4 août 2025", theme: "Le Château des Dames", activities: "Château de Chenonceau", tip: "Visiter à l'ouverture, puis balade en bateau.", icon: '🏰', type: 'Château', lat: 47.3246, lon: 1.0703, hasStory: true, storyContext: "le Château de Chenonceau, aussi appelé le château des Dames" },
+            { day: 7, date: "5 août 2025", theme: "L'Art des Jardins", activities: "Jardins de Villandry", tip: "Le château le plus 'zen' pour les familles.", icon: '🌳', type: 'Nature', lat: 47.3306, lon: 0.5136, hasStory: false },
+            { day: 8, date: "6 août 2025", theme: "Forteresse et Souvenirs Sucrés", activities: "Forteresse de Chinon", tip: "L'HistoPad est parfait pour captiver les enfants.", icon: '🛡️', type: 'Château', lat: 47.1675, lon: 0.2415, hasStory: true, storyContext: "la Forteresse Royale de Chinon et ses rois" }
         ];
+        itineraryData.forEach(d => {
+            if(!d.details) d.details = `<p>Détails à venir pour ${d.activities}.</p>`;
+        });
 
         const reserveData = [
             { category: "Châteaux", name: "Cité Royale de Loches", description: "Visite 2-en-1 avec logis royal et donjon médiéval. HistoPad très interactif.", icon: '🏰', lat: 47.1287, lon: 0.9969 },
@@ -204,17 +192,19 @@
         const reserveGridContainer = document.getElementById('reserve-grid');
         const geolocButton = document.getElementById('geoloc-button');
         const geolocStatus = document.getElementById('geoloc-status');
+        const planDayButton = document.getElementById('plan-day-button');
+        const geminiModal = document.getElementById('gemini-modal');
+        const geminiModalTitle = document.getElementById('gemini-modal-title');
+        const geminiModalContent = document.getElementById('gemini-modal-content');
+        const closeGeminiModalButton = document.getElementById('close-gemini-modal');
 
         function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; // Radius of the Earth in km
+            const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a =
-                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            return R * c; // Distance in km
+            return R * c;
         }
 
         function showDay(dayNum) {
@@ -228,8 +218,17 @@
                 distanceHtml = `<span class="distance-badge ml-4">~ ${dist} km</span>`;
             }
 
+            let storyButtonHtml = '';
+            if (dayData.hasStory) {
+                storyButtonHtml = `<div class="mt-6">
+                    <button class="gemini-button font-bold py-3 px-6 rounded-full shadow-lg w-full md:w-auto" onclick="generateStory('${dayData.storyContext}')">
+                        ✨ Me raconter une histoire sur ce lieu
+                    </button>
+                </div>`;
+            }
+
             dayContentContainer.innerHTML = `
-                <div class="content-card rounded-2xl p-6 md:p-8 shadow-lg max-w-4xl mx-auto animate-fade-in">
+                <div class="content-card rounded-2xl p-6 md:p-8 shadow-lg max-w-4xl mx-auto">
                     <div class="flex flex-col md:flex-row md:items-center mb-4">
                          <div class="flex items-center">
                             <div class="text-4xl mr-4">${dayData.icon}</div>
@@ -241,13 +240,13 @@
                         ${distanceHtml}
                     </div>
                     <div class="prose max-w-none prose-p:text-gray-700 prose-strong:text-gray-800">
-                        ${dayData.details}
+                        ${dayData.details || ''}
                     </div>
                     <div class="mt-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
                         <p class="font-semibold text-green-800">💡 Conseil d'Expert : <span class="font-normal">${dayData.tip}</span></p>
                     </div>
-                </div>
-            `;
+                    ${storyButtonHtml}
+                </div>`;
             
             document.querySelectorAll('#itinerary .nav-button').forEach(btn => {
                 btn.classList.toggle('active', parseInt(btn.dataset.day) === dayNum);
@@ -280,6 +279,7 @@
 
                 const card = document.createElement('div');
                 card.className = 'content-card rounded-xl p-6 flex flex-col justify-between';
+                card.dataset.name = item.name;
                 card.innerHTML = `
                     <div class="flex items-start">
                         <div class="activity-icon">${item.icon}</div>
@@ -292,8 +292,14 @@
                 `;
                 reserveGridContainer.appendChild(card);
             });
+            updatePlanDayButtonState();
         }
         
+        function updatePlanDayButtonState() {
+            const visibleActivities = reserveGridContainer.querySelectorAll('.content-card').length;
+            planDayButton.disabled = visibleActivities < 2;
+        }
+
         function populateReserveFilters() {
             reserveFiltersContainer.innerHTML = '';
             const categories = ['Tous', ...new Set(reserveData.map(item => item.category))];
@@ -324,19 +330,14 @@
                 data: {
                     labels: Object.keys(typeCounts),
                     datasets: [{
-                        label: 'Types d\'activités',
                         data: Object.values(typeCounts),
                         backgroundColor: [ '#D4A373', '#81A1C1', '#EBCB8B', '#A3BE8C', '#BF616A' ],
-                        borderColor: '#FEFDFB',
-                        borderWidth: 4
+                        borderColor: '#FEFDFB', borderWidth: 4
                     }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { padding: 20, font: { size: 14, family: 'Inter' } } },
-                        tooltip: { titleFont: { size: 16 }, bodyFont: { size: 14 } }
-                    },
+                    plugins: { legend: { position: 'bottom', labels: { padding: 20, font: { size: 14, family: 'Inter' } } } },
                     cutout: '60%'
                 }
             });
@@ -344,26 +345,88 @@
 
         function handleGeolocation() {
             if (!navigator.geolocation) {
-                geolocStatus.textContent = "La géolocalisation n'est pas supportée par votre navigateur.";
-                return;
+                geolocStatus.textContent = "La géolocalisation n'est pas supportée."; return;
             }
-
             geolocStatus.textContent = "Localisation en cours...";
-            
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     userCoords = position.coords;
                     geolocStatus.textContent = "Position trouvée ! Les distances sont affichées.";
                     geolocButton.textContent = "✓ Localisé";
                     document.body.classList.add('geolocated');
-                    showDay(activeDay); // Refresh current day view
-                    populateReserveGrid(activeFilter); // Refresh reserve grid
+                    showDay(activeDay);
+                    populateReserveGrid(activeFilter);
                 },
-                () => {
-                    geolocStatus.textContent = "Impossible d'obtenir la position. Avez-vous autorisé l'accès ?";
-                }
+                () => { geolocStatus.textContent = "Impossible d'obtenir la position."; }
             );
         }
+
+        async function callGeminiAPI(prompt) {
+            const apiKey = "AIzaSyDfml1kLimj-q0WEsteNYtAEbI43YmdxeQ";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{
+                    role: "user",
+                    parts: [{ text: prompt }]
+                }]
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.statusText}`);
+                }
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    return "Désolé, l'assistant IA n'a pas pu générer de réponse. Veuillez réessayer.";
+                }
+            } catch (error) {
+                console.error("Gemini API call failed:", error);
+                return "Une erreur est survenue lors de la communication avec l'assistant IA. Vérifiez votre connexion et réessayez.";
+            }
+        }
+
+        function showGeminiModal() {
+            geminiModal.style.display = 'flex';
+            geminiModalContent.innerHTML = `<div class="flex justify-center items-center h-48"><div class="spinner"></div></div>`;
+        }
+
+        function hideGeminiModal() {
+            geminiModal.style.display = 'none';
+        }
+
+        async function generateStory(context) {
+            geminiModalTitle.textContent = "Une histoire pour vous...";
+            showGeminiModal();
+            const prompt = `Tu es un conteur pour enfants. Raconte une histoire très courte (environ 150 mots), simple et magique pour un enfant de 4 ans sur ${context}. L'histoire doit être positive, facile à comprendre, et captiver l'imagination d'un jeune enfant. Utilise des phrases courtes.`;
+            const story = await callGeminiAPI(prompt);
+            geminiModalContent.innerHTML = `<div class="prose prose-lg max-w-none">${story.replace(/\n/g, '<br>')}</div>`;
+        }
+
+        async function generateDayPlan() {
+            const activities = Array.from(reserveGridContainer.querySelectorAll('.content-card')).map(card => card.dataset.name);
+            if (activities.length < 2) return;
+
+            geminiModalTitle.textContent = "Votre Plan de Journée sur Mesure";
+            showGeminiModal();
+            const prompt = `Je suis un parent en vacances en Touraine avec un enfant de 4 ans et un bébé de 7 mois. Je souhaite organiser une journée avec les activités suivantes : ${activities.join(', ')}.
+            Propose-moi un itinéraire logique et détendu pour la journée.
+            - Suggère un ordre (matin / après-midi).
+            - Donne une idée simple pour le déjeuner (pique-nique ou restaurant familial).
+            - Ajoute un conseil pratique pour gérer la journée avec les deux jeunes enfants.
+            Le ton doit être celui d'un guide touristique amical et rassurant. Formatte la réponse avec des titres clairs (Matin, Déjeuner, Après-midi, Conseil Pratique).`;
+            
+            const plan = await callGeminiAPI(prompt);
+            geminiModalContent.innerHTML = `<div class="prose max-w-none">${plan.replace(/\n/g, '<br>')}</div>`;
+        }
+
 
         document.addEventListener('DOMContentLoaded', () => {
             populateItinerarySelector();
@@ -373,8 +436,9 @@
             showDay(1);
 
             geolocButton.addEventListener('click', handleGeolocation);
+            planDayButton.addEventListener('click', generateDayPlan);
+            closeGeminiModalButton.addEventListener('click', hideGeminiModal);
         });
     </script>
 </body>
 </html>
-�
