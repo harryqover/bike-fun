@@ -422,6 +422,17 @@
             }
         }
 
+        function simpleMarkdownToHtml(text) {
+            let html = text;
+            // Handle ### headers -> h3
+            html = html.replace(/^### (.*$)/gim, '<h3 class="text-3xl font-bold text-blue-500 mb-4 mt-6">$1</h3>');
+            // Handle **bold** -> strong
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // Handle newlines -> br
+            html = html.replace(/\n/g, '<br>');
+            return html;
+        }
+
         function showGeminiModal() {
             geminiModal.style.display = 'flex';
             geminiModalContent.innerHTML = `<div class="flex justify-center items-center h-48"><div class="spinner"></div></div>`;
@@ -436,7 +447,7 @@
             showGeminiModal();
             const prompt = `Tu es un conteur pour enfants. Raconte une histoire très courte (environ 150 mots), simple et magique pour un enfant de 4 ans sur ${context}. L'histoire doit être positive, facile à comprendre, et captiver l'imagination d'un jeune enfant. Utilise des phrases courtes et un ton très joyeux.`;
             const story = await callGeminiAPI(prompt);
-            geminiModalContent.innerHTML = `<div class="text-xl text-gray-700 leading-relaxed">${story.replace(/\n/g, '<br><br>')}</div>`;
+            geminiModalContent.innerHTML = `<div class="text-xl text-gray-700 leading-relaxed">${simpleMarkdownToHtml(story)}</div>`;
         }
 
         async function generateDayPlan() {
@@ -450,10 +461,10 @@
             - Dis quoi faire le matin et l'après-midi.
             - Donne une idée pour le déjeuner (pique-nique ou un endroit simple).
             - Ajoute un conseil pour que tout se passe bien.
-            Utilise un langage très simple, joyeux et encourageant, comme si tu parlais à un enfant. Formatte avec des titres clairs (Matin, Déjeuner, Après-midi, Super Conseil).`;
+            Utilise un langage très simple, joyeux et encourageant, comme si tu parlais à un enfant. Formatte avec des titres clairs en utilisant la syntaxe Markdown ### pour les titres (Ex: ### Matin).`;
             
             const plan = await callGeminiAPI(prompt);
-            geminiModalContent.innerHTML = `<div class="text-lg text-gray-700 leading-relaxed">${plan.replace(/\n/g, '<br><br>')}</div>`;
+            geminiModalContent.innerHTML = `<div class="text-lg text-gray-700 leading-relaxed">${simpleMarkdownToHtml(plan)}</div>`;
         }
 
         function showAIGuide() {
@@ -498,10 +509,11 @@
             - Ambiance : ${vibe}
             - Lieu : ${location}
             En te basant sur ces critères et la liste d'activités ci-dessous, suggère la MEILLEURE activité. Explique ton choix avec des mots très simples et joyeux. Propose aussi UNE autre super idée.
+            Utilise la syntaxe Markdown pour mettre en évidence les titres (### Mon idée) et les noms de lieux (**Nom du lieu**).
             Liste des activités : ${JSON.stringify(reserveData)}`;
             
             const suggestion = await callGeminiAPI(prompt);
-            geminiModalContent.innerHTML = `<div class="text-xl text-gray-700 leading-relaxed">${suggestion.replace(/\n/g, '<br><br>')}</div>`;
+            geminiModalContent.innerHTML = `<div class="text-xl text-gray-700 leading-relaxed">${simpleMarkdownToHtml(suggestion)}</div>`;
         }
 
         document.addEventListener('DOMContentLoaded', () => {
