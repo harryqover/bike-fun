@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guide Interactif : La Touraine en Famille (avec IA Gemini)</title>
+    <title>Guide Interactif : La Touraine en Famille (avec Guide IA)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Warm Neutrals & Nature Tones -->
-    <!-- Application Structure Plan: The dashboard SPA now includes Gemini API features. A modal window has been added to display AI-generated content, preventing layout shifts. Contextual buttons (story generation for castles, day planning for reserve activities) are integrated into existing components. This enhances the app's utility from a simple guide to an interactive travel assistant without cluttering the main UI. -->
+    <!-- Application Structure Plan: The dashboard SPA now includes a floating AI agent button. This agent uses a dedicated form within the main modal to ask structured questions, leading to more reliable and relevant suggestions from the Gemini API. This enhances the app's function as a dynamic travel assistant. -->
     <!-- Visualization & Content Choices: 
-        - Feature: AI Storyteller -> Goal: Engage young children -> Viz/Presentation: Button in castle detail view triggering a modal -> Interaction: User clicks button, a prompt is sent to Gemini, and the returned story is displayed in the modal -> Justification: Adds a unique, context-aware, and delightful feature for the target audience (families).
-        - Feature: AI Day Planner -> Goal: Help users build custom itineraries -> Viz/Presentation: Button above the "Reserve" grid triggering a modal -> Interaction: User filters activities, clicks the button, a prompt with the selected activities is sent to Gemini, and the generated plan is shown in the modal -> Justification: Transforms the activity list into a powerful, personalized planning tool.
-        - Report Info: Geolocation, Itinerary, etc. -> Same as previous version, providing core functionality.
+        - Feature: AI Tour Guide -> Goal: Provide personalized activity suggestions on-demand -> Viz/Presentation: A floating action button opens a modal with a form (dropdowns, radio buttons). -> Interaction: User fills the form, submits, and the AI's recommendation is displayed in the same modal. -> Justification: Offers a structured, user-friendly way to interact with the AI, guiding the user to provide the necessary information for a high-quality recommendation.
+        - Feature: AI Storyteller & Day Planner -> Same as previous version, providing contextual AI assistance.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
@@ -85,6 +84,27 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        #ai-guide-fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(45deg, #4c51bf, #6b46c1);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 40;
+        }
+        #ai-guide-fab:hover {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -136,6 +156,11 @@
             </div>
         </main>
     </div>
+
+    <!-- AI Guide FAB -->
+    <button id="ai-guide-fab" title="Demander au Guide IA">
+        🤖
+    </button>
 
     <!-- Gemini Modal -->
     <div id="gemini-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -197,6 +222,7 @@
         const geminiModalTitle = document.getElementById('gemini-modal-title');
         const geminiModalContent = document.getElementById('gemini-modal-content');
         const closeGeminiModalButton = document.getElementById('close-gemini-modal');
+        const aiGuideFab = document.getElementById('ai-guide-fab');
 
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371;
@@ -366,10 +392,7 @@
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
             
             const payload = {
-                contents: [{
-                    role: "user",
-                    parts: [{ text: prompt }]
-                }]
+                contents: [{ role: "user", parts: [{ text: prompt }] }]
             };
 
             try {
@@ -378,18 +401,15 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                if (!response.ok) {
-                    throw new Error(`API Error: ${response.statusText}`);
-                }
+                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
                 const result = await response.json();
-                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
+                if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
                     return result.candidates[0].content.parts[0].text;
-                } else {
-                    return "Désolé, l'assistant IA n'a pas pu générer de réponse. Veuillez réessayer.";
                 }
+                return "Désolé, l'assistant IA n'a pas pu générer de réponse. Veuillez réessayer.";
             } catch (error) {
                 console.error("Gemini API call failed:", error);
-                return "Une erreur est survenue lors de la communication avec l'assistant IA. Vérifiez votre connexion et réessayez.";
+                return "Une erreur est survenue lors de la communication avec l'assistant IA.";
             }
         }
 
@@ -427,6 +447,66 @@
             geminiModalContent.innerHTML = `<div class="prose max-w-none">${plan.replace(/\n/g, '<br>')}</div>`;
         }
 
+        function showAIGuide() {
+            geminiModalTitle.textContent = "🤖 Votre Guide IA";
+            geminiModalContent.innerHTML = `
+                <p class="mb-6 text-gray-700">Bonjour ! Pour vous trouver l'activité parfaite, j'ai juste besoin de quelques informations.</p>
+                <form id="ai-guide-form" class="space-y-6">
+                    <div>
+                        <label for="vibe" class="block text-sm font-medium text-gray-700 mb-1">Quel genre d'ambiance recherchez-vous ?</label>
+                        <select id="vibe" name="vibe" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option>Détente et nature</option>
+                            <option>Aventure et jeux</option>
+                            <option>Culture et histoire</option>
+                            <option>Village de charme</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="time" class="block text-sm font-medium text-gray-700 mb-1">Combien de temps avez-vous ?</label>
+                        <select id="time" name="time" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option>1-2 heures</option>
+                            <option>Une demi-journée</option>
+                            <option>Toute la journée</option>
+                        </select>
+                    </div>
+                    <div>
+                        <fieldset>
+                            <legend class="text-sm font-medium text-gray-700 mb-2">Plutôt à l'intérieur ou à l'extérieur ?</legend>
+                            <div class="flex items-center gap-x-4">
+                                <label><input type="radio" name="location" value="en extérieur" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" checked> Extérieur</label>
+                                <label><input type="radio" name="location" value="en intérieur" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"> Intérieur</label>
+                                <label><input type="radio" name="location" value="peu importe" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"> Peu importe</label>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="pt-4">
+                        <button type="submit" class="w-full gemini-button font-bold py-3 px-6 rounded-full shadow-lg hover:opacity-90 transition-opacity duration-300">Trouver mon activité !</button>
+                    </div>
+                </form>
+            `;
+            geminiModal.style.display = 'flex';
+            document.getElementById('ai-guide-form').addEventListener('submit', handleAIGuideSubmit);
+        }
+
+        async function handleAIGuideSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const vibe = form.vibe.value;
+            const time = form.time.value;
+            const location = form.location.value;
+
+            geminiModalContent.innerHTML = `<div class="flex justify-center items-center h-48"><div class="spinner"></div></div>`;
+
+            const prompt = `Agis comme un guide touristique expert de la Touraine, spécialisé dans les voyages en famille. Une famille avec un enfant de 4 ans et un bébé cherche une activité. Leurs préférences sont :
+            - Ambiance : ${vibe}
+            - Temps disponible : ${time}
+            - Lieu : ${location}
+            En te basant sur ces critères et la liste d'activités disponibles ci-dessous, suggère la MEILLEURE activité possible. Explique ton choix de manière amicale et concise, en mettant en avant pourquoi c'est adapté pour la famille. Propose également UNE seule bonne alternative.
+            Liste des activités disponibles : ${JSON.stringify(reserveData)}`;
+            
+            const suggestion = await callGeminiAPI(prompt);
+            geminiModalContent.innerHTML = `<div class="prose max-w-none">${suggestion.replace(/\n/g, '<br>')}</div>`;
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             populateItinerarySelector();
@@ -438,6 +518,7 @@
             geolocButton.addEventListener('click', handleGeolocation);
             planDayButton.addEventListener('click', generateDayPlan);
             closeGeminiModalButton.addEventListener('click', hideGeminiModal);
+            aiGuideFab.addEventListener('click', showAIGuide);
         });
     </script>
 </body>
