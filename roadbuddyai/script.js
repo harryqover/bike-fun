@@ -5,12 +5,12 @@
 
 // --- CONFIGURATION ---
 // IMPORTANT: Paste the Web App URL from your Google Apps Script deployment here.
-const SCRIPT_API_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+const SCRIPT_API_URL = 'https://script.google.com/macros/s/AKfycbxzKsl-yhw_ZUfopEV8VYaAZRd7C7ssCSOeQyi_LJFvwwdAr5WdjKA7KiEq7R7X0CoDkg/exec';
 
 // --- PWA SERVICE WORKER ---
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
+    navigator.serviceWorker.register('https://harryqover.github.io/bike-fun/roadbuddyai/sw.js')
       .then(registration => console.log('ServiceWorker registration successful.'))
       .catch(err => console.error('ServiceWorker registration failed: ', err));
   });
