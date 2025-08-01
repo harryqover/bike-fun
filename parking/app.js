@@ -30,16 +30,11 @@ getCodeBtn.addEventListener('click', async () => {
     getCodeBtn.disabled = true;
     try {
         const response = await fetch(SCRIPT_URL);
-
-        // AMÉLIORATION : Vérifie si la réponse du serveur est une erreur
         if (!response.ok) {
             const errorText = await response.text();
-            // Affiche l'erreur réelle du script si possible
             throw new Error(`Le serveur a répondu avec une erreur: ${response.status}. Réponse: ${errorText}`);
         }
-
         const data = await response.json();
-
         if (data.code) {
             currentCode = data.code;
             codeDisplay.textContent = currentCode;
@@ -51,30 +46,21 @@ getCodeBtn.addEventListener('click', async () => {
             getCodeBtn.disabled = false;
         }
     } catch (error) {
-        // Affiche une erreur plus utile dans la console du navigateur (F12)
         console.error("Détail de l'erreur lors de la récupération du code:", error);
         statusMessage.textContent = "Erreur de communication. Vérifiez la console (F12).";
         getCodeBtn.disabled = false;
     }
 });
 
-// Le reste du fichier app.js reste identique...
 
-// 2.A. Handle clicks on suggested plaque buttons
+// 2. Handle Plaque Selection & Submission
 plaqueButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        const plaque = button.dataset.plaque;
-        submitParking(plaque);
-    });
+    button.addEventListener('click', () => submitParking(button.dataset.plaque));
 });
-
-// 2.B. Handle click on "Other Plaque"
 otherPlaqueBtn.addEventListener('click', () => {
     otherPlaqueSection.classList.remove('hidden');
     otherPlaqueBtn.classList.add('hidden');
 });
-
-// 2.C. Handle submission of a manual plaque
 submitManualPlaqueBtn.addEventListener('click', () => {
     const plaque = plaqueInput.value.trim().toUpperCase();
     if (!plaque || plaque.length < 5) {
@@ -88,7 +74,6 @@ submitManualPlaqueBtn.addEventListener('click', () => {
 async function submitParking(plaque) {
     statusMessage.textContent = "Enregistrement en cours...";
     step2.classList.add('hidden');
-
     try {
         await fetch(SCRIPT_URL, {
             method: 'POST',
@@ -96,10 +81,8 @@ async function submitParking(plaque) {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ action: 'assignCode', code: currentCode, plaque: plaque }),
         });
-        
         showSmsStep(currentCode, plaque);
         statusMessage.textContent = '';
-
     } catch (error) {
         console.error("Erreur lors de la soumission:", error);
         statusMessage.textContent = "❌ Erreur lors de l'enregistrement.";
@@ -113,7 +96,6 @@ function showSmsStep(code, plaque) {
     finalPlaque.textContent = plaque;
     smsText.textContent = smsBody;
     openSmsLink.href = `sms:4411&body=${encodeURIComponent(smsBody)}`;
-    
     copySmsBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(smsBody).then(() => {
             copySmsBtn.textContent = 'Copié !';
@@ -123,11 +105,11 @@ function showSmsStep(code, plaque) {
             alert("La copie a échoué.");
         });
     });
-    
     step3.classList.remove('hidden');
 }
 
-// --- Logic for Uploading New Codes ---
+
+// --- CORRECTION ET AMÉLIORATION DE LA LOGIQUE D'UPLOAD ---
 uploadBtn.addEventListener('click', () => {
     const file = imageUploadInput.files[0];
     if (!file) {
@@ -144,27 +126,52 @@ uploadBtn.addEventListener('click', () => {
         statusMessage.textContent = "🤖 Analyse de l'image par l'IA...";
         
         try {
-            await fetch(SCRIPT_URL, {
+            // CORRECTION : On utilise 'cors' pour pouvoir lire la réponse
+            const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors',
-                headers: {'Content-Type': 'application/json'},
+                mode: 'cors', 
+                headers: {
+                    'Content-Type': 'application/json',
+                },
                 body: JSON.stringify({ action: 'addCodesFromImage', imageData: base64Image }),
             });
-            statusMessage.textContent = "✅ Analyse terminée !";
-            imageUploadInput.value = "";
-            setTimeout(() => { 
-                statusMessage.textContent = "Rechargement...";
-                window.location.reload(); 
-            }, 3000);
+
+            // On vérifie si la requête elle-même a réussi
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP: ${response.status}`);
+            }
+
+            // On analyse la réponse JSON du script
+            const data = await response.json();
+            
+            // DÉBOGAGE : On affiche la réponse complète dans la console
+            console.log("Réponse complète du serveur:", data);
+
+            if (data.success) {
+                statusMessage.textContent = `✅ ${data.message}`;
+                // DÉBOGAGE : On affiche les codes qui ont été ajoutés
+                console.log("Codes ajoutés avec succès:", data.addedCodes);
+                imageUploadInput.value = "";
+                setTimeout(() => { 
+                    statusMessage.textContent = "Rechargement...";
+                    window.location.reload(); 
+                }, 4000);
+            } else {
+                // On affiche l'erreur spécifique renvoyée par le script
+                statusMessage.textContent = `❌ Erreur : ${data.error || 'Une erreur inconnue est survenue.'}`;
+            }
 
         } catch (error) {
-            statusMessage.textContent = "❌ Erreur lors de l'analyse.";
+            console.error("Erreur détaillée lors de l'upload:", error);
+            statusMessage.textContent = "❌ Erreur de communication avec le serveur.";
+        } finally {
+            // On réactive le bouton dans tous les cas
             uploadBtn.disabled = false;
         }
     };
 
     reader.onerror = () => {
-        statusMessage.textContent = "❌ Erreur de lecture du fichier.";
+        statusMessage.textContent = "❌ Erreur de lecture du fichier local.";
         uploadBtn.disabled = false;
     };
 
