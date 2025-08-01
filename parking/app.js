@@ -1,179 +1,195 @@
-// L'URL de votre script est déjà intégrée
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwY1AHmB52TDJTerlryEZkwK7nzDrB5YD0w94QwMY-ioyyMkWsnUG-pS0uDBrhLmDKB/exec"; 
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Configuration ---
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwY1AHmB52TDJTerlryEZkwK7nzDrB5YD0w94QwMY-ioyyMkWsnUG-pS0uDBrhLmDKB/exec";
 
-// --- DOM Elements ---
-const getCodeBtn = document.getElementById('getCodeBtn');
-const statusMessage = document.getElementById('statusMessage');
-const step1 = document.getElementById('step1');
-const step2 = document.getElementById('step2');
-const codeDisplay = document.getElementById('codeDisplay');
-const plaqueButtons = document.querySelectorAll('.plaque-btn');
-const otherPlaqueBtn = document.getElementById('otherPlaqueBtn');
-const otherPlaqueSection = document.getElementById('otherPlaqueSection');
-const plaqueInput = document.getElementById('plaqueInput');
-const submitManualPlaqueBtn = document.getElementById('submitManualPlaqueBtn');
-const step3 = document.getElementById('step3');
-const finalPlaque = document.getElementById('finalPlaque');
-const smsText = document.getElementById('smsText');
-const copySmsBtn = document.getElementById('copySmsBtn');
-const openSmsLink = document.getElementById('openSmsLink');
-const imageUploadInput = document.getElementById('imageUploadInput');
-const uploadBtn = document.getElementById('uploadBtn');
+    // --- DOM Elements ---
+    const getCodeBtn = document.getElementById('getCodeBtn');
+    const statusMessage = document.getElementById('statusMessage');
+    
+    const steps = document.querySelectorAll('.step');
+    const codeDisplay = document.getElementById('codeDisplay');
+    const plaqueButtons = document.querySelectorAll('.plaque-btn');
+    const otherPlaqueBtn = document.getElementById('otherPlaqueBtn');
+    const otherPlaqueSection = document.getElementById('otherPlaqueSection');
+    const plaqueInput = document.getElementById('plaqueInput');
+    const submitManualPlaqueBtn = document.getElementById('submitManualPlaqueBtn');
+    
+    const finalPlaque = document.getElementById('finalPlaque');
+    const smsText = document.getElementById('smsText');
+    const copySmsBtn = document.getElementById('copySmsBtn');
+    const openSmsLink = document.getElementById('openSmsLink');
 
-let currentCode = '';
+    // Admin Panel Elements
+    const adminToggleBtn = document.getElementById('adminToggleBtn');
+    const adminPanel = document.getElementById('adminPanel');
+    const closeAdminBtn = document.getElementById('closeAdminBtn');
+    const overlay = document.getElementById('overlay');
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const codesTextarea = document.getElementById('codesTextarea');
+    const submitTextBtn = document.getElementById('submitTextBtn');
+    const imageUploadInput = document.getElementById('imageUploadInput');
+    const uploadBtn = document.getElementById('uploadBtn');
 
-// --- Main App Flow ---
+    let currentCode = '';
 
-// 1. Get a parking code from the backend
-getCodeBtn.addEventListener('click', async () => {
-    statusMessage.textContent = "Recherche d'un code...";
-    getCodeBtn.disabled = true;
-    try {
-        const response = await fetch(SCRIPT_URL);
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Le serveur a répondu avec une erreur: ${response.status}. Réponse: ${errorText}`);
-        }
-        const data = await response.json();
-        if (data.code) {
-            currentCode = data.code;
-            codeDisplay.textContent = currentCode;
-            step1.classList.add('hidden');
-            step2.classList.remove('hidden');
-            statusMessage.textContent = '';
+    // --- Navigation & UI ---
+    function showStep(stepNumber) {
+        steps.forEach(step => step.classList.remove('active'));
+        document.getElementById(`step${stepNumber}`).classList.add('active');
+    }
+
+    function toggleAdminPanel(show) {
+        if (show) {
+            overlay.classList.add('active');
+            adminPanel.classList.add('active');
         } else {
-            statusMessage.textContent = data.error || "Erreur : aucun code trouvé.";
-            getCodeBtn.disabled = false;
+            overlay.classList.remove('active');
+            adminPanel.classList.remove('active');
         }
-    } catch (error) {
-        console.error("Détail de l'erreur lors de la récupération du code:", error);
-        statusMessage.textContent = "Erreur de communication. Vérifiez la console (F12).";
-        getCodeBtn.disabled = false;
     }
-});
 
+    adminToggleBtn.addEventListener('click', () => toggleAdminPanel(true));
+    closeAdminBtn.addEventListener('click', () => toggleAdminPanel(false));
+    overlay.addEventListener('click', () => toggleAdminPanel(false));
 
-// 2. Handle Plaque Selection & Submission
-plaqueButtons.forEach(button => {
-    button.addEventListener('click', () => submitParking(button.dataset.plaque));
-});
-otherPlaqueBtn.addEventListener('click', () => {
-    otherPlaqueSection.classList.remove('hidden');
-    otherPlaqueBtn.classList.add('hidden');
-});
-submitManualPlaqueBtn.addEventListener('click', () => {
-    const plaque = plaqueInput.value.trim().toUpperCase();
-    if (!plaque || plaque.length < 5) {
-        alert("Veuillez entrer une plaque d'immatriculation valide.");
-        return;
-    }
-    submitParking(plaque);
-});
-
-// 3. Submit the chosen plaque to the backend
-async function submitParking(plaque) {
-    statusMessage.textContent = "Enregistrement en cours...";
-    step2.classList.add('hidden');
-    try {
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ action: 'assignCode', code: currentCode, plaque: plaque }),
-        });
-        showSmsStep(currentCode, plaque);
-        statusMessage.textContent = '';
-    } catch (error) {
-        console.error("Erreur lors de la soumission:", error);
-        statusMessage.textContent = "❌ Erreur lors de l'enregistrement.";
-        step2.classList.remove('hidden');
-    }
-}
-
-// 4. Show the final confirmation and SMS helper step
-function showSmsStep(code, plaque) {
-    const smsBody = `${code} ${plaque}`;
-    finalPlaque.textContent = plaque;
-    smsText.textContent = smsBody;
-    openSmsLink.href = `sms:4411&body=${encodeURIComponent(smsBody)}`;
-    copySmsBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(smsBody).then(() => {
-            copySmsBtn.textContent = 'Copié !';
-            setTimeout(() => { copySmsBtn.textContent = 'Copier le texte'; }, 2000);
-        }).catch(err => {
-            console.error('Could not copy text: ', err);
-            alert("La copie a échoué.");
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            tabContents.forEach(content => content.classList.remove('active'));
+            document.getElementById(`${button.dataset.tab}Tab`).classList.add('active');
         });
     });
-    step3.classList.remove('hidden');
-}
 
+    // --- Core App Logic ---
+    getCodeBtn.addEventListener('click', async () => {
+        statusMessage.textContent = "Recherche d'un code...";
+        getCodeBtn.disabled = true;
+        try {
+            const response = await fetch(SCRIPT_URL);
+            if (!response.ok) throw new Error(`Erreur serveur: ${response.status}`);
+            const data = await response.json();
+            if (data.code) {
+                currentCode = data.code;
+                codeDisplay.textContent = currentCode;
+                showStep(2);
+            } else {
+                statusMessage.textContent = data.error || "Aucun code trouvé.";
+            }
+        } catch (error) {
+            console.error("Erreur getCode:", error);
+            statusMessage.textContent = "Erreur de communication.";
+        } finally {
+            getCodeBtn.disabled = false;
+        }
+    });
 
-// --- CORRECTION ET AMÉLIORATION DE LA LOGIQUE D'UPLOAD ---
-uploadBtn.addEventListener('click', () => {
-    const file = imageUploadInput.files[0];
-    if (!file) {
-        alert("Veuillez sélectionner un fichier image.");
-        return;
+    async function submitParking(plaque) {
+        statusMessage.textContent = "Enregistrement...";
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'assignCode', code: currentCode, plaque: plaque }),
+            });
+            showSmsStep(currentCode, plaque);
+        } catch (error) {
+            console.error("Erreur submitParking:", error);
+            statusMessage.textContent = "Erreur d'enregistrement.";
+            showStep(2); // Revenir à l'étape de sélection
+        }
     }
 
-    statusMessage.textContent = "Lecture de l'image...";
-    uploadBtn.disabled = true;
-    const reader = new FileReader();
-    
-    reader.onload = async (event) => {
-        const base64Image = event.target.result.split(',')[1];
-        statusMessage.textContent = "🤖 Analyse de l'image par l'IA...";
-        
+    plaqueButtons.forEach(button => {
+        button.addEventListener('click', () => submitParking(button.dataset.plaque));
+    });
+
+    otherPlaqueBtn.addEventListener('click', () => {
+        otherPlaqueSection.classList.remove('hidden');
+        otherPlaqueBtn.style.display = 'none';
+    });
+
+    submitManualPlaqueBtn.addEventListener('click', () => {
+        const plaque = plaqueInput.value.trim().toUpperCase();
+        if (plaque) submitParking(plaque);
+    });
+
+    function showSmsStep(code, plaque) {
+        const smsBody = `${code} ${plaque}`;
+        finalPlaque.textContent = plaque;
+        smsText.textContent = smsBody;
+        // CORRECTION: Utilisation de '?' comme premier séparateur de paramètre
+        openSmsLink.href = `sms:4411?body=${encodeURIComponent(smsBody)}`;
+        statusMessage.textContent = '';
+        showStep(3);
+    }
+
+    copySmsBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(smsText.textContent).then(() => {
+            copySmsBtn.innerHTML = "<i class='bx bx-check'></i> Copié !";
+            setTimeout(() => { copySmsBtn.innerHTML = "<i class='bx bx-copy'></i> Copier le texte"; }, 2000);
+        });
+    });
+
+    // --- Admin Panel Logic ---
+    submitTextBtn.addEventListener('click', async () => {
+        const codes = codesTextarea.value.split('\n').filter(c => c.trim() !== '');
+        if (codes.length === 0) {
+            alert("Veuillez coller des codes.");
+            return;
+        }
+        statusMessage.textContent = `Ajout de ${codes.length} codes...`;
+        toggleAdminPanel(false);
         try {
-            // CORRECTION : On utilise 'cors' pour pouvoir lire la réponse
             const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'cors', 
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ action: 'addCodesFromImage', imageData: base64Image }),
+                mode: 'cors',
+                body: JSON.stringify({ action: 'addCodesFromText', codes: codes }),
             });
-
-            // On vérifie si la requête elle-même a réussi
-            if (!response.ok) {
-                throw new Error(`Erreur HTTP: ${response.status}`);
-            }
-
-            // On analyse la réponse JSON du script
             const data = await response.json();
-            
-            // DÉBOGAGE : On affiche la réponse complète dans la console
-            console.log("Réponse complète du serveur:", data);
-
             if (data.success) {
                 statusMessage.textContent = `✅ ${data.message}`;
-                // DÉBOGAGE : On affiche les codes qui ont été ajoutés
-                console.log("Codes ajoutés avec succès:", data.addedCodes);
-                imageUploadInput.value = "";
-                setTimeout(() => { 
-                    statusMessage.textContent = "Rechargement...";
-                    window.location.reload(); 
-                }, 4000);
             } else {
-                // On affiche l'erreur spécifique renvoyée par le script
-                statusMessage.textContent = `❌ Erreur : ${data.error || 'Une erreur inconnue est survenue.'}`;
+                statusMessage.textContent = `❌ ${data.error}`;
             }
-
         } catch (error) {
-            console.error("Erreur détaillée lors de l'upload:", error);
-            statusMessage.textContent = "❌ Erreur de communication avec le serveur.";
-        } finally {
-            // On réactive le bouton dans tous les cas
-            uploadBtn.disabled = false;
+            console.error("Erreur addCodesFromText:", error);
+            statusMessage.textContent = "Erreur de communication.";
         }
-    };
+    });
 
-    reader.onerror = () => {
-        statusMessage.textContent = "❌ Erreur de lecture du fichier local.";
-        uploadBtn.disabled = false;
-    };
+    uploadBtn.addEventListener('click', () => {
+        const file = imageUploadInput.files[0];
+        if (!file) {
+            alert("Sélectionnez une image.");
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            const base64Image = event.target.result.split(',')[1];
+            statusMessage.textContent = "🤖 Analyse de l'image...";
+            toggleAdminPanel(false);
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: JSON.stringify({ action: 'addCodesFromImage', imageData: base64Image }),
+                });
+                const data = await response.json();
+                if (data.success) {
+                    statusMessage.textContent = `✅ ${data.message}`;
+                } else {
+                    statusMessage.textContent = `❌ ${data.error}`;
+                }
+            } catch (error) {
+                console.error("Erreur addCodesFromImage:", error);
+                statusMessage.textContent = "Erreur de communication.";
+            }
+        };
+        reader.readAsDataURL(file);
+    });
 
-    reader.readAsDataURL(file);
+    // Initialize first step
+    showStep(1);
 });
