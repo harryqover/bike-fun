@@ -12,7 +12,7 @@
     <link rel="manifest" href="manifest.json">
     
     <!-- App Icons -->
-    <link rel="apple-touch-icon" href="https://harryqover.github.io/bike-fun/img/roadbuddyai.jpeg">
+    <link rel="apple-touch-icon" href="https://harryqover.github.io/bike-fun/img/roadbuddyai_192.png">
     <link rel="icon" href="https://harryqover.github.io/bike-fun/img/roadbuddyai.jpeg">
 
     <!-- Stylesheets and Libraries -->
@@ -292,12 +292,30 @@
                     const lon = EXIF.getTag(this, "GPSLongitude");
                     const latRef = EXIF.getTag(this, "GPSLatitudeRef");
                     const lonRef = EXIF.getTag(this, "GPSLongitudeRef");
+                    
                     if (lat && lon && latRef && lonRef) {
-                        const latitude = convertDMSToDD(lat[0], lat[1], lat[2], latRef);
-                        const longitude = convertDMSToDD(lon[0], lon[1], lon[2], lonRef);
-                        latInput.value = latitude.toFixed(6);
-                        longInput.value = longitude.toFixed(6);
-                        updateGeolocateButton(true, 'Photo');
+                        // The EXIF library returns GPS coordinates as an array of three rational numbers (degrees, minutes, seconds).
+                        // Each rational number has a numerator and a denominator. We must calculate the decimal value for each part.
+                        const latDegrees = lat[0].numerator / lat[0].denominator;
+                        const latMinutes = lat[1].numerator / lat[1].denominator;
+                        const latSeconds = lat[2].numerator / lat[2].denominator;
+
+                        const lonDegrees = lon[0].numerator / lon[0].denominator;
+                        const lonMinutes = lon[1].numerator / lon[1].denominator;
+                        const lonSeconds = lon[2].numerator / lon[2].denominator;
+
+                        // Now we can use the existing conversion function with the correct decimal values.
+                        const latitude = convertDMSToDD(latDegrees, latMinutes, latSeconds, latRef);
+                        const longitude = convertDMSToDD(lonDegrees, lonMinutes, lonSeconds, lonRef);
+                        
+                        // Check if the result is a valid number before setting the input value.
+                        if (!isNaN(latitude) && !isNaN(longitude)) {
+                            latInput.value = latitude.toFixed(6);
+                            longInput.value = longitude.toFixed(6);
+                            updateGeolocateButton(true, 'Photo');
+                        } else {
+                            console.error("Failed to parse EXIF GPS data into numbers.");
+                        }
                     }
                 });
                 const reader = new FileReader();
@@ -459,7 +477,7 @@
                 geminiMessage.innerHTML = `<span class="italic text-purple-400 ai-loader">L'IA réfléchit<span>.</span><span>.</span><span>.</span></span>`;
             }
 
-            async function updateChart() {
+async function updateChart() {
                 try {
                     const history = await apiGet('getConsumptionHistory');
                     if (history && history.length > 0) {
