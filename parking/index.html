@@ -3,29 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parking Schaerbeek</title>
+    <title>Parking Visiteur</title>
     <!-- Google Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#F4F7FE">
+    <link rel="manifest" href="https://harryqover.github.io/bike-fun/parking/manifest.json">
+    <!-- Icônes pour Apple -->
+    <link rel="apple-touch-icon" href="https://harryqover.github.io/bike-fun/parking/img/180.png">
+    <meta name="theme-color" content="#FFFFFF">
 
     <style>
-        /* --- Variables & Reset --- */
+        /* --- Charte Graphique --- */
         :root {
-            --primary-color: #6D55A6;
-            --primary-hover: #59458C;
-            --secondary-color: #E6E0F8;
-            --secondary-hover: #D6CCF0;
-            --background-color: #F4F7FE;
+            --primary-color: #FDB813; /* Jaune Orangé */
+            --primary-hover: #EAA900;
+            --secondary-color: #00AEEF; /* Bleu Ciel */
+            --secondary-hover: #009AD5;
+            --success-color: #8CC63F; /* Vert Tilleul */
+            --text-color: #002D42; /* Bleu Nuit */
+            --text-secondary: #5A7A8A;
+            --background-color: #F2F2F2; /* Gris Clair */
             --card-background: #FFFFFF;
-            --text-primary: #1E293B;
-            --text-secondary: #64748B;
-            --success-color: #10B981;
-            --border-color: #E2E8F0;
+            --border-color: #E0E0E0;
             --font-family: 'Poppins', sans-serif;
         }
 
@@ -38,7 +40,7 @@
         body {
             font-family: var(--font-family);
             background-color: var(--background-color);
-            color: var(--text-primary);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -46,13 +48,13 @@
             padding: 20px;
         }
 
-        /* --- App Container & Header --- */
+        /* --- Conteneur Principal --- */
         .app-container {
             width: 100%;
             max-width: 420px;
             background-color: var(--card-background);
             border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            box-shadow: 0 10px 30px rgba(0, 45, 66, 0.1);
             padding: 24px;
             overflow: hidden;
             position: relative;
@@ -67,7 +69,8 @@
 
         .app-header h1 {
             font-size: 1.5em;
-            font-weight: 600;
+            font-weight: 700;
+            color: var(--text-color);
         }
 
         .icon-btn {
@@ -79,10 +82,10 @@
             transition: color 0.2s;
         }
         .icon-btn:hover {
-            color: var(--primary-color);
+            color: var(--secondary-color);
         }
 
-        /* --- Steps & Transitions --- */
+        /* --- Étapes & Transitions --- */
         .step {
             display: none;
             flex-direction: column;
@@ -98,18 +101,18 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- Buttons --- */
-        button, a.primary-btn, a.secondary-btn {
+        /* --- Boutons --- */
+        button, a.btn {
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 8px;
             width: 100%;
             border: none;
-            padding: 14px;
+            padding: 15px;
             border-radius: 12px;
             font-size: 1em;
-            font-weight: 500;
+            font-weight: 600;
             font-family: var(--font-family);
             cursor: pointer;
             transition: all 0.2s ease;
@@ -118,20 +121,22 @@
 
         .primary-btn {
             background-color: var(--primary-color);
-            color: white;
+            color: var(--text-color);
         }
         .primary-btn:hover {
             background-color: var(--primary-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(109, 85, 166, 0.3);
+            box-shadow: 0 4px 20px rgba(253, 184, 19, 0.4);
         }
 
         .secondary-btn {
-            background-color: var(--secondary-color);
-            color: var(--primary-color);
+            background-color: var(--card-background);
+            color: var(--secondary-color);
+            border: 2px solid var(--secondary-color);
         }
         .secondary-btn:hover {
-            background-color: var(--secondary-hover);
+            background-color: var(--secondary-color);
+            color: white;
         }
 
         .button-group {
@@ -142,7 +147,7 @@
             margin-top: 24px;
         }
 
-        /* --- Step-specific styles --- */
+        /* --- Styles Spécifiques aux Étapes --- */
         #step1 .illustration {
             font-size: 5em;
             color: var(--primary-color);
@@ -160,8 +165,8 @@
         }
         #step2 .code-display {
             font-size: 2em;
-            font-weight: 600;
-            color: var(--primary-color);
+            font-weight: 700;
+            color: var(--text-color);
             letter-spacing: 2px;
             margin-bottom: 16px;
         }
@@ -180,35 +185,18 @@
             margin: 16px 0;
         }
         #step3 .sms-box {
-            background-color: #F0FDF4;
-            border: 1px solid #A7F3D0;
+            background-color: #f0f9f4;
+            border: 1px solid var(--success-color);
             padding: 15px;
             border-radius: 12px;
             margin-top: 1em;
             font-family: 'Courier New', Courier, monospace;
             font-size: 1.1em;
             font-weight: bold;
-            color: #065F46;
+            color: #002D42;
         }
 
-        /* --- Form elements --- */
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 12px;
-            margin-top: 1em;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 1em;
-            font-family: var(--font-family);
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        input[type="text"]:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px var(--secondary-color);
-        }
-
-        /* --- Admin Panel --- */
+        /* --- Panneau Admin --- */
         .admin-panel {
             position: fixed;
             bottom: 0;
@@ -238,7 +226,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0, 45, 66, 0.4);
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.4s, visibility 0.4s;
@@ -262,30 +250,33 @@
             cursor: pointer;
             font-size: 1em;
             color: var(--text-secondary);
-            transition: all 0.2s;
+            font-weight: 500;
         }
         .tab-btn.active {
             color: var(--primary-color);
             border-bottom-color: var(--primary-color);
         }
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s;
-        }
-        .tab-content.active {
-            display: block;
-        }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
         textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 1em;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1em;
+            font-family: var(--font-family);
+            transition: border-color 0.2s, box-shadow 0.2s;
             resize: vertical;
             margin-bottom: 16px;
         }
-        input[type="file"] {
-            width: 100%;
-            margin-top: 16px;
-            margin-bottom: 16px;
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(253, 184, 19, 0.2);
         }
-
-        /* --- General & Hidden --- */
+        
+        /* --- Éléments Généraux --- */
         .hidden { display: none !important; }
         #statusMessage { margin-top: 1.5em; font-weight: 500; min-height: 20px; }
     </style>
@@ -299,29 +290,29 @@
             <button id="adminToggleBtn" class="icon-btn" aria-label="Ouvrir le panneau d'administration"><i class='bx bx-cog'></i></button>
         </header>
 
-        <!-- Main Content -->
+        <!-- Contenu Principal -->
         <main id="main-content">
             <!-- Étape 1: Obtenir un code -->
             <div id="step1" class="step active">
                 <div class="illustration">
                     <i class='bx bxs-car-garage'></i>
                 </div>
-                <p class="intro-text">Besoin d'un code de parking pour un visiteur ?</p>
+                <p class="intro-text">Générez un code de parking pour un visiteur en un clic.</p>
                 <button id="getCodeBtn" class="primary-btn">Obtenir un code</button>
             </div>
 
             <!-- Étape 2: Choisir la plaque -->
             <div id="step2" class="step">
-                <p class="code-display-label">Code disponible :</p>
+                <p class="code-display-label">Code disponible</p>
                 <p id="codeDisplay" class="code-display"></p>
                 <p class="instruction">Pour qui est ce code ?</p>
                 <div class="button-group">
-                    <button class="plaque-btn" data-plaque="2BCC677">Jean-Luc (2BCC677)</button>
-                    <button class="plaque-btn" data-plaque="1HZF925">mimi (1HZF925)</button>
+                    <button class="plaque-btn secondary-btn" data-plaque="2BCC677">Jean-Luc (2BCC677)</button>
+                    <button class="plaque-btn secondary-btn" data-plaque="1HZF925">mimi (1HZF925)</button>
                     <button id="otherPlaqueBtn" class="secondary-btn">Autre plaque</button>
                 </div>
                 <div id="otherPlaqueSection" class="hidden">
-                    <input type="text" id="plaqueInput" placeholder="Entrez la plaque" autocapitalize="characters">
+                    <textarea id="plaqueInput" rows="1" placeholder="Entrez la plaque" autocapitalize="characters"></textarea>
                     <button id="submitManualPlaqueBtn" class="primary-btn">Valider</button>
                 </div>
             </div>
@@ -332,12 +323,12 @@
                     <i class='bx bx-check-circle'></i>
                 </div>
                 <p class="success-message">Parking activé pour <strong id="finalPlaque"></strong> !</p>
-                <p class="instruction">Envoyez le code au <strong>4411</strong> :</p>
+                <p class="instruction">Envoyez le code au <strong>4411</strong></p>
                 <div class="sms-box">
                     <span id="smsText"></span>
                 </div>
                 <div class="button-group">
-                    <a href="#" id="openSmsLink" class="primary-btn"><i class='bx bxs-message-rounded-dots'></i> Ouvrir l'app SMS</a>
+                    <a href="#" id="openSmsLink" class="btn primary-btn"><i class='bx bxs-message-rounded-dots'></i> Ouvrir l'app SMS</a>
                     <button id="copySmsBtn" class="secondary-btn"><i class='bx bx-copy'></i> Copier le texte</button>
                 </div>
             </div>
@@ -346,7 +337,7 @@
         <p id="statusMessage"></p>
     </div>
 
-    <!-- Panneau Admin (caché par défaut) -->
+    <!-- Panneau Admin -->
     <div id="adminPanel" class="admin-panel">
         <div class="admin-panel-header">
             <h2>Ajouter des codes</h2>
@@ -358,16 +349,14 @@
                 <button class="tab-btn" data-tab="upload">Importer une image</button>
             </div>
             
-            <!-- Onglet Coller du texte -->
             <div id="pasteTab" class="tab-content active">
                 <p>Collez une liste de codes, un par ligne.</p>
                 <textarea id="codesTextarea" rows="8" placeholder="VBR3Z4XWABCD..."></textarea>
                 <button id="submitTextBtn" class="primary-btn">Ajouter les codes</button>
             </div>
 
-            <!-- Onglet Importer une image -->
             <div id="uploadTab" class="tab-content">
-                <p>Prenez ou sélectionnez une photo de votre liste de codes.</p>
+                <p>Sélectionnez une photo de votre liste de codes.</p>
                 <input type="file" id="imageUploadInput" accept="image/*">
                 <button id="uploadBtn" class="primary-btn">Analyser l'image</button>
             </div>
