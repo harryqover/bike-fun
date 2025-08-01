@@ -11,272 +11,53 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     
     <link rel="manifest" href="https://harryqover.github.io/bike-fun/parking/manifest.json">
-    <!-- Icônes pour Apple -->
     <link rel="apple-touch-icon" href="https://harryqover.github.io/bike-fun/parking/img/180.png">
     <meta name="theme-color" content="#FFFFFF">
 
     <style>
-        /* --- Charte Graphique --- */
+        /* La charte graphique reste identique à la version précédente */
         :root {
-            --primary-color: #FDB813; /* Jaune Orangé */
-            --primary-hover: #EAA900;
-            --secondary-color: #00AEEF; /* Bleu Ciel */
-            --secondary-hover: #009AD5;
-            --success-color: #8CC63F; /* Vert Tilleul */
-            --text-color: #002D42; /* Bleu Nuit */
-            --text-secondary: #5A7A8A;
-            --background-color: #F2F2F2; /* Gris Clair */
-            --card-background: #FFFFFF;
-            --border-color: #E0E0E0;
+            --primary-color: #FDB813; --primary-hover: #EAA900;
+            --secondary-color: #00AEEF; --secondary-hover: #009AD5;
+            --success-color: #8CC63F; --text-color: #002D42;
+            --text-secondary: #5A7A8A; --background-color: #F2F2F2;
+            --card-background: #FFFFFF; --border-color: #E0E0E0;
             --font-family: 'Poppins', sans-serif;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: var(--font-family);
-            background-color: var(--background-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        /* --- Conteneur Principal --- */
-        .app-container {
-            width: 100%;
-            max-width: 420px;
-            background-color: var(--card-background);
-            border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0, 45, 66, 0.1);
-            padding: 24px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .app-header h1 {
-            font-size: 1.5em;
-            font-weight: 700;
-            color: var(--text-color);
-        }
-
-        .icon-btn {
-            background: none;
-            border: none;
-            font-size: 1.8em;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        .icon-btn:hover {
-            color: var(--secondary-color);
-        }
-
-        /* --- Étapes & Transitions --- */
-        .step {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        .step.active {
-            display: flex;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- Boutons --- */
-        button, a.btn {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            width: 100%;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 1em;
-            font-weight: 600;
-            font-family: var(--font-family);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-        }
-
-        .primary-btn {
-            background-color: var(--primary-color);
-            color: var(--text-color);
-        }
-        .primary-btn:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(253, 184, 19, 0.4);
-        }
-
-        .secondary-btn {
-            background-color: var(--card-background);
-            color: var(--secondary-color);
-            border: 2px solid var(--secondary-color);
-        }
-        .secondary-btn:hover {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-
-        .button-group {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        /* --- Styles Spécifiques aux Étapes --- */
-        #step1 .illustration {
-            font-size: 5em;
-            color: var(--primary-color);
-            line-height: 1;
-            margin-bottom: 16px;
-        }
-        #step1 .intro-text {
-            font-size: 1.1em;
-            color: var(--text-secondary);
-            margin-bottom: 24px;
-        }
-
-        #step2 .code-display-label {
-            color: var(--text-secondary);
-        }
-        #step2 .code-display {
-            font-size: 2em;
-            font-weight: 700;
-            color: var(--text-color);
-            letter-spacing: 2px;
-            margin-bottom: 16px;
-        }
-        #step2 .instruction {
-            font-weight: 500;
-        }
-
-        #step3 .success-animation {
-            font-size: 5em;
-            color: var(--success-color);
-            line-height: 1;
-        }
-        #step3 .success-message {
-            font-size: 1.2em;
-            font-weight: 600;
-            margin: 16px 0;
-        }
-        #step3 .sms-box {
-            background-color: #f0f9f4;
-            border: 1px solid var(--success-color);
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 1em;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #002D42;
-        }
-
-        /* --- Panneau Admin --- */
-        .admin-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: var(--card-background);
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-            padding: 24px;
-            transform: translateY(100%);
-            transition: transform 0.4s ease-in-out;
-            z-index: 100;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
-        }
-        .admin-panel.active {
-            transform: translateY(0);
-        }
-        .admin-panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 45, 66, 0.4);
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.4s, visibility 0.4s;
-            z-index: 99;
-        }
-        .overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        .tabs {
-            display: flex;
-            gap: 10px;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 16px;
-        }
-        .tab-btn {
-            padding: 10px 16px;
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            font-size: 1em;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-        .tab-btn.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-family); background-color: var(--background-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .app-container { width: 100%; max-width: 420px; background-color: var(--card-background); border-radius: 24px; box-shadow: 0 10px 30px rgba(0, 45, 66, 0.1); padding: 24px; overflow: hidden; position: relative; }
+        .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .app-header h1 { font-size: 1.5em; font-weight: 700; }
+        .icon-btn { background: none; border: none; font-size: 1.8em; color: var(--text-secondary); cursor: pointer; transition: color 0.2s; }
+        .icon-btn:hover { color: var(--secondary-color); }
+        .step { display: none; flex-direction: column; align-items: center; text-align: center; animation: fadeIn 0.5s ease-in-out; }
+        .step.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        button, a.btn { display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; border: none; padding: 15px; border-radius: 12px; font-size: 1em; font-weight: 600; font-family: var(--font-family); cursor: pointer; transition: all 0.2s ease; text-decoration: none; }
+        .primary-btn { background-color: var(--primary-color); color: var(--text-color); }
+        .primary-btn:hover { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(253, 184, 19, 0.4); }
+        .secondary-btn { background-color: var(--card-background); color: var(--secondary-color); border: 2px solid var(--secondary-color); }
+        .secondary-btn:hover { background-color: var(--secondary-color); color: white; }
+        .button-group { width: 100%; display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+        #step1 .illustration { font-size: 5em; color: var(--primary-color); margin-bottom: 16px; }
+        #step1 .intro-text { font-size: 1.1em; color: var(--text-secondary); margin-bottom: 24px; }
+        #step2 .code-display { font-size: 2em; font-weight: 700; margin-bottom: 16px; }
+        #step3 .success-animation { font-size: 5em; color: var(--success-color); }
+        #step3 .success-message { font-size: 1.2em; font-weight: 600; margin: 16px 0; }
+        #step3 .sms-box { background-color: #f0f9f4; border: 1px solid var(--success-color); padding: 15px; border-radius: 12px; margin-top: 1em; font-family: 'Courier New', Courier, monospace; font-weight: bold; }
+        input[type="text"], textarea { width: 100%; padding: 12px; margin-top: 1em; border: 1px solid var(--border-color); border-radius: 12px; font-size: 1em; font-family: var(--font-family); transition: all 0.2s; }
+        input[type="text"]:focus, textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(253, 184, 19, 0.2); }
+        .admin-panel { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--card-background); border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 24px; transform: translateY(100%); transition: transform 0.4s ease-in-out; z-index: 100; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); }
+        .admin-panel.active { transform: translateY(0); }
+        .admin-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 45, 66, 0.4); opacity: 0; visibility: hidden; transition: opacity 0.4s, visibility 0.4s; z-index: 99; }
+        .overlay.active { opacity: 1; visibility: visible; }
+        .tabs { display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 16px; }
+        .tab-btn { padding: 10px 16px; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-size: 1em; color: var(--text-secondary); font-weight: 500; }
+        .tab-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
         .tab-content { display: none; animation: fadeIn 0.3s; }
         .tab-content.active { display: block; }
-        textarea {
-            width: 100%;
-            padding: 12px;
-            margin-top: 1em;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 1em;
-            font-family: var(--font-family);
-            transition: border-color 0.2s, box-shadow 0.2s;
-            resize: vertical;
-            margin-bottom: 16px;
-        }
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(253, 184, 19, 0.2);
-        }
-        
-        /* --- Éléments Généraux --- */
         .hidden { display: none !important; }
         #statusMessage { margin-top: 1.5em; font-weight: 500; min-height: 20px; }
     </style>
@@ -284,49 +65,38 @@
 <body>
 
     <div class="app-container">
-        <!-- Header -->
         <header class="app-header">
             <h1>Parking Visiteur</h1>
-            <button id="adminToggleBtn" class="icon-btn" aria-label="Ouvrir le panneau d'administration"><i class='bx bx-cog'></i></button>
+            <button id="adminToggleBtn" class="icon-btn"><i class='bx bx-cog'></i></button>
         </header>
 
-        <!-- Contenu Principal -->
         <main id="main-content">
-            <!-- Étape 1: Obtenir un code -->
             <div id="step1" class="step active">
-                <div class="illustration">
-                    <i class='bx bxs-car-garage'></i>
-                </div>
+                <div class="illustration"><i class='bx bxs-car-garage'></i></div>
                 <p class="intro-text">Générez un code de parking pour un visiteur en un clic.</p>
                 <button id="getCodeBtn" class="primary-btn">Obtenir un code</button>
             </div>
 
-            <!-- Étape 2: Choisir la plaque -->
             <div id="step2" class="step">
-                <p class="code-display-label">Code disponible</p>
+                <p>Code disponible</p>
                 <p id="codeDisplay" class="code-display"></p>
-                <p class="instruction">Pour qui est ce code ?</p>
+                <p>Pour qui est ce code ?</p>
+                <!-- Les boutons de plaques seront insérés ici par le script -->
+                <div id="plaqueSuggestions" class="button-group"></div>
                 <div class="button-group">
-                    <button class="plaque-btn secondary-btn" data-plaque="2BCC677">Jean-Luc (2BCC677)</button>
-                    <button class="plaque-btn secondary-btn" data-plaque="1HZF925">mimi (1HZF925)</button>
                     <button id="otherPlaqueBtn" class="secondary-btn">Autre plaque</button>
                 </div>
                 <div id="otherPlaqueSection" class="hidden">
-                    <textarea id="plaqueInput" rows="1" placeholder="Entrez la plaque" autocapitalize="characters"></textarea>
+                    <input type="text" id="plaqueInput" placeholder="1-ABC-123" maxlength="9" autocapitalize="characters">
                     <button id="submitManualPlaqueBtn" class="primary-btn">Valider</button>
                 </div>
             </div>
             
-            <!-- Étape 3: Envoyer le SMS -->
             <div id="step3" class="step">
-                <div class="success-animation">
-                    <i class='bx bx-check-circle'></i>
-                </div>
+                <div class="success-animation"><i class='bx bx-check-circle'></i></div>
                 <p class="success-message">Parking activé pour <strong id="finalPlaque"></strong> !</p>
-                <p class="instruction">Envoyez le code au <strong>4411</strong></p>
-                <div class="sms-box">
-                    <span id="smsText"></span>
-                </div>
+                <p>Envoyez le code au <strong>4411</strong></p>
+                <div class="sms-box"><span id="smsText"></span></div>
                 <div class="button-group">
                     <a href="#" id="openSmsLink" class="btn primary-btn"><i class='bx bxs-message-rounded-dots'></i> Ouvrir l'app SMS</a>
                     <button id="copySmsBtn" class="secondary-btn"><i class='bx bx-copy'></i> Copier le texte</button>
@@ -341,20 +111,18 @@
     <div id="adminPanel" class="admin-panel">
         <div class="admin-panel-header">
             <h2>Ajouter des codes</h2>
-            <button id="closeAdminBtn" class="icon-btn" aria-label="Fermer le panneau"><i class='bx bx-x'></i></button>
+            <button id="closeAdminBtn" class="icon-btn"><i class='bx bx-x'></i></button>
         </div>
         <div class="admin-panel-content">
             <div class="tabs">
                 <button class="tab-btn active" data-tab="paste">Coller du texte</button>
                 <button class="tab-btn" data-tab="upload">Importer une image</button>
             </div>
-            
             <div id="pasteTab" class="tab-content active">
                 <p>Collez une liste de codes, un par ligne.</p>
                 <textarea id="codesTextarea" rows="8" placeholder="VBR3Z4XWABCD..."></textarea>
                 <button id="submitTextBtn" class="primary-btn">Ajouter les codes</button>
             </div>
-
             <div id="uploadTab" class="tab-content">
                 <p>Sélectionnez une photo de votre liste de codes.</p>
                 <input type="file" id="imageUploadInput" accept="image/*">

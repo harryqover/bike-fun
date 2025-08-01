@@ -5,21 +5,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Elements ---
     const getCodeBtn = document.getElementById('getCodeBtn');
     const statusMessage = document.getElementById('statusMessage');
-    
     const steps = document.querySelectorAll('.step');
     const codeDisplay = document.getElementById('codeDisplay');
-    const plaqueButtons = document.querySelectorAll('.plaque-btn');
+    const plaqueSuggestions = document.getElementById('plaqueSuggestions');
     const otherPlaqueBtn = document.getElementById('otherPlaqueBtn');
     const otherPlaqueSection = document.getElementById('otherPlaqueSection');
     const plaqueInput = document.getElementById('plaqueInput');
     const submitManualPlaqueBtn = document.getElementById('submitManualPlaqueBtn');
-    
     const finalPlaque = document.getElementById('finalPlaque');
     const smsText = document.getElementById('smsText');
     const copySmsBtn = document.getElementById('copySmsBtn');
     const openSmsLink = document.getElementById('openSmsLink');
-
-    // Admin Panel Elements
     const adminToggleBtn = document.getElementById('adminToggleBtn');
     const adminPanel = document.getElementById('adminPanel');
     const closeAdminBtn = document.getElementById('closeAdminBtn');
@@ -40,13 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function toggleAdminPanel(show) {
-        if (show) {
-            overlay.classList.add('active');
-            adminPanel.classList.add('active');
-        } else {
-            overlay.classList.remove('active');
-            adminPanel.classList.remove('active');
-        }
+        overlay.classList.toggle('active', show);
+        adminPanel.classList.toggle('active', show);
     }
 
     adminToggleBtn.addEventListener('click', () => toggleAdminPanel(true));
@@ -64,22 +55,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Core App Logic ---
     getCodeBtn.addEventListener('click', async () => {
-        statusMessage.textContent = "Recherche d'un code...";
+        statusMessage.textContent = "Recherche en cours...";
         getCodeBtn.disabled = true;
         try {
             const response = await fetch(SCRIPT_URL);
             if (!response.ok) throw new Error(`Erreur serveur: ${response.status}`);
             const data = await response.json();
-            if (data.code) {
-                currentCode = data.code;
-                codeDisplay.textContent = currentCode;
-                showStep(2);
-            } else {
-                statusMessage.textContent = data.error || "Aucun code trouvé.";
-            }
+            
+            if (data.error) throw new Error(data.error);
+
+            currentCode = data.code;
+            codeDisplay.textContent = currentCode;
+            
+            // AMÉLIORATION : Affiche les plaques mémorisées
+            plaqueSuggestions.innerHTML = ''; // Vide les anciennes suggestions
+            data.plates.forEach(plate => {
+                const button = document.createElement('button');
+                button.className = 'plaque-btn secondary-btn';
+                button.textContent = plate;
+                button.dataset.plaque = plate;
+                button.addEventListener('click', () => submitParking(plate));
+                plaqueSuggestions.appendChild(button);
+            });
+            
+            showStep(2);
+
         } catch (error) {
             console.error("Erreur getCode:", error);
-            statusMessage.textContent = "Erreur de communication.";
+            statusMessage.textContent = error.message || "Erreur de communication.";
         } finally {
             getCodeBtn.disabled = false;
         }
@@ -97,13 +100,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Erreur submitParking:", error);
             statusMessage.textContent = "Erreur d'enregistrement.";
-            showStep(2); // Revenir à l'étape de sélection
+            showStep(2);
         }
     }
-
-    plaqueButtons.forEach(button => {
-        button.addEventListener('click', () => submitParking(button.dataset.plaque));
-    });
 
     otherPlaqueBtn.addEventListener('click', () => {
         otherPlaqueSection.classList.remove('hidden');
@@ -112,14 +111,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     submitManualPlaqueBtn.addEventListener('click', () => {
         const plaque = plaqueInput.value.trim().toUpperCase();
-        if (plaque) submitParking(plaque);
+        if (plaque.match(/^\d-[A-Z]{3}-\d{3}$/)) {
+             submitParking(plaque);
+        } else {
+            alert("Le format de la plaque est incorrect. Il doit être 1-ABC-123.");
+        }
+    });
+
+    // AMÉLIORATION : Masque de saisie pour la plaque
+    plaqueInput.addEventListener('input', (e) => {
+        let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        let formattedValue = '';
+        if (value.length > 0) formattedValue += value.substring(0, 1);
+        if (value.length > 1) formattedValue += '-' + value.substring(1, 4);
+        if (value.length > 4) formattedValue += '-' + value.substring(4, 7);
+        e.target.value = formattedValue;
     });
 
     function showSmsStep(code, plaque) {
         const smsBody = `${code} ${plaque}`;
         finalPlaque.textContent = plaque;
         smsText.textContent = smsBody;
-        // CORRECTION: Utilisation de '?' comme premier séparateur de paramètre
         openSmsLink.href = `sms:4411?body=${encodeURIComponent(smsBody)}`;
         statusMessage.textContent = '';
         showStep(3);
@@ -133,59 +145,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Admin Panel Logic ---
-    submitTextBtn.addEventListener('click', async () => {
-        const codes = codesTextarea.value.split('\n').filter(c => c.trim() !== '');
-        if (codes.length === 0) {
-            alert("Veuillez coller des codes.");
-            return;
-        }
-        statusMessage.textContent = `Ajout de ${codes.length} codes...`;
+    async function addCodes(action, bodyPayload) {
+        statusMessage.textContent = "Traitement en cours...";
         toggleAdminPanel(false);
         try {
             const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'cors',
-                body: JSON.stringify({ action: 'addCodesFromText', codes: codes }),
+                body: JSON.stringify({ action, ...bodyPayload }),
             });
             const data = await response.json();
-            if (data.success) {
-                statusMessage.textContent = `✅ ${data.message}`;
-            } else {
-                statusMessage.textContent = `❌ ${data.error}`;
-            }
+            statusMessage.textContent = data.success ? `✅ ${data.message}` : `❌ ${data.error}`;
         } catch (error) {
-            console.error("Erreur addCodesFromText:", error);
+            console.error(`Erreur ${action}:`, error);
             statusMessage.textContent = "Erreur de communication.";
+        }
+    }
+
+    submitTextBtn.addEventListener('click', () => {
+        const codes = codesTextarea.value.split('\n').filter(c => c.trim() !== '');
+        if (codes.length > 0) {
+            addCodes('addCodesFromText', { codes });
         }
     });
 
     uploadBtn.addEventListener('click', () => {
         const file = imageUploadInput.files[0];
-        if (!file) {
-            alert("Sélectionnez une image.");
-            return;
-        }
+        if (!file) return;
         const reader = new FileReader();
-        reader.onload = async (event) => {
+        reader.onload = (event) => {
             const base64Image = event.target.result.split(',')[1];
-            statusMessage.textContent = "🤖 Analyse de l'image...";
-            toggleAdminPanel(false);
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    body: JSON.stringify({ action: 'addCodesFromImage', imageData: base64Image }),
-                });
-                const data = await response.json();
-                if (data.success) {
-                    statusMessage.textContent = `✅ ${data.message}`;
-                } else {
-                    statusMessage.textContent = `❌ ${data.error}`;
-                }
-            } catch (error) {
-                console.error("Erreur addCodesFromImage:", error);
-                statusMessage.textContent = "Erreur de communication.";
-            }
+            addCodes('addCodesFromImage', { imageData: base64Image });
         };
         reader.readAsDataURL(file);
     });
