@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Schaerbeek</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007bff">
+    <style>
+        body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background: white;
+    padding: 1.5em 2em;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+h2 {
+    font-size: 1.2em;
+}
+
+p {
+    color: #666;
+    line-height: 1.5;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    margin-top: 0.5em;
+    width: 100%;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+/* Styles pour les groupes de boutons */
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 1em;
+}
+
+/* Style pour le lien SMS qui ressemble à un bouton */
+.button-link {
+    display: block;
+    background-color: #28a745;
+    color: white !important; /* Important to override default link color */
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.2s, transform 0.1s;
+}
+.button-link:hover {
+    background-color: #218838;
+}
+.button-link:active {
+    transform: scale(0.98);
+}
+
+input[type="text"], input[type="file"] {
+    padding: 12px;
+    width: calc(100% - 24px);
+    margin-top: 1em;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1em;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 2em 0;
+}
+
+.hidden {
+    display: none;
+}
+
+#statusMessage {
+    margin-top: 1.5em;
+    font-weight: bold;
+    min-height: 20px;
+}
+
+.instruction {
+    font-weight: bold;
+    color: #333;
+    margin-top: 1.5em;
+}
+
+.success-message {
+    color: #28a745;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.reminder {
+    font-size: 0.9em;
+    color: #888;
+    margin-top: 1em;
+}
+
+/* Section de confirmation SMS */
+.sms-box {
+    background-color: #e9ecef;
+    border: 1px solid #dee2e6;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 1em;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.1em;
+    font-weight: bold;
+    word-wrap: break-word;
+    color: #495057;
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Gestion Parking Visiteur</h1>
+        
+        <!-- Étape 1 : Obtenir un code -->
+        <div id="step1">
+            <button id="getCodeBtn">Obtenir un code de parking</button>
+        </div>
+
+        <!-- Étape 2 : Choisir la plaque -->
+        <div id="step2" class="hidden">
+            <p>Code disponible : <strong id="codeDisplay"></strong></p>
+            <p class="instruction">Pour qui est ce code ?</p>
+            <div class="button-group">
+                <button class="plaque-btn" data-plaque="2BCC677">Jean-Luc (2BCC677)</button>
+                <button class="plaque-btn" data-plaque="1HZF925">mimi (1HZF925)</button>
+                <button id="otherPlaqueBtn">Autre plaque</button>
+            </div>
+            <div id="otherPlaqueSection" class="hidden">
+                <input type="text" id="plaqueInput" placeholder="Entrez la plaque" autocapitalize="characters">
+                <button id="submitManualPlaqueBtn">Valider cette plaque</button>
+            </div>
+        </div>
+        
+        <!-- Étape 3 : Envoyer le SMS -->
+        <div id="step3" class="hidden">
+            <p class="success-message">✅ Parking pour <strong id="finalPlaque"></strong> activé !</p>
+            <p class="instruction">Envoyez maintenant le code au <strong>4411</strong> :</p>
+            <div class="sms-box">
+                <span id="smsText"></span>
+            </div>
+            <div class="button-group">
+                <button id="copySmsBtn">Copier le texte</button>
+                <a href="#" id="openSmsLink" class="button-link">Ouvrir l'app SMS</a>
+            </div>
+             <p class="reminder">Un rappel vous sera envoyé dans 4h30.</p>
+        </div>
+
+        <p id="statusMessage"></p>
+        
+        <hr>
+        <!-- Section d'upload -->
+        <div class="upload-section">
+            <h2>Ajouter des nouveaux codes</h2>
+            <input type="file" id="imageUploadInput" accept="image/*">
+            <button id="uploadBtn">Analyser et Ajouter</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
