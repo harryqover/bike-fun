@@ -4,205 +4,376 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parking Schaerbeek</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#007bff">
+    <meta name="theme-color" content="#F4F7FE">
+
     <style>
+        /* --- Variables & Reset --- */
+        :root {
+            --primary-color: #6D55A6;
+            --primary-hover: #59458C;
+            --secondary-color: #E6E0F8;
+            --secondary-hover: #D6CCF0;
+            --background-color: #F4F7FE;
+            --card-background: #FFFFFF;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --success-color: #10B981;
+            --border-color: #E2E8F0;
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: #f0f2f5;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 20px;
-    min-height: 100vh;
-    margin: 0;
-}
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-.container {
-    background: white;
-    padding: 1.5em 2em;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    text-align: center;
-    width: 90%;
-    max-width: 400px;
-}
+        /* --- App Container & Header --- */
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            background-color: var(--card-background);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            padding: 24px;
+            overflow: hidden;
+            position: relative;
+        }
 
-h1, h2 {
-    color: #333;
-}
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
 
-h2 {
-    font-size: 1.2em;
-}
+        .app-header h1 {
+            font-size: 1.5em;
+            font-weight: 600;
+        }
 
-p {
-    color: #666;
-    line-height: 1.5;
-}
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .icon-btn:hover {
+            color: var(--primary-color);
+        }
 
-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: bold;
-    margin-top: 0.5em;
-    width: 100%;
-    transition: background-color 0.2s, transform 0.1s;
-}
+        /* --- Steps & Transitions --- */
+        .step {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .step.active {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-button:hover {
-    background-color: #0056b3;
-}
+        /* --- Buttons --- */
+        button, a.primary-btn, a.secondary-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 500;
+            font-family: var(--font-family);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
 
-button:active {
-    transform: scale(0.98);
-}
+        .primary-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .primary-btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(109, 85, 166, 0.3);
+        }
 
-button:disabled {
-    background-color: #aaa;
-    cursor: not-allowed;
-}
+        .secondary-btn {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+        .secondary-btn:hover {
+            background-color: var(--secondary-hover);
+        }
 
-/* Styles pour les groupes de boutons */
-.button-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 1em;
-}
+        .button-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 24px;
+        }
 
-/* Style pour le lien SMS qui ressemble à un bouton */
-.button-link {
-    display: block;
-    background-color: #28a745;
-    color: white !important; /* Important to override default link color */
-    padding: 12px 24px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.2s, transform 0.1s;
-}
-.button-link:hover {
-    background-color: #218838;
-}
-.button-link:active {
-    transform: scale(0.98);
-}
+        /* --- Step-specific styles --- */
+        #step1 .illustration {
+            font-size: 5em;
+            color: var(--primary-color);
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+        #step1 .intro-text {
+            font-size: 1.1em;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
 
-input[type="text"], input[type="file"] {
-    padding: 12px;
-    width: calc(100% - 24px);
-    margin-top: 1em;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 1em;
-}
+        #step2 .code-display-label {
+            color: var(--text-secondary);
+        }
+        #step2 .code-display {
+            font-size: 2em;
+            font-weight: 600;
+            color: var(--primary-color);
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+        #step2 .instruction {
+            font-weight: 500;
+        }
 
-hr {
-    border: none;
-    border-top: 1px solid #eee;
-    margin: 2em 0;
-}
+        #step3 .success-animation {
+            font-size: 5em;
+            color: var(--success-color);
+            line-height: 1;
+        }
+        #step3 .success-message {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin: 16px 0;
+        }
+        #step3 .sms-box {
+            background-color: #F0FDF4;
+            border: 1px solid #A7F3D0;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 1em;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #065F46;
+        }
 
-.hidden {
-    display: none;
-}
+        /* --- Form elements --- */
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 1em;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1em;
+            font-family: var(--font-family);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--secondary-color);
+        }
 
-#statusMessage {
-    margin-top: 1.5em;
-    font-weight: bold;
-    min-height: 20px;
-}
+        /* --- Admin Panel --- */
+        .admin-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-background);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            padding: 24px;
+            transform: translateY(100%);
+            transition: transform 0.4s ease-in-out;
+            z-index: 100;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+        }
+        .admin-panel.active {
+            transform: translateY(0);
+        }
+        .admin-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s, visibility 0.4s;
+            z-index: 99;
+        }
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 16px;
+        }
+        .tab-btn {
+            padding: 10px 16px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1em;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        textarea {
+            resize: vertical;
+            margin-bottom: 16px;
+        }
+        input[type="file"] {
+            width: 100%;
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
 
-.instruction {
-    font-weight: bold;
-    color: #333;
-    margin-top: 1.5em;
-}
-
-.success-message {
-    color: #28a745;
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
-.reminder {
-    font-size: 0.9em;
-    color: #888;
-    margin-top: 1em;
-}
-
-/* Section de confirmation SMS */
-.sms-box {
-    background-color: #e9ecef;
-    border: 1px solid #dee2e6;
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 1em;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 1.1em;
-    font-weight: bold;
-    word-wrap: break-word;
-    color: #495057;
-}
-
+        /* --- General & Hidden --- */
+        .hidden { display: none !important; }
+        #statusMessage { margin-top: 1.5em; font-weight: 500; min-height: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Gestion Parking Visiteur</h1>
-        
-        <!-- Étape 1 : Obtenir un code -->
-        <div id="step1">
-            <button id="getCodeBtn">Obtenir un code de parking</button>
-        </div>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>Parking Visiteur</h1>
+            <button id="adminToggleBtn" class="icon-btn" aria-label="Ouvrir le panneau d'administration"><i class='bx bx-cog'></i></button>
+        </header>
 
-        <!-- Étape 2 : Choisir la plaque -->
-        <div id="step2" class="hidden">
-            <p>Code disponible : <strong id="codeDisplay"></strong></p>
-            <p class="instruction">Pour qui est ce code ?</p>
-            <div class="button-group">
-                <button class="plaque-btn" data-plaque="2BCC677">Jean-Luc (2BCC677)</button>
-                <button class="plaque-btn" data-plaque="1HZF925">mimi (1HZF925)</button>
-                <button id="otherPlaqueBtn">Autre plaque</button>
+        <!-- Main Content -->
+        <main id="main-content">
+            <!-- Étape 1: Obtenir un code -->
+            <div id="step1" class="step active">
+                <div class="illustration">
+                    <i class='bx bxs-car-garage'></i>
+                </div>
+                <p class="intro-text">Besoin d'un code de parking pour un visiteur ?</p>
+                <button id="getCodeBtn" class="primary-btn">Obtenir un code</button>
             </div>
-            <div id="otherPlaqueSection" class="hidden">
-                <input type="text" id="plaqueInput" placeholder="Entrez la plaque" autocapitalize="characters">
-                <button id="submitManualPlaqueBtn">Valider cette plaque</button>
-            </div>
-        </div>
-        
-        <!-- Étape 3 : Envoyer le SMS -->
-        <div id="step3" class="hidden">
-            <p class="success-message">✅ Parking pour <strong id="finalPlaque"></strong> activé !</p>
-            <p class="instruction">Envoyez maintenant le code au <strong>4411</strong> :</p>
-            <div class="sms-box">
-                <span id="smsText"></span>
-            </div>
-            <div class="button-group">
-                <button id="copySmsBtn">Copier le texte</button>
-                <a href="#" id="openSmsLink" class="button-link">Ouvrir l'app SMS</a>
-            </div>
-             <p class="reminder">Un rappel vous sera envoyé dans 4h30.</p>
-        </div>
 
+            <!-- Étape 2: Choisir la plaque -->
+            <div id="step2" class="step">
+                <p class="code-display-label">Code disponible :</p>
+                <p id="codeDisplay" class="code-display"></p>
+                <p class="instruction">Pour qui est ce code ?</p>
+                <div class="button-group">
+                    <button class="plaque-btn" data-plaque="2BCC677">Jean-Luc (2BCC677)</button>
+                    <button class="plaque-btn" data-plaque="1HZF925">mimi (1HZF925)</button>
+                    <button id="otherPlaqueBtn" class="secondary-btn">Autre plaque</button>
+                </div>
+                <div id="otherPlaqueSection" class="hidden">
+                    <input type="text" id="plaqueInput" placeholder="Entrez la plaque" autocapitalize="characters">
+                    <button id="submitManualPlaqueBtn" class="primary-btn">Valider</button>
+                </div>
+            </div>
+            
+            <!-- Étape 3: Envoyer le SMS -->
+            <div id="step3" class="step">
+                <div class="success-animation">
+                    <i class='bx bx-check-circle'></i>
+                </div>
+                <p class="success-message">Parking activé pour <strong id="finalPlaque"></strong> !</p>
+                <p class="instruction">Envoyez le code au <strong>4411</strong> :</p>
+                <div class="sms-box">
+                    <span id="smsText"></span>
+                </div>
+                <div class="button-group">
+                    <a href="#" id="openSmsLink" class="primary-btn"><i class='bx bxs-message-rounded-dots'></i> Ouvrir l'app SMS</a>
+                    <button id="copySmsBtn" class="secondary-btn"><i class='bx bx-copy'></i> Copier le texte</button>
+                </div>
+            </div>
+        </main>
+        
         <p id="statusMessage"></p>
-        
-        <hr>
-        <!-- Section d'upload -->
-        <div class="upload-section">
-            <h2>Ajouter des nouveaux codes</h2>
-            <input type="file" id="imageUploadInput" accept="image/*">
-            <button id="uploadBtn">Analyser et Ajouter</button>
+    </div>
+
+    <!-- Panneau Admin (caché par défaut) -->
+    <div id="adminPanel" class="admin-panel">
+        <div class="admin-panel-header">
+            <h2>Ajouter des codes</h2>
+            <button id="closeAdminBtn" class="icon-btn" aria-label="Fermer le panneau"><i class='bx bx-x'></i></button>
+        </div>
+        <div class="admin-panel-content">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="paste">Coller du texte</button>
+                <button class="tab-btn" data-tab="upload">Importer une image</button>
+            </div>
+            
+            <!-- Onglet Coller du texte -->
+            <div id="pasteTab" class="tab-content active">
+                <p>Collez une liste de codes, un par ligne.</p>
+                <textarea id="codesTextarea" rows="8" placeholder="VBR3Z4XWABCD..."></textarea>
+                <button id="submitTextBtn" class="primary-btn">Ajouter les codes</button>
+            </div>
+
+            <!-- Onglet Importer une image -->
+            <div id="uploadTab" class="tab-content">
+                <p>Prenez ou sélectionnez une photo de votre liste de codes.</p>
+                <input type="file" id="imageUploadInput" accept="image/*">
+                <button id="uploadBtn" class="primary-btn">Analyser l'image</button>
+            </div>
         </div>
     </div>
+    <div id="overlay" class="overlay"></div>
 
     <script src="app.js"></script>
 </body>
