@@ -4,24 +4,154 @@
     <meta charset="UTF-8">
     <title>RoadBuddy AI for Skoda</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#111827"/>
+
+    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     
+    <!-- App Icons -->
+    <link rel="apple-touch-icon" href="https://harryqover.github.io/bike-fun/img/roadbuddyai_192.png">
+    <link rel="icon" href="https://harryqover.github.io/bike-fun/img/roadbuddyai.jpeg">
+
+    <!-- Stylesheets and Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
     <style>
-        /* Your CSS styles remain the same */
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; background-color: #111827; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        /* ...etc... */
+        .btn-active { background-color: #2563eb; color: white; box-shadow: 0 4px 14px 0 rgba(0, 118, 255, 0.39); }
+        .gemini-fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .ai-loader span { animation: dots 1.4s infinite; animation-fill-mode: both; }
+        .ai-loader span:nth-child(2) { animation-delay: .2s; }
+        .ai-loader span:nth-child(3) { animation-delay: .4s; }
+        @keyframes dots { 0%, 80%, 100% { opacity: 0; } 40% { opacity: 1; } }
+        input:checked + label .dot { transform: translateX(100%); background-color: #2563eb; } 
+        input:checked + label .relative > div:first-child { background-color: #1d4ed8; }
     </style>
 </head>
 <body class="text-white flex items-center justify-center min-h-screen p-4">
 
-    <script src="https://harryqover.github.io/bike-fun/roadbuddyai/script.js"></script>
+    <div class="w-full max-w-md mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <img src="https://harryqover.github.io/bike-fun/img/roadbuddyai.jpeg" alt="Logo RoadBuddy AI" class="w-20 h-20 mx-auto rounded-full shadow-lg mb-4">
+            <h1 class="text-3xl font-bold text-white">RoadBuddy AI</h1>
+            <p class="text-gray-400">pour Skoda</p>
+        </header>
+
+        <!-- Yearly Costs -->
+        <div id="yearly-costs" class="text-xs text-gray-400 flex justify-center gap-4 mb-4 opacity-0 transition-opacity duration-500">
+            <div class="text-center">
+                <span class="font-bold text-white" id="qover-cost">...</span>
+                <span class="block">Qover (12m)</span>
+            </div>
+            <div class="text-center">
+                <span class="font-bold text-white" id="personnel-cost">...</span>
+                <span class="block">Perso (12m)</span>
+            </div>
+        </div>
+
+        <div class="bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 space-y-6">
+            
+            <div id="gemini-message-container" style="display: none;" class="bg-purple-500/10 border border-purple-400/30 text-purple-300 p-4 rounded-lg text-center gemini-fade-in">
+                 <p class="font-bold text-sm mb-1">🤖</p>
+                 <p id="gemini-message" class="text-sm"></p>
+            </div>
+
+            <form id="fuel-form" class="space-y-6">
+                <div>
+                    <label for="mileage" class="block text-sm font-medium text-gray-300 mb-2">Kilométrage actuel (km)</label>
+                    <input type="number" id="mileage" name="mileage" required class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Chargement...">
+                    <p id="mileage-validation-message" class="text-red-400 text-xs mt-1 h-4"></p>
+                </div>
+                
+                <!-- PIN Container, shown conditionally -->
+                <div id="pin-container" style="display: none;" class="bg-yellow-500/10 border border-yellow-400/30 text-yellow-300 p-4 rounded-lg text-center transition-all duration-300">
+                    <p class="font-mono text-sm">Code carte essence</p>
+                    <p class="font-bold text-3xl tracking-widest">5387</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Type de carburant</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button type="button" id="btn-gas" class="fuel-type-btn btn-active p-3 rounded-lg transition">⚡ Essence</button>
+                        <button type="button" id="btn-electric" class="fuel-type-btn p-3 rounded-lg transition bg-gray-700">🔌 Électricité</button>
+                    </div>
+                    <input type="hidden" id="fuelType" name="fuelType" value="Essence">
+                </div>
+                
+                <!-- Fuel Details Container -->
+                <div id="fuel-details-section">
+                    <div class="flex items-end gap-4">
+                        <div class="flex-grow space-y-4">
+                             <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="liters" class="block text-sm font-medium text-gray-300 mb-2">Litres (L)</label>
+                                    <input type="number" step="0.01" id="liters" name="liters" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="ex: 42.5">
+                                </div>
+                                <div>
+                                    <label for="pricePerLiter" class="block text-sm font-medium text-gray-300 mb-2">Prix / L (€)</label>
+                                    <input type="number" step="0.001" id="pricePerLiter" name="pricePerLiter" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="ex: 1.899">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="totalCost" class="block text-sm font-medium text-gray-300 mb-2">Coût total (€)</label>
+                                <input type="number" step="0.01" id="totalCost" name="totalCost" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Calculé ou manuel">
+                            </div>
+                        </div>
+                        <div id="photo-upload-container">
+                             <input type="file" id="image-picker" accept="image/*" class="hidden">
+                             <label for="image-picker" class="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-3 rounded-lg transition h-full flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1v6zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2z"/><path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
+                             </label>
+                        </div>
+                    </div>
+                     <div id="image-preview-container" class="hidden text-center mt-4">
+                        <img id="image-preview" class="max-w-full max-h-48 mx-auto rounded-lg shadow-md">
+                        <p id="ai-status" class="text-sm text-purple-400 mt-2"></p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center space-x-3">
+                        <label for="paidBy" class="text-sm font-medium text-gray-300">Payé par Qover?</label>
+                        <input type="checkbox" id="paidBy" name="paidBy" class="hidden">
+                        <label for="paidBy" class="cursor-pointer">
+                            <div class="relative"><div class="w-12 h-7 bg-gray-600 rounded-full"></div><div class="dot absolute left-1 top-1 bg-white w-5 h-5 rounded-full transition"></div></div>
+                        </label>
+                    </div>
+                    
+                    <button type="button" id="geolocate-btn" class="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg> Position
+                    </button>
+                </div>
+                <input type="hidden" id="latitude" name="latitude"><input type="hidden" id="longitude" name="longitude">
+
+                <button type="submit" id="submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-lg shadow-blue-500/30 flex items-center justify-center">
+                    <span id="submit-text">Enregistrer</span>
+                    <div id="loader" class="loader" style="display: none;"></div>
+                </button>
+                
+                <p id="status-message" class="text-center text-sm h-4"></p>
+            </form>
+        </div>
+
+        <!-- Chart Container -->
+        <div id="chart-container" class="mt-8 bg-gray-800 rounded-2xl p-4" style="display: none;">
+             <h2 class="text-lg font-bold text-center text-white mb-4">📊 Historique Consommation (L/100km)</h2>
+             <canvas id="consumptionChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Main application script -->
+    <script src="https://harryqover.github.io/bike-fun/roadbuddyai/script.js" defer></script>
 </body>
 </html>
