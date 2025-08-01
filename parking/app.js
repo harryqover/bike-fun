@@ -1,7 +1,7 @@
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !! COLLEZ L'URL DE VOTRE GOOGLE APPS SCRIPT DÉPLOYÉ CI-DESSOUS !!
+// !! L'URL DE VOTRE SCRIPT A ÉTÉ INTÉGRÉE CI-DESSOUS !!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-const SCRIPT_URL = "VOTRE_URL_DE_SCRIPT_GOOGLE_APPS"; 
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwY1AHmB52TDJTerlryEZkwK7nzDrB5YD0w94QwMY-ioyyMkWsnUG-pS0uDBrhLmDKB/exec"; 
 
 // --- DOM Elements ---
 const getCodeBtn = document.getElementById('getCodeBtn');
