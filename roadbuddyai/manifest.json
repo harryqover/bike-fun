@@ -1,0 +1,21 @@
+{
+  "short_name": "RoadBuddy",
+  "name": "RoadBuddy AI for Skoda",
+  "description": "Log vehicle mileage and fuel expenses.",
+  "icons": [
+    {
+      "src": "https://harryqover.github.io/bike-fun/img/roadbuddyai_192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://harryqover.github.io/bike-fun/img/roadbuddyai_512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#111827",
+  "background_color": "#111827"
+}
