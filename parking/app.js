@@ -1,16 +1,10 @@
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !! L'URL DE VOTRE SCRIPT A ÉTÉ INTÉGRÉE CI-DESSOUS !!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// L'URL de votre script est déjà intégrée
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwY1AHmB52TDJTerlryEZkwK7nzDrB5YD0w94QwMY-ioyyMkWsnUG-pS0uDBrhLmDKB/exec"; 
 
 // --- DOM Elements ---
 const getCodeBtn = document.getElementById('getCodeBtn');
 const statusMessage = document.getElementById('statusMessage');
-
-// Step 1
 const step1 = document.getElementById('step1');
-
-// Step 2
 const step2 = document.getElementById('step2');
 const codeDisplay = document.getElementById('codeDisplay');
 const plaqueButtons = document.querySelectorAll('.plaque-btn');
@@ -18,15 +12,11 @@ const otherPlaqueBtn = document.getElementById('otherPlaqueBtn');
 const otherPlaqueSection = document.getElementById('otherPlaqueSection');
 const plaqueInput = document.getElementById('plaqueInput');
 const submitManualPlaqueBtn = document.getElementById('submitManualPlaqueBtn');
-
-// Step 3
 const step3 = document.getElementById('step3');
 const finalPlaque = document.getElementById('finalPlaque');
 const smsText = document.getElementById('smsText');
 const copySmsBtn = document.getElementById('copySmsBtn');
 const openSmsLink = document.getElementById('openSmsLink');
-
-// Upload Section
 const imageUploadInput = document.getElementById('imageUploadInput');
 const uploadBtn = document.getElementById('uploadBtn');
 
@@ -40,6 +30,14 @@ getCodeBtn.addEventListener('click', async () => {
     getCodeBtn.disabled = true;
     try {
         const response = await fetch(SCRIPT_URL);
+
+        // AMÉLIORATION : Vérifie si la réponse du serveur est une erreur
+        if (!response.ok) {
+            const errorText = await response.text();
+            // Affiche l'erreur réelle du script si possible
+            throw new Error(`Le serveur a répondu avec une erreur: ${response.status}. Réponse: ${errorText}`);
+        }
+
         const data = await response.json();
 
         if (data.code) {
@@ -53,10 +51,14 @@ getCodeBtn.addEventListener('click', async () => {
             getCodeBtn.disabled = false;
         }
     } catch (error) {
-        statusMessage.textContent = "Erreur de communication avec le serveur.";
+        // Affiche une erreur plus utile dans la console du navigateur (F12)
+        console.error("Détail de l'erreur lors de la récupération du code:", error);
+        statusMessage.textContent = "Erreur de communication. Vérifiez la console (F12).";
         getCodeBtn.disabled = false;
     }
 });
+
+// Le reste du fichier app.js reste identique...
 
 // 2.A. Handle clicks on suggested plaque buttons
 plaqueButtons.forEach(button => {
@@ -69,7 +71,7 @@ plaqueButtons.forEach(button => {
 // 2.B. Handle click on "Other Plaque"
 otherPlaqueBtn.addEventListener('click', () => {
     otherPlaqueSection.classList.remove('hidden');
-    otherPlaqueBtn.classList.add('hidden'); // Hide the "Other" button itself
+    otherPlaqueBtn.classList.add('hidden');
 });
 
 // 2.C. Handle submission of a manual plaque
@@ -85,51 +87,45 @@ submitManualPlaqueBtn.addEventListener('click', () => {
 // 3. Submit the chosen plaque to the backend
 async function submitParking(plaque) {
     statusMessage.textContent = "Enregistrement en cours...";
-    step2.classList.add('hidden'); // Hide selection step
+    step2.classList.add('hidden');
 
     try {
         await fetch(SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors', // no-cors is often needed for simple POSTs to Apps Script
+            mode: 'no-cors',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ action: 'assignCode', code: currentCode, plaque: plaque }),
         });
         
-        // If successful, show the final SMS step
         showSmsStep(currentCode, plaque);
         statusMessage.textContent = '';
 
     } catch (error) {
+        console.error("Erreur lors de la soumission:", error);
         statusMessage.textContent = "❌ Erreur lors de l'enregistrement.";
-        step2.classList.remove('hidden'); // Show selection step again on error
+        step2.classList.remove('hidden');
     }
 }
 
 // 4. Show the final confirmation and SMS helper step
 function showSmsStep(code, plaque) {
     const smsBody = `${code} ${plaque}`;
-    
     finalPlaque.textContent = plaque;
     smsText.textContent = smsBody;
-    
-    // Set up the "Open SMS" link for mobile devices
     openSmsLink.href = `sms:4411&body=${encodeURIComponent(smsBody)}`;
     
-    // Set up the "Copy" button
     copySmsBtn.addEventListener('click', () => {
-        // Use the modern clipboard API
         navigator.clipboard.writeText(smsBody).then(() => {
             copySmsBtn.textContent = 'Copié !';
             setTimeout(() => { copySmsBtn.textContent = 'Copier le texte'; }, 2000);
         }).catch(err => {
             console.error('Could not copy text: ', err);
-            alert("La copie a échoué. Veuillez copier le texte manuellement.");
+            alert("La copie a échoué.");
         });
     });
     
     step3.classList.remove('hidden');
 }
-
 
 // --- Logic for Uploading New Codes ---
 uploadBtn.addEventListener('click', () => {
@@ -145,31 +141,30 @@ uploadBtn.addEventListener('click', () => {
     
     reader.onload = async (event) => {
         const base64Image = event.target.result.split(',')[1];
-        statusMessage.textContent = "🤖 Analyse de l'image par l'IA... (Patientez)";
+        statusMessage.textContent = "🤖 Analyse de l'image par l'IA...";
         
         try {
-            // Using no-cors as we don't need to read the response here
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ action: 'addCodesFromImage', imageData: base64Image }),
             });
-            statusMessage.textContent = "✅ Analyse terminée. Les codes devraient être ajoutés !";
+            statusMessage.textContent = "✅ Analyse terminée !";
             imageUploadInput.value = "";
             setTimeout(() => { 
-                statusMessage.textContent = "Rechargement de l'app...";
+                statusMessage.textContent = "Rechargement...";
                 window.location.reload(); 
             }, 3000);
 
         } catch (error) {
-            statusMessage.textContent = "❌ Erreur lors de l'envoi pour analyse.";
+            statusMessage.textContent = "❌ Erreur lors de l'analyse.";
             uploadBtn.disabled = false;
         }
     };
 
     reader.onerror = () => {
-        statusMessage.textContent = "❌ Erreur de lecture du fichier image.";
+        statusMessage.textContent = "❌ Erreur de lecture du fichier.";
         uploadBtn.disabled = false;
     };
 
