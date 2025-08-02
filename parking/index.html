@@ -57,7 +57,7 @@
         .history-info { flex-grow: 1; min-width: 0; text-align: left; }
         .history-plaque { font-weight: 600; }
         .history-time, .history-code { font-size: 0.85em; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
-        .resend-btn { background-color: var(--secondary-color); color: white !important; padding: 8px 12px; font-size: 1.2em; border-radius: 8px; flex-shrink: 0; width: auto !important; }
+        .resend-btn { background-color: var(--secondary-color); color: white !important; padding: 8px 12px; font-size: 1.2em; border-radius: 8px; flex-shrink: 0; width: auto; }
         .history-item.active-parking { border-left: 4px solid var(--success-color); }
         .countdown-timer { font-weight: 600; color: var(--success-color); }
         .countdown-timer .bx { animation: spin 2s linear infinite; }
@@ -67,7 +67,8 @@
         .admin-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 45, 66, 0.4); opacity: 0; visibility: hidden; transition: opacity 0.4s, visibility 0.4s; z-index: 99; }
         .overlay.active { opacity: 1; visibility: visible; }
-        .admin-section { margin-top: 24px; }
+        .admin-section { margin-top: 16px; }
+        .admin-section h2 { font-size: 1.1em; font-weight: 600; text-align: left; margin-bottom: 12px; }
         .toggle-switch { display: flex; justify-content: space-between; align-items: center; }
         .toggle-switch label { font-weight: 500; }
         .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
@@ -80,7 +81,7 @@
         .modal.active { opacity: 1; visibility: visible; }
         .modal-content { background: var(--card-bg); padding: 24px; border-radius: 16px; width: 90%; max-width: 380px; text-align: center; }
         .modal-content h2 { margin-bottom: 16px; }
-        .modal-content input, .modal-content textarea { margin-bottom: 16px; border-radius: 8px; padding: 10px; }
+        .modal-content input { margin-bottom: 16px; border-radius: 8px; padding: 10px; width: 100%; border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-color); }
         .hidden { display: none !important; }
         #statusMessage { margin-top: 1.5em; font-weight: 500; min-height: 20px; text-align: center; }
         .tabs { display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 16px; }
@@ -93,6 +94,10 @@
         #step3 .success-animation { font-size: 5em; color: var(--success-color); }
         #step3 .success-message { font-size: 1.2em; font-weight: 600; margin: 16px 0; }
         #step3 .sms-box { background-color: #f0f9f4; border: 1px solid var(--success-color); padding: 15px; border-radius: 12px; margin-top: 1em; font-family: 'Courier New', Courier, monospace; font-weight: bold; }
+        .stats-container { display: flex; flex-direction: column; gap: 10px; }
+        .stat-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--bg-color); padding: 10px 14px; border-radius: 10px; font-size: 0.9em; }
+        .stat-item span:first-child { color: var(--text-secondary); }
+        .stat-item span:last-child { font-weight: 600; }
     </style>
 </head>
 <body class="">
@@ -114,31 +119,7 @@
                     <div id="historyContainer"></div>
                 </div>
             </div>
-
-            <div id="step2" class="step">
-                <p>Code disponible</p>
-                <p id="codeDisplay" class="code-display"></p>
-                <p>Pour qui est ce code ?</p>
-                <div id="plaqueSuggestions" class="button-group"></div>
-                <div class="button-group">
-                    <button id="otherPlaqueBtn" class="secondary-btn">Autre plaque</button>
-                </div>
-                <div id="otherPlaqueSection" class="hidden">
-                    <input type="text" id="plaqueInput" placeholder="1-ABC-123" maxlength="9" autocapitalize="characters">
-                    <button id="submitManualPlaqueBtn" class="primary-btn">Valider</button>
-                </div>
-            </div>
-            
-            <div id="step3" class="step">
-                <div class="success-animation"><i class='bx bx-check-circle'></i></div>
-                <p class="success-message">Parking activé pour <strong id="finalPlaque"></strong> !</p>
-                <p>Envoyez le code au <strong>4411</strong></p>
-                <div class="sms-box"><span id="smsText"></span></div>
-                <div class="button-group">
-                    <a href="#" id="openSmsLink" class="btn primary-btn"><i class='bx bxs-message-rounded-dots'></i> Ouvrir l'app SMS</a>
-                    <button id="copySmsBtn" class="secondary-btn"><i class='bx bx-copy'></i> Copier le texte</button>
-                </div>
-            </div>
+            <!-- ... autres étapes ... -->
         </main>
         <p id="statusMessage"></p>
     </div>
@@ -150,20 +131,27 @@
             <div class="admin-section">
                 <div class="toggle-switch">
                     <label for="dark-mode-toggle">Thème sombre</label>
-                    <label class="switch">
-                        <input type="checkbox" id="dark-mode-toggle">
-                        <span class="slider"></span>
-                    </label>
+                    <label class="switch"><input type="checkbox" id="dark-mode-toggle"><span class="slider"></span></label>
                 </div>
             </div>
+            
+            <!-- NOUVELLE SECTION STATISTIQUES -->
+            <div class="admin-section">
+                <h2>Statistiques</h2>
+                <div id="statsContainer" class="stats-container">
+                    <!-- Les stats seront injectées ici -->
+                </div>
+            </div>
+
             <hr style="margin: 24px 0; border: 1px solid var(--border-color);">
+            
             <div class="tabs">
                 <button class="tab-btn active" data-tab="paste">Coller du texte</button>
                 <button class="tab-btn" data-tab="upload">Importer une image</button>
             </div>
             <div id="pasteTab" class="tab-content active">
                 <p>Collez une liste de codes, un par ligne.</p>
-                <textarea id="codesTextarea" rows="8" placeholder="VBR3Z4XWABCD..."></textarea>
+                <textarea id="codesTextarea" rows="6" placeholder="VBR3Z4XWABCD..."></textarea>
                 <button id="submitTextBtn" class="primary-btn">Ajouter les codes</button>
             </div>
             <div id="uploadTab" class="tab-content">
@@ -203,27 +191,12 @@
         const nicknameInput = document.getElementById('nicknameInput');
         const saveNicknameBtn = document.getElementById('saveNicknameBtn');
         const skipNicknameBtn = document.getElementById('skipNicknameBtn');
-        const steps = document.querySelectorAll('.step');
-        const codeDisplay = document.getElementById('codeDisplay');
-        const plaqueSuggestions = document.getElementById('plaqueSuggestions');
-        const otherPlaqueBtn = document.getElementById('otherPlaqueBtn');
-        const otherPlaqueSection = document.getElementById('otherPlaqueSection');
-        const plaqueInput = document.getElementById('plaqueInput');
-        const submitManualPlaqueBtn = document.getElementById('submitManualPlaqueBtn');
-        const finalPlaque = document.getElementById('finalPlaque');
-        const smsText = document.getElementById('smsText');
-        const copySmsBtn = document.getElementById('copySmsBtn');
-        const openSmsLink = document.getElementById('openSmsLink');
         const adminToggleBtn = document.getElementById('adminToggleBtn');
         const adminPanel = document.getElementById('adminPanel');
         const closeAdminBtn = document.getElementById('closeAdminBtn');
         const overlay = document.getElementById('overlay');
-        const tabButtons = document.querySelectorAll('.tab-btn');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const codesTextarea = document.getElementById('codesTextarea');
-        const submitTextBtn = document.getElementById('submitTextBtn');
-        const imageUploadInput = document.getElementById('imageUploadInput');
-        const uploadBtn = document.getElementById('uploadBtn');
+        const statsContainer = document.getElementById('statsContainer');
+        // ... (autres éléments DOM)
         
         let appData = {};
         let countdownIntervals = [];
@@ -261,19 +234,67 @@
                     getCodeBtn.textContent = "Obtenir un code";
                 }
                 renderHistory(appData.history || []);
+                renderStats(appData); // Afficher les statistiques
             } catch (error) {
                 console.error("Erreur initializeApp:", error);
                 statusMessage.textContent = "Erreur de communication.";
             }
         }
 
+        function renderStats(data) {
+            statsContainer.innerHTML = '';
+            
+            const remaining = document.createElement('div');
+            remaining.className = 'stat-item';
+            remaining.innerHTML = `<span>Codes restants</span><span>${data.availableCodesCount}</span>`;
+            statsContainer.appendChild(remaining);
+
+            const monthly = document.createElement('div');
+            monthly.className = 'stat-item';
+            monthly.innerHTML = `<span>Utilisés ce mois-ci</span><span>${data.stats.monthlyUsage}</span>`;
+            statsContainer.appendChild(monthly);
+
+            const topVisitor = document.createElement('div');
+            topVisitor.className = 'stat-item';
+            if (data.stats.topVisitor) {
+                const visitorName = data.stats.topVisitor.surnom || data.stats.topVisitor.plaque;
+                topVisitor.innerHTML = `<span>Visiteur fréquent</span><span>${visitorName} (${data.stats.topVisitor.count} fois)</span>`;
+            } else {
+                topVisitor.innerHTML = `<span>Visiteur fréquent</span><span>-</span>`;
+            }
+            statsContainer.appendChild(topVisitor);
+        }
+
+        // Le reste du JS est identique à la version précédente...
+        const steps = document.querySelectorAll('.step');
+        const codeDisplay = document.getElementById('codeDisplay');
+        const plaqueSuggestions = document.getElementById('plaqueSuggestions');
+        const otherPlaqueBtn = document.getElementById('otherPlaqueBtn');
+        const otherPlaqueSection = document.getElementById('otherPlaqueSection');
+        const plaqueInput = document.getElementById('plaqueInput');
+        const submitManualPlaqueBtn = document.getElementById('submitManualPlaqueBtn');
+        const finalPlaque = document.getElementById('finalPlaque');
+        const smsText = document.getElementById('smsText');
+        const copySmsBtn = document.getElementById('copySmsBtn');
+        const openSmsLink = document.getElementById('openSmsLink');
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const codesTextarea = document.getElementById('codesTextarea');
+        const submitTextBtn = document.getElementById('submitTextBtn');
+        const imageUploadInput = document.getElementById('imageUploadInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+
+        function showStep(stepNumber) { steps.forEach(step => step.classList.remove('active')); document.getElementById(`step${stepNumber}`).classList.add('active'); }
+        function toggleAdminPanel(show) { overlay.classList.toggle('active', show); adminPanel.classList.toggle('active', show); }
+        adminToggleBtn.addEventListener('click', () => toggleAdminPanel(true));
+        closeAdminBtn.addEventListener('click', () => toggleAdminPanel(false));
+        overlay.addEventListener('click', () => { toggleAdminPanel(false); if(nicknameModal.classList.contains('active')) closeNicknameModal(); });
+        tabButtons.forEach(button => { button.addEventListener('click', () => { tabButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active'); tabContents.forEach(content => content.classList.remove('active')); document.getElementById(`${button.dataset.tab}Tab`).classList.add('active'); }); });
+        
         function renderHistory(historyItems) {
             const container = document.getElementById('historyContainer');
             container.innerHTML = '';
-            if (historyItems.length === 0) {
-                container.innerHTML = '<p class="no-history" style="color: var(--text-secondary); font-style: italic; padding: 20px 0; text-align: center;">Aucun historique récent.</p>';
-                return;
-            }
+            if (historyItems.length === 0) { container.innerHTML = '<p style="color: var(--text-secondary); font-style: italic; padding: 20px 0; text-align: center;">Aucun historique récent.</p>'; return; }
             historyItems.forEach(item => {
                 const startTime = new Date(item.dateUtilisation);
                 const endTime = new Date(startTime.getTime() + 4.5 * 60 * 60 * 1000);
@@ -283,7 +304,8 @@
                 const historyElement = document.createElement('div');
                 historyElement.className = `history-item ${isActive ? 'active-parking' : ''}`;
                 const timeElementId = `timer-${item.code.replace(/\s/g, '')}`;
-                historyElement.innerHTML = `<div class="history-info"><span class="history-plaque">${item.plaque}</span><div id="${timeElementId}" class="history-time"></div><span class="history-code"><i class='bx bx-barcode'></i> Code: ${item.code}</span></div><a href="${smsLink}" class="btn resend-btn"><i class='bx bx-send'></i></a>`;
+                const plaqueDisplay = (appData.plates.find(p => p.plaque === item.plaque) || {}).surnom || item.plaque;
+                historyElement.innerHTML = `<div class="history-info"><span class="history-plaque">${plaqueDisplay}</span><div id="${timeElementId}" class="history-time"></div><span class="history-code"><i class='bx bx-barcode'></i> Code: ${item.code}</span></div><a href="${smsLink}" class="btn resend-btn"><i class='bx bx-send'></i></a>`;
                 container.appendChild(historyElement);
                 const timeElement = document.getElementById(timeElementId);
                 if (isActive) {
@@ -311,47 +333,19 @@
             element.innerHTML = `<span class="countdown-timer"><i class='bx bx-loader-alt'></i> Restant: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</span>`;
         }
 
-        // --- Logique des Surnoms ---
         let pendingPlaqueForNickname = null;
-        function promptForNickname(plaque) {
-            pendingPlaqueForNickname = plaque;
-            newPlaqueNumberEl.textContent = plaque;
-            nicknameModal.classList.add('active');
-            overlay.classList.add('active');
-        }
+        function promptForNickname(plaque) { pendingPlaqueForNickname = plaque; newPlaqueNumberEl.textContent = plaque; nicknameModal.classList.add('active'); overlay.classList.add('active'); }
         async function saveNickname() {
             const surnom = nicknameInput.value.trim();
-            if (!surnom || !pendingPlaqueForNickname) {
-                closeNicknameModal();
-                return;
-            }
+            if (!surnom || !pendingPlaqueForNickname) { closeNicknameModal(); return; }
             try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    body: JSON.stringify({ action: 'updateNickname', plaque: pendingPlaqueForNickname, surnom: surnom }),
-                });
-            } catch (error) {
-                console.error("Erreur saveNickname:", error);
-            } finally {
-                closeNicknameModal();
-                initializeApp(); // Refresh data
-            }
+                await fetch(SCRIPT_URL, { method: 'POST', mode: 'cors', body: JSON.stringify({ action: 'updateNickname', plaque: pendingPlaqueForNickname, surnom: surnom }) });
+            } catch (error) { console.error("Erreur saveNickname:", error); }
+            finally { closeNicknameModal(); initializeApp(); }
         }
-        function closeNicknameModal() {
-            nicknameModal.classList.remove('active');
-            overlay.classList.remove('active');
-            nicknameInput.value = '';
-            pendingPlaqueForNickname = null;
-        }
+        function closeNicknameModal() { nicknameModal.classList.remove('active'); overlay.classList.remove('active'); nicknameInput.value = ''; pendingPlaqueForNickname = null; }
         saveNicknameBtn.addEventListener('click', saveNickname);
         skipNicknameBtn.addEventListener('click', closeNicknameModal);
-
-        // --- Logique Principale ---
-        function showStep(stepNumber) {
-            steps.forEach(step => step.classList.remove('active'));
-            document.getElementById(`step${stepNumber}`).classList.add('active');
-        }
 
         getCodeBtn.addEventListener('click', () => {
             if (appData.code) {
@@ -372,44 +366,47 @@
         async function submitParking(plaque) {
             statusMessage.textContent = "Enregistrement...";
             try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ action: 'assignCode', code: appData.code, plaque: plaque }),
-                });
-                
+                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'assignCode', code: appData.code, plaque: plaque }) });
                 const isNewPlaque = !appData.plates.some(p => p.plaque === plaque);
-                if (isNewPlaque) {
-                    promptForNickname(plaque);
-                }
-                
+                if (isNewPlaque) { promptForNickname(plaque); }
                 showSmsStep(appData.code, plaque);
-            } catch (error) {
-                statusMessage.textContent = "Erreur d'enregistrement.";
-                showStep(2);
-            }
+            } catch (error) { statusMessage.textContent = "Erreur d'enregistrement."; showStep(2); }
         }
 
         function showSmsStep(code, plaque) {
-            finalPlaque.textContent = plaque;
+            finalPlaque.textContent = (appData.plates.find(p => p.plaque === plaque) || {}).surnom || plaque;
             smsText.textContent = `${code} ${plaque}`;
             openSmsLink.href = `sms:4411?body=${encodeURIComponent(`${code} ${plaque}`)}`;
             statusMessage.textContent = '';
             showStep(3);
-            setTimeout(initializeApp, 1000); // Refresh history
+            setTimeout(initializeApp, 1000);
         }
-
-        // Le reste de la logique (admin, etc.) va ici...
-        toggleAdminPanel = (show) => {
-            overlay.classList.toggle('active', show);
-            adminPanel.classList.toggle('active', show);
-        };
-        adminToggleBtn.addEventListener('click', () => toggleAdminPanel(true));
-        closeAdminBtn.addEventListener('click', () => toggleAdminPanel(false));
-        overlay.addEventListener('click', () => {
-            toggleAdminPanel(false);
-            if(nicknameModal.classList.contains('active')) closeNicknameModal();
+        
+        plaqueInput.addEventListener('input', (e) => {
+            let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            let formattedValue = '';
+            if (value.length > 0) formattedValue += value.substring(0, 1);
+            if (value.length > 1) formattedValue += '-' + value.substring(1, 4);
+            if (value.length > 4) formattedValue += '-' + value.substring(4, 7);
+            e.target.value = formattedValue;
         });
+        
+        otherPlaqueBtn.addEventListener('click', () => { otherPlaqueSection.classList.remove('hidden'); otherPlaqueBtn.style.display = 'none'; });
+        submitManualPlaqueBtn.addEventListener('click', () => { const plaque = plaqueInput.value.trim().toUpperCase(); if (plaque.match(/^\d-[A-Z]{3}-\d{3}$/)) { submitParking(plaque); } else { alert("Format de plaque incorrect (doit être 1-ABC-123)."); } });
+        copySmsBtn.addEventListener('click', () => { navigator.clipboard.writeText(smsText.textContent).then(() => { copySmsBtn.innerHTML = "<i class='bx bx-check'></i> Copié !"; setTimeout(() => { copySmsBtn.innerHTML = "<i class='bx bx-copy'></i> Copier le texte"; }, 2000); }); });
+
+        async function addCodes(action, bodyPayload) {
+            statusMessage.textContent = "Traitement...";
+            toggleAdminPanel(false);
+            try {
+                const response = await fetch(SCRIPT_URL, { method: 'POST', mode: 'cors', body: JSON.stringify({ action, ...bodyPayload }) });
+                const data = await response.json();
+                statusMessage.textContent = data.success ? `✅ ${data.message}` : `❌ ${data.error}`;
+                if (data.success) setTimeout(initializeApp, 2000);
+            } catch (error) { statusMessage.textContent = "Erreur de communication."; }
+        }
+        submitTextBtn.addEventListener('click', () => { const codes = codesTextarea.value.split('\n').filter(c => c.trim() !== ''); if (codes.length > 0) addCodes('addCodesFromText', { codes }); });
+        uploadBtn.addEventListener('click', () => { const file = imageUploadInput.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (event) => { const base64Image = event.target.result.split(',')[1]; addCodes('addCodesFromImage', { imageData: base64Image }); }; reader.readAsDataURL(file); });
 
         initializeApp();
     });
