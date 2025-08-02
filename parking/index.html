@@ -61,74 +61,33 @@
         .hidden { display: none !important; }
         #statusMessage { margin-top: 1.5em; font-weight: 500; min-height: 20px; text-align: center; }
         
-        /* --- STYLES POUR L'HISTORIQUE (Corrigés) --- */
-        .history-section {
-            margin-top: 32px;
-            width: 100%;
+        /* --- STYLES POUR L'HISTORIQUE --- */
+        .history-section { margin-top: 32px; width: 100%; }
+        .history-section h2 { font-size: 1.1em; font-weight: 600; text-align: left; margin-bottom: 16px; color: var(--text-color); }
+        #historyContainer { display: flex; flex-direction: column; gap: 12px; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; gap: 16px; background-color: var(--card-background); padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); transition: all 0.3s; }
+        .history-item:hover { box-shadow: 0 4px 15px rgba(0, 45, 66, 0.08); }
+        .history-info { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; flex-grow: 1; min-width: 0; }
+        .history-plaque { font-weight: 600; color: var(--text-color); }
+        .history-time, .history-code { font-size: 0.85em; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+        .resend-btn { background-color: var(--secondary-color); color: white !important; padding: 8px 12px; font-size: 1.2em; border-radius: 8px; flex-shrink: 0; width: auto !important; }
+        .resend-btn:hover { background-color: var(--secondary-hover); }
+        .no-history { color: var(--text-secondary); font-style: italic; padding: 20px 0; text-align: center; }
+
+        /* --- NOUVEAUX STYLES POUR LE COMPTE À REBOURS --- */
+        .history-item.active-parking {
+            border-left: 4px solid var(--success-color);
         }
-        .history-section h2 {
-            font-size: 1.1em;
+        .countdown-timer {
             font-weight: 600;
-            text-align: left;
-            margin-bottom: 16px;
-            color: var(--text-color);
+            color: var(--success-color);
         }
-        #historyContainer {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        .countdown-timer .bx {
+            animation: spin 2s linear infinite;
         }
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px; /* Ajoute un espace entre le texte et le bouton */
-            background-color: var(--card-background);
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            transition: box-shadow 0.2s;
-        }
-        .history-item:hover {
-            box-shadow: 0 4px 15px rgba(0, 45, 66, 0.08);
-        }
-        .history-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-            text-align: left;
-            flex-grow: 1; /* Permet à cette section de prendre l'espace disponible */
-            min-width: 0; /* Empêche le débordement de texte */
-        }
-        .history-plaque {
-            font-weight: 600;
-            color: var(--text-color);
-        }
-        .history-time, .history-code {
-            font-size: 0.85em;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .resend-btn {
-            background-color: var(--secondary-color);
-            color: white !important;
-            padding: 8px 12px;
-            font-size: 1.2em;
-            border-radius: 8px;
-            flex-shrink: 0; /* Empêche le bouton de rétrécir */
-            width: auto !important; /* CORRECTION : Le bouton prend la largeur de son contenu */
-        }
-        .resend-btn:hover {
-            background-color: var(--secondary-hover);
-        }
-        .no-history {
-            color: var(--text-secondary);
-            font-style: italic;
-            padding: 20px 0;
-            text-align: center;
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -146,12 +105,9 @@
                 <p class="intro-text">Générez un code de parking pour un visiteur en un clic.</p>
                 <button id="getCodeBtn" class="primary-btn">Obtenir un code</button>
                 
-                <!-- SECTION HISTORIQUE -->
                 <div class="history-section">
                     <h2>Derniers codes utilisés</h2>
-                    <div id="historyContainer">
-                        <!-- L'historique sera injecté ici par le script -->
-                    </div>
+                    <div id="historyContainer"></div>
                 </div>
             </div>
 
@@ -240,6 +196,7 @@
             const uploadBtn = document.getElementById('uploadBtn');
 
             let appData = {};
+            let countdownIntervals = []; // Stocke les timers pour les nettoyer
 
             // --- Navigation & UI ---
             function showStep(stepNumber) {
@@ -269,6 +226,9 @@
             async function initializeApp() {
                 statusMessage.textContent = "Chargement des données...";
                 getCodeBtn.disabled = true;
+                countdownIntervals.forEach(clearInterval); // Nettoie les anciens timers
+                countdownIntervals = [];
+
                 try {
                     const response = await fetch(SCRIPT_URL);
                     if (!response.ok) throw new Error(`Erreur serveur: ${response.status}`);
@@ -302,26 +262,59 @@
                 historyItems.forEach(item => {
                     const startTime = new Date(item.dateUtilisation);
                     const endTime = new Date(startTime.getTime() + 4.5 * 60 * 60 * 1000);
-
-                    const formatTime = (date) => date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                    const now = new Date();
+                    const isActive = now < endTime;
 
                     const smsBody = `${item.code} ${item.plaque}`;
                     const smsLink = `sms:4411?body=${encodeURIComponent(smsBody)}`;
 
                     const historyElement = document.createElement('div');
-                    historyElement.className = 'history-item';
+                    historyElement.className = `history-item ${isActive ? 'active-parking' : ''}`;
+                    
+                    const timeElementId = `timer-${item.code}`;
+
                     historyElement.innerHTML = `
                         <div class="history-info">
                             <span class="history-plaque">${item.plaque}</span>
-                            <span class="history-time">
-                                <i class='bx bx-time'></i> Début: ${formatTime(startTime)} - Fin: ${formatTime(endTime)}
-                            </span>
+                            <div id="${timeElementId}" class="history-time">
+                                <!-- Le contenu sera injecté ici -->
+                            </div>
                             <span class="history-code"><i class='bx bx-barcode'></i> Code: ${item.code}</span>
                         </div>
                         <a href="${smsLink}" class="btn resend-btn"><i class='bx bx-send'></i></a>
                     `;
                     container.appendChild(historyElement);
+
+                    const timeElement = document.getElementById(timeElementId);
+                    if (isActive) {
+                        updateCountdown(timeElement, endTime, historyElement);
+                        const intervalId = setInterval(() => updateCountdown(timeElement, endTime, historyElement), 1000);
+                        countdownIntervals.push(intervalId);
+                    } else {
+                        timeElement.innerHTML = `<i class='bx bx-time-five'></i> Expiré`;
+                    }
                 });
+            }
+
+            function updateCountdown(element, endTime, historyItem) {
+                const now = new Date().getTime();
+                const distance = endTime - now;
+
+                if (distance < 0) {
+                    clearInterval(countdownIntervals.find(id => id)); // Trouver et nettoyer l'intervalle spécifique serait mieux, mais c'est plus complexe
+                    element.innerHTML = `<i class='bx bx-time-five'></i> Expiré`;
+                    historyItem.classList.remove('active-parking');
+                    return;
+                }
+
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                element.innerHTML = `
+                    <span class="countdown-timer">
+                        <i class='bx bx-loader-alt'></i> Restant: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}
+                    </span>`;
             }
 
             getCodeBtn.addEventListener('click', () => {
@@ -386,6 +379,8 @@
                 openSmsLink.href = `sms:4411?body=${encodeURIComponent(smsBody)}`;
                 statusMessage.textContent = '';
                 showStep(3);
+                // Re-initialize to refresh history after a short delay
+                setTimeout(initializeApp, 1000);
             }
 
             copySmsBtn.addEventListener('click', () => {
@@ -407,7 +402,6 @@
                     });
                     const data = await response.json();
                     statusMessage.textContent = data.success ? `✅ ${data.message}` : `❌ ${data.error}`;
-                    // Re-initialize to refresh history if codes were added
                     if (data.success) setTimeout(initializeApp, 2000);
                 } catch (error) {
                     console.error(`Erreur ${action}:`, error);
