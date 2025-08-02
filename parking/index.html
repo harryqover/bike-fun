@@ -119,7 +119,31 @@
                     <div id="historyContainer"></div>
                 </div>
             </div>
-            <!-- ... autres étapes ... -->
+
+            <div id="step2" class="step">
+                <p>Code disponible</p>
+                <p id="codeDisplay" class="code-display"></p>
+                <p>Pour qui est ce code ?</p>
+                <div id="plaqueSuggestions" class="button-group"></div>
+                <div class="button-group">
+                    <button id="otherPlaqueBtn" class="secondary-btn">Autre plaque</button>
+                </div>
+                <div id="otherPlaqueSection" class="hidden">
+                    <input type="text" id="plaqueInput" placeholder="1-ABC-123" maxlength="9" autocapitalize="characters">
+                    <button id="submitManualPlaqueBtn" class="primary-btn">Valider</button>
+                </div>
+            </div>
+            
+            <div id="step3" class="step">
+                <div class="success-animation"><i class='bx bx-check-circle'></i></div>
+                <p class="success-message">Parking activé pour <strong id="finalPlaque"></strong> !</p>
+                <p>Envoyez le code au <strong>4411</strong></p>
+                <div class="sms-box"><span id="smsText"></span></div>
+                <div class="button-group">
+                    <a href="#" id="openSmsLink" class="btn primary-btn"><i class='bx bxs-message-rounded-dots'></i> Ouvrir l'app SMS</a>
+                    <button id="copySmsBtn" class="secondary-btn"><i class='bx bx-copy'></i> Copier le texte</button>
+                </div>
+            </div>
         </main>
         <p id="statusMessage"></p>
     </div>
@@ -135,12 +159,9 @@
                 </div>
             </div>
             
-            <!-- NOUVELLE SECTION STATISTIQUES -->
             <div class="admin-section">
                 <h2>Statistiques</h2>
-                <div id="statsContainer" class="stats-container">
-                    <!-- Les stats seront injectées ici -->
-                </div>
+                <div id="statsContainer" class="stats-container"></div>
             </div>
 
             <hr style="margin: 24px 0; border: 1px solid var(--border-color);">
@@ -181,7 +202,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwY1AHmB52TDJTerlryEZkwK7nzDrB5YD0w94QwMY-ioyyMkWsnUG-pS0uDBrhLmDKB/exec";
         
-        // --- DOM Elements ---
         const getCodeBtn = document.getElementById('getCodeBtn');
         const statusMessage = document.getElementById('statusMessage');
         const codesRemainingEl = document.getElementById('codesRemaining');
@@ -196,12 +216,27 @@
         const closeAdminBtn = document.getElementById('closeAdminBtn');
         const overlay = document.getElementById('overlay');
         const statsContainer = document.getElementById('statsContainer');
-        // ... (autres éléments DOM)
+        const steps = document.querySelectorAll('.step');
+        const codeDisplay = document.getElementById('codeDisplay');
+        const plaqueSuggestions = document.getElementById('plaqueSuggestions');
+        const otherPlaqueBtn = document.getElementById('otherPlaqueBtn');
+        const otherPlaqueSection = document.getElementById('otherPlaqueSection');
+        const plaqueInput = document.getElementById('plaqueInput');
+        const submitManualPlaqueBtn = document.getElementById('submitManualPlaqueBtn');
+        const finalPlaque = document.getElementById('finalPlaque');
+        const smsText = document.getElementById('smsText');
+        const copySmsBtn = document.getElementById('copySmsBtn');
+        const openSmsLink = document.getElementById('openSmsLink');
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const codesTextarea = document.getElementById('codesTextarea');
+        const submitTextBtn = document.getElementById('submitTextBtn');
+        const imageUploadInput = document.getElementById('imageUploadInput');
+        const uploadBtn = document.getElementById('uploadBtn');
         
         let appData = {};
         let countdownIntervals = [];
 
-        // --- Thème Sombre ---
         const applyTheme = (theme) => {
             document.body.classList.toggle('dark-theme', theme === 'dark');
             darkModeToggle.checked = theme === 'dark';
@@ -213,7 +248,6 @@
         });
         applyTheme(localStorage.getItem('theme'));
 
-        // --- Initialisation ---
         async function initializeApp() {
             statusMessage.textContent = "Chargement...";
             getCodeBtn.disabled = true;
@@ -234,7 +268,7 @@
                     getCodeBtn.textContent = "Obtenir un code";
                 }
                 renderHistory(appData.history || []);
-                renderStats(appData); // Afficher les statistiques
+                renderStats(appData);
             } catch (error) {
                 console.error("Erreur initializeApp:", error);
                 statusMessage.textContent = "Erreur de communication.";
@@ -243,17 +277,14 @@
 
         function renderStats(data) {
             statsContainer.innerHTML = '';
-            
             const remaining = document.createElement('div');
             remaining.className = 'stat-item';
             remaining.innerHTML = `<span>Codes restants</span><span>${data.availableCodesCount}</span>`;
             statsContainer.appendChild(remaining);
-
             const monthly = document.createElement('div');
             monthly.className = 'stat-item';
             monthly.innerHTML = `<span>Utilisés ce mois-ci</span><span>${data.stats.monthlyUsage}</span>`;
             statsContainer.appendChild(monthly);
-
             const topVisitor = document.createElement('div');
             topVisitor.className = 'stat-item';
             if (data.stats.topVisitor) {
@@ -265,32 +296,6 @@
             statsContainer.appendChild(topVisitor);
         }
 
-        // Le reste du JS est identique à la version précédente...
-        const steps = document.querySelectorAll('.step');
-        const codeDisplay = document.getElementById('codeDisplay');
-        const plaqueSuggestions = document.getElementById('plaqueSuggestions');
-        const otherPlaqueBtn = document.getElementById('otherPlaqueBtn');
-        const otherPlaqueSection = document.getElementById('otherPlaqueSection');
-        const plaqueInput = document.getElementById('plaqueInput');
-        const submitManualPlaqueBtn = document.getElementById('submitManualPlaqueBtn');
-        const finalPlaque = document.getElementById('finalPlaque');
-        const smsText = document.getElementById('smsText');
-        const copySmsBtn = document.getElementById('copySmsBtn');
-        const openSmsLink = document.getElementById('openSmsLink');
-        const tabButtons = document.querySelectorAll('.tab-btn');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const codesTextarea = document.getElementById('codesTextarea');
-        const submitTextBtn = document.getElementById('submitTextBtn');
-        const imageUploadInput = document.getElementById('imageUploadInput');
-        const uploadBtn = document.getElementById('uploadBtn');
-
-        function showStep(stepNumber) { steps.forEach(step => step.classList.remove('active')); document.getElementById(`step${stepNumber}`).classList.add('active'); }
-        function toggleAdminPanel(show) { overlay.classList.toggle('active', show); adminPanel.classList.toggle('active', show); }
-        adminToggleBtn.addEventListener('click', () => toggleAdminPanel(true));
-        closeAdminBtn.addEventListener('click', () => toggleAdminPanel(false));
-        overlay.addEventListener('click', () => { toggleAdminPanel(false); if(nicknameModal.classList.contains('active')) closeNicknameModal(); });
-        tabButtons.forEach(button => { button.addEventListener('click', () => { tabButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active'); tabContents.forEach(content => content.classList.remove('active')); document.getElementById(`${button.dataset.tab}Tab`).classList.add('active'); }); });
-        
         function renderHistory(historyItems) {
             const container = document.getElementById('historyContainer');
             container.innerHTML = '';
@@ -347,6 +352,8 @@
         saveNicknameBtn.addEventListener('click', saveNickname);
         skipNicknameBtn.addEventListener('click', closeNicknameModal);
 
+        function showStep(stepNumber) { steps.forEach(step => step.classList.remove('active')); document.getElementById(`step${stepNumber}`).classList.add('active'); }
+        
         getCodeBtn.addEventListener('click', () => {
             if (appData.code) {
                 plaqueSuggestions.innerHTML = '';
@@ -395,6 +402,11 @@
         submitManualPlaqueBtn.addEventListener('click', () => { const plaque = plaqueInput.value.trim().toUpperCase(); if (plaque.match(/^\d-[A-Z]{3}-\d{3}$/)) { submitParking(plaque); } else { alert("Format de plaque incorrect (doit être 1-ABC-123)."); } });
         copySmsBtn.addEventListener('click', () => { navigator.clipboard.writeText(smsText.textContent).then(() => { copySmsBtn.innerHTML = "<i class='bx bx-check'></i> Copié !"; setTimeout(() => { copySmsBtn.innerHTML = "<i class='bx bx-copy'></i> Copier le texte"; }, 2000); }); });
 
+        function toggleAdminPanel(show) { overlay.classList.toggle('active', show); adminPanel.classList.toggle('active', show); }
+        adminToggleBtn.addEventListener('click', () => toggleAdminPanel(true));
+        closeAdminBtn.addEventListener('click', () => toggleAdminPanel(false));
+        overlay.addEventListener('click', () => { toggleAdminPanel(false); if(nicknameModal.classList.contains('active')) closeNicknameModal(); });
+        
         async function addCodes(action, bodyPayload) {
             statusMessage.textContent = "Traitement...";
             toggleAdminPanel(false);
