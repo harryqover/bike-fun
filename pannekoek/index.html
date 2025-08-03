@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>De Pannekoek</title>
+    <meta name="theme-color" content="#4FD1C5"/>
+
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Link to Manifest for PWA capabilities -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="images/icon-192x192.png">
+
+    <!-- Custom Font & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* Custom styles to match the logo */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .font-logo {
+            font-family: 'Pacifico', cursive;
+        }
+        /* Colors inspired by the logo */
+        :root {
+            --brand-teal: #4FD1C5;
+            --brand-beige: #FDF6E3;
+            --brand-dark: #334155;
+        }
+        .bg-brand-beige { background-color: var(--brand-beige); }
+        .bg-brand-teal { background-color: var(--brand-teal); }
+        .text-brand-teal { color: var(--brand-teal); }
+        .text-brand-dark { color: var(--brand-dark); }
+        .border-brand-teal { border-color: var(--brand-teal); }
+        .nav-item.active {
+            color: var(--brand-teal);
+            border-top-color: var(--brand-teal);
+        }
+    </style>
+</head>
+<body class="bg-brand-beige text-brand-dark">
+
+    <div id="app" class="pb-20">
+
+        <!-- Header -->
+        <header class="bg-white shadow-md p-4 text-center sticky top-0 z-10">
+            <h1 class="font-logo text-3xl text-brand-teal">De Pannekoek</h1>
+        </header>
+
+        <!-- Main Content: Pages will be toggled here -->
+        <main class="p-4">
+
+            <!-- Page: Accueil -->
+            <section id="accueil" class="page text-center">
+                <img src="https://storage.googleapis.com/gemini-prod/images/89f7c18a-f781-41cd-9e6f-24521aa097e4" alt="Logo De Pannekoek" class="mx-auto w-64 h-64 object-cover rounded-full shadow-lg mb-6">
+                <h2 class="text-2xl font-bold mb-2">Bienvenue !</h2>
+                <p>Votre guide pour un séjour parfait à La Panne.</p>
+            </section>
+
+            <!-- Page: Calendrier -->
+            <section id="calendrier" class="page hidden">
+                <h2 class="text-2xl font-bold mb-4 text-center">Disponibilités</h2>
+                <div class="aspect-w-16 aspect-h-9 bg-white rounded-lg shadow-md overflow-hidden">
+                    <iframe src="https://calendar.google.com/calendar/embed?src=fa96f273e660b5d7327819efb1ba46e246ba6ee7695d4ca2611727e5a5350042%40group.calendar.google.com&ctz=Europe%2FBrussels" style="border: 0" width="100%" height="600" frameborder="0" scrolling="no"></iframe>
+                </div>
+            </section>
+
+            <!-- Page: Infos Pratiques -->
+            <section id="infos" class="page hidden space-y-4">
+                <h2 class="text-2xl font-bold mb-4 text-center">Infos Pratiques</h2>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-wifi text-brand-teal mr-2"></i>WiFi</h3>
+                    <p><strong>Réseau :</strong> [Nom du réseau WiFi]</p>
+                    <p><strong>Mot de passe :</strong> [Mot de passe WiFi]</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-trash-alt text-brand-teal mr-2"></i>Poubelles</h3>
+                    <p>Achetez une carte "Drop&Go" (disponible au Delhaize) pour les points de tri. Le tri du plastique (bleu), carton (jaune) et verre est gratuit.</p>
+                    <a href="https://www.depanne.be/fr/vos-dechets-dans-les-points-de-tri-dropgo" target="_blank" class="text-brand-teal hover:underline">Plus d'infos ici</a>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-thermometer-half text-brand-teal mr-2"></i>Thermostat</h3>
+                    <p>À l'arrivée, mettez sur "horloge" (env. 22°C). Au départ, mettez sur "hors gel" (flocon de neige ❄️).</p>
+                </div>
+                 <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-parking text-brand-teal mr-2"></i>Parking</h3>
+                    <p>Le parking est au -2 (entrée de gauche). Les 4 emplacements du fond sont pour vous.</p>
+                </div>
+                 <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-key text-brand-teal mr-2"></i>Clés & Porte</h3>
+                    <p>L'appartement est au 2ème étage, n°203. <strong class="text-red-500">Attention, la porte se verrouille automatiquement !</strong> Gardez toujours une clé sur vous.</p>
+                </div>
+            </section>
+
+            <!-- Page: Carte -->
+            <section id="carte" class="page hidden">
+                 <h2 class="text-2xl font-bold mb-4 text-center">Points d'intérêt</h2>
+                 <div class="aspect-w-16 aspect-h-9 bg-white rounded-lg shadow-md overflow-hidden">
+                    <iframe 
+                        width="100%" 
+                        height="600" 
+                        frameborder="0" 
+                        scrolling="no" 
+                        marginheight="0" 
+                        marginwidth="0" 
+                        src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=en&amp;q=De%20Pannekoek%20Apartment+(L'Appartement)&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed">
+                    </iframe>
+                 </div>
+                 <div class="mt-4 bg-white p-4 rounded-lg shadow-md">
+                     <h3 class="font-bold text-lg mb-2">Nos Recommandations</h3>
+                     <ul>
+                         <li class="mb-2"><i class="fas fa-utensils text-brand-teal mr-2"></i><strong>Restaurants:</strong> Le Léopold, Chez Soi</li>
+                         <li><i class="fas fa-cookie-bite text-brand-teal mr-2"></i><strong>Boulangerie:</strong> Bakkerij De Westhoek</li>
+                     </ul>
+                 </div>
+            </section>
+
+            <!-- Page: Checkout -->
+            <section id="checkout" class="page hidden space-y-4">
+                <h2 class="text-2xl font-bold mb-4 text-center">Checklist de Départ</h2>
+                
+                <div id="checkout-form" class="bg-white p-4 rounded-lg shadow-md space-y-4">
+                    <div class="space-y-3" id="checklist-items">
+                        <!-- Checklist items will be dynamically inserted here from the PDF content -->
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Vider les poubelles et sacs de tri">Vider les poubelles et sacs de tri</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Vider et nettoyer le frigo">Vider et nettoyer le frigo</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Passer l'aspirateur">Passer l'aspirateur</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Nettoyer les surfaces">Nettoyer les surfaces</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Descendre tous les stores">Descendre tous les stores</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Vérifier pare-soleil replié">Vérifier que le pare-soleil est replié</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Fermer toutes les fenêtres">Fermer toutes les fenêtres</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Éteindre les lumières">Éteindre les lumières et appareils</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Thermostat en mode hors gel">Mettre le thermostat en mode "hors gel"</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Ranger le double des clés">Ranger le double des clés</label>
+                    </div>
+                    <hr>
+                    <div>
+                        <label for="checkout-name" class="block text-sm font-medium text-gray-700">Checkout fait par :</label>
+                        <input type="text" id="checkout-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-teal focus:ring-brand-teal sm:text-sm" placeholder="Votre nom">
+                    </div>
+                    <div>
+                        <label for="missing-items" class="block text-sm font-medium text-gray-700">Signaler un problème ou un article manquant ?</label>
+                        <textarea id="missing-items" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-teal focus:ring-brand-teal sm:text-sm" placeholder="Ex: Il n'y a plus de papier toilette, une ampoule est grillée..."></textarea>
+                    </div>
+                    <button id="submit-checkout" class="w-full bg-brand-teal text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors flex items-center justify-center">
+                        <i class="fas fa-check-circle mr-2"></i> Envoyer le Checkout
+                    </button>
+                </div>
+
+                <div id="checkout-status" class="hidden text-center p-4 bg-green-100 text-green-800 rounded-lg"></div>
+
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                     <h3 class="font-bold text-lg mb-2"><i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>Problèmes signalés récemment</h3>
+                     <div id="missing-items-list" class="text-sm text-gray-600">
+                        <p>Chargement...</p>
+                     </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white shadow-lg flex justify-around border-t">
+            <button data-page="accueil" class="nav-item w-full pt-2 pb-1 text-center text-gray-500 border-t-2 border-transparent active">
+                <i class="fas fa-home text-xl"></i><span class="block text-xs">Accueil</span>
+            </button>
+            <button data-page="calendrier" class="nav-item w-full pt-2 pb-1 text-center text-gray-500 border-t-2 border-transparent">
+                <i class="fas fa-calendar-alt text-xl"></i><span class="block text-xs">Dispos</span>
+            </button>
+            <button data-page="infos" class="nav-item w-full pt-2 pb-1 text-center text-gray-500 border-t-2 border-transparent">
+                <i class="fas fa-info-circle text-xl"></i><span class="block text-xs">Infos</span>
+            </button>
+            <button data-page="carte" class="nav-item w-full pt-2 pb-1 text-center text-gray-500 border-t-2 border-transparent">
+                <i class="fas fa-map-marked-alt text-xl"></i><span class="block text-xs">Carte</span>
+            </button>
+             <button data-page="checkout" class="nav-item w-full pt-2 pb-1 text-center text-gray-500 border-t-2 border-transparent">
+                <i class="fas fa-clipboard-check text-xl"></i><span class="block text-xs">Checkout</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        // --- PWA Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('Service Worker registered!'))
+                    .catch(err => console.log('Service Worker registration failed: ', err));
+            });
+        }
+
+        // --- Simple SPA Navigation Logic ---
+        const pages = document.querySelectorAll('.page');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        function showPage(pageId) {
+            pages.forEach(page => {
+                page.classList.toggle('hidden', page.id !== pageId);
+            });
+            navItems.forEach(item => {
+                item.classList.toggle('active', item.dataset.page === pageId);
+            });
+            window.scrollTo(0, 0); // Scroll to top on page change
+        }
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                showPage(item.dataset.page);
+            });
+        });
+
+        // --- Checkout Logic ---
+        const GAS_WEB_APP_URL = 'VOTRE_URL_GOOGLE_APPS_SCRIPT_ICI'; // <-- IMPORTANT: Remplacez par votre URL
+        
+        const submitButton = document.getElementById('submit-checkout');
+        const checkoutName = document.getElementById('checkout-name');
+        const missingItemsText = document.getElementById('missing-items');
+        const checklistItems = document.querySelectorAll('#checklist-items input[type=checkbox]');
+        const statusDiv = document.getElementById('checkout-status');
+        const missingItemsListDiv = document.getElementById('missing-items-list');
+
+        async function fetchMissingItems() {
+            if (GAS_WEB_APP_URL === 'VOTRE_URL_GOOGLE_APPS_SCRIPT_ICI') {
+                missingItemsListDiv.innerHTML = `<p class="text-red-500">L'URL du backend n'est pas configurée.</p>`;
+                return;
+            }
+            try {
+                const response = await fetch(GAS_WEB_APP_URL);
+                const data = await response.json();
+                if (data.items && data.items.length > 0) {
+                    let html = '<ul>';
+                    data.items.forEach(item => {
+                        html += `<li class="border-b py-1">- ${item}</li>`;
+                    });
+                    html += '</ul>';
+                    missingItemsListDiv.innerHTML = html;
+                } else {
+                    missingItemsListDiv.innerHTML = '<p>Aucun problème signalé. Tout est en ordre !</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching missing items:', error);
+                missingItemsListDiv.innerHTML = '<p>Erreur lors du chargement des données.</p>';
+            }
+        }
+
+        submitButton.addEventListener('click', async () => {
+            if (checkoutName.value.trim() === '') {
+                alert('Veuillez indiquer votre nom.');
+                return;
+            }
+             if (GAS_WEB_APP_URL === 'VOTRE_URL_GOOGLE_APPS_SCRIPT_ICI') {
+                alert("Le développeur n'a pas encore configuré le backend !");
+                return;
+            }
+
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi en cours...';
+
+            const checklistData = {};
+            checklistItems.forEach(item => {
+                checklistData[item.dataset.task] = item.checked;
+            });
+
+            const payload = {
+                name: checkoutName.value.trim(),
+                missingItem: missingItemsText.value.trim(),
+                checklist: checklistData
+            };
+
+            try {
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Required for simple POST to Google Apps Script
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                statusDiv.innerHTML = 'Merci ! Votre checklist a bien été enregistrée.';
+                statusDiv.classList.remove('hidden');
+                document.getElementById('checkout-form').classList.add('hidden');
+
+                // Reset form
+                checkoutName.value = '';
+                missingItemsText.value = '';
+                checklistItems.forEach(item => item.checked = false);
+
+            } catch (error) {
+                console.error('Error submitting checkout:', error);
+                alert('Une erreur est survenue. Veuillez réessayer.');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Envoyer le Checkout';
+            }
+        });
+        
+        // Initial load
+        showPage('accueil');
+        fetchMissingItems(); // Also fetch data when the app loads
+        document.querySelector('button[data-page="checkout"]').addEventListener('click', fetchMissingItems); // Refresh on page view
+
+
+    </script>
+</body>
+</html>

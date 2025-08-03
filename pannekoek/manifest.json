@@ -1,0 +1,21 @@
+{
+    "name": "De Pannekoek - La Panne",
+    "short_name": "Pannekoek",
+    "description": "Votre guide pour un séjour parfait à l'appartement De Pannekoek.",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#FDF6E3",
+    "theme_color": "#4FD1C5",
+    "icons": [
+        {
+            "src": "images/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "images/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
