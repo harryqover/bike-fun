@@ -9,9 +9,12 @@
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Link to Manifest for PWA capabilities -->
+    <!-- Corrected path for Manifest -->
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="images/icon-192x192.png">
+    
+    <!-- Favicon and Apple Touch Icon using the hosted logo -->
+    <link rel="icon" type="image/png" href="https://harryqover.github.io/bike-fun/pannekoek/img/logo.png">
+    <link rel="apple-touch-icon" href="https://harryqover.github.io/bike-fun/pannekoek/img/logo.png">
 
     <!-- Custom Font & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,7 +61,7 @@
 
             <!-- Page: Accueil -->
             <section id="accueil" class="page text-center">
-                <img src="https://storage.googleapis.com/gemini-prod/images/89f7c18a-f781-41cd-9e6f-24521aa097e4" alt="Logo De Pannekoek" class="mx-auto w-64 h-64 object-cover rounded-full shadow-lg mb-6">
+                <img src="https://harryqover.github.io/bike-fun/pannekoek/img/logo.png" alt="Logo De Pannekoek" class="mx-auto w-64 h-64 object-contain mb-6">
                 <h2 class="text-2xl font-bold mb-2">Bienvenue !</h2>
                 <p>Votre guide pour un séjour parfait à La Panne.</p>
             </section>
@@ -76,8 +79,8 @@
                 <h2 class="text-2xl font-bold mb-4 text-center">Infos Pratiques</h2>
                 <div class="bg-white p-4 rounded-lg shadow-md">
                     <h3 class="font-bold text-lg mb-2"><i class="fas fa-wifi text-brand-teal mr-2"></i>WiFi</h3>
-                    <p><strong>Réseau :</strong> [Nom du réseau WiFi]</p>
-                    <p><strong>Mot de passe :</strong> [Mot de passe WiFi]</p>
+                    <p><strong>Réseau :</strong> Telenet-490A2</p>
+                    <p><strong>Mot de passe :</strong> pannekoek2024</p>
                 </div>
                 <div class="bg-white p-4 rounded-lg shadow-md">
                     <h3 class="font-bold text-lg mb-2"><i class="fas fa-trash-alt text-brand-teal mr-2"></i>Poubelles</h3>
@@ -109,7 +112,7 @@
                         scrolling="no" 
                         marginheight="0" 
                         marginwidth="0" 
-                        src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=en&amp;q=De%20Pannekoek%20Apartment+(L'Appartement)&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed">
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2508.816912384666!2d2.58662231575276!3d51.07917997956708!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47dc8c102934a171%3A0x33449b5bf52f05e9!2sResidentie%20Aurora!5e0!3m2!1sfr!2sbe!4v1662470011234!5m2!1sfr!2sbe">
                     </iframe>
                  </div>
                  <div class="mt-4 bg-white p-4 rounded-lg shadow-md">
@@ -127,7 +130,6 @@
                 
                 <div id="checkout-form" class="bg-white p-4 rounded-lg shadow-md space-y-4">
                     <div class="space-y-3" id="checklist-items">
-                        <!-- Checklist items will be dynamically inserted here from the PDF content -->
                         <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Vider les poubelles et sacs de tri">Vider les poubelles et sacs de tri</label>
                         <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Vider et nettoyer le frigo">Vider et nettoyer le frigo</label>
                         <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Passer l'aspirateur">Passer l'aspirateur</label>
@@ -186,11 +188,12 @@
     </div>
 
     <script>
-        // --- PWA Service Worker Registration ---
+        // --- PWA Service Worker Registration (Corrected Path) ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => console.log('Service Worker registered!'))
+                // Use a relative path so it works on GitHub Pages
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => console.log('Service Worker registered! Scope:', registration.scope))
                     .catch(err => console.log('Service Worker registration failed: ', err));
             });
         }
@@ -206,7 +209,7 @@
             navItems.forEach(item => {
                 item.classList.toggle('active', item.dataset.page === pageId);
             });
-            window.scrollTo(0, 0); // Scroll to top on page change
+            window.scrollTo(0, 0);
         }
 
         navItems.forEach(item => {
@@ -216,7 +219,7 @@
         });
 
         // --- Checkout Logic ---
-        const GAS_WEB_APP_URL = 'VOTRE_URL_GOOGLE_APPS_SCRIPT_ICI'; // <-- IMPORTANT: Remplacez par votre URL
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyWFPfsy4sJC8oj5_fGgFL1Qv71u6QEM_X-9CaGHR-CN2aznb11fC7gIeR2hTvM2Vky/exec';
         
         const submitButton = document.getElementById('submit-checkout');
         const checkoutName = document.getElementById('checkout-name');
@@ -225,37 +228,37 @@
         const statusDiv = document.getElementById('checkout-status');
         const missingItemsListDiv = document.getElementById('missing-items-list');
 
-        async function fetchMissingItems() {
-            if (GAS_WEB_APP_URL === 'VOTRE_URL_GOOGLE_APPS_SCRIPT_ICI') {
-                missingItemsListDiv.innerHTML = `<p class="text-red-500">L'URL du backend n'est pas configurée.</p>`;
-                return;
+        // --- Function to handle the JSONP response from Google Apps Script ---
+        function handleMissingItemsResponse(data) {
+            if (data.items && data.items.length > 0) {
+                let html = '<ul class="list-disc pl-5 space-y-1">';
+                data.items.forEach(item => {
+                    html += `<li>${item}</li>`;
+                });
+                html += '</ul>';
+                missingItemsListDiv.innerHTML = html;
+            } else {
+                missingItemsListDiv.innerHTML = '<p>Aucun problème signalé. Tout est en ordre !</p>';
             }
-            try {
-                const response = await fetch(GAS_WEB_APP_URL);
-                const data = await response.json();
-                if (data.items && data.items.length > 0) {
-                    let html = '<ul>';
-                    data.items.forEach(item => {
-                        html += `<li class="border-b py-1">- ${item}</li>`;
-                    });
-                    html += '</ul>';
-                    missingItemsListDiv.innerHTML = html;
-                } else {
-                    missingItemsListDiv.innerHTML = '<p>Aucun problème signalé. Tout est en ordre !</p>';
-                }
-            } catch (error) {
-                console.error('Error fetching missing items:', error);
-                missingItemsListDiv.innerHTML = '<p>Erreur lors du chargement des données.</p>';
+        }
+
+        // --- Fetch missing items using JSONP to bypass CORS ---
+        function fetchMissingItems() {
+            // Remove old script tags to avoid memory leaks
+            const oldScript = document.getElementById('jsonp-script');
+            if (oldScript) {
+                oldScript.remove();
             }
+            // Create a new script tag to make the request
+            const script = document.createElement('script');
+            script.id = 'jsonp-script';
+            script.src = `${GAS_WEB_APP_URL}?callback=handleMissingItemsResponse`;
+            document.body.appendChild(script);
         }
 
         submitButton.addEventListener('click', async () => {
             if (checkoutName.value.trim() === '') {
                 alert('Veuillez indiquer votre nom.');
-                return;
-            }
-             if (GAS_WEB_APP_URL === 'VOTRE_URL_GOOGLE_APPS_SCRIPT_ICI') {
-                alert("Le développeur n'a pas encore configuré le backend !");
                 return;
             }
 
@@ -274,9 +277,11 @@
             };
 
             try {
-                const response = await fetch(GAS_WEB_APP_URL, {
+                // This POST request uses a trick to work around CORS for simple data sending.
+                // We don't expect a readable response, just that the data gets sent.
+                await fetch(GAS_WEB_APP_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Required for simple POST to Google Apps Script
+                    mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -286,11 +291,15 @@
                 statusDiv.innerHTML = 'Merci ! Votre checklist a bien été enregistrée.';
                 statusDiv.classList.remove('hidden');
                 document.getElementById('checkout-form').classList.add('hidden');
+                
+                setTimeout(() => {
+                    statusDiv.classList.add('hidden');
+                    document.getElementById('checkout-form').classList.remove('hidden');
+                    checkoutName.value = '';
+                    missingItemsText.value = '';
+                    checklistItems.forEach(item => item.checked = false);
+                }, 4000);
 
-                // Reset form
-                checkoutName.value = '';
-                missingItemsText.value = '';
-                checklistItems.forEach(item => item.checked = false);
 
             } catch (error) {
                 console.error('Error submitting checkout:', error);
@@ -303,9 +312,8 @@
         
         // Initial load
         showPage('accueil');
-        fetchMissingItems(); // Also fetch data when the app loads
-        document.querySelector('button[data-page="checkout"]').addEventListener('click', fetchMissingItems); // Refresh on page view
-
+        fetchMissingItems();
+        document.querySelector('button[data-page="checkout"]').addEventListener('click', fetchMissingItems);
 
     </script>
 </body>
