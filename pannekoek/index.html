@@ -44,14 +44,12 @@
             color: #9B2C2C; /* red-800 */
             border-radius: 50%;
             position: relative;
+            cursor: pointer;
         }
         .calendar-day.today {
             font-weight: bold;
             border: 2px solid var(--brand-teal);
             border-radius: 50%;
-        }
-        .calendar-day.other-month {
-            color: #A0AEC0; /* gray-500 */
         }
     </style>
 </head>
@@ -91,10 +89,17 @@
                     <div class="mt-4 text-center text-sm text-gray-600">
                         <span class="inline-block w-4 h-4 rounded-full bg-red-300 align-middle mr-2"></span> Jours réservés
                     </div>
+                    <!-- Event List Container -->
+                    <div class="mt-4 border-t pt-4">
+                        <h3 class="font-bold text-lg mb-2 text-center">Réservations du mois</h3>
+                        <div id="calendar-event-list" class="space-y-2">
+                            <p class="text-center text-gray-500">Chargement des réservations...</p>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <!-- Page: Infos Pratiques -->
+            <!-- Other pages remain the same -->
             <section id="infos" class="page hidden space-y-4">
                 <h2 class="text-2xl font-bold mb-4 text-center">Infos Pratiques</h2>
                 <div class="bg-white p-4 rounded-lg shadow-md">
@@ -120,8 +125,6 @@
                     <p>L'appartement est au 2ème étage, n°203. <strong class="text-red-500">Attention, la porte se verrouille automatiquement !</strong> Gardez toujours une clé sur vous.</p>
                 </div>
             </section>
-
-            <!-- Page: Carte -->
             <section id="carte" class="page hidden">
                  <h2 class="text-2xl font-bold mb-4 text-center">Points d'intérêt</h2>
                  <div class="aspect-w-16 aspect-h-9 bg-white rounded-lg shadow-md overflow-hidden">
@@ -143,11 +146,8 @@
                      </ul>
                  </div>
             </section>
-
-            <!-- Page: Checkout -->
             <section id="checkout" class="page hidden space-y-4">
                 <h2 class="text-2xl font-bold mb-4 text-center">Checklist de Départ</h2>
-                
                 <div id="checkout-form" class="bg-white p-4 rounded-lg shadow-md space-y-4">
                     <div class="space-y-3" id="checklist-items">
                         <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Vider les poubelles et sacs de tri">Vider les poubelles et sacs de tri</label>
@@ -174,9 +174,7 @@
                         <i class="fas fa-check-circle mr-2"></i> Envoyer le Checkout
                     </button>
                 </div>
-
                 <div id="checkout-status" class="hidden text-center p-4 bg-green-100 text-green-800 rounded-lg"></div>
-
                 <div class="bg-white p-4 rounded-lg shadow-md">
                      <h3 class="font-bold text-lg mb-2"><i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>Problèmes signalés récemment</h3>
                      <div id="missing-items-list" class="text-sm text-gray-600">
@@ -206,114 +204,85 @@
         </nav>
     </div>
 
+    <!-- Modal Structure -->
+    <div id="event-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative">
+            <button id="modal-close" class="absolute top-2 right-3 text-2xl text-gray-500 hover:text-gray-800">&times;</button>
+            <h3 id="modal-title" class="text-xl font-bold text-brand-dark mb-4">Détails de la réservation</h3>
+            <div id="modal-body" class="text-gray-700 whitespace-pre-wrap">
+                <!-- Modal content will be injected here -->
+            </div>
+        </div>
+    </div>
+
+
     <script>
         const VAPID_PUBLIC_KEY = 'BMUU5t9SbXFs0IMaOdEkziiOtTLl1B2nNkolM1Ml90QN_V_m6RYXGivz2xqv4vaW2qxWPwrCsI7Kx2vW4PcptGw';
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyWFPfsy4sJC8oj5_fGgFL1Qv71u6QEM_X-9CaGHR-CN2aznb11fC7gIeR2hTvM2Vky/exec';
 
         // --- PWA & Push Logic ---
         let swRegistration = null;
-
         if ('serviceWorker' in navigator && 'PushManager' in window) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                    .then(registration => {
-                        swRegistration = registration;
-                        console.log('Service Worker registered!');
-                        initializeUI();
-                    })
-                    .catch(err => console.log('Service Worker registration failed: ', err));
+                    .then(reg => { swRegistration = reg; console.log('SW registered!'); initializeUI(); })
+                    .catch(err => console.log('SW registration failed: ', err));
             });
         }
-
         const notificationBell = document.getElementById('notification-bell');
-        
         function initializeUI() {
-            notificationBell.addEventListener('click', () => {
-                notificationBell.disabled = true;
-                subscribeUser();
+            notificationBell.addEventListener('click', () => { notificationBell.disabled = true; subscribeUser(); });
+            swRegistration.pushManager.getSubscription().then(sub => {
+                if (sub) { notificationBell.classList.add('active'); } 
+                else { notificationBell.classList.remove('active'); }
             });
-
-            swRegistration.pushManager.getSubscription()
-                .then(subscription => {
-                    const isSubscribed = !(subscription === null);
-                    if (isSubscribed) {
-                        notificationBell.classList.add('active');
-                    } else {
-                        notificationBell.classList.remove('active');
-                    }
-                });
         }
-
         function subscribeUser() {
-            const urlB64ToUint8Array = base64String => {
-                const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-                const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            const urlB64ToUint8Array = b64 => {
+                const padding = '='.repeat((4 - b64.length % 4) % 4);
+                const base64 = (b64 + padding).replace(/\-/g, '+').replace(/_/g, '/');
                 const rawData = atob(base64);
                 const outputArray = new Uint8Array(rawData.length);
-                for (let i = 0; i < rawData.length; ++i) {
-                    outputArray[i] = rawData.charCodeAt(i);
-                }
+                for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
                 return outputArray;
             };
-
-            const applicationServerKey = urlB64ToUint8Array(VAPID_PUBLIC_KEY);
-            swRegistration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: applicationServerKey
-            })
-            .then(subscription => {
-                console.log('User is subscribed:', subscription);
-                saveSubscription(subscription);
-                notificationBell.classList.add('active');
-                notificationBell.disabled = false;
-            })
-            .catch(err => {
-                console.log('Failed to subscribe the user: ', err);
-                alert("Impossible d'activer les notifications. Avez-vous bloqué les permissions pour ce site ?");
-                notificationBell.disabled = false;
-            });
+            const appServerKey = urlB64ToUint8Array(VAPID_PUBLIC_KEY);
+            swRegistration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: appServerKey })
+                .then(sub => { console.log('User is subscribed:', sub); saveSubscription(sub); notificationBell.classList.add('active'); notificationBell.disabled = false; })
+                .catch(err => { console.log('Failed to subscribe: ', err); alert("Impossible d'activer les notifications."); notificationBell.disabled = false; });
         }
-
-        async function saveSubscription(subscription) {
-            const payload = {
-                action: 'save-subscription',
-                subscription: subscription
-            };
+        async function saveSubscription(sub) {
             try {
-                await fetch(GAS_WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify(payload)
-                });
-                console.log('Subscription saved on backend.');
-            } catch (error) {
-                console.error('Error saving subscription:', error);
-            }
+                await fetch(GAS_WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'save-subscription', subscription: sub }) });
+            } catch (error) { console.error('Error saving subscription:', error); }
         }
 
         // --- SPA Navigation Logic ---
         const pages = document.querySelectorAll('.page');
         const navItems = document.querySelectorAll('.nav-item');
-
         function showPage(pageId) {
-            pages.forEach(page => page.classList.toggle('hidden', page.id !== pageId));
+            pages.forEach(p => p.classList.toggle('hidden', p.id !== pageId));
             navItems.forEach(item => item.classList.toggle('active', item.dataset.page === pageId));
             window.scrollTo(0, 0);
         }
-
         navItems.forEach(item => item.addEventListener('click', () => showPage(item.dataset.page)));
         
         // --- Calendar Logic ---
         const calendarGrid = document.getElementById('calendar-grid');
         const monthYearEl = document.getElementById('calendar-month-year');
+        const eventListEl = document.getElementById('calendar-event-list');
+        const modal = document.getElementById('event-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const modalClose = document.getElementById('modal-close');
+
         let currentDate = new Date();
         let calendarEvents = [];
 
         function renderCalendar(date) {
-            calendarGrid.innerHTML = ''; // Clear previous month
+            calendarGrid.innerHTML = '';
             const year = date.getFullYear();
             const month = date.getMonth();
-
             monthYearEl.textContent = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
 
             const firstDayOfMonth = new Date(year, month, 1).getDay();
@@ -327,24 +296,22 @@
             });
 
             const paddingDays = (firstDayOfMonth === 0) ? 6 : firstDayOfMonth - 1;
-            for (let i = 0; i < paddingDays; i++) {
-                calendarGrid.appendChild(document.createElement('div'));
-            }
+            for (let i = 0; i < paddingDays; i++) { calendarGrid.appendChild(document.createElement('div')); }
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayEl = document.createElement('div');
                 dayEl.textContent = day;
                 const dayDate = new Date(year, month, day);
                 dayEl.dataset.date = dayDate.toISOString().slice(0, 10);
-                dayEl.className = 'calendar-day p-2 cursor-default';
+                dayEl.className = 'calendar-day p-2';
 
                 if (day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) {
                     dayEl.classList.add('today');
                 }
                 calendarGrid.appendChild(dayEl);
             }
-            
             applyEventsToCalendar();
+            renderEventList(date);
         }
 
         function applyEventsToCalendar() {
@@ -359,10 +326,59 @@
                     const dayEl = calendarGrid.querySelector(`[data-date="${dateString}"]`);
                     if (dayEl) {
                         dayEl.classList.add('reserved');
+                        dayEl.dataset.eventId = event.id; // Store event ID
+                        dayEl.addEventListener('click', handleDayClick);
                     }
                     current.setDate(current.getDate() + 1);
                 }
             });
+        }
+        
+        function handleDayClick(e) {
+            const eventId = e.currentTarget.dataset.eventId;
+            if (!eventId) return;
+            const event = calendarEvents.find(ev => ev.id === eventId);
+            if (event) showEventModal(event);
+        }
+
+        function showEventModal(event) {
+            modalTitle.textContent = event.title;
+            modalBody.textContent = event.description || "Aucune description pour cet événement.";
+            modal.classList.remove('hidden');
+        }
+
+        function renderEventList(date) {
+            const currentMonth = date.getMonth();
+            const currentYear = date.getFullYear();
+
+            const eventsThisMonth = calendarEvents.filter(event => {
+                const start = new Date(event.start + 'T00:00:00');
+                return start.getMonth() === currentMonth && start.getFullYear() === currentYear;
+            }).sort((a,b) => new Date(a.start) - new Date(b.start));
+
+            if (eventsThisMonth.length === 0) {
+                eventListEl.innerHTML = '<p class="text-center text-gray-500">Aucune réservation pour ce mois.</p>';
+                return;
+            }
+
+            eventListEl.innerHTML = eventsThisMonth.map(event => {
+                const start = new Date(event.start + 'T00:00:00');
+                const end = new Date(event.end + 'T00:00:00');
+                const options = { day: 'numeric', month: 'long' };
+                // Adjust end date for display (e.g., event until the 5th means checkout on the 5th)
+                end.setDate(end.getDate() - 1);
+
+                const dateString = start.getDate() === end.getDate() 
+                    ? `le ${start.toLocaleDateString('fr-FR', options)}`
+                    : `du ${start.toLocaleDateString('fr-FR', options)} au ${end.toLocaleDateString('fr-FR', options)}`;
+
+                return `
+                    <div class="p-3 bg-teal-50 border-l-4 border-brand-teal rounded">
+                        <p class="font-semibold text-brand-dark">${event.title}</p>
+                        <p class="text-sm text-gray-600">${dateString}</p>
+                    </div>
+                `;
+            }).join('');
         }
 
         function fetchCalendarEvents() {
@@ -373,19 +389,20 @@
         }
 
         function handleCalendarEventsResponse(data) {
-            if (data.error) {
-                console.error("Calendar Error:", data.error);
-                return;
-            }
+            if (data.error) { console.error("Calendar Error:", data.error); return; }
             calendarEvents = data.events;
-            applyEventsToCalendar();
+            renderCalendar(currentDate); // Re-render with events
         }
+        
+        modalClose.addEventListener('click', () => modal.classList.add('hidden'));
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.add('hidden');
+        });
 
         document.getElementById('prev-month').addEventListener('click', () => {
             currentDate.setMonth(currentDate.getMonth() - 1);
             renderCalendar(currentDate);
         });
-
         document.getElementById('next-month').addEventListener('click', () => {
             currentDate.setMonth(currentDate.getMonth() + 1);
             renderCalendar(currentDate);
@@ -400,82 +417,53 @@
         const missingItemsListDiv = document.getElementById('missing-items-list');
 
         function handleMissingItemsResponse(data) {
-            if (data.error) {
-                console.error("Error from Google Script:", data.error);
-                missingItemsListDiv.innerHTML = '<p class="text-red-500">Erreur lors du chargement des problèmes signalés.</p>';
-                return;
-            }
-
+            if (data.error) { missingItemsListDiv.innerHTML = `<p class="text-red-500">Erreur: ${data.error}</p>`; return; }
             if (data.items && data.items.length > 0) {
-                let html = '<div class="space-y-3">';
-                data.items.forEach(item => {
-                    html += `
-                        <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                            <p class="font-semibold text-gray-800">${item.issue}</p>
-                            <p class="text-xs text-gray-500 mt-1">Signalé par ${item.name || 'Anonyme'} le ${item.date}</p>
-                        </div>
-                    `;
-                });
-                html += '</div>';
-                missingItemsListDiv.innerHTML = html;
+                missingItemsListDiv.innerHTML = '<div class="space-y-3">' + data.items.map(item => `
+                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p class="font-semibold text-gray-800">${item.issue}</p>
+                        <p class="text-xs text-gray-500 mt-1">Signalé par ${item.name || 'Anonyme'} le ${item.date}</p>
+                    </div>
+                `).join('') + '</div>';
             } else {
-                missingItemsListDiv.innerHTML = '<p class="text-green-700">Aucun problème signalé récemment. Tout est en ordre !</p>';
+                missingItemsListDiv.innerHTML = '<p class="text-green-700">Aucun problème signalé récemment.</p>';
             }
         }
 
         function fetchMissingItems() {
-            const oldScript = document.getElementById('jsonp-script');
+            const oldScript = document.getElementById('jsonp-script-missing');
             if (oldScript) oldScript.remove();
             const script = document.createElement('script');
-            script.id = 'jsonp-script';
-            script.src = `${GAS_WEB_APP_URL}?callback=handleMissingItemsResponse`;
+            script.id = 'jsonp-script-missing';
+            script.src = `${GAS_WEB_APP_URL}?action=getMissingItems&callback=handleMissingItemsResponse`;
             document.body.appendChild(script);
         }
 
         submitButton.addEventListener('click', async () => {
-            if (checkoutName.value.trim() === '') {
-                alert('Veuillez indiquer votre nom.');
-                return;
-            }
-
+            if (checkoutName.value.trim() === '') { alert('Veuillez indiquer votre nom.'); return; }
             submitButton.disabled = true;
             submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi en cours...';
-
-            const checklistData = {};
-            checklistItems.forEach(item => {
-                checklistData[item.dataset.task] = item.checked;
-            });
-
             const payload = {
                 name: checkoutName.value.trim(),
                 missingItem: missingItemsText.value.trim(),
-                checklist: checklistData
+                checklist: Object.fromEntries(Array.from(checklistItems).map(cb => [cb.dataset.task, cb.checked]))
             };
-
             try {
-                await fetch(GAS_WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
+                await fetch(GAS_WEB_APP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 statusDiv.innerHTML = 'Merci ! Votre checklist a bien été enregistrée.';
                 statusDiv.classList.remove('hidden');
                 document.getElementById('checkout-form').classList.add('hidden');
-                
                 setTimeout(() => {
                     statusDiv.classList.add('hidden');
                     document.getElementById('checkout-form').classList.remove('hidden');
                     checkoutName.value = '';
                     missingItemsText.value = '';
-                    checklistItems.forEach(item => item.checked = false);
+                    checklistItems.forEach(cb => cb.checked = false);
                     fetchMissingItems();
                 }, 4000);
-
             } catch (error) {
                 console.error('Error submitting checkout:', error);
-                alert('Une erreur est survenue. Veuillez réessayer.');
+                alert('Une erreur est survenue.');
             } finally {
                 submitButton.disabled = false;
                 submitButton.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Envoyer le Checkout';
