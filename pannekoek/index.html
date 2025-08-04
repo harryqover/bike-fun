@@ -372,6 +372,7 @@
                     if (dayEl) {
                         dayEl.classList.add('event-day');
                         dayEl.style.backgroundColor = event.color || '#FEB2B2';
+                        console.log("color event: ", event.color);
                         dayEl.style.color = getTextColorForBackground(event.color || '#FEB2B2');
                         dayEl.dataset.eventId = event.id;
                         dayEl.addEventListener('click', handleDayClick);
