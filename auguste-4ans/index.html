@@ -347,33 +347,47 @@
             const drawbridge = document.getElementById('drawbridge');
             const interiorText = document.getElementById('interior-text');
             const puzzleContainer = document.getElementById('puzzle-container');
-            const shields = document.querySelectorAll('.shield');
             let isBridgeOpening = false;
             let puzzleSolved = false;
+            
+            // --- NOUVEAU : Préparation des sons ---
+            const successSound = new Audio('https://harryqover.github.io/bike-fun/auguste-4ans/mandolin.mp3');
+            const openSound = new Audio('https://harryqover.github.io/bike-fun/auguste-4ans/tadaam.mp3');
 
-            // --- Logique de l'énigme ---
-            shields.forEach(shield => {
-                shield.addEventListener('click', (event) => {
-                    event.stopPropagation(); // Empêche le clic de se propager au pont-levis
-                    if (puzzleSolved) return;
 
-                    if (shield.id === 'correct-shield') {
+            // --- Logique de Clic Unifiée pour le Pont-Levis ---
+            drawbridge.addEventListener('click', (event) => {
+                // Vérifie si un bouclier a été cliqué en utilisant .closest()
+                const clickedShield = event.target.closest('.shield');
+
+                // --- CAS 1: Un bouclier a été cliqué ---
+                if (clickedShield) {
+                    if (puzzleSolved) return; // Si l'énigme est déjà résolue, ne rien faire
+
+                    if (clickedShield.id === 'correct-shield') {
+                        // Bonne réponse : on joue le son de succès et on cache l'énigme
+                        successSound.play();
                         puzzleSolved = true;
                         puzzleContainer.classList.add('hidden');
                     } else {
-                        shield.classList.add('shake');
+                        // Mauvaise réponse : on secoue le bouclier
+                        clickedShield.classList.add('shake');
                         setTimeout(() => {
-                            shield.classList.remove('shake');
+                            clickedShield.classList.remove('shake');
                         }, 500);
                     }
-                });
-            });
+                    return; // On arrête l'exécution ici pour ne pas ouvrir le pont
+                }
 
-            // --- Logique du pont-levis ---
-            drawbridge.addEventListener('click', () => {
-                // Le pont ne s'ouvre que si l'énigme est résolue et qu'il n'est pas déjà en train de s'ouvrir
-                if (!puzzleSolved || isBridgeOpening) return;
+                // --- CAS 2: Le pont-levis a été cliqué (mais pas un bouclier) ---
+                // Si on arrive ici, c'est que le clic n'était pas sur un bouclier.
+                // On n'ouvre le pont que si l'énigme est résolue.
+                if (!puzzleSolved || isBridgeOpening) {
+                    return;
+                }
                 
+                // On joue le son d'ouverture et on ouvre le pont
+                openSound.play();
                 isBridgeOpening = true;
                 drawbridge.classList.add('open');
                 interiorText.classList.add('visible');
