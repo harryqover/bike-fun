@@ -3,42 +3,383 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mission pour le Chevalier [Prénom de l'enfant invité]</title>
-    <link rel="stylesheet" href="https://harryqover.github.io/bike-fun/auguste-4ans/style.css">
+    <!-- Le titre de la page sera modifié dynamiquement par le script -->
+    <title>Invitation à une Mission Secrète !</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        /* CSS pour le style et l'animation */
+        :root {
+            --castle-color: #a9a9a9; /* Gris pierre */
+            --roof-color: #8b4513;   /* Marron selle */
+            --door-color: #6b4f3a;    /* Marron bois */
+            --door-border: #4a3728;
+            --window-color: #2c3e50; /* Bleu nuit */
+            --shield-color: #c0c0c0; /* Argent */
+            --shield-border: #555;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #87CEEB, #e0f2ff); /* Ciel bleu dégradé */
+            font-family: 'MedievalSharp', cursive;
+            color: #3a2a1a;
+            overflow-x: hidden;
+            text-align: center;
+        }
+
+        #castle-container {
+            position: relative;
+            width: 90vw;
+            max-width: 600px; /* Taille ajustée pour le design CSS */
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        /* --- CONSTRUCTION DU CHÂTEAU EN CSS --- */
+        .castle-body {
+            display: flex;
+            align-items: flex-end;
+            height: 100%;
+            width: 100%;
+        }
+
+        .tower {
+            position: relative;
+            width: 25%;
+            height: 90%;
+            background-color: var(--castle-color);
+            border: 2px solid #555;
+            box-shadow: inset 5px 0 15px rgba(0,0,0,0.2);
+        }
+
+        .tower::before { /* Créneaux */
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: 
+                linear-gradient(to right, var(--castle-color) 50%, transparent 50%),
+                linear-gradient(to right, var(--castle-color) 50%, transparent 50%);
+            background-size: 40px 20px;
+            background-position: 0 0, 20px 0;
+        }
+        
+        .tower .roof {
+            position: absolute;
+            top: -70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-bottom: 50px solid var(--roof-color);
+        }
+
+        .tower .window {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 40px;
+            background: var(--window-color);
+            border: 2px solid #444;
+            border-radius: 50% 50% 0 0;
+        }
+        
+        .central-wall {
+            width: 50%;
+            height: 70%;
+            background-color: var(--castle-color);
+            border-top: 2px solid #555;
+            border-bottom: 2px solid #555;
+            position: relative;
+            box-shadow: inset 0px 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .central-wall::before { /* Créneaux du mur central */
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: 
+                linear-gradient(to right, var(--castle-color) 50%, transparent 50%),
+                linear-gradient(to right, var(--castle-color) 50%, transparent 50%);
+            background-size: 50px 20px;
+            background-position: 0 0, 25px 0;
+        }
+
+        #invitation-content {
+            position: absolute;
+            width: 60%;
+            height: 80%;
+            bottom: 0;
+            left: 20%;
+            perspective: 1000px;
+        }
+
+        #drawbridge {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: var(--door-color);
+            background-image: linear-gradient(rgba(0,0,0,0.2) 0 5px, transparent 5px 100%);
+            background-size: 100% 25px;
+            border: 3px solid var(--door-border);
+            box-sizing: border-box;
+            transform-origin: bottom center;
+            transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        #drawbridge.open {
+            transform: rotateX(-95deg);
+        }
+
+        #exterior-text {
+            color: #fff;
+            transition: opacity 0.3s ease-out;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+
+        #drawbridge.open #exterior-text {
+            opacity: 0;
+        }
+
+        #exterior-text h1, #exterior-text p {
+            font-size: 1.2vw;
+            margin: 5px 0;
+        }
+        #exterior-text .action-text {
+            font-weight: bold;
+            margin-top: 10px;
+            color: #ffd700;
+        }
+
+        /* --- NOUVELLE PARTIE : ÉNIGME DES BOUCLIERS --- */
+        #puzzle-container {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 11; /* Au-dessus du texte extérieur */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        #puzzle-container.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .puzzle-instruction {
+            color: #fff;
+            font-size: 1.4vw;
+            text-shadow: 1px 1px 3px #000;
+            margin-bottom: 20px;
+        }
+        .shield-gallery {
+            display: flex;
+            gap: 15px;
+        }
+        .shield {
+            width: 50px;
+            height: 60px;
+            background-color: var(--shield-color);
+            border: 2px solid var(--shield-border);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .shield:hover {
+            transform: scale(1.1);
+        }
+        .shield.square {
+            border-radius: 4px;
+        }
+        .shield.circle {
+            border-radius: 50%;
+        }
+        .shield.triangle {
+            background-color: transparent;
+            border: none;
+            width: 0;
+            height: 0;
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+            border-bottom: 60px solid var(--shield-color);
+        }
+        .shield.shake {
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        /* --- FIN DE LA PARTIE ÉNIGME --- */
+
+        #interior-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f5e4c3; /* Couleur parchemin */
+            opacity: 0;
+            z-index: 5;
+            transition: opacity 0.5s ease-in 0.8s;
+            overflow-y: auto;
+            font-size: 1.1vw;
+        }
+
+        #interior-text.visible {
+            opacity: 1;
+        }
+
+        #interior-text h2 {
+            color: #8b0000;
+            font-size: 1.5vw;
+            margin-top: 0;
+        }
+
+        .final-text {
+            font-weight: bold;
+            font-size: 1.3vw;
+            color: #8b0000;
+        }
+
+        /* Responsive design */
+        @media (max-width: 900px) {
+            #exterior-text h1, #exterior-text p, #interior-text, .final-text { font-size: 2vw; }
+            .puzzle-instruction { font-size: 2.2vw; }
+        }
+        @media (max-width: 600px) {
+            #exterior-text h1, #exterior-text p, #interior-text, .final-text { font-size: 3vw; }
+            .puzzle-instruction { font-size: 3.2vw; }
+            .shield { width: 40px; height: 50px; }
+            .shield.triangle { border-left-width: 25px; border-right-width: 25px; border-bottom-width: 50px; }
+        }
+        @media (max-width: 400px) {
+            #exterior-text h1, #exterior-text p, #interior-text, .final-text { font-size: 3.8vw; }
+            .puzzle-instruction { font-size: 4vw; }
+        }
+    </style>
 </head>
 <body>
 
     <div id="castle-container">
-        <img src="https://i.ibb.co/L8y6cpr/chateau-fort-dessin.png" alt="Château fort" class="castle-background">
+        <!-- Le château est construit en CSS -->
+        <div class="castle-body">
+            <div class="tower left-tower"><div class="roof"></div><div class="window"></div></div>
+            <div class="central-wall">
+                 <div id="interior-text">
+                    <h2>MISSION SECRÈTE : LE TRÉSOR PERDU !</h2>
+                    <p><strong>Ta quête, si tu l'acceptes :</strong> Aider le Roi Auguste à fêter ses 4 ans et à retrouver le fabuleux trésor du dragon !</p>
+                    <p><strong>Le rassemblement des chevaliers aura lieu :</strong></p>
+                    <p><strong>Quand ?</strong> Le Samedi 30 août 2025 à [Heure de début]</p>
+                    <p><strong>Où ?</strong> Au grand château fort du 16 rue Théo Coopman, à Schaerbeek.</p>
+                    <p>Pour confirmer que tu rejoins l'aventure, envoie un message par corbeau voyageur (ou par SMS) aux gardiens du royaume, [Votre prénom] et [Prénom du co-parent], avant le [Date souhaitée pour la réponse].</p>
+                    <p>Leur code secret est le : <strong>[Votre numéro de téléphone]</strong></p>
+                    <p class="final-text">Sois prêt pour l'aventure ! ⚔️</p>
+                </div>
+            </div>
+            <div class="tower right-tower"><div class="roof"></div><div class="window"></div></div>
+        </div>
 
+        <!-- Le contenu de l'invitation est superposé sur le château CSS -->
         <div id="invitation-content">
             <div id="drawbridge">
+                <!-- L'énigme est maintenant par-dessus le texte du pont-levis -->
+                <div id="puzzle-container">
+                    <p class="puzzle-instruction">Pour prouver ta sagesse,<br>touche le bouclier ROND !</p>
+                    <div class="shield-gallery">
+                        <div class="shield square" data-shape="square"></div>
+                        <div class="shield circle" data-shape="circle" id="correct-shield"></div>
+                        <div class="shield triangle" data-shape="triangle"></div>
+                    </div>
+                </div>
                 <div id="exterior-text">
-                    <h1>Oyez, Oyez, courageux Chevalier [Prénom de l'enfant invité] !</h1>
+                    <h1>Oyez, Oyez, courageux Chevalier <span id="guest-name"></span> !</h1>
                     <p>Le grand Roi Auguste a une mission secrète pour toi.</p>
                     <p>Ta bravoure est réclamée au royaume !</p>
                     <p class="action-text">Abaisse vite le pont-levis pour découvrir ton ordre de mission... si tu l'oses !</p>
                 </div>
             </div>
-
-            <div id="interior-text">
-                <h2>MISSION SECRÈTE : LE TRÉSOR PERDU !</h2>
-                <p><strong>Ta quête, si tu l'acceptes :</strong></p>
-                <p>Aider le Roi Auguste à fêter ses 4 ans et à retrouver le fabuleux trésor du dragon !</p>
-                <p><strong>Le rassemblement des chevaliers aura lieu :</strong></p>
-                <p><strong>Quand ?</strong> Le Samedi 30 août 2025 à [Heure de début]</p>
-                <p><strong>Où ?</strong> Au grand château fort du 16 rue Théo Coopman, à Schaerbeek.</p>
-                <p>Pour confirmer que tu rejoins l'aventure, envoie un message par corbeau voyageur (ou par SMS) aux gardiens du royaume, [Votre prénom] et [Prénom du co-parent], avant le [Date souhaitée pour la réponse].</p>
-                <p>Leur code secret est le : <strong>[Votre numéro de téléphone]</strong></p>
-                <p class="final-text">Sois prêt pour l'aventure ! ⚔️</p>
-            </div>
         </div>
     </div>
 
-    <script src="https://harryqover.github.io/bike-fun/auguste-4ans/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Logique du nom dynamique ---
+            const urlParams = new URLSearchParams(window.location.search);
+            const guestName = decodeURIComponent(urlParams.get('name') || "Vaillant"); 
+            const guestNameElement = document.getElementById('guest-name');
+            if (guestNameElement) {
+                guestNameElement.textContent = guestName;
+            }
+            document.title = `Mission pour le Chevalier ${guestName} !`;
+
+            // --- Éléments du DOM ---
+            const drawbridge = document.getElementById('drawbridge');
+            const interiorText = document.getElementById('interior-text');
+            const puzzleContainer = document.getElementById('puzzle-container');
+            const shields = document.querySelectorAll('.shield');
+            let isBridgeOpening = false;
+            let puzzleSolved = false;
+
+            // --- Logique de l'énigme ---
+            shields.forEach(shield => {
+                shield.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Empêche le clic de se propager au pont-levis
+                    if (puzzleSolved) return;
+
+                    if (shield.id === 'correct-shield') {
+                        puzzleSolved = true;
+                        puzzleContainer.classList.add('hidden');
+                    } else {
+                        shield.classList.add('shake');
+                        setTimeout(() => {
+                            shield.classList.remove('shake');
+                        }, 500);
+                    }
+                });
+            });
+
+            // --- Logique du pont-levis ---
+            drawbridge.addEventListener('click', () => {
+                // Le pont ne s'ouvre que si l'énigme est résolue et qu'il n'est pas déjà en train de s'ouvrir
+                if (!puzzleSolved || isBridgeOpening) return;
+                
+                isBridgeOpening = true;
+                drawbridge.classList.add('open');
+                interiorText.classList.add('visible');
+            });
+        });
+    </script>
 
 </body>
 </html>
