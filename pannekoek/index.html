@@ -38,16 +38,7 @@
         .nav-item.active { color: var(--brand-teal); border-top-color: var(--brand-teal); }
         #notification-bell.active { color: var(--brand-teal); }
         
-        .calendar-day.reserved {
-            background-color: #FEB2B2;
-            color: #9B2C2C;
-            border-radius: 50%;
-            position: relative;
-            cursor: pointer;
-        }
-        .calendar-day.pending {
-            background-color: #FEEBC8; /* orange-200 */
-            color: #9C4221; /* orange-800 */
+        .calendar-day.event-day {
             border-radius: 50%;
             position: relative;
             cursor: pointer;
@@ -90,10 +81,6 @@
                         <button id="next-month" class="p-2 rounded-full hover:bg-gray-200"><i class="fas fa-chevron-right"></i></button>
                     </div>
                     <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center"></div>
-                    <div class="mt-4 flex justify-center space-x-4 text-sm text-gray-600">
-                        <div><span class="inline-block w-4 h-4 rounded-full bg-red-300 align-middle mr-2"></span>Réservé</div>
-                        <div><span class="inline-block w-4 h-4 rounded-full bg-orange-200 align-middle mr-2"></span>En attente</div>
-                    </div>
                     
                     <div class="mt-4 border-t pt-4">
                         <h3 class="font-bold text-lg mb-2 text-center">Réservations du mois</h3>
@@ -256,10 +243,22 @@
             applyEventsToCalendar();
             renderEventList(date);
         }
+        
+        // Helper function to determine if a color is light or dark
+        function getTextColorForBackground(hexColor) {
+            if (!hexColor) return '#000000'; // Default to black
+            const r = parseInt(hexColor.substr(1, 2), 16);
+            const g = parseInt(hexColor.substr(3, 2), 16);
+            const b = parseInt(hexColor.substr(5, 2), 16);
+            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            return (yiq >= 128) ? '#000000' : '#FFFFFF';
+        }
 
         function applyEventsToCalendar() {
-            document.querySelectorAll('.calendar-day.reserved, .calendar-day.pending').forEach(el => {
-                el.classList.remove('reserved', 'pending');
+            document.querySelectorAll('.event-day').forEach(el => {
+                el.classList.remove('event-day');
+                el.style.backgroundColor = '';
+                el.style.color = '';
                 el.removeEventListener('click', handleDayClick);
             });
 
@@ -268,13 +267,14 @@
             calendarEvents.forEach(event => {
                 let current = new Date(event.start + 'T00:00:00');
                 let end = new Date(event.end + 'T00:00:00');
-                const isPending = event.title.toLowerCase().includes('[en attente]');
-
+                
                 while (current < end) {
                     const dateString = current.toISOString().slice(0, 10);
                     const dayEl = calendarGrid.querySelector(`[data-date="${dateString}"]`);
                     if (dayEl) {
-                        dayEl.classList.add(isPending ? 'pending' : 'reserved');
+                        dayEl.classList.add('event-day');
+                        dayEl.style.backgroundColor = event.color || '#FEB2B2'; // Default to red if no color
+                        dayEl.style.color = getTextColorForBackground(event.color || '#FEB2B2');
                         dayEl.dataset.eventId = event.id;
                         dayEl.addEventListener('click', handleDayClick);
                     }
@@ -318,10 +318,12 @@
                 const dateString = start.getTime() === end.getTime() 
                     ? `le ${start.toLocaleDateString('fr-FR', options)}`
                     : `du ${start.toLocaleDateString('fr-FR', options)} au ${end.toLocaleDateString('fr-FR', options)}`;
-                const isPending = event.title.toLowerCase().includes('[en attente]');
-                const colorClass = isPending ? 'border-orange-400 bg-orange-50' : 'border-brand-teal bg-teal-50';
+                const color = event.color || '#A0AEC0';
 
-                return `<div class="p-3 ${colorClass} border-l-4 rounded"><p class="font-semibold text-brand-dark">${event.title}</p><p class="text-sm text-gray-600">${dateString}</p></div>`;
+                return `<div class="p-3 border-l-4 rounded" style="border-color: ${color}; background-color: ${color}20;">
+                            <p class="font-semibold text-brand-dark">${event.title}</p>
+                            <p class="text-sm text-gray-600">${dateString}</p>
+                        </div>`;
             }).join('');
         }
 
