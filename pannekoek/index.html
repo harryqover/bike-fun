@@ -125,8 +125,8 @@
                 <h2 class="text-2xl font-bold mb-4 text-center">Infos Pratiques</h2>
                 <div class="bg-white p-4 rounded-lg shadow-md">
                     <h3 class="font-bold text-lg mb-2"><i class="fas fa-wifi text-brand-teal mr-2"></i>WiFi</h3>
-                    <p><strong>Réseau :</strong> TADAAM</p>
-                    <p><strong>Mot de passe :</strong> xxxx???</p>
+                    <p><strong>Réseau :</strong> Telenet-490A2</p>
+                    <p><strong>Mot de passe :</strong> pannekoek2024</p>
                 </div>
                 <div class="bg-white p-4 rounded-lg shadow-md">
                     <h3 class="font-bold text-lg mb-2"><i class="fas fa-trash-alt text-brand-teal mr-2"></i>Poubelles</h3>
@@ -293,6 +293,21 @@
         });
         
         // --- Calendar Logic ---
+        const G_CALENDAR_COLORS = {
+            '1': { background: '#a4bdfc', text: '#000000' }, // Lavender
+            '2': { background: '#7ae7bf', text: '#000000' }, // Sage
+            '3': { background: '#dbadff', text: '#000000' }, // Grape
+            '4': { background: '#ff887c', text: '#000000' }, // Flamingo
+            '5': { background: '#fbd75b', text: '#000000' }, // Banana
+            '6': { background: '#ffb878', text: '#000000' }, // Tangerine
+            '7': { background: '#46d6db', text: '#000000' }, // Peacock
+            '8': { background: '#e1e1e1', text: '#000000' }, // Graphite
+            '9': { background: '#5484ed', text: '#ffffff' }, // Blueberry
+            '10': { background: '#51b749', text: '#ffffff' }, // Basil
+            '11': { background: '#dc2127', text: '#ffffff' }, // Tomato
+            'default': { background: '#7986cb', text: '#ffffff' }
+        };
+
         const calendarGrid = document.getElementById('calendar-grid');
         const monthYearEl = document.getElementById('calendar-month-year');
         const eventListEl = document.getElementById('calendar-event-list');
@@ -342,21 +357,8 @@
             applyEventsToCalendar();
             renderEventList(date);
         }
-        
-        function getTextColorForBackground(hexColor) {
-            if (!hexColor) return '#000000';
-            const r = parseInt(hexColor.substr(1, 2), 16);
-            const g = parseInt(hexColor.substr(3, 2), 16);
-            const b = parseInt(hexColor.substr(5, 2), 16);
-            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-            return (yiq >= 128) ? '#000000' : '#FFFFFF';
-        }
 
         function applyEventsToCalendar() {
-            const colorsDb = {
-                2: {background:"#33b679", text: "#ffffff"},
-                6: {background:"#f4511e", text: "#ffffff"}
-            }
             document.querySelectorAll('.event-day').forEach(el => {
                 el.classList.remove('event-day');
                 el.style.backgroundColor = '';
@@ -369,17 +371,15 @@
             calendarEvents.forEach(event => {
                 let current = new Date(event.start + 'T00:00:00');
                 let end = new Date(event.end + 'T00:00:00');
+                const colorInfo = G_CALENDAR_COLORS[event.color] || G_CALENDAR_COLORS['default'];
                 
                 while (current < end) {
                     const dateString = current.toISOString().slice(0, 10);
                     const dayEl = calendarGrid.querySelector(`[data-date="${dateString}"]`);
                     if (dayEl) {
                         dayEl.classList.add('event-day');
-                        console.log("color event: ", event.color);
-                        dayEl.style.backgroundColor = colorsDb[event.color].background || '#7886cb';
-                        console.log("color background event: ", colorsDb[event.color].background);
-                        console.log("color text event: ", colorsDb[event.color].text);
-                        dayEl.style.color = getTextColorForBackground(colorsDb[event.color].text || '#ffffff');
+                        dayEl.style.backgroundColor = colorInfo.background;
+                        dayEl.style.color = colorInfo.text;
                         dayEl.dataset.eventId = event.id;
                         dayEl.addEventListener('click', handleDayClick);
                     }
@@ -423,9 +423,9 @@
                 const dateString = start.getTime() === end.getTime() 
                     ? `le ${start.toLocaleDateString('fr-FR', options)}`
                     : `du ${start.toLocaleDateString('fr-FR', options)} au ${end.toLocaleDateString('fr-FR', options)}`;
-                const color = event.color || '#A0AEC0';
+                const colorInfo = G_CALENDAR_COLORS[event.color] || G_CALENDAR_COLORS['default'];
 
-                return `<div class="p-3 border-l-4 rounded" style="border-color: ${color}; background-color: ${color}20;">
+                return `<div class="p-3 border-l-4 rounded" style="border-color: ${colorInfo.background}; background-color: ${colorInfo.background}20;">
                             <p class="font-semibold text-brand-dark">${event.title}</p>
                             <p class="text-sm text-gray-600">${dateString}</p>
                         </div>`;
@@ -505,13 +505,73 @@
         });
 
         // --- Checkout Logic ---
-        // (This section is now generated dynamically, so no direct JS needed here)
+        const submitCheckoutButton = document.getElementById('submit-checkout');
+        const checkoutNameEl = document.getElementById('checkout-name');
+        const missingItemsTextEl = document.getElementById('missing-items');
+        const checklistItemsEls = document.querySelectorAll('#checklist-items input[type=checkbox]');
+        const checkoutStatusEl = document.getElementById('checkout-status');
+        const missingItemsListEl = document.getElementById('missing-items-list');
+
+        function handleMissingItemsResponse(data) {
+            if (data.error) { missingItemsListEl.innerHTML = `<p class="text-red-500">Erreur: ${data.error}</p>`; return; }
+            if (data.items && data.items.length > 0) {
+                missingItemsListEl.innerHTML = '<div class="space-y-3">' + data.items.map(item => `
+                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p class="font-semibold text-gray-800">${item.issue}</p>
+                        <p class="text-xs text-gray-500 mt-1">Signalé par ${item.name || 'Anonyme'} le ${item.date}</p>
+                    </div>
+                `).join('') + '</div>';
+            } else {
+                missingItemsListEl.innerHTML = '<p class="text-green-700">Aucun problème signalé récemment.</p>';
+            }
+        }
+
+        function fetchMissingItems() {
+            const oldScript = document.getElementById('jsonp-script-missing');
+            if (oldScript) oldScript.remove();
+            const script = document.createElement('script');
+            script.id = 'jsonp-script-missing';
+            script.src = `${GAS_WEB_APP_URL}?action=getMissingItems&callback=handleMissingItemsResponse`;
+            document.body.appendChild(script);
+        }
+
+        submitCheckoutButton.addEventListener('click', async () => {
+            if (checkoutNameEl.value.trim() === '') { alert('Veuillez indiquer votre nom.'); return; }
+            submitCheckoutButton.disabled = true;
+            submitCheckoutButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi en cours...';
+            const payload = {
+                name: checkoutNameEl.value.trim(),
+                missingItem: missingItemsTextEl.value.trim(),
+                checklist: Object.fromEntries(Array.from(checklistItemsEls).map(cb => [cb.dataset.task, cb.checked]))
+            };
+            try {
+                await fetch(GAS_WEB_APP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                checkoutStatusEl.innerHTML = 'Merci ! Votre checklist a bien été enregistrée.';
+                checkoutStatusEl.classList.remove('hidden');
+                document.getElementById('checkout-form').classList.add('hidden');
+                setTimeout(() => {
+                    checkoutStatusEl.classList.add('hidden');
+                    document.getElementById('checkout-form').classList.remove('hidden');
+                    checkoutNameEl.value = '';
+                    missingItemsTextEl.value = '';
+                    checklistItemsEls.forEach(cb => cb.checked = false);
+                    fetchMissingItems();
+                }, 4000);
+            } catch (error) {
+                console.error('Error submitting checkout:', error);
+                alert('Une erreur est survenue.');
+            } finally {
+                submitCheckoutButton.disabled = false;
+                submitCheckoutButton.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Envoyer le Checkout';
+            }
+        });
 
         // --- Initial Load ---
         showPage('accueil');
         renderCalendar(currentDate);
         fetchCalendarEvents();
-        // fetchMissingItems(); // This is called on checkout page view
+        fetchMissingItems();
+        document.querySelector('button[data-page="checkout"]').addEventListener('click', fetchMissingItems);
     </script>
 </body>
 </html>
