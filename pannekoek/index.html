@@ -120,14 +120,113 @@
                 </div>
             </section>
 
-            <!-- Other pages remain the same -->
-            <section id="infos" class="page hidden space-y-4"></section>
-            <section id="carte" class="page hidden"></section>
-            <section id="checkout" class="page hidden space-y-4"></section>
+            <!-- Page: Infos Pratiques -->
+            <section id="infos" class="page hidden space-y-4">
+                <h2 class="text-2xl font-bold mb-4 text-center">Infos Pratiques</h2>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-wifi text-brand-teal mr-2"></i>WiFi</h3>
+                    <p><strong>Réseau :</strong> TADAAM</p>
+                    <p><strong>Mot de passe :</strong> xxxx???</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-trash-alt text-brand-teal mr-2"></i>Poubelles</h3>
+                    <p>Achetez une carte "Drop&Go" (disponible au Delhaize) pour les points de tri. Le tri du plastique (bleu), carton (jaune) et verre est gratuit.</p>
+                    <a href="https://www.depanne.be/fr/vos-dechets-dans-les-points-de-tri-dropgo" target="_blank" class="text-brand-teal hover:underline">Plus d'infos ici</a>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-thermometer-half text-brand-teal mr-2"></i>Thermostat</h3>
+                    <p>À l'arrivée, mettez sur "horloge" (env. 22°C). Au départ, mettez sur "hors gel" (flocon de neige ❄️).</p>
+                </div>
+                 <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-parking text-brand-teal mr-2"></i>Parking</h3>
+                    <p>Le parking est au -2 (entrée de gauche). Les 4 emplacements du fond sont pour vous.</p>
+                </div>
+                 <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-key text-brand-teal mr-2"></i>Clés & Porte</h3>
+                    <p>L'appartement est au 2ème étage, n°203. <strong class="text-red-500">Attention, la porte se verrouille automatiquement !</strong> Gardez toujours une clé sur vous.</p>
+                </div>
+            </section>
+
+            <!-- Page: Carte -->
+            <section id="carte" class="page hidden">
+                 <h2 class="text-2xl font-bold mb-4 text-center">Points d'intérêt</h2>
+                 <div class="aspect-w-16 aspect-h-9 bg-white rounded-lg shadow-md overflow-hidden">
+                    <iframe 
+                        width="100%" 
+                        height="600" 
+                        frameborder="0" 
+                        scrolling="no" 
+                        marginheight="0" 
+                        marginwidth="0" 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2508.816912384666!2d2.58662231575276!3d51.07917997956708!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47dc8c102934a171%3A0x33449b5bf52f05e9!2sResidentie%20Aurora!5e0!3m2!1sfr!2sbe!4v1662470011234!5m2!1sfr!2sbe">
+                    </iframe>
+                 </div>
+                 <div class="mt-4 bg-white p-4 rounded-lg shadow-md">
+                     <h3 class="font-bold text-lg mb-2">Nos Recommandations</h3>
+                     <ul>
+                         <li class="mb-2"><i class="fas fa-utensils text-brand-teal mr-2"></i><strong>Restaurants:</strong> Le Léopold, Chez Soi</li>
+                         <li><i class="fas fa-cookie-bite text-brand-teal mr-2"></i><strong>Boulangerie:</strong> Bakkerij De Westhoek</li>
+                     </ul>
+                 </div>
+            </section>
+
+            <!-- Page: Checkout -->
+            <section id="checkout" class="page hidden space-y-4">
+                <h2 class="text-2xl font-bold mb-4 text-center">Checklist de Départ</h2>
+                <div id="checkout-form" class="bg-white p-4 rounded-lg shadow-md space-y-4">
+                    <div class="space-y-3" id="checklist-items">
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Vider les poubelles et sacs de tri">Vider les poubelles et sacs de tri</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Vider et nettoyer le frigo">Vider et nettoyer le frigo</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Passer l'aspirateur">Passer l'aspirateur</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Nettoyer les surfaces">Nettoyer les surfaces</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Descendre tous les stores">Descendre tous les stores</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Vérifier pare-soleil replié">Vérifier que le pare-soleil est replié</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Fermer toutes les fenêtres">Fermer toutes les fenêtres</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Éteindre les lumières">Éteindre les lumières et appareils</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Thermostat en mode hors gel">Mettre le thermostat en mode "hors gel"</label>
+                        <label class="flex items-center"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-brand-teal focus:ring-brand-teal mr-3" data-task="Ranger le double des clés">Ranger le double des clés</label>
+                    </div>
+                    <hr>
+                    <div>
+                        <label for="checkout-name" class="block text-sm font-medium text-gray-700">Checkout fait par :</label>
+                        <input type="text" id="checkout-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-teal focus:ring-brand-teal sm:text-sm" placeholder="Votre nom">
+                    </div>
+                    <div>
+                        <label for="missing-items" class="block text-sm font-medium text-gray-700">Signaler un problème ou un article manquant ?</label>
+                        <textarea id="missing-items" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-teal focus:ring-brand-teal sm:text-sm" placeholder="Ex: Il n'y a plus de papier toilette, une ampoule est grillée..."></textarea>
+                    </div>
+                    <button id="submit-checkout" class="w-full bg-brand-teal text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors flex items-center justify-center">
+                        <i class="fas fa-check-circle mr-2"></i> Envoyer le Checkout
+                    </button>
+                </div>
+                <div id="checkout-status" class="hidden text-center p-4 bg-green-100 text-green-800 rounded-lg"></div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                     <h3 class="font-bold text-lg mb-2"><i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>Problèmes signalés récemment</h3>
+                     <div id="missing-items-list" class="text-sm text-gray-600">
+                        <p>Chargement...</p>
+                     </div>
+                </div>
+            </section>
         </main>
 
         <!-- Bottom Navigation -->
-        <nav class="fixed bottom-0 left-0 right-0 bg-white shadow-lg flex justify-around border-t"></nav>
+        <nav class="fixed bottom-0 left-0 right-0 bg-white shadow-lg flex justify-around border-t">
+            <button data-page="accueil" class="nav-item w-full pt-2 pb-1 text-center text-gray-500 border-t-2 border-transparent active">
+                <i class="fas fa-home text-xl"></i><span class="block text-xs">Accueil</span>
+            </button>
+            <button data-page="calendrier" class="nav-item w-full pt-2 pb-1 text-center text-gray-500 border-t-2 border-transparent">
+                <i class="fas fa-calendar-alt text-xl"></i><span class="block text-xs">Dispos</span>
+            </button>
+            <button data-page="infos" class="nav-item w-full pt-2 pb-1 text-center text-gray-500 border-t-2 border-transparent">
+                <i class="fas fa-info-circle text-xl"></i><span class="block text-xs">Infos</span>
+            </button>
+            <button data-page="carte" class="nav-item w-full pt-2 pb-1 text-center text-gray-500 border-t-2 border-transparent">
+                <i class="fas fa-map-marked-alt text-xl"></i><span class="block text-xs">Carte</span>
+            </button>
+             <button data-page="checkout" class="nav-item w-full pt-2 pb-1 text-center text-gray-500 border-t-2 border-transparent">
+                <i class="fas fa-clipboard-check text-xl"></i><span class="block text-xs">Checkout</span>
+            </button>
+        </nav>
     </div>
 
     <!-- Modal Structure -->
@@ -244,9 +343,8 @@
             renderEventList(date);
         }
         
-        // Helper function to determine if a color is light or dark
         function getTextColorForBackground(hexColor) {
-            if (!hexColor) return '#000000'; // Default to black
+            if (!hexColor) return '#000000';
             const r = parseInt(hexColor.substr(1, 2), 16);
             const g = parseInt(hexColor.substr(3, 2), 16);
             const b = parseInt(hexColor.substr(5, 2), 16);
@@ -273,7 +371,7 @@
                     const dayEl = calendarGrid.querySelector(`[data-date="${dateString}"]`);
                     if (dayEl) {
                         dayEl.classList.add('event-day');
-                        dayEl.style.backgroundColor = event.color || '#FEB2B2'; // Default to red if no color
+                        dayEl.style.backgroundColor = event.color || '#FEB2B2';
                         dayEl.style.color = getTextColorForBackground(event.color || '#FEB2B2');
                         dayEl.dataset.eventId = event.id;
                         dayEl.addEventListener('click', handleDayClick);
