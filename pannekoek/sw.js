@@ -1,51 +1,60 @@
-// sw.js - Service Worker for offline functionality
+// sw.js - Service Worker for offline functionality and push notifications
 
-const CACHE_NAME = 'pannekoek-pwa-cache-v2'; // Incremented cache version
-// Corrected relative paths for GitHub pages subdirectory
+const CACHE_NAME = 'pannekoek-pwa-cache-v5'; // Incremented cache version
+// Only cache local assets during installation.
+// Third-party assets will be cached on first use by the fetch handler.
 const urlsToCache = [
-    './', // Represents the root of the directory
-    'index.html',
-    'manifest.json',
-    'https://cdn.tailwindcss.com/',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Pacifico&display=swap',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css',
-    'https://storage.googleapis.com/gemini-prod/images/89f7c18a-f781-41cd-9e6f-24521aa097e4', // Cache the logo image
-    // Add paths to your icons if they are stored locally, e.g. 'images/icon-192x192.png'
+    './',
+    'https://harryqover.github.io/bike-fun/pannekoek/index.html',
+    'https://harryqover.github.io/bike-fun/pannekoek/manifest.json',
+    'https://harryqover.github.io/bike-fun/pannekoek/img/logo.png'
 ];
 
-// Install event: opens a cache and adds the core files to it.
+// --- Cache Install and Activate Events ---
 self.addEventListener('install', event => {
+    event.waitUntil(caches.open(CACHE_NAME).then(cache => {
+        console.log('Opened cache and caching local files');
+        return cache.addAll(urlsToCache);
+    }));
+});
+
+self.addEventListener('activate', event => {
+    const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('Opened cache and caching files');
-                return cache.addAll(urlsToCache);
+        caches.keys().then(cacheNames => Promise.all(
+            cacheNames.map(cacheName => {
+                if (cacheWhitelist.indexOf(cacheName) === -1) {
+                    console.log('Deleting old cache:', cacheName);
+                    return caches.delete(cacheName);
+                }
             })
+        ))
     );
 });
 
-// Fetch event: serves assets from cache if they exist.
+// --- Fetch Event Handler ---
+// This strategy is "Cache falling back to network".
+// It also caches new requests to third-party domains (like Tailwind, Google Fonts) as they are made.
 self.addEventListener('fetch', event => {
-    // We only want to cache GET requests.
     if (event.request.method !== 'GET') {
         return;
     }
 
     event.respondWith(
         caches.open(CACHE_NAME).then(cache => {
-            return cache.match(event.request).then(response => {
-                // Return response from cache if found
-                if (response) {
-                    return response;
+            return cache.match(event.request).then(responseFromCache => {
+                // If the resource is in the cache, return it.
+                if (responseFromCache) {
+                    return responseFromCache;
                 }
 
-                // If not in cache, fetch from network
+                // Otherwise, fetch from the network.
                 return fetch(event.request).then(networkResponse => {
-                    // Check if we received a valid response
+                    // If we get a valid response, clone it and put it in the cache.
                     if (networkResponse && networkResponse.status === 200) {
-                        // Cache the new response for future use
                         cache.put(event.request, networkResponse.clone());
                     }
+                    // Return the network response.
                     return networkResponse;
                 });
             });
@@ -54,19 +63,51 @@ self.addEventListener('fetch', event => {
 });
 
 
-// Activate event: cleans up old caches.
-self.addEventListener('activate', event => {
-    const cacheWhitelist = [CACHE_NAME];
+// --- PUSH EVENT LISTENER ---
+self.addEventListener('push', event => {
+    console.log('[Service Worker] Push Received.');
+    
+    let notificationData = {
+        title: 'De Pannekoek',
+        body: 'Quelque chose de nouveau s\'est passé !',
+        icon: 'https://harryqover.github.io/bike-fun/pannekoek/img/logo.png'
+    };
+
+    if (event.data) {
+        try {
+            const parsedData = JSON.parse(event.data.text());
+            notificationData = { ...notificationData, ...parsedData };
+        } catch (e) {
+            console.error('Push event data parsing error:', e);
+        }
+    }
+
+    const options = {
+        body: notificationData.body,
+        icon: notificationData.icon,
+        badge: 'https://harryqover.github.io/bike-fun/pannekoek/img/logo.png',
+        vibrate: [200, 100, 200]
+    };
+
     event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheWhitelist.indexOf(cacheName) === -1) {
-                        console.log('Deleting old cache:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
+        self.registration.showNotification(notificationData.title, options)
+    );
+});
+
+// --- NOTIFICATION CLICK EVENT ---
+self.addEventListener('notificationclick', event => {
+    console.log('[Service Worker] Notification click Received.');
+    event.notification.close();
+    event.waitUntil(
+        clients.matchAll({ type: 'window' }).then(clientsArr => {
+            const hadWindowToFocus = clientsArr.some(windowClient =>
+                windowClient.url.includes('harryqover.github.io/bike-fun/pannekoek/') 
+                ? (windowClient.focus(), true) 
+                : false
             );
+            if (!hadWindowToFocus) {
+                clients.openWindow('/bike-fun/pannekoek/index.html').then(wc => wc ? wc.focus() : null);
+            }
         })
     );
 });
