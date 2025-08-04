@@ -375,8 +375,8 @@
                     const dayEl = calendarGrid.querySelector(`[data-date="${dateString}"]`);
                     if (dayEl) {
                         dayEl.classList.add('event-day');
-                        dayEl.style.backgroundColor = colorsDb[event.color].background || '#7886cb';
                         console.log("color event: ", event.color);
+                        dayEl.style.backgroundColor = colorsDb[event.color].background || '#7886cb';
                         console.log("color background event: ", colorsDb[event.color].background);
                         console.log("color text event: ", colorsDb[event.color].text);
                         dayEl.style.color = getTextColorForBackground(colorsDb[event.color].text || '#ffffff');
