@@ -18,6 +18,7 @@
             --window-color: #2c3e50; /* Bleu nuit */
             --shield-color: #c0c0c0; /* Argent */
             --shield-border: #555;
+            --flag-color: #b22222; /* Rouge brique */
         }
 
         body {
@@ -30,7 +31,7 @@
             background: linear-gradient(to bottom, #87CEEB, #e0f2ff); /* Ciel bleu dégradé */
             font-family: 'MedievalSharp', cursive;
             color: #3a2a1a;
-            overflow-x: hidden;
+            overflow: hidden; /* Important pour cacher le dragon avant son entrée */
             text-align: center;
         }
 
@@ -123,6 +124,59 @@
             background-position: 0 0, 25px 0;
         }
 
+        /* --- EFFET WOW 1 : DRAPEAUX --- */
+        .flag {
+            position: absolute;
+            top: -110px; /* Au-dessus du toit */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 40px;
+            background: #654321; /* Mât */
+        }
+        .flag::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 5px;
+            width: 40px;
+            height: 25px;
+            background: var(--flag-color);
+            clip-path: polygon(0 0, 100% 0, 75% 50%, 100% 100%, 0 100%);
+            transform-origin: 0 0;
+            animation: flutter 3s ease-in-out infinite;
+        }
+        @keyframes flutter {
+            0%, 100% { transform: scaleX(1) rotate(0deg); }
+            50% { transform: scaleX(0.95) rotate(5deg); }
+        }
+
+        /* --- EFFET WOW 2 : DRAGON --- */
+        #dragon-container {
+            position: absolute;
+            top: 10%;
+            left: -200px; /* Commence hors de l'écran */
+            width: 150px;
+            height: auto;
+            z-index: -1;
+            opacity: 0;
+        }
+        #dragon-container.fly {
+            animation: fly-by 15s linear forwards;
+        }
+        @keyframes fly-by {
+            0% { left: -200px; opacity: 1; transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+            90% { opacity: 1; }
+            100% { left: 110vw; opacity: 0; transform: translateY(-40px); }
+        }
+        #dragon-container svg {
+            width: 100%;
+            height: 100%;
+            fill: #2c3e50;
+            filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.3));
+        }
+
         #invitation-content {
             position: absolute;
             width: 60%;
@@ -175,13 +229,12 @@
             color: #ffd700;
         }
 
-        /* --- NOUVELLE PARTIE : ÉNIGME DES BOUCLIERS --- */
         #puzzle-container {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.6);
-            z-index: 11; /* Au-dessus du texte extérieur */
+            z-index: 11;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -211,69 +264,80 @@
             border: 2px solid var(--shield-border);
             cursor: pointer;
             transition: transform 0.2s ease;
+            position: relative; /* Pour les étoiles */
         }
         .shield:hover {
             transform: scale(1.1);
         }
-        .shield.square {
-            border-radius: 4px;
-        }
-        .shield.circle {
-            border-radius: 50%;
-        }
+        .shield.square { border-radius: 4px; }
+        .shield.circle { border-radius: 50%; }
         .shield.triangle {
-            background-color: transparent;
-            border: none;
-            width: 0;
-            height: 0;
-            border-left: 30px solid transparent;
-            border-right: 30px solid transparent;
+            background-color: transparent; border: none; width: 0; height: 0;
+            border-left: 30px solid transparent; border-right: 30px solid transparent;
             border-bottom: 60px solid var(--shield-color);
         }
-        .shield.shake {
-            animation: shake 0.5s;
-        }
+        .shield.shake { animation: shake 0.5s; }
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-5px); }
             75% { transform: translateX(5px); }
         }
-        /* --- FIN DE LA PARTIE ÉNIGME --- */
+
+        /* --- EFFET WOW 3 : ÉTOILES --- */
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: gold;
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .sparkle.animate {
+            animation: explode 0.7s ease-out forwards;
+        }
+        @keyframes explode {
+            0% { transform: translate(0, 0) scale(0.5); opacity: 1; }
+            100% { transform: var(--transform-end) scale(1); opacity: 0; }
+        }
+        
+        /* --- EFFET WOW 4 : CHAÎNES --- */
+        .chain {
+            position: absolute;
+            width: 4px;
+            height: 80px; /* Hauteur initiale */
+            background: #333;
+            top: -75px;
+            z-index: -1;
+            transform-origin: top center;
+            transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .chain.left { left: 10px; transform: rotate(15deg); }
+        .chain.right { right: 10px; transform: rotate(-15deg); }
+        
+        #drawbridge.open .chain.left { transform: rotate(-70deg); }
+        #drawbridge.open .chain.right { transform: rotate(70deg); }
+
 
         #interior-text {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            padding: 20px;
-            box-sizing: border-box;
+            top: 0; left: 0; width: 100%; height: 100%;
+            padding: 20px; box-sizing: border-box;
             background-color: #f5e4c3; /* Couleur parchemin */
-            opacity: 0;
-            z-index: 5;
+            opacity: 0; z-index: 5;
             transition: opacity 0.5s ease-in 0.8s;
-            overflow-y: auto;
-            font-size: 1.1vw;
-            /* CORRECTION : Rend l'élément non cliquable lorsqu'il est invisible */
+            overflow-y: auto; font-size: 1.1vw;
             pointer-events: none;
         }
-
         #interior-text.visible {
             opacity: 1;
-            /* CORRECTION : Rend l'élément cliquable à nouveau lorsqu'il est visible */
             pointer-events: auto;
         }
-
         #interior-text h2 {
-            color: #8b0000;
-            font-size: 1.5vw;
-            margin-top: 0;
+            color: #8b0000; font-size: 1.5vw; margin-top: 0;
         }
-
         .final-text {
-            font-weight: bold;
-            font-size: 1.3vw;
-            color: #8b0000;
+            font-weight: bold; font-size: 1.3vw; color: #8b0000;
         }
 
         /* Responsive design */
@@ -294,11 +358,22 @@
     </style>
 </head>
 <body>
+    
+    <!-- Dragon volant -->
+    <div id="dragon-container">
+        <svg viewBox="0 0 208.01 155.55">
+            <path d="M208,54.95c-1.4-5.9-4.3-11.2-8.5-15.4-8-8-19.1-12.6-31.2-12.6-10.9,0-21,3.7-28.8,10.1-2.1-12.4-10.2-22.9-21.6-26.6-10.6-3.4-22.1-0.6-30.4,7.4-5.3-10.2-16.3-16.6-28.5-16.6-18.2,0-33,14.8-33,33s14.8,33,33,33c2.5,0,5-0.3,7.4-0.8,0.3,0.8,0.6,1.5,0.9,2.3,2.4,5.4,6.2,10,11.1,13.6,1.4,1,3,1.8,4.6,2.4,0,0,0,0,0,0-1.2,3.3-1.8,6.8-1.8,10.4,0,16.5,13.5,30,30,30,14.3,0,26.3-10,29.3-23.1,1.9,0.3,3.8,0.5,5.7,0.5,18.2,0,33-14.8,33-33,0-13.3-7.9-24.7-19.2-29.8,12.3-5.3,20.8-17.3,22-31.3Z"/>
+        </svg>
+    </div>
 
     <div id="castle-container">
         <!-- Le château est construit en CSS -->
         <div class="castle-body">
-            <div class="tower left-tower"><div class="roof"></div><div class="window"></div></div>
+            <div class="tower left-tower">
+                <div class="flag"></div>
+                <div class="roof"></div>
+                <div class="window"></div>
+            </div>
             <div class="central-wall">
                  <div id="interior-text">
                     <h2>MISSION SECRÈTE : LE TRÉSOR PERDU !</h2>
@@ -311,12 +386,19 @@
                     <p class="final-text">Sois prêt pour l'aventure ! ⚔️</p>
                 </div>
             </div>
-            <div class="tower right-tower"><div class="roof"></div><div class="window"></div></div>
+            <div class="tower right-tower">
+                <div class="flag"></div>
+                <div class="roof"></div>
+                <div class="window"></div>
+            </div>
         </div>
 
         <!-- Le contenu de l'invitation est superposé sur le château CSS -->
         <div id="invitation-content">
             <div id="drawbridge">
+                <!-- Chaînes du pont-levis -->
+                <div class="chain left"></div>
+                <div class="chain right"></div>
                 <!-- L'énigme est maintenant par-dessus le texte du pont-levis -->
                 <div id="puzzle-container">
                     <p class="puzzle-instruction">Pour prouver ta sagesse,<br>touche le bouclier ROND !</p>
@@ -351,22 +433,37 @@
             const drawbridge = document.getElementById('drawbridge');
             const interiorText = document.getElementById('interior-text');
             const puzzleContainer = document.getElementById('puzzle-container');
+            const dragon = document.getElementById('dragon-container');
             let isBridgeOpening = false;
             let puzzleSolved = false;
             
             // --- Préparation des sons ---
             const successSound = new Audio('https://harryqover.github.io/bike-fun/auguste-4ans/mandolin.mp3');
             const openSound = new Audio('https://harryqover.github.io/bike-fun/auguste-4ans/tadaam.mp3');
+            const failSound = new Audio('https://harryqover.github.io/bike-fun/auguste-4ans/sword.mp3');
 
             // --- Fonction pour jouer les sons en toute sécurité ---
             function playSound(sound) {
+                sound.currentTime = 0; // Rembobine le son
                 const playPromise = sound.play();
                 if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        // Affiche une erreur dans la console si le son ne peut pas être joué,
-                        // mais ne bloque pas l'application.
-                        console.error("Erreur de lecture audio:", error);
-                    });
+                    playPromise.catch(error => console.error("Erreur audio:", error));
+                }
+            }
+
+            // --- Fonction pour l'animation des étoiles ---
+            function createSparkles(container) {
+                for (let i = 0; i < 15; i++) {
+                    const sparkle = document.createElement('div');
+                    sparkle.classList.add('sparkle');
+                    const angle = Math.random() * 360;
+                    const distance = Math.random() * 40 + 30;
+                    const x = Math.cos(angle * (Math.PI / 180)) * distance;
+                    const y = Math.sin(angle * (Math.PI / 180)) * distance;
+                    sparkle.style.setProperty('--transform-end', `translate(${x}px, ${y}px)`);
+                    container.appendChild(sparkle);
+                    sparkle.classList.add('animate');
+                    setTimeout(() => sparkle.remove(), 700);
                 }
             }
 
@@ -374,38 +471,35 @@
             drawbridge.addEventListener('click', (event) => {
                 const clickedShield = event.target.closest('.shield');
 
-                // --- CAS 1: Un bouclier a été cliqué ---
                 if (clickedShield) {
                     if (puzzleSolved) return;
-
                     if (clickedShield.id === 'correct-shield') {
-                        // D'abord l'action visuelle
                         puzzleSolved = true;
-                        puzzleContainer.classList.add('hidden');
-                        // Puis le son
                         playSound(successSound);
-                    } else {
-                        // Action visuelle pour une mauvaise réponse
-                        clickedShield.classList.add('shake');
+                        createSparkles(clickedShield);
                         setTimeout(() => {
-                            clickedShield.classList.remove('shake');
-                        }, 500);
+                           puzzleContainer.classList.add('hidden');
+                        }, 200);
+                    } else {
+                        playSound(failSound);
+                        clickedShield.classList.add('shake');
+                        setTimeout(() => clickedShield.classList.remove('shake'), 500);
                     }
-                    return; // Arrête le script ici pour ne pas ouvrir le pont par erreur
-                }
-
-                // --- CAS 2: Le pont-levis a été cliqué (mais pas un bouclier) ---
-                if (!puzzleSolved || isBridgeOpening) {
                     return;
                 }
+
+                if (!puzzleSolved || isBridgeOpening) return;
                 
-                // D'abord l'action visuelle
                 isBridgeOpening = true;
                 drawbridge.classList.add('open');
                 interiorText.classList.add('visible');
-                // Puis le son
                 playSound(openSound);
             });
+            
+            // --- Animation du dragon ---
+            setTimeout(() => {
+                dragon.classList.add('fly');
+            }, 2000); // Le dragon apparaît après 2 secondes
         });
     </script>
 
