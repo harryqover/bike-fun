@@ -377,8 +377,8 @@
                         dayEl.classList.add('event-day');
                         dayEl.style.backgroundColor = colorsDb[event.color].background || '#7886cb';
                         console.log("color event: ", event.color);
-                        console.log("color event: ", colorsDb[event.color].background);
-                        console.log("color event: ", colorsDb[event.color].text);
+                        console.log("color background event: ", colorsDb[event.color].background);
+                        console.log("color text event: ", colorsDb[event.color].text);
                         dayEl.style.color = getTextColorForBackground(colorsDb[event.color].text || '#ffffff');
                         dayEl.dataset.eventId = event.id;
                         dayEl.addEventListener('click', handleDayClick);
