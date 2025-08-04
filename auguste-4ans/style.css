@@ -1,0 +1,131 @@
+/* style.css */
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #87CEEB, #FFFFFF); /* Ciel bleu dégradé */
+    font-family: 'MedievalSharp', cursive;
+    color: #3a2a1a;
+    overflow: hidden;
+}
+
+#castle-container {
+    position: relative;
+    width: 90vw;
+    max-width: 800px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.castle-background {
+    width: 100%;
+    height: auto;
+}
+
+#invitation-content {
+    position: absolute;
+    width: 42%; /* Ajustez cette valeur pour correspondre à la porte de votre image de château */
+    height: 40%; /* Ajustez cette valeur pour correspondre à la porte */
+    bottom: 8%; /* Ajustez pour positionner sur le bas de la porte */
+    left: 29%; /* Ajustez pour centrer sur la porte */
+    perspective: 1000px;
+}
+
+#drawbridge {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #6b4f3a; /* Couleur bois */
+    background-image: linear-gradient(rgba(0,0,0,0.2) 0 5px, transparent 5px 100%);
+    background-size: 100% 25px;
+    border: 3px solid #4a3728;
+    box-sizing: border-box;
+    transform-origin: top center;
+    transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#drawbridge.open {
+    transform: rotateX(95deg);
+}
+
+#exterior-text {
+    padding: 20px;
+    text-align: center;
+    color: #fff;
+    transition: opacity 0.3s ease-out;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+#drawbridge.open #exterior-text {
+    opacity: 0;
+}
+
+#exterior-text h1 {
+    font-size: 1.5vw;
+    margin: 0;
+}
+
+#exterior-text p {
+    font-size: 1.1vw;
+    margin: 10px 0;
+}
+
+#exterior-text .action-text {
+    font-weight: bold;
+    margin-top: 20px;
+    color: #ffd700;
+}
+
+
+#interior-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #f5e4c3; /* Couleur parchemin */
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.5s ease-in 0.8s; /* Apparition retardée */
+    z-index: 5;
+    overflow-y: auto;
+    font-size: 1.1vw;
+}
+
+#interior-text.visible {
+    opacity: 1;
+}
+
+#interior-text h2 {
+    color: #8b0000;
+    font-size: 1.5vw;
+    margin-top: 0;
+}
+
+.final-text {
+    font-weight: bold;
+    font-size: 1.3vw;
+    color: #8b0000;
+}
+
+/* Responsive design pour les petits écrans */
+@media (max-width: 768px) {
+    #exterior-text h1, #interior-text h2 { font-size: 3vw; }
+    #exterior-text p, #interior-text, .final-text { font-size: 2.5vw; }
+}
+
+@media (max-width: 480px) {
+    #exterior-text h1, #interior-text h2 { font-size: 4vw; }
+    #exterior-text p, #interior-text, .final-text { font-size: 3.5vw; }
+}
