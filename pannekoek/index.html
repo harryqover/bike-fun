@@ -353,6 +353,10 @@
         }
 
         function applyEventsToCalendar() {
+            const colorsDb = {
+                2: {background:"#33b679", text: "#ffffff"},
+                6: {background:"#f4511e", text: "#ffffff"}
+            }
             document.querySelectorAll('.event-day').forEach(el => {
                 el.classList.remove('event-day');
                 el.style.backgroundColor = '';
@@ -371,9 +375,11 @@
                     const dayEl = calendarGrid.querySelector(`[data-date="${dateString}"]`);
                     if (dayEl) {
                         dayEl.classList.add('event-day');
-                        dayEl.style.backgroundColor = event.color || '#FEB2B2';
+                        dayEl.style.backgroundColor = colorsDb[event.color].background || '#7886cb';
                         console.log("color event: ", event.color);
-                        dayEl.style.color = getTextColorForBackground(event.color || '#FEB2B2');
+                        console.log("color event: ", colorsDb[event.color].background);
+                        console.log("color event: ", colorsDb[event.color].text);
+                        dayEl.style.color = getTextColorForBackground(colorsDb[event.color].text || '#ffffff');
                         dayEl.dataset.eventId = event.id;
                         dayEl.addEventListener('click', handleDayClick);
                     }
