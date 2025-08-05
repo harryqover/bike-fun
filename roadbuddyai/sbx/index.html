@@ -8,11 +8,14 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     
+    <!-- App Icons -->
     <link rel="apple-touch-icon" href="https://harryqover.github.io/bike-fun/img/roadbuddyai_192.png">
     <link rel="icon" href="https://harryqover.github.io/bike-fun/img/roadbuddyai.jpeg">
 
+    <!-- Stylesheets and Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
@@ -20,6 +23,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     
+    <!-- Custom Styles -->
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; background-color: #111827; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
@@ -33,29 +37,49 @@
         @keyframes dots { 0%, 80%, 100% { opacity: 0; } 40% { opacity: 1; } }
         input:checked + label .dot { transform: translateX(100%); background-color: #2563eb; } 
         input:checked + label .relative > div:first-child { background-color: #1d4ed8; }
+        
         /* Styles for History Table */
         .history-table { width: 100%; border-collapse: collapse; }
         .history-table th, .history-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #374151; }
         .history-table th { font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; }
         .history-table td { font-size: 0.875rem; color: #d1d5db; }
-        .history-table tr.editing-row td { padding-top: 4px; padding-bottom: 4px; }
         .history-table .action-btn { background: none; border: none; cursor: pointer; padding: 4px; }
         .history-table .action-btn:hover { opacity: 0.8; }
-        .history-table input[type="text"], .history-table input[type="number"] {
-            background-color: #1f2937; color: white; border: 1px solid #4b5563;
-            border-radius: 4px; padding: 4px 6px; width: 100%; font-size: 0.875rem;
+
+        /* Styles for Edit Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease-in-out;
+            z-index: 50;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content {
+            background-color: #1f2937; color: white;
+            padding: 2rem; border-radius: 1rem;
+            width: 90%; max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transform: scale(0.95); transition: transform 0.3s ease-in-out;
+        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-input {
+            width: 100%; bg-gray-700 border-gray-600 text-white rounded-lg p-3 
+            focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition
         }
     </style>
 </head>
 <body class="text-white flex items-center justify-center min-h-screen p-4">
 
     <div class="w-full max-w-md mx-auto">
+        <!-- Header -->
         <header class="text-center mb-6">
             <img src="https://harryqover.github.io/bike-fun/img/roadbuddyai.jpeg" alt="Logo RoadBuddy AI" class="w-20 h-20 mx-auto rounded-full shadow-lg mb-4">
             <h1 class="text-3xl font-bold text-white">RoadBuddy AI</h1>
             <p class="text-gray-400">pour Skoda</p>
         </header>
 
+        <!-- Yearly Costs -->
         <div id="yearly-costs" class="text-xs text-gray-400 flex justify-center gap-4 mb-4 opacity-0 transition-opacity duration-500">
             <div class="text-center">
                 <span class="font-bold text-white" id="qover-cost">...</span>
@@ -81,6 +105,7 @@
                     <p id="mileage-validation-message" class="text-red-400 text-xs mt-1 h-4"></p>
                 </div>
                 
+                <!-- PIN Container, shown conditionally -->
                 <div id="pin-container" style="display: none;" class="bg-yellow-500/10 border border-yellow-400/30 text-yellow-300 p-4 rounded-lg text-center transition-all duration-300">
                     <p class="font-mono text-sm">Code carte essence</p>
                     <p class="font-bold text-3xl tracking-widest">5387</p>
@@ -95,6 +120,7 @@
                     <input type="hidden" id="fuelType" name="fuelType" value="Essence">
                 </div>
                 
+                <!-- Fuel Details Container -->
                 <div id="fuel-details-section">
                     <div class="flex items-end gap-4">
                         <div class="flex-grow space-y-4">
@@ -150,11 +176,13 @@
             </form>
         </div>
 
+        <!-- Chart Container -->
         <div id="chart-container" class="mt-8 bg-gray-800 rounded-2xl p-4" style="display: none;">
              <h2 class="text-lg font-bold text-center text-white mb-4">📊 Historique Consommation (L/100km)</h2>
              <canvas id="consumptionChart"></canvas>
         </div>
 
+        <!-- History Table Container -->
         <div id="history-container" class="mt-8 bg-gray-800 rounded-2xl p-4 md:p-6" style="display: none;">
             <h2 class="text-lg font-bold text-center text-white mb-4">📖 Historique Récent</h2>
             <div class="overflow-x-auto">
@@ -169,11 +197,70 @@
                         </tr>
                     </thead>
                     <tbody id="history-table-body">
-                        </tbody>
+                        <!-- Rows will be injected by JavaScript -->
+                    </tbody>
                 </table>
             </div>
         </div>
+    </div>
 
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal-overlay">
+        <div class="modal-content">
+            <form id="edit-form" class="space-y-4">
+                <h2 class="text-xl font-bold text-white mb-2">Éditer l'enregistrement</h2>
+                
+                <input type="hidden" id="edit-row-number">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="edit-date" class="block text-sm font-medium text-gray-300 mb-1">Date</label>
+                        <input type="date" id="edit-date" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-2 focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="edit-mileage" class="block text-sm font-medium text-gray-300 mb-1">Kilométrage (km)</label>
+                        <input type="number" id="edit-mileage" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-2 focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="edit-fuelType" class="block text-sm font-medium text-gray-300 mb-1">Type de Carburant</label>
+                        <select id="edit-fuelType" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-2 focus:ring-2 focus:ring-blue-500">
+                            <option value="Essence">Essence</option>
+                            <option value="Électricité">Électricité</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="edit-paidBy" class="block text-sm font-medium text-gray-300 mb-1">Payé par</label>
+                        <select id="edit-paidBy" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-2 focus:ring-2 focus:ring-blue-500">
+                            <option value="Qover">Qover</option>
+                            <option value="Personnel">Personnel</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Fuel Details for Modal -->
+                <div id="edit-fuel-details" class="space-y-4 pt-4 border-t border-gray-700">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="edit-liters" class="block text-sm font-medium text-gray-300 mb-1">Litres (L)</label>
+                            <input type="number" step="0.01" id="edit-liters" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-2 focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="edit-pricePerLiter" class="block text-sm font-medium text-gray-300 mb-1">Prix / L (€)</label>
+                            <input type="number" step="0.001" id="edit-pricePerLiter" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-2 focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="edit-totalCost" class="block text-sm font-medium text-gray-300 mb-1">Coût Total (€)</label>
+                            <input type="number" step="0.01" id="edit-totalCost" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-2 focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-4 pt-4">
+                    <button type="button" id="modal-cancel-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition">Annuler</button>
+                    <button type="submit" id="modal-save-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition">Enregistrer</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -197,21 +284,14 @@
         // --- GLOBAL VARIABLES ---
         let lastKnownMileage = 0;
         let consumptionChartInstance = null;
-        // Store original data for cancellation
-        let originalRowHTML = null;
-        let activeEditingRow = null;
-
+        let currentEditingRecord = null;
 
         // --- API HELPER FUNCTIONS ---
         async function apiGet(action) {
             const response = await fetch(`${SCRIPT_API_URL}?action=${action}`);
-            if (!response.ok) {
-                throw new Error(`Network error calling action: ${action}`);
-            }
+            if (!response.ok) throw new Error(`Network error calling action: ${action}`);
             const result = await response.json();
-            if (result.status === 'error') {
-                throw new Error(`API Error: ${result.message}`);
-            }
+            if (result.status === 'error') throw new Error(`API Error: ${result.message}`);
             return result.data;
         }
 
@@ -219,18 +299,13 @@
             const response = await fetch(SCRIPT_API_URL, {
                 method: 'POST',
                 redirect: 'follow', 
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8',
-                },
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ action, payload }),
             });
             const result = await response.json();
-            if (result.status === 'error') {
-                throw new Error(`API Error from script: ${result.message}`);
-            }
+            if (result.status === 'error') throw new Error(`API Error from script: ${result.message}`);
             return result.data;
         }
-
 
         // --- MAIN APP LOGIC ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -265,7 +340,16 @@
             const personnelCostEl = document.getElementById('personnel-cost');
             const historyContainer = document.getElementById('history-container');
             const historyTableBody = document.getElementById('history-table-body');
-
+            
+            // Modal Elements
+            const editModal = document.getElementById('edit-modal');
+            const editForm = document.getElementById('edit-form');
+            const modalCancelBtn = document.getElementById('modal-cancel-btn');
+            const editFuelDetails = document.getElementById('edit-fuel-details');
+            const editFuelTypeSelect = document.getElementById('edit-fuelType');
+            const editLitersInput = document.getElementById('edit-liters');
+            const editPricePerLiterInput = document.getElementById('edit-pricePerLiter');
+            const editTotalCostInput = document.getElementById('edit-totalCost');
 
             async function initializeApp() {
                 try {
@@ -275,15 +359,6 @@
                 } catch (error) {
                     console.error("Failed to get last mileage:", error);
                     mileageInput.placeholder = 'Erreur de chargement';
-                }
-
-                try {
-                    const costs = await apiGet('getYearlyCosts');
-                    qoverCostEl.textContent = `${costs.qover} €`;
-                    personnelCostEl.textContent = `${costs.personnel} €`;
-                    yearlyCostsContainer.classList.remove('opacity-0');
-                } catch (error) {
-                    console.error("Failed to get yearly costs:", error);
                 }
                 document.getElementById('paidBy').checked = true;
                 refreshAllData();
@@ -300,7 +375,15 @@
             form.addEventListener('submit', handleFormSubmit);
             imagePicker.addEventListener('change', handleImageUpload);
             historyTableBody.addEventListener('click', handleTableActions);
-
+            
+            // Modal Listeners
+            modalCancelBtn.addEventListener('click', closeEditModal);
+            editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
+            editForm.addEventListener('submit', handleModalFormSubmit);
+            editFuelTypeSelect.addEventListener('change', () => toggleEditFuelDetails(editFuelTypeSelect.value));
+            editLitersInput.addEventListener('input', () => updateModalCosts('liters'));
+            editPricePerLiterInput.addEventListener('input', () => updateModalCosts('pricePerLiter'));
+            editTotalCostInput.addEventListener('input', () => updateModalCosts('totalCost'));
 
             // --- DATA REFRESH ---
             function refreshAllData() {
@@ -312,37 +395,20 @@
                 }).catch(error => console.error("Failed to refresh yearly costs:", error));
             }
 
-            // --- FUNCTIONS ---
+            // --- MAIN FORM FUNCTIONS ---
             function handleImageUpload(event) {
                 const file = event.target.files[0];
                 if (!file) return;
-                latInput.value = '';
-                longInput.value = '';
-                updateGeolocateButton(false);
+                latInput.value = ''; longInput.value = ''; updateGeolocateButton(false);
                 EXIF.getData(file, function() {
-                    const lat = EXIF.getTag(this, "GPSLatitude");
-                    const lon = EXIF.getTag(this, "GPSLongitude");
-                    const latRef = EXIF.getTag(this, "GPSLatitudeRef");
-                    const lonRef = EXIF.getTag(this, "GPSLongitudeRef");
-                    
+                    const lat = EXIF.getTag(this, "GPSLatitude"), lon = EXIF.getTag(this, "GPSLongitude"),
+                          latRef = EXIF.getTag(this, "GPSLatitudeRef"), lonRef = EXIF.getTag(this, "GPSLongitudeRef");
                     if (lat && lon && latRef && lonRef) {
-                        const latDegrees = lat[0].numerator / lat[0].denominator;
-                        const latMinutes = lat[1].numerator / lat[1].denominator;
-                        const latSeconds = lat[2].numerator / lat[2].denominator;
-
-                        const lonDegrees = lon[0].numerator / lon[0].denominator;
-                        const lonMinutes = lon[1].numerator / lon[1].denominator;
-                        const lonSeconds = lon[2].numerator / lon[2].denominator;
-                        
-                        const latitude = convertDMSToDD(latDegrees, latMinutes, latSeconds, latRef);
-                        const longitude = convertDMSToDD(lonDegrees, lonMinutes, lonSeconds, lonRef);
-                        
+                        const latitude = convertDMSToDD(lat[0].numerator / lat[0].denominator, lat[1].numerator / lat[1].denominator, lat[2].numerator / lat[2].denominator, latRef);
+                        const longitude = convertDMSToDD(lon[0].numerator / lon[0].denominator, lon[1].numerator / lon[1].denominator, lon[2].numerator / lon[2].denominator, lonRef);
                         if (!isNaN(latitude) && !isNaN(longitude)) {
-                            latInput.value = latitude.toFixed(6);
-                            longInput.value = longitude.toFixed(6);
+                            latInput.value = latitude.toFixed(6); longInput.value = longitude.toFixed(6);
                             updateGeolocateButton(true, 'Photo');
-                        } else {
-                            console.error("Failed to parse EXIF GPS data into numbers.");
                         }
                     }
                 });
@@ -355,26 +421,19 @@
                     try {
                         const data = await apiPost('extractDataFromImage', { base64ImageData: base64Data });
                         onAiSuccess(data);
-                    } catch (error) {
-                        onAiFailure(error);
-                    }
+                    } catch (error) { onAiFailure(error); }
                 };
                 reader.readAsDataURL(file);
             }
 
             function convertDMSToDD(degrees, minutes, seconds, direction) {
                 let dd = degrees + minutes / 60 + seconds / 3600;
-                if (direction == "S" || direction == "W") {
-                    dd = dd * -1;
-                }
+                if (direction == "S" || direction == "W") dd = dd * -1;
                 return dd;
             }
 
             function onAiSuccess(data) {
-                if (data.error) {
-                    aiStatus.textContent = `Erreur IA: ${data.error}`;
-                    return;
-                }
+                if (data.error) { aiStatus.textContent = `Erreur IA: ${data.error}`; return; }
                 aiStatus.textContent = "Données extraites !";
                 litersInput.value = data.liters || '';
                 pricePerLiterInput.value = data.pricePerLiter || '';
@@ -390,18 +449,13 @@
                 const currentMileage = Number(mileageInput.value);
                 geminiContainer.style.display = 'none';
                 mileageValidationMessage.textContent = '';
-                if (mileageInput.value === "") {
-                    pinContainer.style.display = 'none';
-                    return;
-                }
+                if (mileageInput.value === "") { pinContainer.style.display = 'none'; return; }
                 if (currentMileage > lastKnownMileage) {
                     pinContainer.style.display = 'block';
                     mileageValidationMessage.textContent = '';
                 } else {
                     pinContainer.style.display = 'none';
-                    if (lastKnownMileage > 0) {
-                        mileageValidationMessage.textContent = `Doit être > ${lastKnownMileage} km.`;
-                    }
+                    if (lastKnownMileage > 0) mileageValidationMessage.textContent = `Doit être > ${lastKnownMileage} km.`;
                 }
             }
 
@@ -416,19 +470,13 @@
             }
 
             function updateCosts() {
-                const liters = parseFloat(litersInput.value);
-                const price = parseFloat(pricePerLiterInput.value);
-                if (!isNaN(liters) && !isNaN(price)) {
-                    totalCostInput.value = (liters * price).toFixed(2);
-                }
+                const liters = parseFloat(litersInput.value), price = parseFloat(pricePerLiterInput.value);
+                if (!isNaN(liters) && !isNaN(price)) totalCostInput.value = (liters * price).toFixed(2);
             }
 
             function updatePricePerLiter() {
-                const liters = parseFloat(litersInput.value);
-                const total = parseFloat(totalCostInput.value);
-                if (!isNaN(liters) && !isNaN(total) && liters > 0) {
-                    pricePerLiterInput.value = (total / liters).toFixed(3);
-                }
+                const liters = parseFloat(litersInput.value), total = parseFloat(totalCostInput.value);
+                if (!isNaN(liters) && !isNaN(total) && liters > 0) pricePerLiterInput.value = (total / liters).toFixed(3);
             }
 
             function updateGeolocateButton(found, source = 'GPS') {
@@ -442,58 +490,39 @@
 
             function getLocation() {
                 if (navigator.geolocation) {
-                    geolocateBtn.disabled = true;
-                    geolocateBtn.innerHTML = 'Recherche...';
+                    geolocateBtn.disabled = true; geolocateBtn.innerHTML = 'Recherche...';
                     navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            latInput.value = position.coords.latitude.toFixed(6);
-                            longInput.value = position.coords.longitude.toFixed(6);
-                            updateGeolocateButton(true, 'GPS');
-                        },
-                        () => {
-                            showStatus("Erreur de géolocalisation.", 'error');
-                            updateGeolocateButton(false);
-                        }
+                        (p) => { latInput.value = p.coords.latitude.toFixed(6); longInput.value = p.coords.longitude.toFixed(6); updateGeolocateButton(true, 'GPS'); },
+                        () => { showStatus("Erreur de géolocalisation.", 'error'); updateGeolocateButton(false); }
                     );
-                } else {
-                    showStatus("La géolocalisation n'est pas supportée.", 'error');
-                }
+                } else { showStatus("La géolocalisation n'est pas supportée.", 'error'); }
             }
 
             async function handleFormSubmit(event) {
                 event.preventDefault();
                 const currentMileage = Number(mileageInput.value);
                 if (currentMileage <= lastKnownMileage && lastKnownMileage > 0) {
-                    showStatus(`Le kilométrage doit être supérieur à ${lastKnownMileage} km.`, 'error');
-                    return;
+                    showStatus(`Le kilométrage doit être supérieur à ${lastKnownMileage} km.`, 'error'); return;
                 }
                 setLoadingState(true);
                 const formData = {
-                    mileage: currentMileage,
-                    fuelType: fuelTypeInput.value,
-                    liters: litersInput.value || 0,
-                    pricePerLiter: pricePerLiterInput.value || 0,
+                    mileage: currentMileage, fuelType: fuelTypeInput.value,
+                    liters: litersInput.value || 0, pricePerLiter: pricePerLiterInput.value || 0,
                     totalCost: totalCostInput.value || 0,
                     paidBy: document.getElementById('paidBy').checked ? 'Qover' : 'Personnel',
-                    latitude: latInput.value,
-                    longitude: longInput.value
+                    latitude: latInput.value, longitude: longInput.value
                 };
-
                 try {
                     const response = await apiPost('logData', formData);
                     showStatus(response.message, 'success');
                     lastKnownMileage = currentMileage;
                     showAiLoading();
-                    apiPost('getGamificationMessage', formData).then(gamifyResponse => {
-                        geminiMessage.innerHTML = gamifyResponse.message;
-                    });
+                    apiPost('getGamificationMessage', formData).then(gamifyResponse => { geminiMessage.innerHTML = gamifyResponse.message; });
                     resetForm();
                     refreshAllData();
                 } catch (error) {
                     showStatus('Erreur: ' + error.message, 'error');
-                } finally {
-                    setLoadingState(false);
-                }
+                } finally { setLoadingState(false); }
             }
             
             function showAiLoading() {
@@ -504,12 +533,8 @@
             async function updateChart() {
                 try {
                     const history = await apiGet('getConsumptionHistory');
-                    if (history && history.length > 0) {
-                        chartContainer.style.display = 'block';
-                        renderChart(history);
-                    } else {
-                        chartContainer.style.display = 'none';
-                    }
+                    chartContainer.style.display = (history && history.length > 0) ? 'block' : 'none';
+                    if (history && history.length > 0) renderChart(history);
                 } catch (error) {
                     console.error("Failed to update chart:", error);
                     chartContainer.style.display = 'none';
@@ -518,25 +543,19 @@
 
             function renderChart(data) {
                 const ctx = document.getElementById('consumptionChart').getContext('2d');
-                if (consumptionChartInstance) {
-                    consumptionChartInstance.destroy();
-                }
+                if (consumptionChartInstance) consumptionChartInstance.destroy();
                 consumptionChartInstance = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: data.map((_, i) => `Plein ${i + 1}`),
                         datasets: [{
-                            label: 'L/100km',
-                            data: data,
-                            backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                            borderColor: 'rgba(59, 130, 246, 1)',
-                            borderWidth: 1,
-                            borderRadius: 5,
+                            label: 'L/100km', data: data,
+                            backgroundColor: 'rgba(59, 130, 246, 0.5)', borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1, borderRadius: 5,
                         }]
                     },
                     options: {
-                        responsive: true,
-                        plugins: { legend: { display: false } },
+                        responsive: true, plugins: { legend: { display: false } },
                         scales: {
                             y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#d1d5db' } },
                             x: { grid: { display: false }, ticks: { color: '#d1d5db' } }
@@ -546,14 +565,11 @@
             }
 
             function resetForm() {
-                form.reset();
-                selectFuelType('Essence');
-                mileageValidationMessage.textContent = '';
-                updateGeolocateButton(false);
+                form.reset(); selectFuelType('Essence');
+                mileageValidationMessage.textContent = ''; updateGeolocateButton(false);
                 document.getElementById('paidBy').checked = true;
                 mileageInput.placeholder = `Dernier: ${lastKnownMileage} km`;
-                imagePreviewContainer.classList.add('hidden');
-                imagePicker.value = '';
+                imagePreviewContainer.classList.add('hidden'); imagePicker.value = '';
                 setTimeout(() => { statusMessage.textContent = ''; }, 8000);
             }
 
@@ -568,34 +584,30 @@
                 submitBtn.disabled = isLoading;
             }
 
-            // --- HISTORY TABLE FUNCTIONS ---
+            // --- HISTORY TABLE & MODAL FUNCTIONS ---
             async function updateHistoryTable() {
                 try {
-                    historyTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4">Chargement de l'historique...</td></tr>`;
+                    historyTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4">Chargement...</td></tr>`;
                     historyContainer.style.display = 'block';
                     const records = await apiGet('getRecentRecords');
-                    historyTableBody.innerHTML = ''; // Clear loading
+                    historyTableBody.innerHTML = '';
                     if (records && records.length > 0) {
                         records.forEach(record => {
                             const tr = document.createElement('tr');
-                            tr.dataset.record = JSON.stringify(record); // Store full record data
-                            tr.dataset.rowNumber = record.rowNumber;
-
+                            tr.dataset.record = JSON.stringify(record);
                             const formattedDate = new Date(record.data['Date']).toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit' });
                             tr.innerHTML = `
-                                <td data-field="Date">${formattedDate}</td>
-                                <td data-field="Kilométrage (km)">${record.data['Kilométrage (km)']}</td>
-                                <td data-field="Type de Carburant">${record.data['Type de Carburant'] === 'Essence' ? '⛽' : '🔌'}</td>
-                                <td data-field="Payé par">${record.data['Payé par']}</td>
+                                <td>${formattedDate}</td>
+                                <td>${record.data['Kilométrage (km)']}</td>
+                                <td>${record.data['Type de Carburant'] === 'Essence' ? '⛽' : '🔌'}</td>
+                                <td>${record.data['Payé par']}</td>
                                 <td class="actions">
                                     <button class="action-btn edit-btn" title="Modifier">✏️</button>
                                     <button class="action-btn delete-btn" title="Supprimer">🗑️</button>
                                 </td>`;
                             historyTableBody.appendChild(tr);
                         });
-                    } else {
-                        historyContainer.style.display = 'none';
-                    }
+                    } else { historyContainer.style.display = 'none'; }
                 } catch (error) {
                     console.error('Failed to update history table:', error);
                     historyTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-red-400">Erreur de chargement.</td></tr>`;
@@ -605,78 +617,83 @@
             function handleTableActions(event) {
                 const button = event.target.closest('.action-btn');
                 if (!button) return;
-
                 const tr = button.closest('tr');
-                if (button.classList.contains('edit-btn')) {
-                    handleEdit(tr);
-                } else if (button.classList.contains('delete-btn')) {
-                    handleDelete(tr);
-                } else if (button.classList.contains('save-btn')) {
-                    handleSave(tr);
-                } else if (button.classList.contains('cancel-btn')) {
-                    handleCancel(tr);
-                }
-            }
-
-            function handleEdit(tr) {
-                if (activeEditingRow) {
-                     handleCancel(activeEditingRow); // Cancel any other editing row
-                }
-                activeEditingRow = tr;
-                originalRowHTML = tr.innerHTML;
                 const record = JSON.parse(tr.dataset.record);
-                tr.classList.add('editing-row');
-
-                const date = new Date(record.data['Date']).toISOString().split('T')[0];
-
-                tr.innerHTML = `
-                    <td><input type="date" value="${date}" class="w-32 bg-gray-900 border-gray-700 rounded px-1 py-0.5"></td>
-                    <td><input type="number" value="${record.data['Kilométrage (km)']}" class="w-24 bg-gray-900 border-gray-700 rounded px-1 py-0.5"></td>
-                    <td>
-                      <select class="bg-gray-900 border-gray-700 rounded px-1 py-0.5">
-                        <option value="Essence" ${record.data['Type de Carburant'] === 'Essence' ? 'selected' : ''}>Essence</option>
-                        <option value="Électricité" ${record.data['Type de Carburant'] === 'Électricité' ? 'selected' : ''}>Électricité</option>
-                      </select>
-                    </td>
-                    <td>
-                      <select class="bg-gray-900 border-gray-700 rounded px-1 py-0.5">
-                        <option value="Qover" ${record.data['Payé par'] === 'Qover' ? 'selected' : ''}>Qover</option>
-                        <option value="Personnel" ${record.data['Payé par'] === 'Personnel' ? 'selected' : ''}>Personnel</option>
-                      </select>
-                    </td>
-                    <td>
-                        <button class="action-btn save-btn" title="Enregistrer">✔️</button>
-                        <button class="action-btn cancel-btn" title="Annuler">✖️</button>
-                    </td>`;
+                if (button.classList.contains('edit-btn')) {
+                    openEditModal(record);
+                } else if (button.classList.contains('delete-btn')) {
+                    handleDelete(record);
+                }
             }
 
-            async function handleDelete(tr) {
-                const rowNumber = tr.dataset.rowNumber;
-                if (confirm(`Êtes-vous sûr de vouloir supprimer la ligne ${rowNumber} ? Cette action est irréversible.`)) {
+            async function handleDelete(record) {
+                if (confirm(`Êtes-vous sûr de vouloir supprimer l'enregistrement du ${new Date(record.data.Date).toLocaleDateString('fr-BE')} ?`)) {
                     try {
                         showStatus('Suppression en cours...', 'info');
-                        await apiPost('deleteRecord', { rowNumber: parseInt(rowNumber) });
+                        await apiPost('deleteRecord', { rowNumber: record.rowNumber });
                         showStatus('Enregistrement supprimé !', 'success');
                         refreshAllData();
-                    } catch (error) {
-                        showStatus(`Erreur: ${error.message}`, 'error');
+                    } catch (error) { showStatus(`Erreur: ${error.message}`, 'error'); }
+                }
+            }
+
+            function openEditModal(record) {
+                currentEditingRecord = record;
+                const data = record.data;
+                document.getElementById('edit-row-number').value = record.rowNumber;
+                document.getElementById('edit-date').value = new Date(data.Date).toISOString().split('T')[0];
+                document.getElementById('edit-mileage').value = data['Kilométrage (km)'];
+                editFuelTypeSelect.value = data['Type de Carburant'];
+                document.getElementById('edit-paidBy').value = data['Payé par'];
+                
+                editLitersInput.value = data['Litres (L)'] || '';
+                editPricePerLiterInput.value = data['Prix/Litre (€)'] || '';
+                editTotalCostInput.value = data['Coût Total (€)'] || '';
+                
+                toggleEditFuelDetails(data['Type de Carburant']);
+                editModal.classList.add('active');
+            }
+
+            function closeEditModal() {
+                editModal.classList.remove('active');
+                currentEditingRecord = null;
+            }
+
+            function toggleEditFuelDetails(fuelType) {
+                editFuelDetails.style.display = fuelType === 'Essence' ? 'block' : 'none';
+            }
+
+            function updateModalCosts(source) {
+                const liters = parseFloat(editLitersInput.value);
+                const price = parseFloat(editPricePerLiterInput.value);
+                const total = parseFloat(editTotalCostInput.value);
+
+                if (source === 'liters' || source === 'pricePerLiter') {
+                    if (!isNaN(liters) && !isNaN(price)) {
+                        editTotalCostInput.value = (liters * price).toFixed(2);
+                    }
+                } else if (source === 'totalCost') {
+                    if (!isNaN(liters) && !isNaN(total) && liters > 0) {
+                        editPricePerLiterInput.value = (total / liters).toFixed(3);
                     }
                 }
             }
-            
-            async function handleSave(tr) {
-                const originalRecord = JSON.parse(tr.dataset.record);
-                const inputs = tr.querySelectorAll('input, select');
-                const updatedData = { ...originalRecord.data }; // Clone original data
+
+            async function handleModalFormSubmit(event) {
+                event.preventDefault();
+                const rowNumber = parseInt(document.getElementById('edit-row-number').value);
                 
-                // Update data from inputs
-                updatedData['Date'] = new Date(inputs[0].value);
-                updatedData['Kilométrage (km)'] = parseFloat(inputs[1].value);
-                updatedData['Type de Carburant'] = inputs[2].value;
-                updatedData['Payé par'] = inputs[3].value;
+                const updatedData = { ...currentEditingRecord.data }; // Start with original data
+                updatedData['Date'] = new Date(document.getElementById('edit-date').value);
+                updatedData['Kilométrage (km)'] = parseFloat(document.getElementById('edit-mileage').value);
+                updatedData['Type de Carburant'] = editFuelTypeSelect.value;
+                updatedData['Payé par'] = document.getElementById('edit-paidBy').value;
                 
-                // If type is changed to Electric, zero out fuel values
-                if (updatedData['Type de Carburant'] === 'Électricité') {
+                if (updatedData['Type de Carburant'] === 'Essence') {
+                    updatedData['Litres (L)'] = parseFloat(editLitersInput.value) || 0;
+                    updatedData['Prix/Litre (€)'] = parseFloat(editPricePerLiterInput.value) || 0;
+                    updatedData['Coût Total (€)'] = parseFloat(editTotalCostInput.value) || 0;
+                } else {
                     updatedData['Litres (L)'] = 0;
                     updatedData['Prix/Litre (€)'] = 0;
                     updatedData['Coût Total (€)'] = 0;
@@ -684,21 +701,13 @@
 
                 try {
                     showStatus('Mise à jour en cours...', 'info');
-                    await apiPost('updateRecord', { rowNumber: originalRecord.rowNumber, data: updatedData });
+                    await apiPost('updateRecord', { rowNumber, data: updatedData });
                     showStatus('Enregistrement mis à jour !', 'success');
-                    activeEditingRow = null;
-                    originalRowHTML = null;
+                    closeEditModal();
                     refreshAllData();
                 } catch(error) {
                     showStatus(`Erreur: ${error.message}`, 'error');
                 }
-            }
-
-            function handleCancel(tr) {
-                tr.innerHTML = originalRowHTML;
-                tr.classList.remove('editing-row');
-                activeEditingRow = null;
-                originalRowHTML = null;
             }
 
             // Start the application
