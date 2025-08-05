@@ -67,6 +67,20 @@
             width: 100%; bg-gray-700 border-gray-600 text-white rounded-lg p-3 
             focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition
         }
+
+        /* Style for stale data (loaded from cache) */
+        .is-stale {
+            color: #6b7280; /* gray-500 */
+            animation: pulse-stale 2s infinite ease-in-out;
+        }
+        input.is-stale::placeholder {
+            color: #6b7280;
+            animation: pulse-stale 2s infinite ease-in-out;
+        }
+        @keyframes pulse-stale {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
     </style>
 </head>
 <body class="text-white flex items-center justify-center min-h-screen p-4">
@@ -390,6 +404,7 @@
                 if (cachedMileage) {
                     lastKnownMileage = Number(cachedMileage);
                     mileageInput.placeholder = `Dernier: ${lastKnownMileage} km`;
+                    mileageInput.classList.add('is-stale');
                 }
 
                 // Load and display last known yearly costs from localStorage
@@ -399,6 +414,8 @@
                         const costs = JSON.parse(cachedCosts);
                         qoverCostEl.textContent = `${costs.qover} €`;
                         personnelCostEl.textContent = `${costs.personnel} €`;
+                        qoverCostEl.classList.add('is-stale');
+                        personnelCostEl.classList.add('is-stale');
                         yearlyCostsContainer.classList.remove('opacity-0');
                     } catch(e) {
                         console.error("Could not parse cached costs", e);
@@ -417,6 +434,8 @@
                     qoverCostEl.textContent = `${costs.qover} €`;
                     personnelCostEl.textContent = `${costs.personnel} €`;
                     yearlyCostsContainer.classList.remove('opacity-0');
+                    qoverCostEl.classList.remove('is-stale');
+                    personnelCostEl.classList.remove('is-stale');
                     localStorage.setItem('roadbuddy_yearlyCosts', JSON.stringify(costs));
                 }).catch(error => console.error("Failed to refresh yearly costs:", error));
 
@@ -424,6 +443,7 @@
                 apiGet('getLastMileage').then(mileage => {
                     lastKnownMileage = Number(mileage) || 0;
                     mileageInput.placeholder = `Dernier: ${lastKnownMileage} km`;
+                    mileageInput.classList.remove('is-stale');
                     localStorage.setItem('roadbuddy_lastMileage', lastKnownMileage);
                 }).catch(error => console.error("Failed to refresh last mileage:", error));
             }
