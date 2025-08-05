@@ -131,7 +131,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Type de carburant</label>
                     <div class="grid grid-cols-2 gap-4">
-                        <button type="button" id="btn-gas" class="fuel-type-btn btn-active p-3 rounded-lg transition">⚡ Essence</button>
+                        <button type="button" id="btn-gas" class="fuel-type-btn btn-active p-3 rounded-lg transition text-sm">⚡ Essence (95 E10)</button>
                         <button type="button" id="btn-electric" class="fuel-type-btn p-3 rounded-lg transition bg-gray-700">🔌 Électricité</button>
                     </div>
                     <input type="hidden" id="fuelType" name="fuelType" value="Essence">
@@ -209,7 +209,7 @@
                             <th>Date</th>
                             <th>KM</th>
                             <th>Type</th>
-                            <th>Payé par</th>
+                            <th>Conso.</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -641,11 +641,6 @@
 
             // --- HISTORY TABLE & MODAL FUNCTIONS ---
             
-            /**
-             * Formats a Date object into a `YYYY-MM-DDTHH:mm` string for datetime-local input.
-             * @param {Date} date The date to format.
-             * @returns {string} The formatted string.
-             */
             function toLocalISOString(date) {
                 const pad = (num) => num.toString().padStart(2, '0');
                 return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
@@ -663,14 +658,32 @@
                             tr.dataset.record = JSON.stringify(record);
                             const date = new Date(record.data['Date']);
                             const formattedDate = !isNaN(date) 
-                                ? date.toLocaleString('fr-BE', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', '')
+                                ? date.toLocaleString('fr-BE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', '')
                                 : 'Date invalide';
 
+                            let consumptionCell = `<td></td>`; // Default empty cell
+                            if (record.data['Type de Carburant'] === 'Essence') {
+                                if (record.consumptionInfo) {
+                                    const { consumption, trend } = record.consumptionInfo;
+                                    let trendIcon = '';
+                                    if (trend === 'up') {
+                                        trendIcon = '<span class="text-red-400 ml-1">▲</span>'; // Up arrow
+                                    } else if (trend === 'down') {
+                                        trendIcon = '<span class="text-green-400 ml-1">▼</span>'; // Down arrow
+                                    } else {
+                                        trendIcon = '<span class="text-gray-500 ml-1">~</span>';
+                                    }
+                                    consumptionCell = `<td class="text-xs whitespace-nowrap">${consumption} L ${trendIcon}</td>`;
+                                } else {
+                                    consumptionCell = `<td class="text-xs">-</td>`;
+                                }
+                            }
+
                             tr.innerHTML = `
-                                <td>${formattedDate}</td>
+                                <td class="text-xs">${formattedDate}</td>
                                 <td>${record.data['Kilométrage (km)']}</td>
                                 <td>${record.data['Type de Carburant'] === 'Essence' ? '⛽' : '🔌'}</td>
-                                <td>${record.data['Payé par']}</td>
+                                ${consumptionCell}
                                 <td class="actions">
                                     <button class="action-btn edit-btn" title="Modifier">✏️</button>
                                     <button class="action-btn delete-btn" title="Supprimer">🗑️</button>
