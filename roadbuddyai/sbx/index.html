@@ -351,16 +351,14 @@
             const editPricePerLiterInput = document.getElementById('edit-pricePerLiter');
             const editTotalCostInput = document.getElementById('edit-totalCost');
 
-            async function initializeApp() {
-                try {
-                    const mileage = await apiGet('getLastMileage');
-                    lastKnownMileage = Number(mileage) || 0;
-                    mileageInput.placeholder = `Dernier: ${lastKnownMileage} km`;
-                } catch (error) {
-                    console.error("Failed to get last mileage:", error);
-                    mileageInput.placeholder = 'Erreur de chargement';
-                }
+            function initializeApp() {
+                // 1. Load from cache for instant UI
+                loadDataFromCache();
+                
+                // Set default form state
                 document.getElementById('paidBy').checked = true;
+
+                // 2. Fetch fresh data from network to update UI and cache
                 refreshAllData();
             }
 
@@ -385,14 +383,49 @@
             editPricePerLiterInput.addEventListener('input', () => updateModalCosts('pricePerLiter'));
             editTotalCostInput.addEventListener('input', () => updateModalCosts('totalCost'));
 
-            // --- DATA REFRESH ---
+            // --- CACHING & DATA REFRESH ---
+            function loadDataFromCache() {
+                // Load and display last known mileage from localStorage
+                const cachedMileage = localStorage.getItem('roadbuddy_lastMileage');
+                if (cachedMileage) {
+                    lastKnownMileage = Number(cachedMileage);
+                    mileageInput.placeholder = `Dernier: ${lastKnownMileage} km`;
+                }
+
+                // Load and display last known yearly costs from localStorage
+                const cachedCosts = localStorage.getItem('roadbuddy_yearlyCosts');
+                if (cachedCosts) {
+                    try {
+                        const costs = JSON.parse(cachedCosts);
+                        qoverCostEl.textContent = `${costs.qover} €`;
+                        personnelCostEl.textContent = `${costs.personnel} €`;
+                        yearlyCostsContainer.classList.remove('opacity-0');
+                    } catch(e) {
+                        console.error("Could not parse cached costs", e);
+                        localStorage.removeItem('roadbuddy_yearlyCosts'); // Clear bad data
+                    }
+                }
+            }
+
             function refreshAllData() {
+                // Fetch and update chart and history table
                 updateChart();
                 updateHistoryTable();
+
+                // Fetch yearly costs, then update UI and cache
                 apiGet('getYearlyCosts').then(costs => {
                     qoverCostEl.textContent = `${costs.qover} €`;
                     personnelCostEl.textContent = `${costs.personnel} €`;
+                    yearlyCostsContainer.classList.remove('opacity-0');
+                    localStorage.setItem('roadbuddy_yearlyCosts', JSON.stringify(costs));
                 }).catch(error => console.error("Failed to refresh yearly costs:", error));
+
+                // Fetch last mileage, then update UI and cache
+                apiGet('getLastMileage').then(mileage => {
+                    lastKnownMileage = Number(mileage) || 0;
+                    mileageInput.placeholder = `Dernier: ${lastKnownMileage} km`;
+                    localStorage.setItem('roadbuddy_lastMileage', lastKnownMileage);
+                }).catch(error => console.error("Failed to refresh last mileage:", error));
             }
 
             // --- MAIN FORM FUNCTIONS ---
@@ -515,7 +548,6 @@
                 try {
                     const response = await apiPost('logData', formData);
                     showStatus(response.message, 'success');
-                    lastKnownMileage = currentMileage;
                     showAiLoading();
                     apiPost('getGamificationMessage', formData).then(gamifyResponse => { geminiMessage.innerHTML = gamifyResponse.message; });
                     resetForm();
