@@ -67,6 +67,9 @@
             width: 100%; bg-gray-700 border-gray-600 text-white rounded-lg p-3 
             focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition
         }
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
 
         /* Style for stale data (loaded from cache) */
         .is-stale {
@@ -228,8 +231,8 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="edit-date" class="block text-sm font-medium text-gray-300 mb-1">Date</label>
-                        <input type="date" id="edit-date" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-2 focus:ring-2 focus:ring-blue-500">
+                        <label for="edit-date" class="block text-sm font-medium text-gray-300 mb-1">Date et Heure</label>
+                        <input type="datetime-local" id="edit-date" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-2 focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label for="edit-mileage" class="block text-sm font-medium text-gray-300 mb-1">Kilométrage (km)</label>
@@ -637,6 +640,17 @@
             }
 
             // --- HISTORY TABLE & MODAL FUNCTIONS ---
+            
+            /**
+             * Formats a Date object into a `YYYY-MM-DDTHH:mm` string for datetime-local input.
+             * @param {Date} date The date to format.
+             * @returns {string} The formatted string.
+             */
+            function toLocalISOString(date) {
+                const pad = (num) => num.toString().padStart(2, '0');
+                return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+            }
+
             async function updateHistoryTable() {
                 try {
                     historyTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4">Chargement...</td></tr>`;
@@ -647,7 +661,11 @@
                         records.forEach(record => {
                             const tr = document.createElement('tr');
                             tr.dataset.record = JSON.stringify(record);
-                            const formattedDate = new Date(record.data['Date']).toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit' });
+                            const date = new Date(record.data['Date']);
+                            const formattedDate = !isNaN(date) 
+                                ? date.toLocaleString('fr-BE', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', '')
+                                : 'Date invalide';
+
                             tr.innerHTML = `
                                 <td>${formattedDate}</td>
                                 <td>${record.data['Kilométrage (km)']}</td>
@@ -679,7 +697,9 @@
             }
 
             async function handleDelete(record) {
-                if (confirm(`Êtes-vous sûr de vouloir supprimer l'enregistrement du ${new Date(record.data.Date).toLocaleDateString('fr-BE')} ?`)) {
+                const date = new Date(record.data.Date);
+                const formattedDate = !isNaN(date) ? date.toLocaleDateString('fr-BE') : 'cet enregistrement';
+                if (confirm(`Êtes-vous sûr de vouloir supprimer l'enregistrement du ${formattedDate} ?`)) {
                     try {
                         showStatus('Suppression en cours...', 'info');
                         await apiPost('deleteRecord', { rowNumber: record.rowNumber });
@@ -692,8 +712,15 @@
             function openEditModal(record) {
                 currentEditingRecord = record;
                 const data = record.data;
+                const date = new Date(data.Date);
+
+                if (isNaN(date)) {
+                    alert("Impossible d'éditer cet enregistrement car la date est invalide.");
+                    return;
+                }
+
                 document.getElementById('edit-row-number').value = record.rowNumber;
-                document.getElementById('edit-date').value = new Date(data.Date).toISOString().split('T')[0];
+                document.getElementById('edit-date').value = toLocalISOString(date);
                 document.getElementById('edit-mileage').value = data['Kilométrage (km)'];
                 editFuelTypeSelect.value = data['Type de Carburant'];
                 document.getElementById('edit-paidBy').value = data['Payé par'];
