@@ -5,6 +5,7 @@
     <title>RoadBuddy AI for Skoda</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#111827"/>
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -656,10 +657,14 @@
                         records.forEach(record => {
                             const tr = document.createElement('tr');
                             tr.dataset.record = JSON.stringify(record);
-                            const date = new Date(record.data['Date']);
-                            const formattedDate = !isNaN(date) 
-                                ? date.toLocaleString('fr-BE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', '')
-                                : 'Date invalide';
+                            
+                            let formattedDate = 'Date invalide';
+                            if (record.data['Date']) {
+                                const date = new Date(record.data['Date']);
+                                if (!isNaN(date)) {
+                                    formattedDate = date.toLocaleString('fr-BE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', '');
+                                }
+                            }
 
                             let consumptionCell = `<td></td>`; // Default empty cell
                             if (record.data['Type de Carburant'] === 'Essence') {
@@ -725,8 +730,12 @@
             function openEditModal(record) {
                 currentEditingRecord = record;
                 const data = record.data;
+                
+                if (!data.Date) {
+                    alert("Impossible d'éditer cet enregistrement car la date est invalide.");
+                    return;
+                }
                 const date = new Date(data.Date);
-
                 if (isNaN(date)) {
                     alert("Impossible d'éditer cet enregistrement car la date est invalide.");
                     return;
