@@ -8,14 +8,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- App Icons -->
     <link rel="apple-touch-icon" href="https://harryqover.github.io/bike-fun/img/roadbuddyai_192.png">
     <link rel="icon" href="https://harryqover.github.io/bike-fun/img/roadbuddyai.jpeg">
 
-    <!-- Stylesheets and Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
@@ -23,7 +20,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <!-- Custom Styles -->
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; background-color: #111827; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
@@ -37,19 +33,29 @@
         @keyframes dots { 0%, 80%, 100% { opacity: 0; } 40% { opacity: 1; } }
         input:checked + label .dot { transform: translateX(100%); background-color: #2563eb; } 
         input:checked + label .relative > div:first-child { background-color: #1d4ed8; }
+        /* Styles for History Table */
+        .history-table { width: 100%; border-collapse: collapse; }
+        .history-table th, .history-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #374151; }
+        .history-table th { font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; }
+        .history-table td { font-size: 0.875rem; color: #d1d5db; }
+        .history-table tr.editing-row td { padding-top: 4px; padding-bottom: 4px; }
+        .history-table .action-btn { background: none; border: none; cursor: pointer; padding: 4px; }
+        .history-table .action-btn:hover { opacity: 0.8; }
+        .history-table input[type="text"], .history-table input[type="number"] {
+            background-color: #1f2937; color: white; border: 1px solid #4b5563;
+            border-radius: 4px; padding: 4px 6px; width: 100%; font-size: 0.875rem;
+        }
     </style>
 </head>
 <body class="text-white flex items-center justify-center min-h-screen p-4">
 
     <div class="w-full max-w-md mx-auto">
-        <!-- Header -->
         <header class="text-center mb-6">
             <img src="https://harryqover.github.io/bike-fun/img/roadbuddyai.jpeg" alt="Logo RoadBuddy AI" class="w-20 h-20 mx-auto rounded-full shadow-lg mb-4">
             <h1 class="text-3xl font-bold text-white">RoadBuddy AI</h1>
             <p class="text-gray-400">pour Skoda</p>
         </header>
 
-        <!-- Yearly Costs -->
         <div id="yearly-costs" class="text-xs text-gray-400 flex justify-center gap-4 mb-4 opacity-0 transition-opacity duration-500">
             <div class="text-center">
                 <span class="font-bold text-white" id="qover-cost">...</span>
@@ -75,7 +81,6 @@
                     <p id="mileage-validation-message" class="text-red-400 text-xs mt-1 h-4"></p>
                 </div>
                 
-                <!-- PIN Container, shown conditionally -->
                 <div id="pin-container" style="display: none;" class="bg-yellow-500/10 border border-yellow-400/30 text-yellow-300 p-4 rounded-lg text-center transition-all duration-300">
                     <p class="font-mono text-sm">Code carte essence</p>
                     <p class="font-bold text-3xl tracking-widest">5387</p>
@@ -90,7 +95,6 @@
                     <input type="hidden" id="fuelType" name="fuelType" value="Essence">
                 </div>
                 
-                <!-- Fuel Details Container -->
                 <div id="fuel-details-section">
                     <div class="flex items-end gap-4">
                         <div class="flex-grow space-y-4">
@@ -146,17 +150,32 @@
             </form>
         </div>
 
-        <!-- Chart Container -->
         <div id="chart-container" class="mt-8 bg-gray-800 rounded-2xl p-4" style="display: none;">
              <h2 class="text-lg font-bold text-center text-white mb-4">📊 Historique Consommation (L/100km)</h2>
              <canvas id="consumptionChart"></canvas>
         </div>
+
+        <div id="history-container" class="mt-8 bg-gray-800 rounded-2xl p-4 md:p-6" style="display: none;">
+            <h2 class="text-lg font-bold text-center text-white mb-4">📖 Historique Récent</h2>
+            <div class="overflow-x-auto">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>KM</th>
+                            <th>Type</th>
+                            <th>Payé par</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
-    <!-- 
-      Main application script is now embedded below to fix the data submission issue.
-      The external script.js file is no longer loaded.
-    -->
     <script>
         /**
          * Client-side script for RoadBuddy AI.
@@ -178,6 +197,10 @@
         // --- GLOBAL VARIABLES ---
         let lastKnownMileage = 0;
         let consumptionChartInstance = null;
+        // Store original data for cancellation
+        let originalRowHTML = null;
+        let activeEditingRow = null;
+
 
         // --- API HELPER FUNCTIONS ---
         async function apiGet(action) {
@@ -193,20 +216,15 @@
         }
 
         async function apiPost(action, payload) {
-            // This is the corrected function to handle POST requests to Google Apps Script.
-            // It sends the data as 'text/plain' to avoid a CORS preflight request which causes the "failed to fetch" error.
             const response = await fetch(SCRIPT_API_URL, {
                 method: 'POST',
-                redirect: 'follow', // This is crucial for Google Scripts.
+                redirect: 'follow', 
                 headers: {
                     'Content-Type': 'text/plain;charset=utf-8',
                 },
                 body: JSON.stringify({ action, payload }),
             });
-            
-            // The response from the followed redirect will be JSON.
             const result = await response.json();
-
             if (result.status === 'error') {
                 throw new Error(`API Error from script: ${result.message}`);
             }
@@ -245,6 +263,9 @@
             const yearlyCostsContainer = document.getElementById('yearly-costs');
             const qoverCostEl = document.getElementById('qover-cost');
             const personnelCostEl = document.getElementById('personnel-cost');
+            const historyContainer = document.getElementById('history-container');
+            const historyTableBody = document.getElementById('history-table-body');
+
 
             async function initializeApp() {
                 try {
@@ -264,9 +285,8 @@
                 } catch (error) {
                     console.error("Failed to get yearly costs:", error);
                 }
-
                 document.getElementById('paidBy').checked = true;
-                updateChart();
+                refreshAllData();
             }
 
             // --- EVENT LISTENERS ---
@@ -279,6 +299,18 @@
             totalCostInput.addEventListener('input', updatePricePerLiter);
             form.addEventListener('submit', handleFormSubmit);
             imagePicker.addEventListener('change', handleImageUpload);
+            historyTableBody.addEventListener('click', handleTableActions);
+
+
+            // --- DATA REFRESH ---
+            function refreshAllData() {
+                updateChart();
+                updateHistoryTable();
+                apiGet('getYearlyCosts').then(costs => {
+                    qoverCostEl.textContent = `${costs.qover} €`;
+                    personnelCostEl.textContent = `${costs.personnel} €`;
+                }).catch(error => console.error("Failed to refresh yearly costs:", error));
+            }
 
             // --- FUNCTIONS ---
             function handleImageUpload(event) {
@@ -294,8 +326,6 @@
                     const lonRef = EXIF.getTag(this, "GPSLongitudeRef");
                     
                     if (lat && lon && latRef && lonRef) {
-                        // The EXIF library returns GPS coordinates as an array of three rational numbers (degrees, minutes, seconds).
-                        // Each rational number has a numerator and a denominator. We must calculate the decimal value for each part.
                         const latDegrees = lat[0].numerator / lat[0].denominator;
                         const latMinutes = lat[1].numerator / lat[1].denominator;
                         const latSeconds = lat[2].numerator / lat[2].denominator;
@@ -303,12 +333,10 @@
                         const lonDegrees = lon[0].numerator / lon[0].denominator;
                         const lonMinutes = lon[1].numerator / lon[1].denominator;
                         const lonSeconds = lon[2].numerator / lon[2].denominator;
-
-                        // Now we can use the existing conversion function with the correct decimal values.
+                        
                         const latitude = convertDMSToDD(latDegrees, latMinutes, latSeconds, latRef);
                         const longitude = convertDMSToDD(lonDegrees, lonMinutes, lonSeconds, lonRef);
                         
-                        // Check if the result is a valid number before setting the input value.
                         if (!isNaN(latitude) && !isNaN(longitude)) {
                             latInput.value = latitude.toFixed(6);
                             longInput.value = longitude.toFixed(6);
@@ -460,24 +488,20 @@
                         geminiMessage.innerHTML = gamifyResponse.message;
                     });
                     resetForm();
-                    updateChart();
-                    apiGet('getYearlyCosts').then(costs => {
-                        qoverCostEl.textContent = `${costs.qover} €`;
-                        personnelCostEl.textContent = `${costs.personnel} €`;
-                    });
+                    refreshAllData();
                 } catch (error) {
                     showStatus('Erreur: ' + error.message, 'error');
                 } finally {
                     setLoadingState(false);
                 }
             }
-
+            
             function showAiLoading() {
                 geminiContainer.style.display = 'block';
                 geminiMessage.innerHTML = `<span class="italic text-purple-400 ai-loader">L'IA réfléchit<span>.</span><span>.</span><span>.</span></span>`;
             }
 
-async function updateChart() {
+            async function updateChart() {
                 try {
                     const history = await apiGet('getConsumptionHistory');
                     if (history && history.length > 0) {
@@ -542,6 +566,139 @@ async function updateChart() {
                 submitText.style.display = isLoading ? 'none' : 'block';
                 loader.style.display = isLoading ? 'block' : 'none';
                 submitBtn.disabled = isLoading;
+            }
+
+            // --- HISTORY TABLE FUNCTIONS ---
+            async function updateHistoryTable() {
+                try {
+                    historyTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4">Chargement de l'historique...</td></tr>`;
+                    historyContainer.style.display = 'block';
+                    const records = await apiGet('getRecentRecords');
+                    historyTableBody.innerHTML = ''; // Clear loading
+                    if (records && records.length > 0) {
+                        records.forEach(record => {
+                            const tr = document.createElement('tr');
+                            tr.dataset.record = JSON.stringify(record); // Store full record data
+                            tr.dataset.rowNumber = record.rowNumber;
+
+                            const formattedDate = new Date(record.data['Date']).toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit' });
+                            tr.innerHTML = `
+                                <td data-field="Date">${formattedDate}</td>
+                                <td data-field="Kilométrage (km)">${record.data['Kilométrage (km)']}</td>
+                                <td data-field="Type de Carburant">${record.data['Type de Carburant'] === 'Essence' ? '⛽' : '🔌'}</td>
+                                <td data-field="Payé par">${record.data['Payé par']}</td>
+                                <td class="actions">
+                                    <button class="action-btn edit-btn" title="Modifier">✏️</button>
+                                    <button class="action-btn delete-btn" title="Supprimer">🗑️</button>
+                                </td>`;
+                            historyTableBody.appendChild(tr);
+                        });
+                    } else {
+                        historyContainer.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Failed to update history table:', error);
+                    historyTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-red-400">Erreur de chargement.</td></tr>`;
+                }
+            }
+            
+            function handleTableActions(event) {
+                const button = event.target.closest('.action-btn');
+                if (!button) return;
+
+                const tr = button.closest('tr');
+                if (button.classList.contains('edit-btn')) {
+                    handleEdit(tr);
+                } else if (button.classList.contains('delete-btn')) {
+                    handleDelete(tr);
+                } else if (button.classList.contains('save-btn')) {
+                    handleSave(tr);
+                } else if (button.classList.contains('cancel-btn')) {
+                    handleCancel(tr);
+                }
+            }
+
+            function handleEdit(tr) {
+                if (activeEditingRow) {
+                     handleCancel(activeEditingRow); // Cancel any other editing row
+                }
+                activeEditingRow = tr;
+                originalRowHTML = tr.innerHTML;
+                const record = JSON.parse(tr.dataset.record);
+                tr.classList.add('editing-row');
+
+                const date = new Date(record.data['Date']).toISOString().split('T')[0];
+
+                tr.innerHTML = `
+                    <td><input type="date" value="${date}" class="w-32 bg-gray-900 border-gray-700 rounded px-1 py-0.5"></td>
+                    <td><input type="number" value="${record.data['Kilométrage (km)']}" class="w-24 bg-gray-900 border-gray-700 rounded px-1 py-0.5"></td>
+                    <td>
+                      <select class="bg-gray-900 border-gray-700 rounded px-1 py-0.5">
+                        <option value="Essence" ${record.data['Type de Carburant'] === 'Essence' ? 'selected' : ''}>Essence</option>
+                        <option value="Électricité" ${record.data['Type de Carburant'] === 'Électricité' ? 'selected' : ''}>Électricité</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select class="bg-gray-900 border-gray-700 rounded px-1 py-0.5">
+                        <option value="Qover" ${record.data['Payé par'] === 'Qover' ? 'selected' : ''}>Qover</option>
+                        <option value="Personnel" ${record.data['Payé par'] === 'Personnel' ? 'selected' : ''}>Personnel</option>
+                      </select>
+                    </td>
+                    <td>
+                        <button class="action-btn save-btn" title="Enregistrer">✔️</button>
+                        <button class="action-btn cancel-btn" title="Annuler">✖️</button>
+                    </td>`;
+            }
+
+            async function handleDelete(tr) {
+                const rowNumber = tr.dataset.rowNumber;
+                if (confirm(`Êtes-vous sûr de vouloir supprimer la ligne ${rowNumber} ? Cette action est irréversible.`)) {
+                    try {
+                        showStatus('Suppression en cours...', 'info');
+                        await apiPost('deleteRecord', { rowNumber: parseInt(rowNumber) });
+                        showStatus('Enregistrement supprimé !', 'success');
+                        refreshAllData();
+                    } catch (error) {
+                        showStatus(`Erreur: ${error.message}`, 'error');
+                    }
+                }
+            }
+            
+            async function handleSave(tr) {
+                const originalRecord = JSON.parse(tr.dataset.record);
+                const inputs = tr.querySelectorAll('input, select');
+                const updatedData = { ...originalRecord.data }; // Clone original data
+                
+                // Update data from inputs
+                updatedData['Date'] = new Date(inputs[0].value);
+                updatedData['Kilométrage (km)'] = parseFloat(inputs[1].value);
+                updatedData['Type de Carburant'] = inputs[2].value;
+                updatedData['Payé par'] = inputs[3].value;
+                
+                // If type is changed to Electric, zero out fuel values
+                if (updatedData['Type de Carburant'] === 'Électricité') {
+                    updatedData['Litres (L)'] = 0;
+                    updatedData['Prix/Litre (€)'] = 0;
+                    updatedData['Coût Total (€)'] = 0;
+                }
+
+                try {
+                    showStatus('Mise à jour en cours...', 'info');
+                    await apiPost('updateRecord', { rowNumber: originalRecord.rowNumber, data: updatedData });
+                    showStatus('Enregistrement mis à jour !', 'success');
+                    activeEditingRow = null;
+                    originalRowHTML = null;
+                    refreshAllData();
+                } catch(error) {
+                    showStatus(`Erreur: ${error.message}`, 'error');
+                }
+            }
+
+            function handleCancel(tr) {
+                tr.innerHTML = originalRowHTML;
+                tr.classList.remove('editing-row');
+                activeEditingRow = null;
+                originalRowHTML = null;
             }
 
             // Start the application
