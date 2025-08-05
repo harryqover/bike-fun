@@ -5,6 +5,7 @@
     <title>RoadBuddy AI for Skoda</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#111827"/>
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -67,6 +68,23 @@
             width: 100%; bg-gray-700 border-gray-600 text-white rounded-lg p-3 
             focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition
         }
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+
+        /* Style for stale data (loaded from cache) */
+        .is-stale {
+            color: #6b7280; /* gray-500 */
+            animation: pulse-stale 2s infinite ease-in-out;
+        }
+        input.is-stale::placeholder {
+            color: #6b7280;
+            animation: pulse-stale 2s infinite ease-in-out;
+        }
+        @keyframes pulse-stale {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
     </style>
 </head>
 <body class="text-white flex items-center justify-center min-h-screen p-4">
@@ -114,7 +132,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Type de carburant</label>
                     <div class="grid grid-cols-2 gap-4">
-                        <button type="button" id="btn-gas" class="fuel-type-btn btn-active p-3 rounded-lg transition">⚡ Essence</button>
+                        <button type="button" id="btn-gas" class="fuel-type-btn btn-active p-3 rounded-lg transition text-sm">⚡ Essence (95 E10)</button>
                         <button type="button" id="btn-electric" class="fuel-type-btn p-3 rounded-lg transition bg-gray-700">🔌 Électricité</button>
                     </div>
                     <input type="hidden" id="fuelType" name="fuelType" value="Essence">
@@ -192,7 +210,7 @@
                             <th>Date</th>
                             <th>KM</th>
                             <th>Type</th>
-                            <th>Payé par</th>
+                            <th>Conso.</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -214,8 +232,8 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="edit-date" class="block text-sm font-medium text-gray-300 mb-1">Date</label>
-                        <input type="date" id="edit-date" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-2 focus:ring-2 focus:ring-blue-500">
+                        <label for="edit-date" class="block text-sm font-medium text-gray-300 mb-1">Date et Heure</label>
+                        <input type="datetime-local" id="edit-date" class="w-full bg-gray-700 border-gray-600 text-white rounded-lg p-2 focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label for="edit-mileage" class="block text-sm font-medium text-gray-300 mb-1">Kilométrage (km)</label>
@@ -390,6 +408,7 @@
                 if (cachedMileage) {
                     lastKnownMileage = Number(cachedMileage);
                     mileageInput.placeholder = `Dernier: ${lastKnownMileage} km`;
+                    mileageInput.classList.add('is-stale');
                 }
 
                 // Load and display last known yearly costs from localStorage
@@ -399,6 +418,8 @@
                         const costs = JSON.parse(cachedCosts);
                         qoverCostEl.textContent = `${costs.qover} €`;
                         personnelCostEl.textContent = `${costs.personnel} €`;
+                        qoverCostEl.classList.add('is-stale');
+                        personnelCostEl.classList.add('is-stale');
                         yearlyCostsContainer.classList.remove('opacity-0');
                     } catch(e) {
                         console.error("Could not parse cached costs", e);
@@ -417,6 +438,8 @@
                     qoverCostEl.textContent = `${costs.qover} €`;
                     personnelCostEl.textContent = `${costs.personnel} €`;
                     yearlyCostsContainer.classList.remove('opacity-0');
+                    qoverCostEl.classList.remove('is-stale');
+                    personnelCostEl.classList.remove('is-stale');
                     localStorage.setItem('roadbuddy_yearlyCosts', JSON.stringify(costs));
                 }).catch(error => console.error("Failed to refresh yearly costs:", error));
 
@@ -424,6 +447,7 @@
                 apiGet('getLastMileage').then(mileage => {
                     lastKnownMileage = Number(mileage) || 0;
                     mileageInput.placeholder = `Dernier: ${lastKnownMileage} km`;
+                    mileageInput.classList.remove('is-stale');
                     localStorage.setItem('roadbuddy_lastMileage', lastKnownMileage);
                 }).catch(error => console.error("Failed to refresh last mileage:", error));
             }
@@ -617,6 +641,12 @@
             }
 
             // --- HISTORY TABLE & MODAL FUNCTIONS ---
+            
+            function toLocalISOString(date) {
+                const pad = (num) => num.toString().padStart(2, '0');
+                return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+            }
+
             async function updateHistoryTable() {
                 try {
                     historyTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4">Chargement...</td></tr>`;
@@ -627,12 +657,38 @@
                         records.forEach(record => {
                             const tr = document.createElement('tr');
                             tr.dataset.record = JSON.stringify(record);
-                            const formattedDate = new Date(record.data['Date']).toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit' });
+                            
+                            let formattedDate = 'Date invalide';
+                            if (record.data['Date']) {
+                                const date = new Date(record.data['Date']);
+                                if (!isNaN(date)) {
+                                    formattedDate = date.toLocaleString('fr-BE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', '');
+                                }
+                            }
+
+                            let consumptionCell = `<td></td>`; // Default empty cell
+                            if (record.data['Type de Carburant'] === 'Essence') {
+                                if (record.consumptionInfo) {
+                                    const { consumption, trend } = record.consumptionInfo;
+                                    let trendIcon = '';
+                                    if (trend === 'up') {
+                                        trendIcon = '<span class="text-red-400 ml-1">▲</span>'; // Up arrow
+                                    } else if (trend === 'down') {
+                                        trendIcon = '<span class="text-green-400 ml-1">▼</span>'; // Down arrow
+                                    } else {
+                                        trendIcon = '<span class="text-gray-500 ml-1">~</span>';
+                                    }
+                                    consumptionCell = `<td class="text-xs whitespace-nowrap">${consumption} L ${trendIcon}</td>`;
+                                } else {
+                                    consumptionCell = `<td class="text-xs">-</td>`;
+                                }
+                            }
+
                             tr.innerHTML = `
-                                <td>${formattedDate}</td>
+                                <td class="text-xs">${formattedDate}</td>
                                 <td>${record.data['Kilométrage (km)']}</td>
                                 <td>${record.data['Type de Carburant'] === 'Essence' ? '⛽' : '🔌'}</td>
-                                <td>${record.data['Payé par']}</td>
+                                ${consumptionCell}
                                 <td class="actions">
                                     <button class="action-btn edit-btn" title="Modifier">✏️</button>
                                     <button class="action-btn delete-btn" title="Supprimer">🗑️</button>
@@ -659,7 +715,9 @@
             }
 
             async function handleDelete(record) {
-                if (confirm(`Êtes-vous sûr de vouloir supprimer l'enregistrement du ${new Date(record.data.Date).toLocaleDateString('fr-BE')} ?`)) {
+                const date = new Date(record.data.Date);
+                const formattedDate = !isNaN(date) ? date.toLocaleDateString('fr-BE') : 'cet enregistrement';
+                if (confirm(`Êtes-vous sûr de vouloir supprimer l'enregistrement du ${formattedDate} ?`)) {
                     try {
                         showStatus('Suppression en cours...', 'info');
                         await apiPost('deleteRecord', { rowNumber: record.rowNumber });
@@ -672,8 +730,19 @@
             function openEditModal(record) {
                 currentEditingRecord = record;
                 const data = record.data;
+                
+                if (!data.Date) {
+                    alert("Impossible d'éditer cet enregistrement car la date est invalide.");
+                    return;
+                }
+                const date = new Date(data.Date);
+                if (isNaN(date)) {
+                    alert("Impossible d'éditer cet enregistrement car la date est invalide.");
+                    return;
+                }
+
                 document.getElementById('edit-row-number').value = record.rowNumber;
-                document.getElementById('edit-date').value = new Date(data.Date).toISOString().split('T')[0];
+                document.getElementById('edit-date').value = toLocalISOString(date);
                 document.getElementById('edit-mileage').value = data['Kilométrage (km)'];
                 editFuelTypeSelect.value = data['Type de Carburant'];
                 document.getElementById('edit-paidBy').value = data['Payé par'];
