@@ -571,7 +571,7 @@
                 if (data && data.items && data.items.length > 0) {
                     data.items.forEach(pilot => {
                         const tr = document.createElement('tr');
-                        const pilotId = pilot.subject?.pilotId || 'N/A';
+                        const pilotId = pilot.reference || 'N/A';
                         const currentWage = pilot.subject?.wage || '';
                         const currentBirthdate = pilot.subject?.birthdate ? formatDate(pilot.subject.birthdate) : '';
                         const currentGender = pilot.subject?.gender || '';
