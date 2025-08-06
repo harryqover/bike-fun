@@ -133,19 +133,120 @@
                     </div>
                 </div>
 
-                <!-- Add/Edit Views (same as before) -->
-                <div id="view-add-pilot" class="hidden bg-white p-6 rounded-lg shadow">...</div>
-                <div id="view-bulk-add" class="hidden bg-white p-6 rounded-lg shadow">...</div>
+                <!-- Add Pilot View -->
+                <div id="view-add-pilot" class="hidden bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">Add New Pilot</h2>
+                    <form id="add-pilot-form" class="space-y-6">
+                        <div>
+                            <label for="add-pilotId" class="block text-sm font-medium text-gray-700">Pilot ID (Unique)</label>
+                            <input type="text" name="pilotId" id="add-pilotId" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="add-startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
+                            <input type="date" name="startDate" id="add-startDate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="add-wage" class="block text-sm font-medium text-gray-700">Annual Wage (€)</label>
+                            <input type="number" name="wage" id="add-wage" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="add-birthdate" class="block text-sm font-medium text-gray-700">Birthdate</label>
+                            <input type="date" name="birthdate" id="add-birthdate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Gender</label>
+                            <div class="mt-2 flex items-center space-x-6">
+                                <label class="flex items-center">
+                                    <input type="radio" name="gender" value="Male" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500" checked>
+                                    <span class="ml-2 text-sm text-gray-700">Male</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="gender" value="Female" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                    <span class="ml-2 text-sm text-gray-700">Female</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" class="btn tui-bg-red text-white font-bold py-2 px-4 rounded-lg">Add Pilot</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Bulk Add View -->
+                <div id="view-bulk-add" class="hidden bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">Bulk Add Pilots</h2>
+                    <p class="text-gray-600 mb-4">Paste CSV data below. The format should be: <code class="bg-gray-200 p-1 rounded">pilotId,startDate,wage,birthdate,gender</code>. No header row.</p>
+                    <textarea id="csv-data" rows="10" class="w-full p-2 border border-gray-300 rounded-md" placeholder="pilot001,2025-01-01,85000,1985-05-20,Male&#10;pilot002,2025-01-15,92000,1990-11-12,Female"></textarea>
+                    <div class="flex justify-end mt-4">
+                        <button id="bulk-add-btn" class="btn tui-bg-red text-white font-bold py-2 px-4 rounded-lg">Add Pilots</button>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- Modals (same as before) -->
-    <div id="endorse-modal" class="modal-overlay hidden ...">...</div>
-    <div id="cancel-modal" class="modal-overlay hidden ...">...</div>
+    <!-- Modals -->
+    <!-- Endorse Modal -->
+    <div id="endorse-modal" class="modal-overlay hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-40">
+        <div class="modal-content relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Endorse Pilot Coverage</h3>
+                <form id="endorse-form" class="mt-2 px-7 py-3 space-y-4 text-left">
+                    <input type="hidden" id="endorse-risk-id">
+                    <input type="hidden" id="endorse-gender">
+                    <p class="text-sm">Pilot ID: <strong id="endorse-pilot-id" class="text-base"></strong></p>
+                    <div>
+                        <label for="endorse-wage" class="block text-sm font-medium text-gray-700">New Annual Wage (€)</label>
+                        <input type="number" id="endorse-wage" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                    <div>
+                        <label for="endorse-birthdate" class="block text-sm font-medium text-gray-700">New Birthdate</label>
+                        <input type="date" id="endorse-birthdate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                    <div>
+                        <label for="endorse-effective-date" class="block text-sm font-medium text-gray-700">Effective Date</label>
+                        <input type="date" id="endorse-effective-date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                </form>
+                <div class="items-center px-4 py-3">
+                    <button id="submit-endorsement" class="btn px-4 py-2 tui-bg-red text-white text-base font-medium rounded-md w-full shadow-sm">Submit Endorsement</button>
+                    <button id="cancel-endorsement" class="btn px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md w-full shadow-sm mt-2">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Modal -->
+    <div id="cancel-modal" class="modal-overlay hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-40">
+        <div class="modal-content relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Cancel Pilot Coverage</h3>
+                <form id="cancel-form" class="mt-2 px-7 py-3 space-y-4 text-left">
+                    <input type="hidden" id="cancel-risk-id">
+                    <p class="text-sm">Are you sure you want to cancel coverage for Pilot ID: <strong id="cancel-pilot-id" class="text-base"></strong>?</p>
+                    <div>
+                        <label for="cancel-end-date" class="block text-sm font-medium text-gray-700">Coverage End Date</label>
+                        <input type="date" id="cancel-end-date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                </form>
+                <div class="items-center px-4 py-3">
+                    <button id="submit-cancellation" class="btn px-4 py-2 tui-bg-red text-white text-base font-medium rounded-md w-full shadow-sm">Confirm Cancellation</button>
+                    <button id="cancel-cancellation" class="btn px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md w-full shadow-sm mt-2">Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    <!-- Toast Notification (same as before) -->
-    <div id="toast" class="hidden ...">...</div>
+    <!-- Message/Toast Notification -->
+    <div id="toast" class="hidden fixed bottom-5 right-5 max-w-sm w-full bg-green-500 text-white py-3 px-4 rounded-lg shadow-lg flex items-center justify-between">
+        <p id="toast-message" class="flex-grow"></p>
+        <button id="toast-close-btn" class="ml-4 flex-shrink-0 text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -187,6 +288,16 @@
                 loginBtnText.classList.toggle('hidden', show);
                 loginSubmitBtn.disabled = show;
             };
+            
+            const showToast = (message, isError = false) => {
+                toastMessage.textContent = message;
+                toast.classList.remove('hidden', 'bg-green-500', 'bg-red-500');
+                toast.classList.add(isError ? 'bg-red-500' : 'bg-green-500');
+            };
+            
+            toastCloseBtn.addEventListener('click', () => {
+                toast.classList.add('hidden');
+            });
 
             const showLoginUI = (message = 'Enter your email to receive a secure login link.', isError = false, showForm = true) => {
                 loginMessage.textContent = message;
@@ -376,9 +487,12 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentWage}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentBirthdate}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-4">
-                                <button class="text-indigo-600 hover:text-indigo-900 endorse-btn" title="Endorse" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-wage="${currentWage}" data-birthdate="${currentBirthdate}" data-gender="${currentGender}">...</button>
-
-                                <button class="text-red-600 hover:text-red-900 cancel-btn" title="Cancel" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}">...</button>
+                                <button class="text-indigo-600 hover:text-indigo-900 endorse-btn" title="Endorse" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-wage="${currentWage}" data-birthdate="${currentBirthdate}" data-gender="${currentGender}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900 cancel-btn" title="Cancel" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
+                                </button>
                             </td>`;
                         pilotsTableBody.appendChild(tr);
 
@@ -395,8 +509,137 @@
                 document.getElementById('stats-total-premium').textContent = totalPremium.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
             };
 
-            // --- EVENT LISTENERS (Unchanged logic) ---
-            // ... Your existing event listener code for forms and modals will work as is ...
+            // --- Navigation ---
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    const targetViewId = link.id.replace('nav-', 'view-');
+                    views.forEach(view => {
+                        view.classList.toggle('hidden', view.id !== targetViewId);
+                    });
+                });
+            });
+
+            // --- Event Listeners ---
+            document.getElementById('add-pilot-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const payload = {
+                    pilotId: this.elements['add-pilotId'].value,
+                    startDate: this.elements['add-startDate'].value,
+                    wage: parseInt(this.elements['add-wage'].value, 10),
+                    birthdate: this.elements['add-birthdate'].value,
+                    gender: this.querySelector('input[name="gender"]:checked').value,
+                };
+
+                callGoogleScript('postRiskItem', { payload }, true)
+                    .then(() => {
+                        showToast('Pilot added successfully!');
+                        this.reset();
+                        document.getElementById('nav-all-pilots').click();
+                        loadPilots();
+                    });
+            });
+
+            document.getElementById('bulk-add-btn').addEventListener('click', () => {
+                const csvData = document.getElementById('csv-data').value.trim();
+                if (!csvData) return showToast('CSV data cannot be empty.', true);
+                
+                const rows = csvData.split('\n');
+                const pilots = rows.map(row => {
+                    const [pilotId, startDate, wage, birthdate, gender] = row.split(',');
+                    if (!pilotId || !startDate || !wage || !birthdate || !gender) return null;
+                    return { pilotId, startDate, wage: parseInt(wage, 10), birthdate, gender: gender.trim() };
+                }).filter(p => p !== null);
+
+                if (pilots.length === 0) return showToast('No valid pilot data found in CSV.', true);
+
+                callGoogleScript('postBulkRiskItems', { pilots }, true)
+                    .then(response => {
+                        const successCount = response.filter(r => r.status === 'success').length;
+                        const errorCount = pilots.length - successCount;
+                        showToast(`${successCount} pilots added. ${errorCount} failed.`);
+                        document.getElementById('csv-data').value = '';
+                        document.getElementById('nav-all-pilots').click();
+                        loadPilots();
+                    });
+            });
+            
+            const endorseModal = document.getElementById('endorse-modal');
+            const cancelModal = document.getElementById('cancel-modal');
+            const openModal = (modal) => modal.classList.remove('hidden');
+            const closeModal = (modal) => modal.classList.add('hidden');
+
+            document.getElementById('view-all-pilots').addEventListener('click', (e) => {
+                const endorseButton = e.target.closest('.endorse-btn');
+                const cancelButton = e.target.closest('.cancel-btn');
+
+                if (endorseButton) {
+                    document.getElementById('endorse-risk-id').value = endorseButton.dataset.riskId;
+                    document.getElementById('endorse-pilot-id').textContent = endorseButton.dataset.pilotId;
+                    document.getElementById('endorse-wage').value = endorseButton.dataset.wage;
+                    document.getElementById('endorse-birthdate').value = endorseButton.dataset.birthdate;
+                    document.getElementById('endorse-gender').value = endorseButton.dataset.gender;
+                    document.getElementById('endorse-effective-date').value = new Date().toISOString().split('T')[0];
+                    openModal(endorseModal);
+                }
+                
+                if (cancelButton) {
+                    document.getElementById('cancel-risk-id').value = cancelButton.dataset.riskId;
+                    document.getElementById('cancel-pilot-id').textContent = cancelButton.dataset.pilotId;
+                    document.getElementById('cancel-form').reset();
+                    openModal(cancelModal);
+                }
+            });
+
+            document.getElementById('cancel-endorsement').addEventListener('click', () => closeModal(endorseModal));
+            document.getElementById('submit-endorsement').addEventListener('click', () => {
+                const pilotId = document.getElementById('endorse-pilot-id').textContent;
+                const newWage = document.getElementById('endorse-wage').value;
+                const newBirthdate = document.getElementById('endorse-birthdate').value;
+                const originalGender = document.getElementById('endorse-gender').value;
+
+                if (!newWage && !newBirthdate) {
+                    return showToast('Enter at least a new wage or birthdate.', true);
+                }
+
+                const payload = {
+                    riskItemId: document.getElementById('endorse-risk-id').value,
+                    effectiveDate: document.getElementById('endorse-effective-date').value,
+                    subject: {
+                        pilotId: pilotId,
+                        wage: newWage ? parseInt(newWage, 10) : undefined,
+                        birthdate: newBirthdate || undefined,
+                        gender: originalGender
+                    }
+                };
+
+                if (!payload.effectiveDate) return showToast('Effective date is required.', true);
+
+                callGoogleScript('endorseRiskItem', { payload }, true)
+                    .then(() => {
+                        showToast('Endorsement successful!');
+                        closeModal(endorseModal);
+                        loadPilots();
+                    });
+            });
+            
+            document.getElementById('cancel-cancellation').addEventListener('click', () => closeModal(cancelModal));
+            document.getElementById('submit-cancellation').addEventListener('click', () => {
+                const payload = {
+                    riskItemId: document.getElementById('cancel-risk-id').value,
+                    endDate: document.getElementById('cancel-end-date').value
+                };
+                if (!payload.endDate) return showToast('End date is required.', true);
+
+                callGoogleScript('cancelRiskItem', { payload }, true)
+                    .then(() => {
+                        showToast('Cancellation successful!');
+                        closeModal(cancelModal);
+                        loadPilots();
+                    });
+            });
 
             // --- Initial Load ---
             handleInitialLoad();
