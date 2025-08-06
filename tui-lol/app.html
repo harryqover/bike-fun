@@ -23,12 +23,25 @@
         #login-overlay, #app-wrapper {
             display: none; /* Hide both by default */
         }
+        /* Custom styles for a cleaner input look */
+        .form-input {
+            @apply mt-1 block w-full rounded-lg border-gray-200 bg-gray-50 p-3 text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+        }
+        /* Hide number input spinners for a cleaner look */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
 
     <!-- Login Overlay -->
-    <div id="login-overlay" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+    <div id="login-overlay" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 px-4">
         <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm">
             <div class="flex justify-center mb-6">
                  <img src="https://www.tuifly.be/flight/_ui/mobile/th/images/logo/TUI-fly-Logo.svg" alt="TUI Fly Logo" class="h-10 w-auto">
@@ -37,9 +50,9 @@
             <p id="login-message" class="text-center text-gray-600 mb-4">Enter your email to receive a secure login link.</p>
             <form id="login-form">
                 <label for="email-input" class="block text-sm font-medium text-gray-700">Email Address</label>
-                <input type="email" id="email-input" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2" required>
+                <input type="email" id="email-input" class="form-input" required>
                 <p id="login-error" class="text-red-500 text-sm mt-2 hidden"></p>
-                <button type="submit" id="login-submit-btn" class="mt-6 w-full btn tui-bg-red text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center">
+                <button type="submit" id="login-submit-btn" class="mt-6 w-full btn tui-bg-red text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center">
                     <span id="login-btn-text">Send Login Link</span>
                     <svg id="login-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -139,19 +152,19 @@
                     <form id="add-pilot-form" class="space-y-6">
                         <div>
                             <label for="add-pilotId" class="block text-sm font-medium text-gray-700">Pilot ID (Unique)</label>
-                            <input type="text" name="pilotId" id="add-pilotId" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2">
+                            <input type="text" name="pilotId" id="add-pilotId" required class="form-input">
                         </div>
                         <div>
                             <label for="add-startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
-                            <input type="date" name="startDate" id="add-startDate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2">
+                            <input type="date" name="startDate" id="add-startDate" required class="form-input">
                         </div>
                         <div>
                             <label for="add-wage" class="block text-sm font-medium text-gray-700">Annual Wage (€)</label>
-                            <input type="number" name="wage" id="add-wage" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2">
+                            <input type="number" name="wage" id="add-wage" required class="form-input">
                         </div>
                         <div>
                             <label for="add-birthdate" class="block text-sm font-medium text-gray-700">Birthdate</label>
-                            <input type="date" name="birthdate" id="add-birthdate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2">
+                            <input type="date" name="birthdate" id="add-birthdate" required class="form-input">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Gender</label>
@@ -176,7 +189,7 @@
                 <div id="view-bulk-add" class="hidden bg-white p-6 rounded-lg shadow">
                     <h2 class="text-2xl font-bold mb-4 text-gray-800">Bulk Add Pilots</h2>
                     <p class="text-gray-600 mb-4">Paste CSV data below. The format should be: <code class="bg-gray-200 p-1 rounded">pilotId,startDate,wage,birthdate,gender</code>. No header row.</p>
-                    <textarea id="csv-data" rows="10" class="w-full p-2 border border-gray-300 rounded-md px-3 py-2" placeholder="pilot001,2025-01-01,85000,1985-05-20,Male&#10;pilot002,2025-01-15,92000,1990-11-12,Female"></textarea>
+                    <textarea id="csv-data" rows="10" class="form-input" placeholder="pilot001,2025-01-01,85000,1985-05-20,Male&#10;pilot002,2025-01-15,92000,1990-11-12,Female"></textarea>
                     <div class="flex justify-end mt-4">
                         <button id="bulk-add-btn" class="btn tui-bg-red text-white font-bold py-2 px-4 rounded-lg">Add Pilots</button>
                     </div>
@@ -186,6 +199,83 @@
     </div>
 
     <!-- Modals -->
+    <!-- Upgrade Modal -->
+    <div id="upgrade-modal" class="modal-overlay hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-40">
+        <div class="modal-content relative top-10 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 text-center">Upgrade Coverage Extension</h3>
+                <form id="upgrade-form" class="mt-4 px-7 py-3 space-y-4 text-left">
+                    <input type="hidden" id="upgrade-risk-id">
+                    <input type="hidden" id="upgrade-pilot-id">
+                    <input type="hidden" id="upgrade-gender">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="upgrade-firstName" class="block text-sm font-medium text-gray-700">First Name</label>
+                            <input type="text" id="upgrade-firstName" class="form-input" required>
+                        </div>
+                        <div>
+                            <label for="upgrade-lastName" class="block text-sm font-medium text-gray-700">Last Name</label>
+                            <input type="text" id="upgrade-lastName" class="form-input" required>
+                        </div>
+                    </div>
+                     <div>
+                        <label for="upgrade-email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="upgrade-email" class="form-input" required>
+                    </div>
+                    <div>
+                        <label for="upgrade-birthdate" class="block text-sm font-medium text-gray-700">Birthdate</label>
+                        <input type="date" id="upgrade-birthdate" class="form-input" required>
+                    </div>
+                    <hr class="my-4">
+                    <h4 class="text-md font-medium text-gray-800">Address</h4>
+                    <div>
+                        <label for="upgrade-street" class="block text-sm font-medium text-gray-700">Street</label>
+                        <input type="text" id="upgrade-street" class="form-input" required>
+                    </div>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="upgrade-number" class="block text-sm font-medium text-gray-700">Number</label>
+                            <input type="text" id="upgrade-number" class="form-input" required>
+                        </div>
+                        <div>
+                            <label for="upgrade-zip" class="block text-sm font-medium text-gray-700">ZIP Code</label>
+                            <input type="text" id="upgrade-zip" class="form-input" required>
+                        </div>
+                    </div>
+                     <div>
+                        <label for="upgrade-city" class="block text-sm font-medium text-gray-700">City</label>
+                        <input type="text" id="upgrade-city" class="form-input" required>
+                    </div>
+                     <hr class="my-4">
+                     <h4 class="text-md font-medium text-gray-800">Coverage Details</h4>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="upgrade-startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
+                            <input type="date" id="upgrade-startDate" class="form-input" required>
+                        </div>
+                        <div>
+                            <label for="upgrade-endDate" class="block text-sm font-medium text-gray-700">End Date</label>
+                            <input type="date" id="upgrade-endDate" class="form-input" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="upgrade-insuredAmount" class="block text-sm font-medium text-gray-700">Insured Amount (€)</label>
+                        <select id="upgrade-insuredAmount" class="form-input" required>
+                            <option value="20000">20,000</option>
+                            <option value="40000">40,000</option>
+                            <option value="60000">60,000</option>
+                        </select>
+                    </div>
+                </form>
+                <div class="items-center px-4 py-3">
+                    <button id="submit-upgrade" class="btn px-4 py-2 tui-bg-red text-white text-base font-medium rounded-md w-full shadow-sm">Add Coverage Extension</button>
+                    <button id="cancel-upgrade" class="btn px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md w-full shadow-sm mt-2">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Endorse Modal -->
     <div id="endorse-modal" class="modal-overlay hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-40">
         <div class="modal-content relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
@@ -197,15 +287,15 @@
                     <p class="text-sm">Pilot ID: <strong id="endorse-pilot-id" class="text-base"></strong></p>
                     <div>
                         <label for="endorse-wage" class="block text-sm font-medium text-gray-700">New Annual Wage (€)</label>
-                        <input type="number" id="endorse-wage" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm px-3 py-2">
+                        <input type="number" id="endorse-wage" class="form-input">
                     </div>
                     <div>
                         <label for="endorse-birthdate" class="block text-sm font-medium text-gray-700">New Birthdate</label>
-                        <input type="date" id="endorse-birthdate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm px-3 py-2">
+                        <input type="date" id="endorse-birthdate" class="form-input">
                     </div>
                     <div>
                         <label for="endorse-effective-date" class="block text-sm font-medium text-gray-700">Effective Date</label>
-                        <input type="date" id="endorse-effective-date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm px-3 py-2">
+                        <input type="date" id="endorse-effective-date" required class="form-input">
                     </div>
                 </form>
                 <div class="items-center px-4 py-3">
@@ -226,7 +316,7 @@
                     <p class="text-sm">Are you sure you want to cancel coverage for Pilot ID: <strong id="cancel-pilot-id" class="text-base"></strong>?</p>
                     <div>
                         <label for="cancel-end-date" class="block text-sm font-medium text-gray-700">Coverage End Date</label>
-                        <input type="date" id="cancel-end-date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm px-3 py-2">
+                        <input type="date" id="cancel-end-date" required class="form-input">
                     </div>
                 </form>
                 <div class="items-center px-4 py-3">
@@ -478,6 +568,32 @@
                         const currentWage = pilot.subject?.wage || '';
                         const currentBirthdate = pilot.subject?.birthdate ? formatDate(pilot.subject.birthdate) : '';
                         const currentGender = pilot.subject?.gender || '';
+                        const extensionPolicy = pilot.metadata?.policyNumber;
+
+                        let actionsHtml = `
+                            <button class="text-indigo-600 hover:text-indigo-900 endorse-btn" title="Endorse" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-wage="${currentWage}" data-birthdate="${currentBirthdate}" data-gender="${currentGender}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                            </button>
+                            <button class="text-red-600 hover:text-red-900 cancel-btn" title="Cancel" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
+                            </button>
+                        `;
+
+                        if (extensionPolicy) {
+                            actionsHtml += `
+                                <span class="text-green-600" title="Upgraded: ${extensionPolicy}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </span>`;
+                        } else {
+                            actionsHtml += `
+                                <button class="text-blue-600 hover:text-blue-900 upgrade-btn" title="Upgrade Coverage" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-birthdate="${currentBirthdate}" data-gender="${currentGender}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" />
+                                    </svg>
+                                </button>`;
+                        }
                         
                         tr.innerHTML = `
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${pilotId}</td>
@@ -486,14 +602,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${pilot.policyNumber || 'N/A'}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentWage}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentBirthdate}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-4">
-                                <button class="text-indigo-600 hover:text-indigo-900 endorse-btn" title="Endorse" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-wage="${currentWage}" data-birthdate="${currentBirthdate}" data-gender="${currentGender}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
-                                </button>
-                                <button class="text-red-600 hover:text-red-900 cancel-btn" title="Cancel" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
-                                </button>
-                            </td>`;
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-4">${actionsHtml}</td>`;
                         pilotsTableBody.appendChild(tr);
 
                         if (pilot.status === 'CONTRACT_STATUS_ACTIVE') activePilots++;
@@ -568,12 +677,14 @@
             
             const endorseModal = document.getElementById('endorse-modal');
             const cancelModal = document.getElementById('cancel-modal');
+            const upgradeModal = document.getElementById('upgrade-modal');
             const openModal = (modal) => modal.classList.remove('hidden');
             const closeModal = (modal) => modal.classList.add('hidden');
 
             document.getElementById('view-all-pilots').addEventListener('click', (e) => {
                 const endorseButton = e.target.closest('.endorse-btn');
                 const cancelButton = e.target.closest('.cancel-btn');
+                const upgradeButton = e.target.closest('.upgrade-btn');
 
                 if (endorseButton) {
                     document.getElementById('endorse-risk-id').value = endorseButton.dataset.riskId;
@@ -591,27 +702,26 @@
                     document.getElementById('cancel-form').reset();
                     openModal(cancelModal);
                 }
+
+                if (upgradeButton) {
+                    document.getElementById('upgrade-risk-id').value = upgradeButton.dataset.riskId;
+                    document.getElementById('upgrade-pilot-id').value = upgradeButton.dataset.pilotId;
+                    document.getElementById('upgrade-birthdate').value = upgradeButton.dataset.birthdate;
+                    document.getElementById('upgrade-gender').value = upgradeButton.dataset.gender;
+                    openModal(upgradeModal);
+                }
             });
 
             document.getElementById('cancel-endorsement').addEventListener('click', () => closeModal(endorseModal));
             document.getElementById('submit-endorsement').addEventListener('click', () => {
-                const pilotId = document.getElementById('endorse-pilot-id').textContent;
-                const newWage = document.getElementById('endorse-wage').value;
-                const newBirthdate = document.getElementById('endorse-birthdate').value;
-                const originalGender = document.getElementById('endorse-gender').value;
-
-                if (!newWage && !newBirthdate) {
-                    return showToast('Enter at least a new wage or birthdate.', true);
-                }
-
                 const payload = {
                     riskItemId: document.getElementById('endorse-risk-id').value,
                     effectiveDate: document.getElementById('endorse-effective-date').value,
                     subject: {
-                        pilotId: pilotId,
-                        wage: newWage ? parseInt(newWage, 10) : undefined,
-                        birthdate: newBirthdate || undefined,
-                        gender: originalGender
+                        pilotId: document.getElementById('endorse-pilot-id').textContent,
+                        wage: document.getElementById('endorse-wage').value ? parseInt(document.getElementById('endorse-wage').value, 10) : undefined,
+                        birthdate: document.getElementById('endorse-birthdate').value || undefined,
+                        gender: document.getElementById('endorse-gender').value
                     }
                 };
 
@@ -637,6 +747,42 @@
                     .then(() => {
                         showToast('Cancellation successful!');
                         closeModal(cancelModal);
+                        loadPilots();
+                    });
+            });
+
+            document.getElementById('cancel-upgrade').addEventListener('click', () => closeModal(upgradeModal));
+            document.getElementById('submit-upgrade').addEventListener('click', () => {
+                const form = document.getElementById('upgrade-form');
+                const payload = {
+                    riskItemId: document.getElementById('upgrade-risk-id').value,
+                    pilotId: document.getElementById('upgrade-pilot-id').value,
+                    gender: document.getElementById('upgrade-gender').value,
+                    firstName: document.getElementById('upgrade-firstName').value,
+                    lastName: document.getElementById('upgrade-lastName').value,
+                    email: document.getElementById('upgrade-email').value,
+                    birthdate: document.getElementById('upgrade-birthdate').value,
+                    street: document.getElementById('upgrade-street').value,
+                    number: document.getElementById('upgrade-number').value,
+                    zip: document.getElementById('upgrade-zip').value,
+                    city: document.getElementById('upgrade-city').value,
+                    startDate: document.getElementById('upgrade-startDate').value,
+                    endDate: document.getElementById('upgrade-endDate').value,
+                    insuredAmount: parseInt(document.getElementById('upgrade-insuredAmount').value, 10)
+                };
+                
+                // Basic validation
+                for(const key in payload) {
+                    if(!payload[key]) {
+                        return showToast(`Please fill out all fields. Missing: ${key}`, true);
+                    }
+                }
+
+                callGoogleScript('upgradeCoverage', { payload }, true)
+                    .then(() => {
+                        showToast('Coverage extension added successfully!');
+                        closeModal(upgradeModal);
+                        form.reset();
                         loadPilots();
                     });
             });
