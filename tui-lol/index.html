@@ -204,6 +204,7 @@
                 <h3 class="text-lg leading-6 font-medium text-gray-900">Endorse Pilot Coverage</h3>
                 <form id="endorse-form" class="mt-2 px-7 py-3 space-y-4 text-left">
                     <input type="hidden" id="endorse-risk-id">
+                    <input type="hidden" id="endorse-gender">
                     <p class="text-sm">Pilot ID: <strong id="endorse-pilot-id" class="text-base"></strong></p>
                     <div>
                         <label for="endorse-wage" class="block text-sm font-medium text-gray-700">New Annual Wage (€)</label>
@@ -349,6 +350,7 @@
                         const pilotId = pilot.subject?.pilotId || 'N/A';
                         const currentWage = pilot.subject?.wage || '';
                         const currentBirthdate = pilot.subject?.birthdate ? formatDate(pilot.subject.birthdate) : '';
+                        const currentGender = pilot.subject?.gender || '';
                         
                         tr.innerHTML = `
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${pilotId}</td>
@@ -358,7 +360,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentWage}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentBirthdate}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-4">
-                                <button class="text-indigo-600 hover:text-indigo-900 endorse-btn" title="Endorse" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-wage="${currentWage}" data-birthdate="${currentBirthdate}">
+                                <button class="text-indigo-600 hover:text-indigo-900 endorse-btn" title="Endorse" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-wage="${currentWage}" data-birthdate="${currentBirthdate}" data-gender="${currentGender}">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
                                 </button>
                                 <button class="text-red-600 hover:text-red-900 cancel-btn" title="Cancel" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}">
@@ -493,6 +495,7 @@
                     document.getElementById('endorse-pilot-id').textContent = endorseButton.dataset.pilotId;
                     document.getElementById('endorse-wage').value = endorseButton.dataset.wage;
                     document.getElementById('endorse-birthdate').value = endorseButton.dataset.birthdate;
+                    document.getElementById('endorse-gender').value = endorseButton.dataset.gender;
                     document.getElementById('endorse-effective-date').value = new Date().toISOString().split('T')[0];
                     openModal(endorseModal);
                 }
@@ -507,18 +510,27 @@
 
             document.getElementById('cancel-endorsement').addEventListener('click', () => closeModal(endorseModal));
             document.getElementById('submit-endorsement').addEventListener('click', () => {
+                const pilotId = document.getElementById('endorse-pilot-id').textContent;
+                const newWage = document.getElementById('endorse-wage').value;
+                const newBirthdate = document.getElementById('endorse-birthdate').value;
+                const originalGender = document.getElementById('endorse-gender').value;
+
+                if (!newWage && !newBirthdate) {
+                    return showToast('Enter at least a new wage or birthdate.', true);
+                }
+
                 const payload = {
                     riskItemId: document.getElementById('endorse-risk-id').value,
                     effectiveDate: document.getElementById('endorse-effective-date').value,
-                    characteristics: []
+                    subject: {
+                        pilotId: pilotId,
+                        wage: newWage ? parseInt(newWage, 10) : undefined,
+                        birthdate: newBirthdate || undefined,
+                        gender: originalGender
+                    }
                 };
-                const newWage = document.getElementById('endorse-wage').value;
-                const newBirthdate = document.getElementById('endorse-birthdate').value;
 
                 if (!payload.effectiveDate) return showToast('Effective date is required.', true);
-                if (newWage) payload.characteristics.push({ key: 'wage', value: parseInt(newWage, 10) });
-                if (newBirthdate) payload.characteristics.push({ key: 'birthdate', value: newBirthdate });
-                if (payload.characteristics.length === 0) return showToast('Enter at least a new wage or birthdate.', true);
 
                 callGoogleScript('endorseRiskItem', { payload }, true)
                     .then(() => {
