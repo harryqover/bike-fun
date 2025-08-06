@@ -49,131 +49,152 @@
 </head>
 <body class="bg-gray-100">
 
-    <!-- Header -->
-    <header class="bg-white shadow-md border-b">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <div class="flex items-center space-x-4">
-                    <img src="https://www.tuifly.be/flight/_ui/mobile/th/images/logo/TUI-fly-Logo.svg" alt="TUI Fly Logo" class="h-8 w-auto">
-                    <h1 class="text-2xl font-bold text-gray-800">Loss of Licence Portal</h1>
+    <!-- Password Protection Overlay -->
+    <div id="password-overlay" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm">
+            <div class="flex justify-center mb-6">
+                 <img src="https://www.tuifly.be/flight/_ui/mobile/th/images/logo/TUI-fly-Logo.svg" alt="TUI Fly Logo" class="h-10 w-auto">
+            </div>
+            <h2 class="text-xl font-bold text-center text-gray-800 mb-4">Access Required</h2>
+            <form id="password-form">
+                <label for="password-input" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" id="password-input" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                <p id="password-error" class="text-red-500 text-sm mt-2 hidden">Incorrect password. Please try again.</p>
+                <button type="submit" class="mt-6 w-full btn tui-bg-red text-white font-bold py-2 px-4 rounded-lg">
+                    Login
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application Wrapper (Initially Hidden) -->
+    <div id="app-wrapper" class="hidden">
+        <!-- Header -->
+        <header class="bg-white shadow-md border-b">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    <div class="flex items-center space-x-4">
+                        <img src="https://www.tuifly.be/flight/_ui/mobile/th/images/logo/TUI-fly-Logo.svg" alt="TUI Fly Logo" class="h-8 w-auto">
+                        <h1 class="text-2xl font-bold text-gray-800">Loss of Licence Portal</h1>
+                    </div>
                 </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
-        <!-- Statistics Section -->
-        <div id="stats-section" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white p-4 rounded-lg shadow text-center">
-                <h3 class="text-sm font-medium text-gray-500 uppercase">Active Pilots</h3>
-                <p id="stats-active-pilots" class="mt-1 text-3xl font-semibold text-gray-900">0</p>
-            </div>
-            <div class="bg-white p-4 rounded-lg shadow text-center">
-                <h3 class="text-sm font-medium text-gray-500 uppercase">Ended Coverages</h3>
-                <p id="stats-ended-pilots" class="mt-1 text-3xl font-semibold text-gray-900">0</p>
-            </div>
-            <div class="bg-white p-4 rounded-lg shadow text-center">
-                <h3 class="text-sm font-medium text-gray-500 uppercase">Total Premium (Full Term)</h3>
-                <p id="stats-total-premium" class="mt-1 text-3xl font-semibold text-gray-900">€0.00</p>
-            </div>
-        </div>
-
-        <!-- Navigation -->
-        <nav class="mb-6 bg-white p-4 rounded-lg shadow">
-            <div class="flex space-x-8">
-                <a href="#" id="nav-all-pilots" class="nav-link text-gray-700 font-medium active">All Pilots</a>
-                <a href="#" id="nav-add-pilot" class="nav-link text-gray-700 font-medium">Add Pilot</a>
-                <a href="#" id="nav-bulk-add" class="nav-link text-gray-700 font-medium">Bulk Add</a>
-            </div>
-        </nav>
-
-        <!-- Loading Spinner -->
-        <div id="loading-spinner" class="hidden fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-            <div class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 tui-border-red"></div>
-        </div>
-
-        <!-- Content Views -->
-        <div id="content-views">
-            <!-- All Pilots View -->
-            <div id="view-all-pilots" class="bg-white p-6 rounded-lg shadow">
-                <div class="flex items-center justify-between mb-4">
-                     <h2 class="text-2xl font-bold text-gray-800">Insured Pilots</h2>
-                     <div id="refresh-indicator" class="hidden refresh-indicator flex items-center space-x-2 text-sm text-gray-500">
-                         <svg class="spinner h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                         <span>Refreshing...</span>
-                     </div>
+        <!-- Main Content -->
+        <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+            <!-- Statistics Section -->
+            <div id="stats-section" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-white p-4 rounded-lg shadow text-center">
+                    <h3 class="text-sm font-medium text-gray-500 uppercase">Active Pilots</h3>
+                    <p id="stats-active-pilots" class="mt-1 text-3xl font-semibold text-gray-900">0</p>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pilot ID</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Policy Number</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Wage (€)</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Birthdate</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="pilots-table-body" class="bg-white divide-y divide-gray-200">
-                            <!-- Pilot rows will be inserted here by JavaScript -->
-                        </tbody>
-                    </table>
+                <div class="bg-white p-4 rounded-lg shadow text-center">
+                    <h3 class="text-sm font-medium text-gray-500 uppercase">Ended Coverages</h3>
+                    <p id="stats-ended-pilots" class="mt-1 text-3xl font-semibold text-gray-900">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow text-center">
+                    <h3 class="text-sm font-medium text-gray-500 uppercase">Total Premium (Full Term)</h3>
+                    <p id="stats-total-premium" class="mt-1 text-3xl font-semibold text-gray-900">€0.00</p>
                 </div>
             </div>
 
-            <!-- Add Pilot View -->
-            <div id="view-add-pilot" class="hidden bg-white p-6 rounded-lg shadow">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">Add New Pilot</h2>
-                <form id="add-pilot-form" class="space-y-6">
-                    <div>
-                        <label for="pilotId" class="block text-sm font-medium text-gray-700">Pilot ID (Unique)</label>
-                        <input type="text" name="pilotId" id="add-pilotId" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+            <!-- Navigation -->
+            <nav class="mb-6 bg-white p-4 rounded-lg shadow">
+                <div class="flex space-x-8">
+                    <a href="#" id="nav-all-pilots" class="nav-link text-gray-700 font-medium active">All Pilots</a>
+                    <a href="#" id="nav-add-pilot" class="nav-link text-gray-700 font-medium">Add Pilot</a>
+                    <a href="#" id="nav-bulk-add" class="nav-link text-gray-700 font-medium">Bulk Add</a>
+                </div>
+            </nav>
+
+            <!-- Loading Spinner -->
+            <div id="loading-spinner" class="hidden fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                <div class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 tui-border-red"></div>
+            </div>
+
+            <!-- Content Views -->
+            <div id="content-views">
+                <!-- All Pilots View -->
+                <div id="view-all-pilots" class="bg-white p-6 rounded-lg shadow">
+                    <div class="flex items-center justify-between mb-4">
+                         <h2 class="text-2xl font-bold text-gray-800">Insured Pilots</h2>
+                         <div id="refresh-indicator" class="hidden refresh-indicator flex items-center space-x-2 text-sm text-gray-500">
+                             <svg class="spinner h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                             <span>Refreshing...</span>
+                         </div>
                     </div>
-                    <div>
-                        <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
-                        <input type="date" name="startDate" id="add-startDate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pilot ID</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Policy Number</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Wage (€)</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Birthdate</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pilots-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Pilot rows will be inserted here by JavaScript -->
+                            </tbody>
+                        </table>
                     </div>
-                    <div>
-                        <label for="wage" class="block text-sm font-medium text-gray-700">Annual Wage (€)</label>
-                        <input type="number" name="wage" id="add-wage" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="birthdate" class="block text-sm font-medium text-gray-700">Birthdate</label>
-                        <input type="date" name="birthdate" id="add-birthdate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Gender</label>
-                        <div class="mt-2 flex items-center space-x-6">
-                            <label class="flex items-center">
-                                <input type="radio" name="gender" value="Male" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500" checked>
-                                <span class="ml-2 text-sm text-gray-700">Male</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="radio" name="gender" value="Female" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                                <span class="ml-2 text-sm text-gray-700">Female</span>
-                            </label>
+                </div>
+
+                <!-- Add Pilot View -->
+                <div id="view-add-pilot" class="hidden bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">Add New Pilot</h2>
+                    <form id="add-pilot-form" class="space-y-6">
+                        <div>
+                            <label for="pilotId" class="block text-sm font-medium text-gray-700">Pilot ID (Unique)</label>
+                            <input type="text" name="pilotId" id="add-pilotId" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                         </div>
-                    </div>
-                    <div class="flex justify-end">
-                        <button type="submit" class="btn tui-bg-red text-white font-bold py-2 px-4 rounded-lg">Add Pilot</button>
-                    </div>
-                </form>
-            </div>
+                        <div>
+                            <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
+                            <input type="date" name="startDate" id="add-startDate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="wage" class="block text-sm font-medium text-gray-700">Annual Wage (€)</label>
+                            <input type="number" name="wage" id="add-wage" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="birthdate" class="block text-sm font-medium text-gray-700">Birthdate</label>
+                            <input type="date" name="birthdate" id="add-birthdate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Gender</label>
+                            <div class="mt-2 flex items-center space-x-6">
+                                <label class="flex items-center">
+                                    <input type="radio" name="gender" value="Male" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500" checked>
+                                    <span class="ml-2 text-sm text-gray-700">Male</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="gender" value="Female" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                    <span class="ml-2 text-sm text-gray-700">Female</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" class="btn tui-bg-red text-white font-bold py-2 px-4 rounded-lg">Add Pilot</button>
+                        </div>
+                    </form>
+                </div>
 
-            <!-- Bulk Add View -->
-            <div id="view-bulk-add" class="hidden bg-white p-6 rounded-lg shadow">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">Bulk Add Pilots</h2>
-                <p class="text-gray-600 mb-4">Paste CSV data below. The format should be: <code class="bg-gray-200 p-1 rounded">pilotId,startDate,wage,birthdate,gender</code>. No header row.</p>
-                <textarea id="csv-data" rows="10" class="w-full p-2 border border-gray-300 rounded-md" placeholder="pilot001,2025-01-01,85000,1985-05-20,Male&#10;pilot002,2025-01-15,92000,1990-11-12,Female"></textarea>
-                <div class="flex justify-end mt-4">
-                    <button id="bulk-add-btn" class="btn tui-bg-red text-white font-bold py-2 px-4 rounded-lg">Add Pilots</button>
+                <!-- Bulk Add View -->
+                <div id="view-bulk-add" class="hidden bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">Bulk Add Pilots</h2>
+                    <p class="text-gray-600 mb-4">Paste CSV data below. The format should be: <code class="bg-gray-200 p-1 rounded">pilotId,startDate,wage,birthdate,gender</code>. No header row.</p>
+                    <textarea id="csv-data" rows="10" class="w-full p-2 border border-gray-300 rounded-md" placeholder="pilot001,2025-01-01,85000,1985-05-20,Male&#10;pilot002,2025-01-15,92000,1990-11-12,Female"></textarea>
+                    <div class="flex justify-end mt-4">
+                        <button id="bulk-add-btn" class="btn tui-bg-red text-white font-bold py-2 px-4 rounded-lg">Add Pilots</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <!-- Modals -->
     <!-- Endorse Modal -->
@@ -237,9 +258,17 @@
             // --- CONFIGURATION ---
             const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSDsYm1-OumbRWRb-_r3LfQMVFzuuOegLr0sLkbqb3qcvbvZQ_MKG6ar-m9OncNb2v/exec'; 
             const LOCAL_STORAGE_KEY = 'tuiLolPilotsData';
+            const CORRECT_PASSWORD = 'Q0V3R';
+            const AUTH_SESSION_KEY = 'tuiLolAuthenticated';
             // --- END CONFIGURATION ---
 
             // --- DOM Elements ---
+            const passwordOverlay = document.getElementById('password-overlay');
+            const passwordForm = document.getElementById('password-form');
+            const passwordInput = document.getElementById('password-input');
+            const passwordError = document.getElementById('password-error');
+            const appWrapper = document.getElementById('app-wrapper');
+
             const navLinks = document.querySelectorAll('.nav-link');
             const views = document.querySelectorAll('#content-views > div');
             const pilotsTableBody = document.getElementById('pilots-table-body');
@@ -247,6 +276,33 @@
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toast-message');
             const refreshIndicator = document.getElementById('refresh-indicator');
+
+            // --- App Initialization ---
+            const initializeApplication = () => {
+                passwordOverlay.classList.add('hidden');
+                appWrapper.classList.remove('hidden');
+                loadPilots(); // Start loading data once authenticated
+            };
+
+            // --- Password Check ---
+            const checkAuth = () => {
+                if (sessionStorage.getItem(AUTH_SESSION_KEY) === 'true') {
+                    initializeApplication();
+                } else {
+                    passwordOverlay.classList.remove('hidden');
+                }
+            };
+
+            passwordForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (passwordInput.value === CORRECT_PASSWORD) {
+                    sessionStorage.setItem(AUTH_SESSION_KEY, 'true');
+                    initializeApplication();
+                } else {
+                    passwordError.classList.remove('hidden');
+                    passwordInput.value = '';
+                }
+            });
 
             // --- Navigation ---
             navLinks.forEach(link => {
@@ -326,7 +382,7 @@
                 document.getElementById('stats-total-premium').textContent = totalPremium.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
             };
 
-            // --- API Call Function (no changes needed) ---
+            // --- API Call Function ---
             const callGoogleScript = (action, payload = {}, showFullLoading = false) => {
                 if (showFullLoading) showLoading(true);
                 else showRefreshIndicator(true);
@@ -358,7 +414,6 @@
 
             // --- Core Functionality ---
             const loadPilots = () => {
-                // 1. Load from cache immediately
                 try {
                     const cachedData = localStorage.getItem(LOCAL_STORAGE_KEY);
                     if (cachedData) {
@@ -368,15 +423,12 @@
                     console.error("Failed to load or parse cached data", e);
                 }
 
-                // 2. Fetch fresh data in the background
                 callGoogleScript('getRiskItems')
                     .then(freshData => {
-                        // 3. Render fresh data and update cache
                         renderData(freshData);
                         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(freshData));
                     })
                     .catch(error => {
-                        // Error is already handled by callGoogleScript
                         if (!localStorage.getItem(LOCAL_STORAGE_KEY)) {
                            pilotsTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-red-500">Failed to load pilots. Please check connection.</td></tr>`;
                         }
@@ -405,10 +457,8 @@
 
             document.getElementById('bulk-add-btn').addEventListener('click', () => {
                 const csvData = document.getElementById('csv-data').value.trim();
-                if (!csvData) {
-                    showToast('CSV data cannot be empty.', true);
-                    return;
-                }
+                if (!csvData) return showToast('CSV data cannot be empty.', true);
+                
                 const rows = csvData.split('\n');
                 const pilots = rows.map(row => {
                     const [pilotId, startDate, wage, birthdate, gender] = row.split(',');
@@ -416,10 +466,7 @@
                     return { pilotId, startDate, wage: parseInt(wage, 10), birthdate, gender: gender.trim() };
                 }).filter(p => p !== null);
 
-                if (pilots.length === 0) {
-                    showToast('No valid pilot data found in CSV.', true);
-                    return;
-                }
+                if (pilots.length === 0) return showToast('No valid pilot data found in CSV.', true);
 
                 callGoogleScript('postBulkRiskItems', { pilots }, true)
                     .then(response => {
@@ -498,7 +545,7 @@
             });
 
             // --- Initial Load ---
-            loadPilots();
+            checkAuth();
         });
     </script>
 </body>
