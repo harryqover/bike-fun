@@ -120,6 +120,7 @@
                     <a href="#" id="nav-all-pilots" class="nav-link text-gray-700 font-medium active">All Pilots</a>
                     <a href="#" id="nav-add-pilot" class="nav-link text-gray-700 font-medium">Add Pilot</a>
                     <a href="#" id="nav-bulk-add" class="nav-link text-gray-700 font-medium">Bulk Add</a>
+                    <a href="#" id="nav-bulk-upsert" class="nav-link text-gray-700 font-medium">Bulk Upsert</a>
                 </div>
             </nav>
 
@@ -228,11 +229,48 @@
                         <button id="bulk-add-btn" class="btn tui-bg-red text-white font-bold py-2 px-4 rounded-lg">Add Pilots</button>
                     </div>
                 </div>
+
+                <!-- Bulk Upsert View -->
+                <div id="view-bulk-upsert" class="hidden bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">Bulk Upsert Pilots</h2>
+                    <p class="text-gray-600 mb-4">Paste CSV data of the active portfolio. The script will compare this with the existing data to add new pilots and update existing ones. Format: <code class="bg-gray-200 p-1 rounded">pilotId,startDate,wage,birthdate,gender</code>. No header row.</p>
+                    <textarea id="upsert-csv-data" rows="10" class="form-input" placeholder="pilot001,2025-01-01,85500.00,1985-05-20,Male&#10;pilot003,2025-02-01,95000.00,1992-03-10,Male"></textarea>
+                    <div class="flex justify-end mt-4">
+                        <button id="analyze-upsert-btn" class="btn tui-bg-blue text-white font-bold py-2 px-4 rounded-lg">Analyze Data</button>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
 
     <!-- Modals -->
+    <!-- Bulk Upsert Confirmation Modal -->
+    <div id="upsert-confirm-modal" class="modal-overlay hidden fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-40">
+        <div class="modal-content relative top-10 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-2/3 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 text-center">Confirm Bulk Upsert</h3>
+                <div id="upsert-summary" class="mt-4 text-center"></div>
+                <div class="mt-4 space-y-6">
+                    <!-- Pilots to Create -->
+                    <div>
+                        <h4 class="text-md font-semibold text-gray-800">New Pilots to Create</h4>
+                        <div id="upsert-create-list" class="text-sm text-gray-700 mt-2 p-2 border rounded-md max-h-48 overflow-y-auto"></div>
+                    </div>
+                    <!-- Pilots to Update -->
+                    <div>
+                        <h4 class="text-md font-semibold text-gray-800">Pilots to Update</h4>
+                        <div id="upsert-update-list" class="text-sm text-gray-700 mt-2 p-2 border rounded-md max-h-48 overflow-y-auto"></div>
+                    </div>
+                </div>
+                <div class="items-center px-4 py-3 mt-6">
+                    <button id="submit-upsert" class="btn px-4 py-2 tui-bg-red text-white text-base font-medium rounded-md w-full shadow-sm">Confirm and Execute Changes</button>
+                    <button id="cancel-upsert" class="btn px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md w-full shadow-sm mt-2">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Upgrade Modal -->
     <div id="upgrade-modal" class="modal-overlay hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-40">
         <div class="modal-content relative top-10 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
@@ -375,6 +413,10 @@
             const LOCAL_STORAGE_KEY = 'tuiLolPilotsData';
             const AUTH_SESSION_KEY = 'tuiLolAuthToken';
             // --- END CONFIGURATION ---
+
+            // --- STATE ---
+            let bulkUpsertData = {};
+
 
             // --- DOM Elements ---
             const loginOverlay = document.getElementById('login-overlay');
@@ -608,6 +650,7 @@
                 let activePilots = 0, endedPilots = 0, totalPremium = 0;
 
                 if (data && data.items && data.items.length > 0) {
+                    data.items.sort((a, b) => (a.reference || '').localeCompare(b.reference || ''));
                     data.items.forEach(pilot => {
                         const tr = document.createElement('tr');
                         const pilotId = pilot.reference || 'N/A';
@@ -743,6 +786,7 @@
             const endorseModal = document.getElementById('endorse-modal');
             const cancelModal = document.getElementById('cancel-modal');
             const upgradeModal = document.getElementById('upgrade-modal');
+            const upsertConfirmModal = document.getElementById('upsert-confirm-modal');
             const openModal = (modal) => modal.classList.remove('hidden');
             const closeModal = (modal) => modal.classList.add('hidden');
 
@@ -852,10 +896,65 @@
                     });
             });
 
+            // --- Bulk Upsert Logic ---
+            document.getElementById('analyze-upsert-btn').addEventListener('click', () => {
+                const csvData = document.getElementById('upsert-csv-data').value.trim();
+                if (!csvData) return showToast('CSV data for upsert cannot be empty.', true);
+
+                callGoogleScript('analyzeBulkUpsert', { csvData }, true)
+                    .then(analysis => {
+                        bulkUpsertData = analysis; // Store for execution
+                        const { toCreate, toUpdate, noChange } = analysis;
+
+                        document.getElementById('upsert-summary').innerHTML = `
+                            Found <strong class="text-green-600">${toCreate.length}</strong> new pilots to create, 
+                            <strong class="text-yellow-600">${toUpdate.length}</strong> pilots to update, and 
+                            <strong class="text-blue-600">${noChange.length}</strong> pilots with no changes.
+                        `;
+
+                        const createList = document.getElementById('upsert-create-list');
+                        createList.innerHTML = toCreate.length ? toCreate.map(p => `<div>Pilot ID: ${p.pilotId}, Start: ${p.startDate}, Wage: ${p.wage}</div>`).join('') : 'None';
+                        
+                        const updateList = document.getElementById('upsert-update-list');
+                        updateList.innerHTML = toUpdate.length ? toUpdate.map(p => `
+                            <div>
+                                <strong>Pilot ID: ${p.pilotId}</strong>
+                                <div>&nbsp;&nbsp;Wage: <span class="line-through">${p.old.wage}</span> -> <span class="font-bold">${p.new.wage}</span></div>
+                                <div>&nbsp;&nbsp;Birthdate: <span class="line-through">${formatDate(p.old.birthdate)}</span> -> <span class="font-bold">${p.new.birthdate}</span></div>
+                            </div>
+                        `).join('') : 'None';
+                        
+                        openModal(upsertConfirmModal);
+                    });
+            });
+
+            document.getElementById('cancel-upsert').addEventListener('click', () => closeModal(upsertConfirmModal));
+
+            document.getElementById('submit-upsert').addEventListener('click', () => {
+                if (!bulkUpsertData || (!bulkUpsertData.toCreate.length && !bulkUpsertData.toUpdate.length)) {
+                    return showToast('No changes to execute.', true);
+                }
+
+                callGoogleScript('executeBulkUpsert', { changes: bulkUpsertData }, true)
+                    .then(result => {
+                        const { createdCount, updatedCount, errors } = result;
+                        let message = `${createdCount} pilots created, ${updatedCount} pilots updated.`;
+                        if (errors && errors.length) {
+                             message += ` ${errors.length} errors occurred.`;
+                             console.error("Bulk Upsert Errors:", errors);
+                        }
+                        showToast(message, errors && errors.length > 0);
+                        closeModal(upsertConfirmModal);
+                        document.getElementById('upsert-csv-data').value = '';
+                        loadPilots(); // Refresh the main list
+                    });
+            });
+
+
             // --- Initial Load ---
             handleInitialLoad();
         });
-        console.log("version v1710-toggle-fix")
+        console.log("version v1800-bulk-upsert")
     </script>
 </body>
 </html>
