@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TUI LOL Management Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tui-bg-blue { background-color: #0d2240; }
+        .tui-text-red { color: #d9002c; }
+        .tui-bg-red { background-color: #d9002c; }
+        .tui-border-red { border-color: #d9002c; }
+        .btn { transition: all 0.3s ease; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .nav-link { transition: all 0.3s ease; border-bottom: 2px solid transparent; padding-bottom: 8px; }
+        .nav-link.active, .nav-link:hover { border-bottom-color: #d9002c; color: #d9002c; }
+        .modal-overlay { transition: opacity 0.3s ease-in-out; }
+        .modal-content { transition: transform 0.3s ease-in-out; }
+        .refresh-indicator .spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        #login-overlay, #app-wrapper {
+            display: none; /* Hide both by default */
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm">
+            <div class="flex justify-center mb-6">
+                 <img src="https://www.tuifly.be/flight/_ui/mobile/th/images/logo/TUI-fly-Logo.svg" alt="TUI Fly Logo" class="h-10 w-auto">
+            </div>
+            <h2 class="text-xl font-bold text-center text-gray-800 mb-4">Secure Portal Access</h2>
+            <p id="login-message" class="text-center text-gray-600 mb-4">Enter your email to receive a secure login link.</p>
+            <form id="login-form">
+                <label for="email-input" class="block text-sm font-medium text-gray-700">Email Address</label>
+                <input type="email" id="email-input" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                <p id="login-error" class="text-red-500 text-sm mt-2 hidden"></p>
+                <button type="submit" id="login-submit-btn" class="mt-6 w-full btn tui-bg-red text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center">
+                    <span id="login-btn-text">Send Login Link</span>
+                    <svg id="login-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application Wrapper -->
+    <div id="app-wrapper">
+        <!-- Header -->
+        <header class="bg-white shadow-md border-b">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    <div class="flex items-center space-x-4">
+                        <img src="https://www.tuifly.be/flight/_ui/mobile/th/images/logo/TUI-fly-Logo.svg" alt="TUI Fly Logo" class="h-8 w-auto">
+                        <h1 class="text-2xl font-bold text-gray-800">Loss of Licence Portal</h1>
+                    </div>
+                    <div>
+                        <button id="logout-btn" class="flex items-center space-x-2 text-sm text-gray-600 hover:text-red-600 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+            <!-- Statistics Section -->
+            <div id="stats-section" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-white p-4 rounded-lg shadow text-center">
+                    <h3 class="text-sm font-medium text-gray-500 uppercase">Active Pilots</h3>
+                    <p id="stats-active-pilots" class="mt-1 text-3xl font-semibold text-gray-900">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow text-center">
+                    <h3 class="text-sm font-medium text-gray-500 uppercase">Ended Coverages</h3>
+                    <p id="stats-ended-pilots" class="mt-1 text-3xl font-semibold text-gray-900">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow text-center">
+                    <h3 class="text-sm font-medium text-gray-500 uppercase">Total Premium (Full Term)</h3>
+                    <p id="stats-total-premium" class="mt-1 text-3xl font-semibold text-gray-900">€0.00</p>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="mb-6 bg-white p-4 rounded-lg shadow">
+                <div class="flex space-x-8">
+                    <a href="#" id="nav-all-pilots" class="nav-link text-gray-700 font-medium active">All Pilots</a>
+                    <a href="#" id="nav-add-pilot" class="nav-link text-gray-700 font-medium">Add Pilot</a>
+                    <a href="#" id="nav-bulk-add" class="nav-link text-gray-700 font-medium">Bulk Add</a>
+                </div>
+            </nav>
+
+            <!-- Loading Spinner -->
+            <div id="loading-spinner" class="hidden fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                <div class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 tui-border-red"></div>
+            </div>
+
+            <!-- Content Views -->
+            <div id="content-views">
+                <!-- All Pilots View -->
+                <div id="view-all-pilots" class="bg-white p-6 rounded-lg shadow">
+                    <div class="flex items-center justify-between mb-4">
+                         <h2 class="text-2xl font-bold text-gray-800">Insured Pilots</h2>
+                         <div id="refresh-indicator" class="hidden refresh-indicator flex items-center space-x-2 text-sm text-gray-500">
+                             <svg class="spinner h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                             <span>Refreshing...</span>
+                         </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pilot ID</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Policy Number</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Wage (€)</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Birthdate</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pilots-table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Add/Edit Views (same as before) -->
+                <div id="view-add-pilot" class="hidden bg-white p-6 rounded-lg shadow">...</div>
+                <div id="view-bulk-add" class="hidden bg-white p-6 rounded-lg shadow">...</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals (same as before) -->
+    <div id="endorse-modal" class="modal-overlay hidden ...">...</div>
+    <div id="cancel-modal" class="modal-overlay hidden ...">...</div>
+    
+    <!-- Toast Notification (same as before) -->
+    <div id="toast" class="hidden ...">...</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- CONFIGURATION ---
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHk_z2zw03sNWEG3_00A7VBnqvQIsZb2QYNIBbEQO6pn1p58KMkF--NyhkEe-0SdVnLg/exec'; // IMPORTANT: Replace with your new script deployment URL
+            const LOCAL_STORAGE_KEY = 'tuiLolPilotsData';
+            const AUTH_SESSION_KEY = 'tuiLolAuthToken';
+            // --- END CONFIGURATION ---
+
+            // --- DOM Elements ---
+            const loginOverlay = document.getElementById('login-overlay');
+            const loginForm = document.getElementById('login-form');
+            const emailInput = document.getElementById('email-input');
+            const loginError = document.getElementById('login-error');
+            const loginMessage = document.getElementById('login-message');
+            const loginSubmitBtn = document.getElementById('login-submit-btn');
+            const loginBtnText = document.getElementById('login-btn-text');
+            const loginSpinner = document.getElementById('login-spinner');
+            
+            const appWrapper = document.getElementById('app-wrapper');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            // Other DOM elements...
+            const navLinks = document.querySelectorAll('.nav-link');
+            const views = document.querySelectorAll('#content-views > div');
+            const pilotsTableBody = document.getElementById('pilots-table-body');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const toastCloseBtn = document.getElementById('toast-close-btn');
+            const refreshIndicator = document.getElementById('refresh-indicator');
+
+
+            // --- UI/Utility Functions ---
+            const showLoginSpinner = (show) => {
+                loginSpinner.classList.toggle('hidden', !show);
+                loginBtnText.classList.toggle('hidden', show);
+                loginSubmitBtn.disabled = show;
+            };
+
+            const showLoginUI = (message = 'Enter your email to receive a secure login link.', isError = false) => {
+                loginMessage.textContent = message;
+                loginMessage.classList.toggle('text-red-500', isError);
+                loginMessage.classList.toggle('text-gray-600', !isError);
+                loginOverlay.style.display = 'flex';
+                appWrapper.style.display = 'none';
+            };
+
+            const initializeApplication = () => {
+                loginOverlay.style.display = 'none';
+                appWrapper.style.display = 'block';
+                loadPilots();
+            };
+
+            // --- Authentication Flow ---
+            const handleInitialLoad = () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const token = urlParams.get('token');
+
+                if (token) {
+                    // Clean the URL
+                    history.replaceState(null, '', window.location.pathname); 
+                    verifyToken(token);
+                } else {
+                    // No token, show the login form
+                    showLoginUI();
+                }
+            };
+
+            const verifyToken = (token) => {
+                showLoginUI('Verifying your login link, please wait...');
+                
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    redirect: "follow",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: 'verifyToken', token: token })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // IMPORTANT: Store the token that was *sent* in the URL, not a new one.
+                        // This token will be used for all subsequent API calls.
+                        sessionStorage.setItem(AUTH_SESSION_KEY, token);
+                        initializeApplication();
+                    } else {
+                        throw new Error(data.message || 'Verification failed.');
+                    }
+                })
+                .catch(error => {
+                    showLoginUI(`Error: ${error.message} Please try again.`, true);
+                });
+            };
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = emailInput.value;
+                if (!email) return;
+
+                showLoginSpinner(true);
+                loginError.classList.add('hidden');
+
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    redirect: "follow",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: 'requestLoginToken', email: email })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        loginForm.classList.add('hidden');
+                        loginMessage.textContent = data.message;
+                        loginMessage.classList.remove('text-red-500');
+                        loginMessage.classList.add('text-green-600');
+                    } else {
+                        throw new Error(data.message);
+                    }
+                })
+                .catch(error => {
+                    loginError.textContent = error.message;
+                    loginError.classList.remove('hidden');
+                })
+                .finally(() => {
+                    showLoginSpinner(false);
+                });
+            });
+
+            logoutBtn.addEventListener('click', () => {
+                sessionStorage.removeItem(AUTH_SESSION_KEY);
+                location.href = window.location.pathname; // Reload without params
+            });
+
+            // --- API Call Function ---
+            const callGoogleScript = (action, payload = {}, showFullLoading = false) => {
+                if (showFullLoading) showLoading(true);
+                else showRefreshIndicator(true);
+                
+                const authToken = sessionStorage.getItem(AUTH_SESSION_KEY);
+                if (!authToken) {
+                    showToast('Authentication error. Please log in again.', true);
+                    logoutBtn.click();
+                    return Promise.reject('No auth token');
+                }
+
+                const requestBody = {
+                    action,
+                    token: authToken, // Send the token with every request
+                    ...payload
+                };
+
+                return fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    redirect: "follow",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(requestBody)
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'error') throw new Error(data.message || 'An unknown error occurred.');
+                    return data.data;
+                })
+                .catch(error => {
+                    console.error('Google Script Call Error:', error);
+                    showToast(error.message, true);
+                    // If token is invalid, force logout
+                    if (error.message.includes('Authentication failed')) {
+                        logoutBtn.click();
+                    }
+                    return Promise.reject(error);
+                })
+                .finally(() => {
+                    if (showFullLoading) showLoading(false);
+                    else showRefreshIndicator(false);
+                });
+            };
+
+            // --- Core Functionality (loadPilots, renderData, etc.) ---
+            // These functions remain largely the same, but now rely on `callGoogleScript`
+            // which handles the token automatically.
+
+            const loadPilots = () => {
+                // Try loading from cache first for instant UI
+                try {
+                    const cachedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+                    if (cachedData) {
+                        renderData(JSON.parse(cachedData));
+                    }
+                } catch (e) {
+                    console.error("Failed to load or parse cached data", e);
+                }
+
+                // Fetch fresh data from the backend
+                callGoogleScript('getRiskItems')
+                    .then(freshData => {
+                        renderData(freshData);
+                        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(freshData));
+                    })
+                    .catch(error => {
+                        if (!localStorage.getItem(LOCAL_STORAGE_KEY)) {
+                           pilotsTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-red-500">Failed to load pilots. Please check connection or log in again.</td></tr>`;
+                        }
+                    });
+            };
+            
+            // --- RENDER DATA (Unchanged from your original, just pasted here for completeness) ---
+            const formatDate = (dateString) => {
+                if (!dateString) return 'N/A';
+                const date = new Date(dateString);
+                const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+                return new Date(date.getTime() + userTimezoneOffset).toISOString().split('T')[0];
+            };
+
+            const renderData = (data) => {
+                pilotsTableBody.innerHTML = ''; 
+                let activePilots = 0, endedPilots = 0, totalPremium = 0;
+
+                if (data && data.items && data.items.length > 0) {
+                    data.items.forEach(pilot => {
+                        const tr = document.createElement('tr');
+                        const pilotId = pilot.subject?.pilotId || 'N/A';
+                        const currentWage = pilot.subject?.wage || '';
+                        const currentBirthdate = pilot.subject?.birthdate ? formatDate(pilot.subject.birthdate) : '';
+                        const currentGender = pilot.subject?.gender || '';
+                        
+                        tr.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${pilotId}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(pilot.contractPeriod?.startDate)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${pilot.contractPeriod?.endDate ? formatDate(pilot.contractPeriod.endDate) : 'Active'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${pilot.policyNumber || 'N/A'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentWage}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentBirthdate}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-4">
+                                <button class="text-indigo-600 hover:text-indigo-900 endorse-btn" title="Endorse" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-wage="${currentWage}" data-birthdate="${currentBirthdate}" data-gender="${currentGender}">...</button>
+                                <button class="text-red-600 hover:text-red-900 cancel-btn" title="Cancel" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}">...</button>
+                            </td>`;
+                        pilotsTableBody.appendChild(tr);
+
+                        if (pilot.status === 'CONTRACT_STATUS_ACTIVE') activePilots++;
+                        else endedPilots++;
+                        if (pilot.premium?.fullTerm?.cip) totalPremium += pilot.premium.fullTerm.cip;
+                    });
+                } else {
+                     pilotsTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4">No pilots found.</td></tr>`;
+                }
+
+                document.getElementById('stats-active-pilots').textContent = activePilots;
+                document.getElementById('stats-ended-pilots').textContent = endedPilots;
+                document.getElementById('stats-total-premium').textContent = totalPremium.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
+            };
+
+            // --- EVENT LISTENERS (Unchanged logic, just ensure they call the new `callGoogleScript`) ---
+            // Add Pilot Form, Bulk Add, Modals, etc.
+            // ... (Your existing event listener code for forms and modals will work as is,
+            // because they all use the `callGoogleScript` function I've updated)
+
+            // --- Initial Load ---
+            handleInitialLoad();
+        });
+    </script>
+</body>
+</html>
