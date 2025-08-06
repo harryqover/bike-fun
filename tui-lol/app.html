@@ -150,7 +150,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- CONFIGURATION ---
-            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHk_z2zw03sNWEG3_00A7VBnqvQIsZb2QYNIBbEQO6pn1p58KMkF--NyhkEe-0SdVnLg/exec'; // IMPORTANT: Replace with your new script deployment URL
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHk_z2zw03sNWEG3_00A7VBnqvQIsZb2QYNIBbEQO6pn1p58KMkF--NyhkEe-0SdVnLg/exec';
             const LOCAL_STORAGE_KEY = 'tuiLolPilotsData';
             const AUTH_SESSION_KEY = 'tuiLolAuthToken';
             // --- END CONFIGURATION ---
@@ -168,7 +168,6 @@
             const appWrapper = document.getElementById('app-wrapper');
             const logoutBtn = document.getElementById('logout-btn');
 
-            // Other DOM elements...
             const navLinks = document.querySelectorAll('.nav-link');
             const views = document.querySelectorAll('#content-views > div');
             const pilotsTableBody = document.getElementById('pilots-table-body');
@@ -180,16 +179,20 @@
 
 
             // --- UI/Utility Functions ---
+            const showLoading = (show) => loadingSpinner.classList.toggle('hidden', !show);
+            const showRefreshIndicator = (show) => refreshIndicator.classList.toggle('hidden', !show);
+
             const showLoginSpinner = (show) => {
                 loginSpinner.classList.toggle('hidden', !show);
                 loginBtnText.classList.toggle('hidden', show);
                 loginSubmitBtn.disabled = show;
             };
 
-            const showLoginUI = (message = 'Enter your email to receive a secure login link.', isError = false) => {
+            const showLoginUI = (message = 'Enter your email to receive a secure login link.', isError = false, showForm = true) => {
                 loginMessage.textContent = message;
                 loginMessage.classList.toggle('text-red-500', isError);
                 loginMessage.classList.toggle('text-gray-600', !isError);
+                loginForm.style.display = showForm ? 'block' : 'none';
                 loginOverlay.style.display = 'flex';
                 appWrapper.style.display = 'none';
             };
@@ -216,7 +219,7 @@
             };
 
             const verifyToken = (token) => {
-                showLoginUI('Verifying your login link, please wait...');
+                showLoginUI('Verifying your login link, please wait...', false, false);
                 
                 fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
@@ -227,8 +230,6 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        // IMPORTANT: Store the token that was *sent* in the URL, not a new one.
-                        // This token will be used for all subsequent API calls.
                         sessionStorage.setItem(AUTH_SESSION_KEY, token);
                         initializeApplication();
                     } else {
@@ -236,7 +237,7 @@
                     }
                 })
                 .catch(error => {
-                    showLoginUI(`Error: ${error.message} Please try again.`, true);
+                    showLoginUI(`Error: ${error.message} Please try again.`, true, true);
                 });
             };
 
@@ -257,7 +258,7 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        loginForm.classList.add('hidden');
+                        loginForm.style.display = 'none';
                         loginMessage.textContent = data.message;
                         loginMessage.classList.remove('text-red-500');
                         loginMessage.classList.add('text-green-600');
@@ -314,7 +315,6 @@
                 .catch(error => {
                     console.error('Google Script Call Error:', error);
                     showToast(error.message, true);
-                    // If token is invalid, force logout
                     if (error.message.includes('Authentication failed')) {
                         logoutBtn.click();
                     }
@@ -327,11 +327,7 @@
             };
 
             // --- Core Functionality (loadPilots, renderData, etc.) ---
-            // These functions remain largely the same, but now rely on `callGoogleScript`
-            // which handles the token automatically.
-
             const loadPilots = () => {
-                // Try loading from cache first for instant UI
                 try {
                     const cachedData = localStorage.getItem(LOCAL_STORAGE_KEY);
                     if (cachedData) {
@@ -341,7 +337,6 @@
                     console.error("Failed to load or parse cached data", e);
                 }
 
-                // Fetch fresh data from the backend
                 callGoogleScript('getRiskItems')
                     .then(freshData => {
                         renderData(freshData);
@@ -354,7 +349,6 @@
                     });
             };
             
-            // --- RENDER DATA (Unchanged from your original, just pasted here for completeness) ---
             const formatDate = (dateString) => {
                 if (!dateString) return 'N/A';
                 const date = new Date(dateString);
@@ -383,6 +377,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentBirthdate}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-4">
                                 <button class="text-indigo-600 hover:text-indigo-900 endorse-btn" title="Endorse" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-wage="${currentWage}" data-birthdate="${currentBirthdate}" data-gender="${currentGender}">...</button>
+
                                 <button class="text-red-600 hover:text-red-900 cancel-btn" title="Cancel" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}">...</button>
                             </td>`;
                         pilotsTableBody.appendChild(tr);
@@ -400,10 +395,8 @@
                 document.getElementById('stats-total-premium').textContent = totalPremium.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
             };
 
-            // --- EVENT LISTENERS (Unchanged logic, just ensure they call the new `callGoogleScript`) ---
-            // Add Pilot Form, Bulk Add, Modals, etc.
-            // ... (Your existing event listener code for forms and modals will work as is,
-            // because they all use the `callGoogleScript` function I've updated)
+            // --- EVENT LISTENERS (Unchanged logic) ---
+            // ... Your existing event listener code for forms and modals will work as is ...
 
             // --- Initial Load ---
             handleInitialLoad();
