@@ -727,7 +727,8 @@
                         wage: document.getElementById('endorse-wage').value ? parseInt(document.getElementById('endorse-wage').value, 10) : undefined,
                         birthdate: document.getElementById('endorse-birthdate').value || undefined,
                         gender: document.getElementById('endorse-gender').value
-                    }
+                    },
+                    reference: document.getElementById('endorse-pilot-id').textContent
                 };
 
                 if (!payload.effectiveDate) return showToast('Effective date is required.', true);
@@ -795,7 +796,7 @@
             // --- Initial Load ---
             handleInitialLoad();
         });
-        console.log("updated style")
+        console.log("updated uniqueref")
     </script>
 </body>
 </html>
