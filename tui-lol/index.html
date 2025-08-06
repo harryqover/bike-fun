@@ -38,6 +38,13 @@
         .modal-content {
             transition: transform 0.3s ease-in-out;
         }
+        .refresh-indicator .spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -90,7 +97,13 @@
         <div id="content-views">
             <!-- All Pilots View -->
             <div id="view-all-pilots" class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">Insured Pilots</h2>
+                <div class="flex items-center justify-between mb-4">
+                     <h2 class="text-2xl font-bold text-gray-800">Insured Pilots</h2>
+                     <div id="refresh-indicator" class="hidden refresh-indicator flex items-center space-x-2 text-sm text-gray-500">
+                         <svg class="spinner h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                         <span>Refreshing...</span>
+                     </div>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
@@ -222,8 +235,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- CONFIGURATION ---
-            // This should point to your deployed Google Apps Script URL
             const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSDsYm1-OumbRWRb-_r3LfQMVFzuuOegLr0sLkbqb3qcvbvZQ_MKG6ar-m9OncNb2v/exec'; 
+            const LOCAL_STORAGE_KEY = 'tuiLolPilotsData';
             // --- END CONFIGURATION ---
 
             // --- DOM Elements ---
@@ -233,150 +246,144 @@
             const loadingSpinner = document.getElementById('loading-spinner');
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toast-message');
+            const refreshIndicator = document.getElementById('refresh-indicator');
 
             // --- Navigation ---
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    
                     navLinks.forEach(l => l.classList.remove('active'));
                     link.classList.add('active');
-
                     const targetViewId = link.id.replace('nav-', 'view-');
                     views.forEach(view => {
-                        if (view.id === targetViewId) {
-                            view.classList.remove('hidden');
-                        } else {
-                            view.classList.add('hidden');
-                        }
+                        view.classList.toggle('hidden', view.id !== targetViewId);
                     });
                 });
             });
 
             // --- Utility Functions ---
-            const showLoading = (show) => {
-                loadingSpinner.classList.toggle('hidden', !show);
-            };
+            const showLoading = (show) => loadingSpinner.classList.toggle('hidden', !show);
+            const showRefreshIndicator = (show) => refreshIndicator.classList.toggle('hidden', !show);
 
             const showToast = (message, isError = false) => {
                 toastMessage.textContent = message;
                 toast.classList.remove('hidden', 'bg-green-500', 'bg-red-500');
                 toast.classList.add(isError ? 'bg-red-500' : 'bg-green-500');
-                setTimeout(() => {
-                    toast.classList.add('hidden');
-                }, 3000);
+                setTimeout(() => toast.classList.add('hidden'), 3000);
             };
 
             const formatDate = (dateString) => {
                 if (!dateString) return 'N/A';
                 const date = new Date(dateString);
-                // Adjust for timezone to prevent off-by-one day errors
                 const userTimezoneOffset = date.getTimezoneOffset() * 60000;
                 return new Date(date.getTime() + userTimezoneOffset).toISOString().split('T')[0];
             };
+            
+            // --- Data Rendering Function ---
+            const renderData = (data) => {
+                pilotsTableBody.innerHTML = ''; 
 
-            // --- API Call Function ---
-            const callGoogleScript = (action, payload = {}) => {
-                showLoading(true);
+                let activePilots = 0;
+                let endedPilots = 0;
+                let totalPremium = 0;
+
+                if (data && data.items && data.items.length > 0) {
+                    data.items.forEach(pilot => {
+                        const tr = document.createElement('tr');
+                        const pilotId = pilot.subject?.pilotId || 'N/A';
+                        const currentWage = pilot.subject?.wage || '';
+                        const currentBirthdate = pilot.subject?.birthdate ? formatDate(pilot.subject.birthdate) : '';
+                        
+                        tr.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${pilotId}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(pilot.contractPeriod?.startDate)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${pilot.contractPeriod?.endDate ? formatDate(pilot.contractPeriod.endDate) : 'Active'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${pilot.policyNumber || 'N/A'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentWage}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentBirthdate}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-4">
+                                <button class="text-indigo-600 hover:text-indigo-900 endorse-btn" title="Endorse" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-wage="${currentWage}" data-birthdate="${currentBirthdate}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900 cancel-btn" title="Cancel" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
+                                </button>
+                            </td>
+                        `;
+                        pilotsTableBody.appendChild(tr);
+
+                        if (pilot.status === 'CONTRACT_STATUS_ACTIVE') activePilots++;
+                        else endedPilots++;
+                        
+                        if (pilot.premium?.fullTerm?.cip) totalPremium += pilot.premium.fullTerm.cip;
+                    });
+                } else {
+                     pilotsTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4">No pilots found.</td></tr>`;
+                }
+
+                document.getElementById('stats-active-pilots').textContent = activePilots;
+                document.getElementById('stats-ended-pilots').textContent = endedPilots;
+                document.getElementById('stats-total-premium').textContent = totalPremium.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
+            };
+
+            // --- API Call Function (no changes needed) ---
+            const callGoogleScript = (action, payload = {}, showFullLoading = false) => {
+                if (showFullLoading) showLoading(true);
+                else showRefreshIndicator(true);
+
                 return fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     redirect: "follow",
-                    headers: {
-                        "Content-Type": "text/plain;charset=utf-8",
-                    },
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({ action, ...payload })
                 })
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     return response.json();
                 })
                 .then(data => {
-                    showLoading(false);
-                    if (data.status === 'error') {
-                        throw new Error(data.message || 'An unknown error occurred.');
-                    }
+                    if (data.status === 'error') throw new Error(data.message || 'An unknown error occurred.');
                     return data.data;
                 })
                 .catch(error => {
-                    showLoading(false);
                     console.error('Google Script Call Error:', error);
                     showToast(error.message, true);
-                    // Return a rejected promise to stop the promise chain
                     return Promise.reject(error);
+                })
+                .finally(() => {
+                    if (showFullLoading) showLoading(false);
+                    else showRefreshIndicator(false);
                 });
             };
 
             // --- Core Functionality ---
             const loadPilots = () => {
+                // 1. Load from cache immediately
+                try {
+                    const cachedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+                    if (cachedData) {
+                        renderData(JSON.parse(cachedData));
+                    }
+                } catch (e) {
+                    console.error("Failed to load or parse cached data", e);
+                }
+
+                // 2. Fetch fresh data in the background
                 callGoogleScript('getRiskItems')
-                    .then(data => {
-                        pilotsTableBody.innerHTML = ''; // Clear existing rows
-
-                        // --- Statistics Calculation ---
-                        let activePilots = 0;
-                        let endedPilots = 0;
-                        let totalPremium = 0;
-
-                        if (data && data.items && data.items.length > 0) {
-                            data.items.forEach(pilot => {
-                                // Populate table row
-                                const tr = document.createElement('tr');
-                                const pilotId = pilot.subject?.pilotId || 'N/A';
-                                const currentWage = pilot.subject?.wage || '';
-                                const currentBirthdate = pilot.subject?.birthdate ? formatDate(pilot.subject.birthdate) : '';
-                                
-                                tr.innerHTML = `
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${pilotId}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(pilot.contractPeriod?.startDate)}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${pilot.contractPeriod?.endDate ? formatDate(pilot.contractPeriod.endDate) : 'Active'}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${pilot.policyNumber || 'N/A'}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentWage}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentBirthdate}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-4">
-                                        <button class="text-indigo-600 hover:text-indigo-900 endorse-btn" title="Endorse" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-wage="${currentWage}" data-birthdate="${currentBirthdate}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-900 cancel-btn" title="Cancel" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
-                                        </button>
-                                    </td>
-                                `;
-                                pilotsTableBody.appendChild(tr);
-
-                                // --- Statistics Logic ---
-                                if (pilot.status === 'CONTRACT_STATUS_ACTIVE') {
-                                    activePilots++;
-                                } else {
-                                    endedPilots++;
-                                }
-
-                                // Sum up the premium
-                                if (pilot.premium?.fullTerm?.cip) {
-                                    totalPremium += pilot.premium.fullTerm.cip;
-                                }
-                            });
-                        } else {
-                             pilotsTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4">No pilots found.</td></tr>`;
-                        }
-
-                        // --- Update Stats in the DOM ---
-                        document.getElementById('stats-active-pilots').textContent = activePilots;
-                        document.getElementById('stats-ended-pilots').textContent = endedPilots;
-                        document.getElementById('stats-total-premium').textContent = totalPremium.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
+                    .then(freshData => {
+                        // 3. Render fresh data and update cache
+                        renderData(freshData);
+                        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(freshData));
                     })
                     .catch(error => {
-                        pilotsTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-red-500">Failed to load pilots.</td></tr>`;
-                        // Clear stats on error too
-                        document.getElementById('stats-active-pilots').textContent = '0';
-                        document.getElementById('stats-ended-pilots').textContent = '0';
-                        document.getElementById('stats-total-premium').textContent = '€0.00';
+                        // Error is already handled by callGoogleScript
+                        if (!localStorage.getItem(LOCAL_STORAGE_KEY)) {
+                           pilotsTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-red-500">Failed to load pilots. Please check connection.</td></tr>`;
+                        }
                     });
             };
 
             // --- Event Listeners ---
-            // Add Pilot Form
             document.getElementById('add-pilot-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const payload = {
@@ -384,33 +391,28 @@
                     startDate: this.elements['add-startDate'].value,
                     wage: parseInt(this.elements['add-wage'].value, 10),
                     birthdate: this.elements['add-birthdate'].value,
-                    gender: document.querySelector('input[name="gender"]:checked').value,
+                    gender: this.querySelector('input[name="gender"]:checked').value,
                 };
 
-                callGoogleScript('postRiskItem', { payload })
-                    .then(response => {
+                callGoogleScript('postRiskItem', { payload }, true)
+                    .then(() => {
                         showToast('Pilot added successfully!');
                         this.reset();
-                        document.getElementById('nav-all-pilots').click(); // Switch to all pilots view
+                        document.getElementById('nav-all-pilots').click();
                         loadPilots();
-                    })
-                    .catch(err => { /* Error already shown by callGoogleScript */ });
+                    });
             });
 
-            // Bulk Add Button
             document.getElementById('bulk-add-btn').addEventListener('click', () => {
                 const csvData = document.getElementById('csv-data').value.trim();
                 if (!csvData) {
                     showToast('CSV data cannot be empty.', true);
                     return;
                 }
-
                 const rows = csvData.split('\n');
                 const pilots = rows.map(row => {
                     const [pilotId, startDate, wage, birthdate, gender] = row.split(',');
-                    if (!pilotId || !startDate || !wage || !birthdate || !gender) {
-                        return null; // Skip invalid rows
-                    }
+                    if (!pilotId || !startDate || !wage || !birthdate || !gender) return null;
                     return { pilotId, startDate, wage: parseInt(wage, 10), birthdate, gender: gender.trim() };
                 }).filter(p => p !== null);
 
@@ -419,7 +421,7 @@
                     return;
                 }
 
-                callGoogleScript('postBulkRiskItems', { pilots })
+                callGoogleScript('postBulkRiskItems', { pilots }, true)
                     .then(response => {
                         const successCount = response.filter(r => r.status === 'success').length;
                         const errorCount = pilots.length - successCount;
@@ -427,50 +429,35 @@
                         document.getElementById('csv-data').value = '';
                         document.getElementById('nav-all-pilots').click();
                         loadPilots();
-                    })
-                    .catch(err => { /* Error already shown by callGoogleScript */ });
+                    });
             });
             
-            // Modals Logic
             const endorseModal = document.getElementById('endorse-modal');
             const cancelModal = document.getElementById('cancel-modal');
-
             const openModal = (modal) => modal.classList.remove('hidden');
             const closeModal = (modal) => modal.classList.add('hidden');
 
-            // Event delegation for action buttons
             document.getElementById('view-all-pilots').addEventListener('click', (e) => {
                 const endorseButton = e.target.closest('.endorse-btn');
                 const cancelButton = e.target.closest('.cancel-btn');
 
                 if (endorseButton) {
-                    const riskId = endorseButton.dataset.riskId;
-                    const pilotId = endorseButton.dataset.pilotId;
-                    const wage = endorseButton.dataset.wage;
-                    const birthdate = endorseButton.dataset.birthdate;
-
-                    document.getElementById('endorse-risk-id').value = riskId;
-                    document.getElementById('endorse-pilot-id').textContent = pilotId;
-                    document.getElementById('endorse-wage').value = wage;
-                    document.getElementById('endorse-birthdate').value = birthdate;
-                    
-                    const today = new Date().toISOString().split('T')[0];
-                    document.getElementById('endorse-effective-date').value = today;
-
+                    document.getElementById('endorse-risk-id').value = endorseButton.dataset.riskId;
+                    document.getElementById('endorse-pilot-id').textContent = endorseButton.dataset.pilotId;
+                    document.getElementById('endorse-wage').value = endorseButton.dataset.wage;
+                    document.getElementById('endorse-birthdate').value = endorseButton.dataset.birthdate;
+                    document.getElementById('endorse-effective-date').value = new Date().toISOString().split('T')[0];
                     openModal(endorseModal);
                 }
                 
                 if (cancelButton) {
-                    const riskId = cancelButton.dataset.riskId;
-                    const pilotId = cancelButton.dataset.pilotId;
-                    document.getElementById('cancel-risk-id').value = riskId;
-                    document.getElementById('cancel-pilot-id').textContent = pilotId;
+                    document.getElementById('cancel-risk-id').value = cancelButton.dataset.riskId;
+                    document.getElementById('cancel-pilot-id').textContent = cancelButton.dataset.pilotId;
                     document.getElementById('cancel-form').reset();
                     openModal(cancelModal);
                 }
             });
 
-            // Endorse Modal Actions
             document.getElementById('cancel-endorsement').addEventListener('click', () => closeModal(endorseModal));
             document.getElementById('submit-endorsement').addEventListener('click', () => {
                 const payload = {
@@ -481,47 +468,33 @@
                 const newWage = document.getElementById('endorse-wage').value;
                 const newBirthdate = document.getElementById('endorse-birthdate').value;
 
-                if (!payload.effectiveDate) {
-                    showToast('Effective date is required.', true);
-                    return;
-                }
+                if (!payload.effectiveDate) return showToast('Effective date is required.', true);
                 if (newWage) payload.characteristics.push({ key: 'wage', value: parseInt(newWage, 10) });
                 if (newBirthdate) payload.characteristics.push({ key: 'birthdate', value: newBirthdate });
-                
-                if(payload.characteristics.length === 0) {
-                    showToast('Enter at least a new wage or birthdate.', true);
-                    return;
-                }
+                if (payload.characteristics.length === 0) return showToast('Enter at least a new wage or birthdate.', true);
 
-                callGoogleScript('endorseRiskItem', { payload })
-                    .then(response => {
+                callGoogleScript('endorseRiskItem', { payload }, true)
+                    .then(() => {
                         showToast('Endorsement successful!');
                         closeModal(endorseModal);
                         loadPilots();
-                    })
-                    .catch(err => { /* Error already shown */ });
+                    });
             });
             
-            // Cancel Modal Actions
             document.getElementById('cancel-cancellation').addEventListener('click', () => closeModal(cancelModal));
             document.getElementById('submit-cancellation').addEventListener('click', () => {
                 const payload = {
                     riskItemId: document.getElementById('cancel-risk-id').value,
                     endDate: document.getElementById('cancel-end-date').value
                 };
+                if (!payload.endDate) return showToast('End date is required.', true);
 
-                if (!payload.endDate) {
-                    showToast('End date is required.', true);
-                    return;
-                }
-
-                callGoogleScript('cancelRiskItem', { payload })
-                    .then(response => {
+                callGoogleScript('cancelRiskItem', { payload }, true)
+                    .then(() => {
                         showToast('Cancellation successful!');
                         closeModal(cancelModal);
                         loadPilots();
-                    })
-                    .catch(err => { /* Error already shown */ });
+                    });
             });
 
             // --- Initial Load ---
