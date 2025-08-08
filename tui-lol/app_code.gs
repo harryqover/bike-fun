@@ -16,13 +16,13 @@ const masterPolicyIds = {
     "id": "xxxx"
   }
 };
-
 const SCRIPT_PROPERTIES = PropertiesService.getScriptProperties();
 // --- END CONFIGURATION ---
 
 
 /**
- * Main entry point for the web app. Handles all POST requests.
+ * Main entry point for the web app.
+ * Handles all POST requests.
  * @param {object} e - The event parameter from the web app request.
  * @return {ContentService.TextOutput} The JSON response.
  */
@@ -70,7 +70,8 @@ function doPost(e) {
         result = analyzeBulkUpsert(request.csvData, userEmail);
         break;
       case 'executeBulkUpsert':
-        result = executeBulkUpsert(request.changes, userEmail);
+        // CHANGED: Pass the effectiveDate from the request to the function
+        result = executeBulkUpsert(request.changes, request.effectiveDate, userEmail);
         break;
       default:
         throw new Error("Invalid action specified.");
@@ -82,7 +83,6 @@ function doPost(e) {
 
     return ContentService.createTextOutput(JSON.stringify({ status: 'success', data: result }))
       .setMimeType(ContentService.MimeType.JSON);
-
   } catch (error) {
     Logger.log("Error in doPost: " + error.toString() + " Stack: " + error.stack);
     return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: error.toString() }))
@@ -103,7 +103,6 @@ function handleLoginRequest(email) {
 
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const userSheet = ss.getSheetByName("Users");
-
     if (!userSheet) {
       Logger.log("Critical Error: The 'Users' sheet was not found.");
       return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: "Server configuration error: User database not found." })).setMimeType(ContentService.MimeType.JSON);
@@ -130,13 +129,11 @@ function handleLoginRequest(email) {
     expiry.setHours(expiry.getHours() + 6); // Token is valid for 6 hours
 
     Logger.log(`Generating token for ${email} at row ${userRow}. Token: ${token}`);
-
     userSheet.getRange(userRow, 2).setValue(token);
     userSheet.getRange(userRow, 3).setValue(expiry);
     
     // Force the changes to be written to the sheet immediately.
-    SpreadsheetApp.flush(); 
-    
+    SpreadsheetApp.flush();
     Logger.log(`Token for ${email} should now be saved in the sheet.`);
 
     const loginLink = `${WEB_APP_URL}?token=${token}`;
@@ -148,13 +145,11 @@ function handleLoginRequest(email) {
       <p>If you did not request this link, please disregard this email.</p>
       <p>Best regards,<br>TUI Team</p>
     `;
-
     MailApp.sendEmail({
       to: email,
       subject: subject,
       htmlBody: body
     });
-
     return ContentService.createTextOutput(JSON.stringify({ status: 'success', message: 'A login link has been sent to your email.' })).setMimeType(ContentService.MimeType.JSON);
   } catch (e) {
     Logger.log(`Error in handleLoginRequest: ${e.toString()}`);
@@ -185,7 +180,6 @@ function verifyToken(token, internal = false) {
     const dataRange = userSheet.getDataRange();
     const values = dataRange.getValues();
     let foundUser = null;
-
     for (let i = 1; i < values.length; i++) {
       if (values[i][1] === token) {
         foundUser = { row: i + 1, email: values[i][0], token: values[i][1], expiry: new Date(values[i][2]) };
@@ -253,7 +247,8 @@ function analyzeBulkUpsert(csvData, userEmail) {
           old: { wage: existingWage, birthdate: existingBirthdate },
           new: { wage: wage, birthdate: birthdate, gender: gender }
         });
-      } else {
+     
+       } else {
         noChange.push(newPilotData);
       }
     } else {
@@ -265,13 +260,13 @@ function analyzeBulkUpsert(csvData, userEmail) {
   return { toCreate, toUpdate, noChange };
 }
 
-function executeBulkUpsert(changes, userEmail) {
-  Logger.log("Executing bulk upsert for user: " + userEmail);
+// CHANGED: Function signature now accepts effectiveDate
+function executeBulkUpsert(changes, effectiveDate, userEmail) {
+  Logger.log(`Executing bulk upsert for user: ${userEmail} with effective date: ${effectiveDate}`);
   const { toCreate, toUpdate } = changes;
   let createdCount = 0;
   let updatedCount = 0;
   const errors = [];
-
   // Create new pilots
   if (toCreate && toCreate.length > 0) {
     toCreate.forEach(pilot => {
@@ -293,7 +288,8 @@ function executeBulkUpsert(changes, userEmail) {
       try {
         const payload = {
           riskItemId: pilot.riskItemId,
-          effectiveDate: new Date().toISOString().split('T')[0], // Use today as effective date
+          // CHANGED: Use the provided effectiveDate instead of today's date
+          effectiveDate: effectiveDate, 
           subject: {
             wage: pilot.new.wage,
             birthdate: pilot.new.birthdate,
@@ -305,6 +301,7 @@ function executeBulkUpsert(changes, userEmail) {
          if (result.error) {
           throw new Error(result.responseText || result.error);
         }
+        
         updatedCount++;
       } catch (e) {
         errors.push({ pilotId: pilot.pilotId, action: 'update', message: e.toString() });
@@ -338,6 +335,7 @@ function upgradeCoverage(payload, userEmail) {
         name: "standard",
         coverages: {
             licenseLoss: "default"
+ 
         }
     },
     policyholder: {
@@ -349,6 +347,7 @@ function upgradeCoverage(payload, userEmail) {
         address: {
             street: payload.street,
             number: payload.number,
+    
             zip: payload.zip,
             city: payload.city,
             country: "BE"
@@ -360,7 +359,6 @@ function upgradeCoverage(payload, userEmail) {
         gender: payload.gender
     }
   };
-
   const newPolicy = postNewPolicy(policyPayload, userEmail);
   if (newPolicy.error || !newPolicy.policyNumber) {
     Logger.log("Failed to create extension policy. Response: " + JSON.stringify(newPolicy));
@@ -375,7 +373,6 @@ function upgradeCoverage(payload, userEmail) {
   const metadataPayload = {
     metadata: { policyNumber: newPolicyNumber }
   };
-
   const patchResult = patchRiskItem(env, masterPolicyIds[env].id, riskItemId, metadataPayload, userEmail);
   if (patchResult.error) {
     Logger.log(`CRITICAL: Created policy ${newPolicyNumber} but failed to patch risk item ${riskItemId}. Response: ${JSON.stringify(patchResult)}`);
@@ -409,7 +406,6 @@ function logApiCall(url, options, responseCode, responseText, userEmail) {
     const timestamp = new Date();
     const method = options.method || 'get';
     const requestPayload = typeof options.payload === 'string' ? options.payload : JSON.stringify(options.payload);
-
     logSheet.appendRow([
       timestamp,
       userEmail || 'N/A',
