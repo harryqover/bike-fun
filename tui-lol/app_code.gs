@@ -66,6 +66,12 @@ function doPost(e) {
       case 'upgradeCoverage':
         result = upgradeCoverage(request.payload, userEmail);
         break;
+      case 'analyzeBulkUpsert':
+        result = analyzeBulkUpsert(request.csvData, userEmail);
+        break;
+      case 'executeBulkUpsert':
+        result = executeBulkUpsert(request.changes, userEmail);
+        break;
       default:
         throw new Error("Invalid action specified.");
     }
@@ -78,7 +84,7 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (error) {
-    Logger.log("Error in doPost: " + error.toString());
+    Logger.log("Error in doPost: " + error.toString() + " Stack: " + error.stack);
     return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: error.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   }
@@ -207,6 +213,109 @@ function verifyToken(token, internal = false) {
     return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: `An unexpected server error occurred: ${e.message}` })).setMimeType(ContentService.MimeType.JSON);
   }
 }
+
+function analyzeBulkUpsert(csvData, userEmail) {
+  Logger.log("Starting bulk upsert analysis for user: " + userEmail);
+  const existingData = getRiskItems(env, masterPolicyIds[env].id, userEmail);
+  if (existingData.error) {
+    throw new Error("Could not fetch existing pilot data for analysis. " + existingData.responseText);
+  }
+
+  const existingPilotsMap = new Map();
+  if (existingData.items) {
+    existingData.items.forEach(p => existingPilotsMap.set(p.reference, p));
+  }
+  
+  const toCreate = [];
+  const toUpdate = [];
+  const noChange = [];
+
+  const rows = csvData.trim().split('\n');
+  rows.forEach(row => {
+    const [pilotId, startDate, wageStr, birthdate, gender] = row.split(',').map(s => s.trim());
+    if (!pilotId || !startDate || !wageStr || !birthdate || !gender) {
+      Logger.log("Skipping invalid CSV row: " + row);
+      return;
+    }
+    const wage = parseFloat(wageStr);
+    const newPilotData = { pilotId, startDate, wage, birthdate, gender };
+
+    const existingPilot = existingPilotsMap.get(pilotId);
+
+    if (existingPilot) {
+      const existingWage = parseFloat(existingPilot.subject.wage);
+      const existingBirthdate = new Date(existingPilot.subject.birthdate).toISOString().split('T')[0];
+      
+      if (existingWage !== wage || existingBirthdate !== birthdate) {
+        toUpdate.push({
+          riskItemId: existingPilot.id,
+          pilotId: pilotId,
+          old: { wage: existingWage, birthdate: existingBirthdate },
+          new: { wage: wage, birthdate: birthdate, gender: gender }
+        });
+      } else {
+        noChange.push(newPilotData);
+      }
+    } else {
+      toCreate.push(newPilotData);
+    }
+  });
+
+  Logger.log(`Analysis complete: ${toCreate.length} to create, ${toUpdate.length} to update, ${noChange.length} with no change.`);
+  return { toCreate, toUpdate, noChange };
+}
+
+function executeBulkUpsert(changes, userEmail) {
+  Logger.log("Executing bulk upsert for user: " + userEmail);
+  const { toCreate, toUpdate } = changes;
+  let createdCount = 0;
+  let updatedCount = 0;
+  const errors = [];
+
+  // Create new pilots
+  if (toCreate && toCreate.length > 0) {
+    toCreate.forEach(pilot => {
+      try {
+        const result = addSinglePilot(pilot, userEmail);
+        if (result.error) {
+          throw new Error(result.responseText || result.error);
+        }
+        createdCount++;
+      } catch (e) {
+        errors.push({ pilotId: pilot.pilotId, action: 'create', message: e.toString() });
+      }
+    });
+  }
+
+  // Update existing pilots
+  if (toUpdate && toUpdate.length > 0) {
+    toUpdate.forEach(pilot => {
+      try {
+        const payload = {
+          riskItemId: pilot.riskItemId,
+          effectiveDate: new Date().toISOString().split('T')[0], // Use today as effective date
+          subject: {
+            wage: pilot.new.wage,
+            birthdate: pilot.new.birthdate,
+            gender: pilot.new.gender
+          },
+          reference: pilot.pilotId
+        };
+        const result = endorseRiskItem(env, masterPolicyIds[env].id, payload, userEmail);
+         if (result.error) {
+          throw new Error(result.responseText || result.error);
+        }
+        updatedCount++;
+      } catch (e) {
+        errors.push({ pilotId: pilot.pilotId, action: 'update', message: e.toString() });
+      }
+    });
+  }
+  
+  Logger.log(`Execution complete: ${createdCount} created, ${updatedCount} updated, ${errors.length} errors.`);
+  return { createdCount, updatedCount, errors };
+}
+
 
 /**
  * Creates a new extension policy and links it to the master policy risk item.
@@ -360,7 +469,6 @@ function addSinglePilot(pilotData, userEmail) {
     country: "BE", 
     contractPeriod: { startDate: pilotData.startDate },
     subject: {
-      //pilotId: pilotData.pilotId,
       wage: pilotData.wage,
       birthdate: pilotData.birthdate,
       gender: pilotData.gender
@@ -402,7 +510,8 @@ function postRiskItem(env, masterPolicyId, payload, userEmail) {
 function endorseRiskItem(env, masterPolicyId, payload, userEmail) {
     const apiPayload = {
         _effectiveDate: payload.effectiveDate,
-        subject: payload.subject
+        subject: payload.subject,
+        reference: payload.reference
     };
     return patchRiskItem(env, masterPolicyId, payload.riskItemId, apiPayload, userEmail);
 }
