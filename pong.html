@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pong Game</title>
+  <style>
+    body { background: #222; color: #fff; text-align: center; font-family: sans-serif; }
+    canvas { background: #000; display: block; margin: 40px auto; }
+  </style>
+</head>
+<body>
+  <h1>Pong</h1>
+  <canvas id="pong" width="600" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById('pong');
+    const ctx = canvas.getContext('2d');
+    const paddleHeight = 80, paddleWidth = 10, ballSize = 10;
+    let leftY = 160, rightY = 160, leftSpeed = 0, rightSpeed = 0;
+    let ballX = 295, ballY = 195, ballVX = 4, ballVY = 2;
+    let leftScore = 0, rightScore = 0;
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Draw paddles
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(10, leftY, paddleWidth, paddleHeight);
+      ctx.fillRect(canvas.width - 20, rightY, paddleWidth, paddleHeight);
+      // Draw ball
+      ctx.fillRect(ballX, ballY, ballSize, ballSize);
+      // Draw scores
+      ctx.font = "32px sans-serif";
+      ctx.fillText(leftScore, canvas.width / 4, 40);
+      ctx.fillText(rightScore, 3 * canvas.width / 4, 40);
+    }
+
+    function update() {
+      leftY += leftSpeed;
+      rightY += rightSpeed;
+      leftY = Math.max(0, Math.min(canvas.height - paddleHeight, leftY));
+      rightY = Math.max(0, Math.min(canvas.height - paddleHeight, rightY));
+
+      ballX += ballVX;
+      ballY += ballVY;
+
+      // Ball collision with top/bottom
+      if (ballY <= 0 || ballY + ballSize >= canvas.height) ballVY *= -1;
+      // Ball collision with paddles
+      if (ballX <= 20 && ballY + ballSize > leftY && ballY < leftY + paddleHeight) ballVX *= -1;
+      if (ballX + ballSize >= canvas.width - 20 && ballY + ballSize > rightY && ballY < rightY + paddleHeight) ballVX *= -1;
+      // Score
+      if (ballX < 0) { rightScore++; reset(); }
+      if (ballX > canvas.width) { leftScore++; reset(); }
+    }
+
+    function reset() {
+      ballX = 295; ballY = 195;
+      ballVX = (Math.random() > 0.5 ? 4 : -4);
+      ballVY = (Math.random() > 0.5 ? 2 : -2);
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'w') leftSpeed = -6;
+      if (e.key === 's') leftSpeed = 6;
+      if (e.key === 'ArrowUp') rightSpeed = -6;
+      if (e.key === 'ArrowDown') rightSpeed = 6;
+    });
+    document.addEventListener('keyup', e => {
+      if (e.key === 'w' || e.key === 's') leftSpeed = 0;
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') rightSpeed = 0;
+    });
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+    loop();
+  </script>
+  <p>Controls: W/S for left paddle, ↑/↓ for right paddle</p>
+</body>
+</html>
