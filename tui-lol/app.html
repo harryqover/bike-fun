@@ -51,7 +51,6 @@
 </head>
 <body class="bg-gray-100">
 
-    <!-- Login Overlay -->
     <div id="login-overlay" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 px-4">
         <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm">
             <div class="flex justify-center mb-6">
@@ -74,9 +73,7 @@
         </div>
     </div>
 
-    <!-- Main Application Wrapper -->
     <div id="app-wrapper">
-        <!-- Header -->
         <header class="bg-white shadow-md border-b">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-20">
@@ -96,9 +93,7 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="container mx-auto p-4 sm:p-6 lg:p-8">
-            <!-- Statistics Section -->
             <div id="stats-section" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div class="bg-white p-4 rounded-lg shadow text-center">
                     <h3 class="text-sm font-medium text-gray-500 uppercase">Active Pilots</h3>
@@ -114,7 +109,6 @@
                 </div>
             </div>
 
-            <!-- Navigation -->
             <nav class="mb-6 bg-white p-4 rounded-lg shadow">
                 <div class="flex space-x-8">
                     <a href="#" id="nav-all-pilots" class="nav-link text-gray-700 font-medium active">All Pilots</a>
@@ -124,14 +118,11 @@
                 </div>
             </nav>
 
-            <!-- Loading Spinner -->
             <div id="loading-spinner" class="hidden fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
                 <div class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 tui-border-red"></div>
             </div>
 
-            <!-- Content Views -->
             <div id="content-views">
-                <!-- All Pilots View -->
                 <div id="view-all-pilots" class="bg-white p-6 rounded-lg shadow">
                     <div class="flex items-center justify-between mb-4">
                          <h2 class="text-2xl font-bold text-gray-800">Insured Pilots</h2>
@@ -140,7 +131,6 @@
                              <span>Refreshing...</span>
                          </div>
                     </div>
-                    <!-- View Toggles -->
                     <div class="flex items-center space-x-6 mb-4 p-4 bg-gray-50 rounded-lg">
                         <label for="toggle-show-id" class="flex items-center cursor-pointer">
                             <div class="relative">
@@ -181,7 +171,6 @@
                     </div>
                 </div>
 
-                <!-- Add Pilot View -->
                 <div id="view-add-pilot" class="hidden bg-white p-6 rounded-lg shadow">
                     <h2 class="text-2xl font-bold mb-4 text-gray-800">Add New Pilot</h2>
                     <form id="add-pilot-form" class="space-y-6">
@@ -220,7 +209,6 @@
                     </form>
                 </div>
 
-                <!-- Bulk Add View -->
                 <div id="view-bulk-add" class="hidden bg-white p-6 rounded-lg shadow">
                     <h2 class="text-2xl font-bold mb-4 text-gray-800">Bulk Add Pilots</h2>
                     <p class="text-gray-600 mb-4">Paste CSV data below. The format should be: <code class="bg-gray-200 p-1 rounded">pilotId,startDate,wage,birthdate,gender</code>. No header row.</p>
@@ -230,11 +218,16 @@
                     </div>
                 </div>
 
-                <!-- Bulk Upsert View -->
                 <div id="view-bulk-upsert" class="hidden bg-white p-6 rounded-lg shadow">
                     <h2 class="text-2xl font-bold mb-4 text-gray-800">Bulk Upsert Pilots</h2>
                     <p class="text-gray-600 mb-4">Paste CSV data of the active portfolio. The script will compare this with the existing data to add new pilots and update existing ones. Format: <code class="bg-gray-200 p-1 rounded">pilotId,startDate,wage,birthdate,gender</code>. No header row.</p>
                     <textarea id="upsert-csv-data" rows="10" class="form-input" placeholder="pilot001,2025-01-01,85500.00,1985-05-20,Male&#10;pilot003,2025-02-01,95000.00,1992-03-10,Male"></textarea>
+                    
+                    <div class="mt-4">
+                        <label for="upsert-effective-date" class="block text-sm font-medium text-gray-700">Effective Date for Updates</label>
+                        <input type="date" id="upsert-effective-date" class="form-input w-full md:w-1/3">
+                    </div>
+
                     <div class="flex justify-end mt-4">
                         <button id="analyze-upsert-btn" class="btn tui-bg-blue text-white font-bold py-2 px-4 rounded-lg">Analyze Data</button>
                     </div>
@@ -244,20 +237,16 @@
         </main>
     </div>
 
-    <!-- Modals -->
-    <!-- Bulk Upsert Confirmation Modal -->
     <div id="upsert-confirm-modal" class="modal-overlay hidden fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-40">
         <div class="modal-content relative top-10 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-2/3 shadow-lg rounded-md bg-white">
             <div class="mt-3">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 text-center">Confirm Bulk Upsert</h3>
                 <div id="upsert-summary" class="mt-4 text-center"></div>
                 <div class="mt-4 space-y-6">
-                    <!-- Pilots to Create -->
                     <div>
                         <h4 class="text-md font-semibold text-gray-800">New Pilots to Create</h4>
                         <div id="upsert-create-list" class="text-sm text-gray-700 mt-2 p-2 border rounded-md max-h-48 overflow-y-auto"></div>
                     </div>
-                    <!-- Pilots to Update -->
                     <div>
                         <h4 class="text-md font-semibold text-gray-800">Pilots to Update</h4>
                         <div id="upsert-update-list" class="text-sm text-gray-700 mt-2 p-2 border rounded-md max-h-48 overflow-y-auto"></div>
@@ -271,7 +260,6 @@
         </div>
     </div>
     
-    <!-- Upgrade Modal -->
     <div id="upgrade-modal" class="modal-overlay hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-40">
         <div class="modal-content relative top-10 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
             <div class="mt-3">
@@ -344,7 +332,6 @@
         </div>
     </div>
 
-    <!-- Endorse Modal -->
     <div id="endorse-modal" class="modal-overlay hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-40">
         <div class="modal-content relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
             <div class="mt-3 text-center">
@@ -374,7 +361,6 @@
         </div>
     </div>
 
-    <!-- Cancel Modal -->
     <div id="cancel-modal" class="modal-overlay hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-40">
         <div class="modal-content relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
             <div class="mt-3 text-center">
@@ -395,7 +381,6 @@
         </div>
     </div>
     
-    <!-- Message/Toast Notification -->
     <div id="toast" class="hidden fixed bottom-5 right-5 max-w-sm w-full bg-green-500 text-white py-3 px-4 rounded-lg shadow-lg flex items-center justify-between">
         <p id="toast-message" class="flex-grow"></p>
         <button id="toast-close-btn" class="ml-4 flex-shrink-0 text-white">
@@ -442,6 +427,9 @@
             
             const toggleShowId = document.getElementById('toggle-show-id');
             const toggleShowFinancials = document.getElementById('toggle-show-financials');
+            
+            // ADDED: DOM element for the new date input
+            const upsertEffectiveDateInput = document.getElementById('upsert-effective-date');
 
 
             // --- UI/Utility Functions ---
@@ -479,6 +467,8 @@
             const initializeApplication = () => {
                 loginOverlay.style.display = 'none';
                 appWrapper.style.display = 'block';
+                // ADDED: Set default date for the upsert effective date input
+                upsertEffectiveDateInput.value = new Date().toISOString().split('T')[0];
                 loadPilots();
             };
 
@@ -934,8 +924,14 @@
                 if (!bulkUpsertData || (!bulkUpsertData.toCreate.length && !bulkUpsertData.toUpdate.length)) {
                     return showToast('No changes to execute.', true);
                 }
+                
+                // CHANGED: Get effective date and pass it to the backend
+                const effectiveDate = document.getElementById('upsert-effective-date').value;
+                if (!effectiveDate) {
+                    return showToast('Effective Date is required for bulk updates.', true);
+                }
 
-                callGoogleScript('executeBulkUpsert', { changes: bulkUpsertData }, true)
+                callGoogleScript('executeBulkUpsert', { changes: bulkUpsertData, effectiveDate: effectiveDate }, true)
                     .then(result => {
                         const { createdCount, updatedCount, errors } = result;
                         let message = `${createdCount} pilots created, ${updatedCount} pilots updated.`;
@@ -954,7 +950,8 @@
             // --- Initial Load ---
             handleInitialLoad();
         });
-        console.log("version v1800-bulk-upsert")
+        // ✅ Versioning: Helps confirm the latest code is running.
+        console.log("version v1801-upsert-effective-date");
     </script>
 </body>
 </html>
