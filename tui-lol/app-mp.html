@@ -675,9 +675,9 @@
                         const currentBirthdate = pilot.subject?.birthdate ? formatDate(pilot.subject.birthdate) : '';
                         const currentGender = pilot.subject?.gender || '';
                         
-                        // ✅ MODIFIED: Check for the new metadata properties to determine upgrade status.
-                        const upgradeRiskItemId = pilot.metadata?.upgradeRiskItemId;
-                        const upgradePolicyId = pilot.metadata?.upgradePolicyId;
+                        // ✅ MODIFIED: Check for the policy number and master policy ID from metadata.
+                        const upgradePolicyNumber = pilot.metadata?.upgradePolicyNumber;
+                        const upgradeMasterPolicyId = pilot.metadata?.upgradeMasterPolicyId;
 
                         const cip = pilot.premium?.fullTerm?.cip;
                         const gip = pilot.premium?.fullTerm?.gip?.amount;
@@ -691,10 +691,10 @@
                             </button>
                         `;
                         
-                        // ✅ MODIFIED: Render a link to the new risk item if the pilot has been upgraded.
-                        if (upgradeRiskItemId && upgradePolicyId) {
+                        // ✅ MODIFIED: Construct the link using the policy number and master policy ID.
+                        if (upgradePolicyNumber && upgradeMasterPolicyId) {
                             actionsHtml += `
-                                <a href="https://portal-ui.sbx.qover.io/policies/master-policies/${upgradePolicyId}/risk-items/${upgradeRiskItemId}" target="_blank" title="Upgraded. Click to view extension.">
+                                <a href="https://portal-ui.sbx.qover.io/master-policies/${upgradeMasterPolicyId}/risk-items/${upgradePolicyNumber}" target="_blank" title="Upgraded. Click to view extension.">
                                     <span class="text-green-600">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
@@ -980,7 +980,7 @@
             handleInitialLoad();
         });
         // ✅ Versioning: Helps confirm the latest code is running.
-        console.log("version v1902-upgrade-as-risk-item");
+        console.log("version v2002-upgrade-by-policynumber");
     </script>
 </body>
 </html>
