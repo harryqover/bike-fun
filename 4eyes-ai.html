@@ -58,6 +58,9 @@
             0%, 100% { opacity: 0; transform: translateY(-20px); }
             10%, 90% { opacity: 1; transform: translateY(0); }
         }
+        #inputs-container {
+            transition: all 0.3s ease-in-out;
+        }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,24 +74,36 @@
             <p class="text-lg text-gray-600 dark:text-gray-400 mt-2">Compare files, get AI validation, and streamline your four-eyes checks.</p>
         </header>
 
-        <!-- Main Grid Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Left Column: Inputs -->
+        <!-- Main Layout (UPDATED to flex-col) -->
+        <div class="flex flex-col gap-6">
+            <!-- Collapsible Inputs Section -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">Inputs</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="before-text" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Before</label>
-                        <textarea id="before-text" rows="15" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 focus:ring-brand-accent focus:border-brand-accent" placeholder="Paste original code/config here..."></textarea>
-                    </div>
-                    <div>
-                        <label for="after-text" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">After</label>
-                        <textarea id="after-text" rows="15" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 focus:ring-brand-accent focus:border-brand-accent" placeholder="Paste modified code/config here..."></textarea>
+                <div class="flex justify-between items-center mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
+                    <h2 class="text-2xl font-semibold">Inputs</h2>
+                    <button id="toggle-inputs-btn" title="Collapse Inputs" class="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                        <svg id="collapse-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                        </svg>
+                        <svg id="expand-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="inputs-container">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="before-text" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Before</label>
+                            <textarea id="before-text" rows="15" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 focus:ring-brand-accent focus:border-brand-accent" placeholder="Paste original code/config here..."></textarea>
+                        </div>
+                        <div>
+                            <label for="after-text" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">After</label>
+                            <textarea id="after-text" rows="15" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 focus:ring-brand-accent focus:border-brand-accent" placeholder="Paste modified code/config here..."></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column: Analysis & Output -->
+            <!-- Analysis & Output Section -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 <!-- Tabs -->
                 <div class="border-b border-gray-200 dark:border-gray-700 mb-4">
@@ -110,11 +125,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <h4 class="font-medium mb-1 text-center">Before</h4>
-                            <iframe id="render-before" class="w-full h-64 border border-gray-300 dark:border-gray-600 rounded-md bg-white"></iframe>
+                            <iframe id="render-before" class="w-full h-96 border border-gray-300 dark:border-gray-600 rounded-md bg-white"></iframe>
                         </div>
                         <div>
                             <h4 class="font-medium mb-1 text-center">After</h4>
-                            <iframe id="render-after" class="w-full h-64 border border-gray-300 dark:border-gray-600 rounded-md bg-white"></iframe>
+                            <iframe id="render-after" class="w-full h-96 border border-gray-300 dark:border-gray-600 rounded-md bg-white"></iframe>
                         </div>
                     </div>
                 </div>
@@ -182,6 +197,12 @@
             const slackLoader = document.getElementById('slack-loader');
             const slackSuccess = document.getElementById('slack-success');
             const alertBox = document.getElementById('alert-box');
+            
+            // NEW: Input toggle elements
+            const toggleInputsBtn = document.getElementById('toggle-inputs-btn');
+            const inputsContainer = document.getElementById('inputs-container');
+            const collapseIcon = document.getElementById('collapse-icon');
+            const expandIcon = document.getElementById('expand-icon');
 
             const tabs = [
                 { id: 'diff', button: document.getElementById('tab-diff'), panel: document.getElementById('panel-diff') },
@@ -198,6 +219,14 @@
                 setTimeout(() => alertBox.classList.add('opacity-0'), 4500);
             };
             
+            // --- NEW: Input Toggle Functionality ---
+            toggleInputsBtn.addEventListener('click', () => {
+                const isHidden = inputsContainer.classList.toggle('hidden');
+                collapseIcon.classList.toggle('hidden', isHidden);
+                expandIcon.classList.toggle('hidden', !isHidden);
+                toggleInputsBtn.setAttribute('title', isHidden ? 'Expand Inputs' : 'Collapse Inputs');
+            });
+
             // --- Tab Functionality ---
             tabs.forEach(tab => {
                 tab.button.addEventListener('click', () => {
@@ -335,7 +364,7 @@
                 }
             }
 
-            // --- Slack Integration (UPDATED) ---
+            // --- Slack Integration ---
             const parseAIResponseForSlack = (analysisText) => {
                 const lowerText = analysisText.toLowerCase();
                 let status = 'info';
@@ -439,7 +468,7 @@
             updateDiff();
             loadApiKey();
         });
-console.log("xxxxxx")
+console.log("yyyy")
     </script>
 </body>
 </html>
