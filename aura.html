@@ -220,7 +220,7 @@
             margin-top: 20px;
         }
 
-        .modal-buttons button {
+        .modal-content .modal-buttons button {
             flex: 1;
             padding: 12px;
             border: none;
@@ -229,6 +229,15 @@
             font-size: 16px;
             cursor: pointer;
             transition: background-color 0.2s;
+        }
+        
+        #begin-btn {
+            background: #fff;
+            color: #333;
+            font-weight: 700;
+        }
+        #begin-btn:hover {
+            background: #eee;
         }
 
         #complete-task-btn { background: #28a745; }
@@ -875,7 +884,9 @@
             const intersects = raycaster.intersectObjects(scene.children, true);
             if (intersects.length > 0) {
                 let clickedObject = intersects[0].object;
-                while (clickedObject.parent && !clickedObject.userData.id) clickedObject = clickedObject.parent;
+                while (clickedObject.parent && !clickedObject.userData.title) { // Corrected loop condition
+                    clickedObject = clickedObject.parent;
+                }
                 if (clickedObject.userData.id) {
                      if (isConnecting) handleFinalizeConnection(clickedObject);
                      else {
