@@ -31,29 +31,28 @@
             display: block; /* Removes default canvas margin */
         }
 
-        /* UI Panel Styling */
+        /* UI Panel Styling for Planting */
         .ui-panel {
             position: fixed;
-            bottom: -350px; /* Start hidden */
+            top: 150%; /* Start hidden way below */
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             width: 90%;
             max-width: 400px;
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px 20px 0 0;
+            border-radius: 20px;
             padding: 20px;
-            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.3);
-            z-index: 10;
-            transition: bottom 0.5s ease-in-out;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 21; /* Higher than other modals */
+            transition: top 0.5s ease-in-out;
         }
 
         .ui-panel.visible {
-            bottom: 0;
+            top: 50%; /* Center it on screen */
         }
         
-        /* This hides the toggle button when the panel is open */
         .ui-panel.visible + #toggle-panel-btn {
             opacity: 0;
             pointer-events: none;
@@ -150,6 +149,9 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             position: relative;
             animation: fadeIn 0.3s ease;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
         }
 
         @keyframes fadeIn {
@@ -279,6 +281,30 @@
             width: 100%;
             background: #6c757d;
         }
+        
+        #task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        
+        #task-list li {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        #task-list li:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        #task-list li.completed {
+            text-decoration: line-through;
+            color: #888;
+        }
 
 
         /* Location and Time Info */
@@ -298,11 +324,17 @@
             font-size: 14px;
         }
         
-        /* Settings Button */
-        #settings-btn {
+        /* Top Right Buttons */
+        .top-right-controls {
             position: fixed;
             top: 20px;
             right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 12;
+        }
+        
+        .control-btn {
             width: 40px;
             height: 40px;
             background: rgba(0, 0, 0, 0.5);
@@ -313,11 +345,15 @@
             align-items: center;
             font-size: 24px;
             cursor: pointer;
-            z-index: 12;
             transition: transform 0.2s;
+            border: none;
         }
+        
         #settings-btn:hover {
             transform: rotate(45deg);
+        }
+        #list-btn:hover {
+            transform: scale(1.1);
         }
         
         /* Saving/Connecting Indicator */
@@ -407,6 +443,7 @@
 
     <!-- UI Panel for adding new tasks -->
     <div id="ui-panel" class="ui-panel">
+        <span class="close-btn">&times;</span>
         <h2>Plant a New Thought</h2>
         <input type="text" id="task-title" placeholder="What's on your mind?">
         <textarea id="task-details" placeholder="Add more details... (longer details grow bigger plants)"></textarea>
@@ -457,14 +494,28 @@
         </div>
     </div>
     
+    <!-- Task List Modal -->
+    <div id="list-modal" class="modal-container hidden">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>All Thoughts</h2>
+            <ul id="task-list">
+                <!-- Task items will be injected here -->
+            </ul>
+        </div>
+    </div>
+    
     <!-- Time and Location Display -->
     <div class="location-info">
         <p>Schaerbeek, Brussels</p>
         <p id="current-time">Loading time...</p>
     </div>
     
-    <!-- Settings Button -->
-    <div id="settings-btn">⚙️</div>
+    <!-- Top Right Controls -->
+    <div class="top-right-controls">
+        <button id="list-btn" class="control-btn">📋</button>
+        <button id="settings-btn" class="control-btn">⚙️</button>
+    </div>
     
     <!-- Saving Indicator -->
     <div id="saving-indicator" class="indicator">
@@ -531,6 +582,10 @@
         const timeSliderValue = document.getElementById('time-slider-value');
         const resetTimeBtn = document.getElementById('reset-time-btn');
         
+        const listBtn = document.getElementById('list-btn');
+        const listModal = document.getElementById('list-modal');
+        const taskList = document.getElementById('task-list');
+        
         const timeDisplay = document.getElementById('current-time');
         const savingIndicator = document.getElementById('saving-indicator');
         const connectingIndicator = document.getElementById('connecting-indicator');
@@ -586,6 +641,7 @@
             document.addEventListener('click', onDocumentMouseClick);
             togglePanelBtn.addEventListener('click', toggleUIPanel);
             addTaskBtn.addEventListener('click', handleAddTask);
+            uiPanel.querySelector('.close-btn').addEventListener('click', () => uiPanel.classList.remove('visible'));
             
             // Task Modal Listeners
             taskModal.querySelector('.close-btn').addEventListener('click', () => taskModal.classList.add('hidden'));
@@ -602,6 +658,11 @@
             saveApiKeyBtn.addEventListener('click', handleSaveApiKey);
             timeSlider.addEventListener('input', handleTimeSliderChange);
             resetTimeBtn.addEventListener('click', handleResetTime);
+
+            // List Modal Listeners
+            listBtn.addEventListener('click', handleShowList);
+            listModal.querySelector('.close-btn').addEventListener('click', () => listModal.classList.add('hidden'));
+            taskList.addEventListener('click', handleListNavigation);
         }
 
         // =============================================================================
@@ -712,7 +773,7 @@
         }
 
         function onDocumentMouseClick(event) {
-            if (event.target.closest('.ui-panel, .modal-container, #toggle-panel-btn, #cancel-connection-btn, #settings-btn')) return;
+            if (event.target.closest('.ui-panel, .modal-container, #toggle-panel-btn, #cancel-connection-btn, .top-right-controls')) return;
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
@@ -875,6 +936,41 @@
             initSky();
             saveSettingsToLocalStorage();
         }
+        
+        function handleShowList() {
+            populateTaskList();
+            listModal.classList.remove('hidden');
+        }
+        
+        function populateTaskList() {
+            taskList.innerHTML = ''; // Clear existing list
+            if (gardenData.tasks.length === 0) {
+                taskList.innerHTML = '<li>Your garden is empty. Plant a new thought!</li>';
+                return;
+            }
+            gardenData.tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.textContent = task.title;
+                li.dataset.id = task.id;
+                if (task.status === 'completed') {
+                    li.classList.add('completed');
+                }
+                taskList.appendChild(li);
+            });
+        }
+        
+        function handleListNavigation(event) {
+            if (event.target.tagName === 'LI') {
+                const taskId = event.target.dataset.id;
+                const targetObject = taskObjects.find(obj => obj.userData.id === taskId);
+                if (targetObject) {
+                    // Move camera to the object
+                    controls.target.copy(targetObject.position);
+                    camera.position.set(targetObject.position.x, targetObject.position.y + 15, targetObject.position.z + 20);
+                    listModal.classList.add('hidden');
+                }
+            }
+        }
 
         // =============================================================================
         // LOCAL STORAGE
@@ -947,7 +1043,7 @@
             saveDataToLocalStorage();
             taskTitleInput.value = '';
             taskDetailsInput.value = '';
-            toggleUIPanel();
+            uiPanel.classList.remove('visible');
         }
 
         function handleCompleteTask() {
