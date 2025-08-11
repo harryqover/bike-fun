@@ -34,6 +34,29 @@
         @keyframes fadeInOut { 0%, 100% { opacity: 0; transform: translateY(-20px); } 10%, 90% { opacity: 1; transform: translateY(0); } }
         #inputs-container { transition: all 0.3s ease-in-out; }
         .diff-view-toggle-btn.active { background-color: #4f9e9a; color: white; }
+
+        /* WCAG Compliant Diff Colors */
+        .d2h-ins {
+            background-color: #e6ffed !important; /* Light green background */
+        }
+        .d2h-del {
+            background-color: #ffeef0 !important; /* Light red background */
+        }
+        .d2h-code-line-ctn {
+            color: #111827 !important; /* Dark text for high contrast */
+        }
+        .dark .d2h-ins {
+            background-color: #043615 !important;
+        }
+        .dark .d2h-del {
+            background-color: #4a0e0b !important;
+        }
+        .dark .d2h-code-line-ctn {
+            color: #f9fafb !important;
+        }
+        .dark .d2h-file-header {
+             border-bottom: 1px solid #4b5563;
+        }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -85,7 +108,7 @@
                 <div id="panel-diff" class="tab-panel">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="text-xl font-semibold">Code Differences</h3>
-                        <!-- NEW: Diff view toggle -->
+                        <!-- Diff view toggle -->
                         <div class="flex rounded-md border border-gray-300 dark:border-gray-600">
                             <button id="diff-view-line" class="diff-view-toggle-btn active px-3 py-1 text-sm font-medium rounded-l-md">Line-by-Line</button>
                             <button id="diff-view-side" class="diff-view-toggle-btn px-3 py-1 text-sm font-medium rounded-r-md">Side-by-Side</button>
@@ -119,15 +142,6 @@
                                 <button id="clear-api-key" class="px-4 py-2 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600">Clear</button>
                             </div>
                             <p id="api-key-status" class="text-xs text-gray-500 dark:text-gray-400 mt-1 h-4"></p>
-                        </div>
-                         <div>
-                            <label for="gas-url-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Google Apps Script URL</label>
-                            <div class="flex items-center space-x-2">
-                                <input type="url" id="gas-url-input" class="flex-grow p-2 border rounded-md bg-gray-50 dark:bg-gray-700" placeholder="Paste your deployed script URL here">
-                                <button id="save-gas-url" class="px-4 py-2 bg-brand-accent text-white font-semibold rounded-md hover:bg-opacity-90">Save</button>
-                                <button id="clear-gas-url" class="px-4 py-2 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600">Clear</button>
-                            </div>
-                            <p id="gas-url-status" class="text-xs text-gray-500 dark:text-gray-400 mt-1 h-4"></p>
                         </div>
                      </div>
                     <div>
@@ -173,10 +187,6 @@
             const saveApiKeyButton = document.getElementById('save-api-key');
             const clearApiKeyButton = document.getElementById('clear-api-key');
             const apiKeyStatus = document.getElementById('api-key-status');
-            const gasUrlInput = document.getElementById('gas-url-input');
-            const saveGasUrlButton = document.getElementById('save-gas-url');
-            const clearGasUrlButton = document.getElementById('clear-gas-url');
-            const gasUrlStatus = document.getElementById('gas-url-status');
             const slackButton = document.getElementById('slack-button');
             const slackButtonText = document.getElementById('slack-button-text');
             const slackLoader = document.getElementById('slack-loader');
@@ -197,6 +207,8 @@
             ];
             
             let currentDiffFormat = 'line-by-line';
+            // Hardcoded Google Apps Script URL
+            const GAS_URL = 'https://script.google.com/macros/s/AKfycbx-zSfknoC8-LnAqeOr3fIXrKwO4kbgkD5HYveVWPsiWkwIB67akas6b0wXus2500c0yw/exec';
 
             // --- Utility & Setup Functions ---
             const showAlert = (message, isError = false) => {
@@ -235,12 +247,9 @@
             };
 
             const apiKeyManager = setupLocalStorage('geminiApiKey', apiKeyInput, apiKeyStatus);
-            const gasUrlManager = setupLocalStorage('gasUrl', gasUrlInput, gasUrlStatus);
 
             saveApiKeyButton.addEventListener('click', apiKeyManager.saveValue);
             clearApiKeyButton.addEventListener('click', apiKeyManager.clearValue);
-            saveGasUrlButton.addEventListener('click', gasUrlManager.saveValue);
-            clearGasUrlButton.addEventListener('click', gasUrlManager.clearValue);
             
             // --- Event Listeners ---
             toggleInputsBtn.addEventListener('click', () => {
@@ -290,14 +299,12 @@
                 renderAfter.srcdoc = afterText.value;
             };
             
-            // NEW: Conditionally show Render tab
             const detectHtmlAndToggleTab = () => {
                 const content = beforeText.value + afterText.value;
                 const isHtml = /<\/?[a-z][\s\S]*>/i.test(content);
                 tabRenderBtn.classList.toggle('hidden', !isHtml);
             };
 
-            // NEW: Diff view toggle logic
             diffViewLineBtn.addEventListener('click', () => {
                 currentDiffFormat = 'line-by-line';
                 diffViewLineBtn.classList.add('active');
@@ -373,14 +380,6 @@
             };
 
             slackButton.addEventListener('click', async () => {
-                const gasUrl = localStorage.getItem('gasUrl');
-                if (!gasUrl) {
-                    showAlert("Please save your Google Apps Script URL first.", true);
-                    tabs.find(t => t.id === 'ai').button.click();
-                    gasUrlInput.focus();
-                    return;
-                }
-
                 const analysisText = aiResult.textContent;
                 if (!analysisText) {
                     showAlert("Please run the AI analysis first.", true);
@@ -395,7 +394,7 @@
                 const payload = { intent: changeIntent.value, analysis: analysisText, status, icon };
 
                 try {
-                    const response = await fetch(gasUrl, {
+                    const response = await fetch(GAS_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                         body: JSON.stringify(payload),
@@ -423,9 +422,8 @@
             updateDiff();
             detectHtmlAndToggleTab();
             apiKeyManager.loadValue();
-            gasUrlManager.loadValue();
         });
-console.log("zzzz")
+console.log("ooooo");
     </script>
 </body>
 </html>
