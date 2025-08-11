@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configuration Inspector & Validator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- IMPORTANT: Added jsdiff library, which is required for diff2html to work -->
     <script src="https://cdn.jsdelivr.net/npm/diff@5.0.0/dist/diff.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -24,43 +23,17 @@
         }
     </script>
     <style>
-        /* Custom styles for a better look and feel */
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .tab-button {
-            transition: all 0.3s ease;
-        }
-        .tab-button.active {
-            border-color: #4f9e9a;
-            color: #4f9e9a;
-            background-color: rgba(79, 158, 154, 0.1);
-        }
-        .d2h-file-header {
-            background-color: #2d3748 !important; /* Darker header for diff */
-        }
-        .loader {
-            border-top-color: #4f9e9a;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        textarea {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 14px;
-        }
-        .notification-message {
-            animation: fadeInOut 5s forwards;
-            z-index: 100;
-        }
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0; transform: translateY(-20px); }
-            10%, 90% { opacity: 1; transform: translateY(0); }
-        }
-        #inputs-container {
-            transition: all 0.3s ease-in-out;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .tab-button { transition: all 0.3s ease; }
+        .tab-button.active { border-color: #4f9e9a; color: #4f9e9a; background-color: rgba(79, 158, 154, 0.1); }
+        .d2h-file-header { background-color: #2d3748 !important; }
+        .loader { border-top-color: #4f9e9a; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        textarea { font-family: 'Courier New', Courier, monospace; font-size: 14px; }
+        .notification-message { animation: fadeInOut 5s forwards; z-index: 100; }
+        @keyframes fadeInOut { 0%, 100% { opacity: 0; transform: translateY(-20px); } 10%, 90% { opacity: 1; transform: translateY(0); } }
+        #inputs-container { transition: all 0.3s ease-in-out; }
+        .diff-view-toggle-btn.active { background-color: #4f9e9a; color: white; }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,30 +47,25 @@
             <p class="text-lg text-gray-600 dark:text-gray-400 mt-2">Compare files, get AI validation, and streamline your four-eyes checks.</p>
         </header>
 
-        <!-- Main Layout (UPDATED to flex-col) -->
         <div class="flex flex-col gap-6">
             <!-- Collapsible Inputs Section -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 <div class="flex justify-between items-center mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
                     <h2 class="text-2xl font-semibold">Inputs</h2>
                     <button id="toggle-inputs-btn" title="Collapse Inputs" class="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                        <svg id="collapse-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-                        </svg>
-                        <svg id="expand-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
+                        <svg id="collapse-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" /></svg>
+                        <svg id="expand-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                 </div>
                 <div id="inputs-container">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="before-text" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Before</label>
-                            <textarea id="before-text" rows="15" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 focus:ring-brand-accent focus:border-brand-accent" placeholder="Paste original code/config here..."></textarea>
+                            <textarea id="before-text" rows="15" class="w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-700 focus:ring-brand-accent focus:border-brand-accent" placeholder="Paste original code/config here..."></textarea>
                         </div>
                         <div>
                             <label for="after-text" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">After</label>
-                            <textarea id="after-text" rows="15" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 focus:ring-brand-accent focus:border-brand-accent" placeholder="Paste modified code/config here..."></textarea>
+                            <textarea id="after-text" rows="15" class="w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-700 focus:ring-brand-accent focus:border-brand-accent" placeholder="Paste modified code/config here..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -105,18 +73,24 @@
 
             <!-- Analysis & Output Section -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-                <!-- Tabs -->
                 <div class="border-b border-gray-200 dark:border-gray-700 mb-4">
                     <nav class="flex space-x-4" aria-label="Tabs">
                         <button id="tab-diff" class="tab-button active font-medium px-3 py-2 border-b-2 border-transparent hover:border-gray-300">Diff View</button>
-                        <button id="tab-render" class="tab-button font-medium px-3 py-2 border-b-2 border-transparent hover:border-gray-300">Rendered HTML</button>
+                        <button id="tab-render" class="tab-button font-medium px-3 py-2 border-b-2 border-transparent hover:border-gray-300 hidden">Rendered HTML</button>
                         <button id="tab-ai" class="tab-button font-medium px-3 py-2 border-b-2 border-transparent hover:border-gray-300">AI Analysis</button>
                     </nav>
                 </div>
 
                 <!-- Tab Panels -->
                 <div id="panel-diff" class="tab-panel">
-                    <h3 class="text-xl font-semibold mb-2">Code Differences</h3>
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xl font-semibold">Code Differences</h3>
+                        <!-- NEW: Diff view toggle -->
+                        <div class="flex rounded-md border border-gray-300 dark:border-gray-600">
+                            <button id="diff-view-line" class="diff-view-toggle-btn active px-3 py-1 text-sm font-medium rounded-l-md">Line-by-Line</button>
+                            <button id="diff-view-side" class="diff-view-toggle-btn px-3 py-1 text-sm font-medium rounded-r-md">Side-by-Side</button>
+                        </div>
+                    </div>
                     <div id="diff-output" class="text-sm rounded-md bg-gray-50 dark:bg-gray-900"></div>
                 </div>
 
@@ -125,58 +99,65 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <h4 class="font-medium mb-1 text-center">Before</h4>
-                            <iframe id="render-before" class="w-full h-96 border border-gray-300 dark:border-gray-600 rounded-md bg-white"></iframe>
+                            <iframe id="render-before" class="w-full h-96 border rounded-md bg-white"></iframe>
                         </div>
                         <div>
                             <h4 class="font-medium mb-1 text-center">After</h4>
-                            <iframe id="render-after" class="w-full h-96 border border-gray-300 dark:border-gray-600 rounded-md bg-white"></iframe>
+                            <iframe id="render-after" class="w-full h-96 border rounded-md bg-white"></iframe>
                         </div>
                     </div>
                 </div>
 
                 <div id="panel-ai" class="tab-panel hidden">
                      <h3 class="text-xl font-semibold mb-2">AI-Powered Validation</h3>
-                     <!-- API Key Management Section -->
-                     <div class="p-4 mb-4 border border-blue-200 dark:border-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800/50">
-                        <label for="api-key-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gemini API Key</label>
-                        <div class="flex items-center space-x-2">
-                            <input type="password" id="api-key-input" class="flex-grow p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 focus:ring-brand-accent focus:border-brand-accent" placeholder="Enter your API key">
-                            <button id="save-api-key" class="px-4 py-2 bg-brand-accent text-white font-semibold rounded-md hover:bg-opacity-90">Save</button>
-                            <button id="clear-api-key" class="px-4 py-2 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600">Clear</button>
+                     <div class="p-4 mb-4 border border-blue-200 dark:border-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800/50 space-y-3">
+                        <div>
+                            <label for="api-key-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gemini API Key</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="password" id="api-key-input" class="flex-grow p-2 border rounded-md bg-gray-50 dark:bg-gray-700" placeholder="Enter your API key">
+                                <button id="save-api-key" class="px-4 py-2 bg-brand-accent text-white font-semibold rounded-md hover:bg-opacity-90">Save</button>
+                                <button id="clear-api-key" class="px-4 py-2 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600">Clear</button>
+                            </div>
+                            <p id="api-key-status" class="text-xs text-gray-500 dark:text-gray-400 mt-1 h-4"></p>
                         </div>
-                        <p id="api-key-status" class="text-xs text-gray-500 dark:text-gray-400 mt-1 h-4"></p>
+                         <div>
+                            <label for="gas-url-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Google Apps Script URL</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="url" id="gas-url-input" class="flex-grow p-2 border rounded-md bg-gray-50 dark:bg-gray-700" placeholder="Paste your deployed script URL here">
+                                <button id="save-gas-url" class="px-4 py-2 bg-brand-accent text-white font-semibold rounded-md hover:bg-opacity-90">Save</button>
+                                <button id="clear-gas-url" class="px-4 py-2 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600">Clear</button>
+                            </div>
+                            <p id="gas-url-status" class="text-xs text-gray-500 dark:text-gray-400 mt-1 h-4"></p>
+                        </div>
                      </div>
                     <div>
                         <label for="change-intent" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Describe your intended change:</label>
-                        <input type="text" id="change-intent" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 focus:ring-brand-accent focus:border-brand-accent" placeholder="e.g., 'Updated the hero title and changed the button color'">
-                        <button id="analyze-button" class="mt-3 w-full bg-brand-blue hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded-md transition duration-300 flex items-center justify-center">
-                            <svg id="analyze-icon" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M12 21v-1m0-16a9 9 0 11-9 9h16a9 9 0 01-9-9z"></path></svg>
+                        <input type="text" id="change-intent" class="w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-700" placeholder="e.g., 'Updated the hero title and changed the button color'">
+                        <button id="analyze-button" class="mt-3 w-full bg-brand-blue hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded-md flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M12 21v-1m0-16a9 9 0 11-9 9h16a9 9 0 01-9-9z"></path></svg>
                             <span id="analyze-button-text">Run AI Analysis</span>
-                            <div id="analyze-loader" class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-6 w-6 hidden ml-2"></div>
+                            <div id="analyze-loader" class="loader ease-linear rounded-full border-4 h-6 w-6 hidden ml-2"></div>
                         </button>
                     </div>
                     <div id="ai-result-container" class="mt-4 hidden">
                         <h4 class="font-semibold text-lg mb-2">Analysis Result:</h4>
-                        <div id="ai-result" class="p-4 border border-gray-200 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-700/50 whitespace-pre-wrap text-sm"></div>
-                        <button id="slack-button" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 flex items-center justify-center">
-                            <svg id="slack-icon" class="w-5 h-5 mr-2" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12.5,26.2c0,2.9-2.3,5.2-5.2,5.2H2.8c-1.5,0-2.8-1.3-2.8-2.8V23.1c0-2.9,2.3-5.2,5.2-5.2h4.5 C11.2,17.9,12.5,21.7,12.5,26.2z M15.3,26.2c0-2.9,2.3-5.2,5.2-5.2h4.5c1.5,0,2.8,1.3,2.8,2.8v5.2c0,2.9-2.3,5.2-5.2,5.2h-4.5 C16.8,34.4,15.3,30.7,15.3,26.2z M27.8,12.5c-2.9,0-5.2-2.3-5.2-5.2V2.8c0-1.5,1.3-2.8,2.8-2.8h5.2c2.9,0,5.2,2.3,5.2,5.2v4.5 C36.1,11.2,32.3,12.5,27.8,12.5z M27.8,15.3c2.9,0,5.2,2.3,5.2,5.2v4.5c0,1.5-1.3,2.8-2.8,2.8h-5.2c-2.9,0-5.2-2.3-5.2-5.2v-4.5 C22.6,16.8,26.3,15.3,27.8,15.3z M41.5,27.8c0-2.9,2.3-5.2,5.2-5.2h4.5c1.5,0,2.8,1.3,2.8,2.8v5.2c0,2.9-2.3,5.2-5.2,5.2h-4.5 C42.9,36.1,41.5,32.3,41.5,27.8z M38.7,27.8c0,2.9-2.3,5.2-5.2,5.2h-4.5c-1.5,0-2.8-1.3-2.8-2.8v-5.2c0-2.9,2.3-5.2,5.2-5.2h4.5 C37.2,22.6,38.7,26.3,38.7,27.8z M26.2,41.5c2.9,0,5.2,2.3,5.2,5.2v4.5c0,1.5-1.3,2.8-2.8,2.8h-5.2c-2.9,0-5.2-2.3-5.2-5.2v-4.5 C17.9,42.9,21.7,41.5,26.2,41.5z M26.2,38.7c-2.9,0-5.2-2.3-5.2-5.2v-4.5c0-1.5,1.3-2.8,2.8-2.8h5.2c2.9,0,5.2,2.3,5.2,5.2v4.5 C31.4,37.2,27.7,38.7,26.2,38.7z"></path></svg>
-                            <span id="slack-button-text">Post to Slack for Human Review</span>
-                            <div id="slack-loader" class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-6 w-6 hidden ml-2"></div>
+                        <div id="ai-result" class="p-4 border rounded-md bg-gray-50 dark:bg-gray-700/50 whitespace-pre-wrap text-sm"></div>
+                        <button id="slack-button" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" viewBox="0 0 54 54" fill="currentColor"><path d="M12.5,26.2c0,2.9-2.3,5.2-5.2,5.2H2.8c-1.5,0-2.8-1.3-2.8-2.8V23.1c0-2.9,2.3-5.2,5.2-5.2h4.5 C11.2,17.9,12.5,21.7,12.5,26.2z M15.3,26.2c0-2.9,2.3-5.2,5.2-5.2h4.5c1.5,0,2.8,1.3,2.8,2.8v5.2c0,2.9-2.3,5.2-5.2,5.2h-4.5 C16.8,34.4,15.3,30.7,15.3,26.2z M27.8,12.5c-2.9,0-5.2-2.3-5.2-5.2V2.8c0-1.5,1.3-2.8,2.8-2.8h5.2c2.9,0,5.2,2.3,5.2,5.2v4.5 C36.1,11.2,32.3,12.5,27.8,12.5z M27.8,15.3c2.9,0,5.2,2.3,5.2,5.2v4.5c0,1.5-1.3,2.8-2.8,2.8h-5.2c-2.9,0-5.2-2.3-5.2-5.2v-4.5 C22.6,16.8,26.3,15.3,27.8,15.3z M41.5,27.8c0-2.9,2.3-5.2,5.2-5.2h4.5c1.5,0,2.8,1.3,2.8,2.8v5.2c0,2.9-2.3,5.2-5.2,5.2h-4.5 C42.9,36.1,41.5,32.3,41.5,27.8z M38.7,27.8c0,2.9-2.3,5.2-5.2,5.2h-4.5c-1.5,0-2.8-1.3-2.8-2.8v-5.2c0-2.9,2.3-5.2,5.2-5.2h4.5 C37.2,22.6,38.7,26.3,38.7,27.8z M26.2,41.5c2.9,0,5.2,2.3,5.2,5.2v4.5c0,1.5-1.3,2.8-2.8,2.8h-5.2c-2.9,0-5.2-2.3-5.2-5.2v-4.5 C17.9,42.9,21.7,41.5,26.2,41.5z M26.2,38.7c-2.9,0-5.2-2.3-5.2-5.2v-4.5c0-1.5,1.3-2.8,2.8-2.8h5.2c2.9,0,5.2,2.3,5.2,5.2v4.5 C31.4,37.2,27.7,38.7,26.2,38.7z"></path></svg>
+                            <span id="slack-button-text">Post to Slack & Log</span>
+                            <div id="slack-loader" class="loader ease-linear rounded-full border-4 h-6 w-6 hidden ml-2"></div>
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Notification Popups -->
-        <div id="alert-box" class="notification-message fixed top-5 right-5 py-3 px-5 rounded-lg shadow-xl opacity-0 transition-opacity duration-300"></div>
-        <div id="slack-success" class="notification-message fixed bottom-5 right-5 bg-green-500 text-white py-3 px-5 rounded-lg shadow-xl opacity-0">
-            Successfully posted to Slack!
-        </div>
+        <div id="alert-box" class="notification-message fixed top-5 right-5 py-3 px-5 rounded-lg shadow-xl opacity-0"></div>
+        <div id="slack-success" class="notification-message fixed bottom-5 right-5 bg-green-500 text-white py-3 px-5 rounded-lg shadow-xl opacity-0"></div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Element references
+            // --- Element References ---
             const beforeText = document.getElementById('before-text');
             const afterText = document.getElementById('after-text');
             const diffOutput = document.getElementById('diff-output');
@@ -192,34 +173,76 @@
             const saveApiKeyButton = document.getElementById('save-api-key');
             const clearApiKeyButton = document.getElementById('clear-api-key');
             const apiKeyStatus = document.getElementById('api-key-status');
+            const gasUrlInput = document.getElementById('gas-url-input');
+            const saveGasUrlButton = document.getElementById('save-gas-url');
+            const clearGasUrlButton = document.getElementById('clear-gas-url');
+            const gasUrlStatus = document.getElementById('gas-url-status');
             const slackButton = document.getElementById('slack-button');
             const slackButtonText = document.getElementById('slack-button-text');
             const slackLoader = document.getElementById('slack-loader');
             const slackSuccess = document.getElementById('slack-success');
             const alertBox = document.getElementById('alert-box');
-            
-            // NEW: Input toggle elements
             const toggleInputsBtn = document.getElementById('toggle-inputs-btn');
             const inputsContainer = document.getElementById('inputs-container');
             const collapseIcon = document.getElementById('collapse-icon');
             const expandIcon = document.getElementById('expand-icon');
+            const diffViewLineBtn = document.getElementById('diff-view-line');
+            const diffViewSideBtn = document.getElementById('diff-view-side');
+            const tabRenderBtn = document.getElementById('tab-render');
 
             const tabs = [
                 { id: 'diff', button: document.getElementById('tab-diff'), panel: document.getElementById('panel-diff') },
-                { id: 'render', button: document.getElementById('tab-render'), panel: document.getElementById('panel-render') },
+                { id: 'render', button: tabRenderBtn, panel: document.getElementById('panel-render') },
                 { id: 'ai', button: document.getElementById('tab-ai'), panel: document.getElementById('panel-ai') }
             ];
             
-            // --- Utility Functions ---
+            let currentDiffFormat = 'line-by-line';
+
+            // --- Utility & Setup Functions ---
             const showAlert = (message, isError = false) => {
                 alertBox.textContent = message;
-                alertBox.className = 'notification-message fixed top-5 right-5 py-3 px-5 rounded-lg shadow-xl opacity-0'; // Reset
+                alertBox.className = 'notification-message fixed top-5 right-5 py-3 px-5 rounded-lg shadow-xl opacity-0';
                 alertBox.classList.add(isError ? 'bg-red-500' : 'bg-blue-500', 'text-white');
                 alertBox.classList.remove('opacity-0');
                 setTimeout(() => alertBox.classList.add('opacity-0'), 4500);
             };
+
+            const setupLocalStorage = (key, inputEl, statusEl) => {
+                const loadValue = () => {
+                    const savedValue = localStorage.getItem(key);
+                    if (savedValue) {
+                        inputEl.value = savedValue;
+                        statusEl.textContent = 'Loaded from local storage.';
+                        setTimeout(() => statusEl.textContent = '', 3000);
+                    }
+                };
+                const saveValue = () => {
+                    if (inputEl.value) {
+                        localStorage.setItem(key, inputEl.value);
+                        statusEl.textContent = 'Saved!';
+                        setTimeout(() => statusEl.textContent = '', 3000);
+                    } else {
+                        statusEl.textContent = 'Please enter a value to save.';
+                    }
+                };
+                const clearValue = () => {
+                    localStorage.removeItem(key);
+                    inputEl.value = '';
+                    statusEl.textContent = 'Cleared.';
+                    setTimeout(() => statusEl.textContent = '', 3000);
+                };
+                return { loadValue, saveValue, clearValue };
+            };
+
+            const apiKeyManager = setupLocalStorage('geminiApiKey', apiKeyInput, apiKeyStatus);
+            const gasUrlManager = setupLocalStorage('gasUrl', gasUrlInput, gasUrlStatus);
+
+            saveApiKeyButton.addEventListener('click', apiKeyManager.saveValue);
+            clearApiKeyButton.addEventListener('click', apiKeyManager.clearValue);
+            saveGasUrlButton.addEventListener('click', gasUrlManager.saveValue);
+            clearGasUrlButton.addEventListener('click', gasUrlManager.clearValue);
             
-            // --- NEW: Input Toggle Functionality ---
+            // --- Event Listeners ---
             toggleInputsBtn.addEventListener('click', () => {
                 const isHidden = inputsContainer.classList.toggle('hidden');
                 collapseIcon.classList.toggle('hidden', isHidden);
@@ -227,7 +250,6 @@
                 toggleInputsBtn.setAttribute('title', isHidden ? 'Expand Inputs' : 'Collapse Inputs');
             });
 
-            // --- Tab Functionality ---
             tabs.forEach(tab => {
                 tab.button.addEventListener('click', () => {
                     tabs.forEach(t => {
@@ -241,12 +263,11 @@
                 });
             });
 
-            // --- Core Update Functions ---
             const updateDiff = () => {
                 const before = beforeText.value;
                 const after = afterText.value;
                 if (!before && !after) {
-                    diffOutput.innerHTML = '<div class="p-4 text-center text-gray-500">Paste content in the input fields to see the difference.</div>';
+                    diffOutput.innerHTML = '<div class="p-4 text-center text-gray-500">Paste content to see the difference.</div>';
                     return;
                 }
                 if (before === after) {
@@ -255,9 +276,9 @@
                 }
                 const diff = Diff.createTwoFilesPatch('before.txt', 'after.txt', before, after, null, null, { context: 3 });
                 const diff2htmlUi = new Diff2HtmlUI(diffOutput, diff, {
-                    drawFileList: true,
-                    matching: 'lines',
-                    outputFormat: 'side-by-side',
+                    drawFileList: true, 
+                    matching: 'lines', 
+                    outputFormat: currentDiffFormat, // Use the state variable
                     renderNothingWhenEmpty: true,
                 });
                 diff2htmlUi.draw();
@@ -269,35 +290,27 @@
                 renderAfter.srcdoc = afterText.value;
             };
             
-            // --- API Key Management ---
-            const loadApiKey = () => {
-                const savedKey = localStorage.getItem('geminiApiKey');
-                if (savedKey) {
-                    apiKeyInput.value = savedKey;
-                    apiKeyStatus.textContent = 'API Key loaded from local storage.';
-                    setTimeout(() => apiKeyStatus.textContent = '', 3000);
-                }
+            // NEW: Conditionally show Render tab
+            const detectHtmlAndToggleTab = () => {
+                const content = beforeText.value + afterText.value;
+                const isHtml = /<\/?[a-z][\s\S]*>/i.test(content);
+                tabRenderBtn.classList.toggle('hidden', !isHtml);
             };
 
-            saveApiKeyButton.addEventListener('click', () => {
-                const key = apiKeyInput.value;
-                if (key) {
-                    localStorage.setItem('geminiApiKey', key);
-                    apiKeyStatus.textContent = 'API Key saved!';
-                    setTimeout(() => apiKeyStatus.textContent = '', 3000);
-                } else {
-                    apiKeyStatus.textContent = 'Please enter a key to save.';
-                }
+            // NEW: Diff view toggle logic
+            diffViewLineBtn.addEventListener('click', () => {
+                currentDiffFormat = 'line-by-line';
+                diffViewLineBtn.classList.add('active');
+                diffViewSideBtn.classList.remove('active');
+                updateDiff();
+            });
+            diffViewSideBtn.addEventListener('click', () => {
+                currentDiffFormat = 'side-by-side';
+                diffViewSideBtn.classList.add('active');
+                diffViewLineBtn.classList.remove('active');
+                updateDiff();
             });
 
-            clearApiKeyButton.addEventListener('click', () => {
-                localStorage.removeItem('geminiApiKey');
-                apiKeyInput.value = '';
-                apiKeyStatus.textContent = 'API Key cleared.';
-                setTimeout(() => apiKeyStatus.textContent = '', 3000);
-            });
-
-            // --- AI Analysis ---
             analyzeButton.addEventListener('click', async () => {
                 const apiKey = localStorage.getItem('geminiApiKey');
                 if (!apiKey) {
@@ -307,10 +320,7 @@
                     return;
                 }
 
-                const before = beforeText.value;
-                const after = afterText.value;
-                const intent = changeIntent.value;
-
+                const before = beforeText.value, after = afterText.value, intent = changeIntent.value;
                 if (!before || !after || !intent) {
                     showAlert('Please fill in "Before", "After", and your intended change.', true);
                     return;
@@ -328,9 +338,8 @@
                     aiResult.textContent = aiResponse;
                     aiResultContainer.classList.remove('hidden');
                 } catch (error) {
-                    console.error("AI Analysis Error:", error);
                     showAlert(`AI Analysis Error: ${error.message}`, true);
-                    aiResult.textContent = `An error occurred while analyzing. Please check the console for details.\nError: ${error.message}`;
+                    aiResult.textContent = `An error occurred. Check the console.\nError: ${error.message}`;
                     aiResultContainer.classList.remove('hidden');
                 } finally {
                     analyzeButton.disabled = false;
@@ -342,54 +351,39 @@
             async function callGeminiAPI(prompt, apiKey) {
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                 const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-                
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (!response.ok) {
                     const errorBody = await response.json();
                     throw new Error(errorBody.error.message || `HTTP error! status: ${response.status}`);
                 }
-                
                 const result = await response.json();
-                
-                if (result.candidates && result.candidates[0]?.content?.parts?.[0]?.text) {
+                if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
                     return result.candidates[0].content.parts[0].text;
                 } else {
-                    console.warn("Unexpected API response structure:", result);
                     throw new Error("AI analysis returned no content.");
                 }
             }
 
-            // --- Slack Integration ---
             const parseAIResponseForSlack = (analysisText) => {
                 const lowerText = analysisText.toLowerCase();
-                let status = 'info';
-                let icon = 'ℹ️';
-
-                if (lowerText.includes('success')) {
-                    status = 'success';
-                    icon = ':white_check_mark:';
-                } else if (lowerText.includes('warning')) {
-                    status = 'warning';
-                    icon = ':warning:';
-                } else if (lowerText.includes('failure')) {
-                    status = 'failure';
-                    icon = ':x:';
-                }
-                return { status, icon, analysis: analysisText };
+                if (lowerText.includes('success')) return { status: 'success', icon: ':white_check_mark:' };
+                if (lowerText.includes('warning')) return { status: 'warning', icon: ':warning:' };
+                if (lowerText.includes('failure')) return { status: 'failure', icon: ':x:' };
+                return { status: 'info', icon: 'ℹ️' };
             };
 
             slackButton.addEventListener('click', async () => {
-                const intent = changeIntent.value;
-                const analysisText = aiResult.textContent;
-                const webhookUrl = "https://hooks.slack.com/services/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";
+                const gasUrl = localStorage.getItem('gasUrl');
+                if (!gasUrl) {
+                    showAlert("Please save your Google Apps Script URL first.", true);
+                    tabs.find(t => t.id === 'ai').button.click();
+                    gasUrlInput.focus();
+                    return;
+                }
 
+                const analysisText = aiResult.textContent;
                 if (!analysisText) {
-                    showAlert("Please run the AI analysis before posting to Slack.", true);
+                    showAlert("Please run the AI analysis first.", true);
                     return;
                 }
 
@@ -397,78 +391,41 @@
                 slackButtonText.textContent = 'Posting...';
                 slackLoader.classList.remove('hidden');
                 
-                const { icon, status, analysis } = parseAIResponseForSlack(analysisText);
-
-                const slackPayload = {
-                    "blocks": [
-                        {
-                            "type": "header",
-                            "text": {
-                                "type": "plain_text",
-                                "text": `${icon} Configuration Change Review [${status.toUpperCase()}]`,
-                                "emoji": true
-                            }
-                        },
-                        {
-                            "type": "section",
-                            "text": {
-                                "type": "mrkdwn",
-                                "text": "*Intended Change:*\n>" + intent
-                            }
-                        },
-                        { "type": "divider" },
-                        {
-                            "type": "section",
-                            "text": {
-                                "type": "mrkdwn",
-                                "text": "*🤖 AI Analysis & Verdict:*"
-                            }
-                        },
-                        {
-                            "type": "section",
-                            "text": {
-                                "type": "mrkdwn",
-                                "text": "```" + analysis + "```"
-                            }
-                        },
-                        { "type": "divider" },
-                        {
-                            "type": "context",
-                            "elements": [
-                                {
-                                    "type": "mrkdwn",
-                                    "text": "👀 *Human review requested.* Please verify the changes and the AI's assessment."
-                                }
-                            ]
-                        }
-                    ]
-                };
+                const { status, icon } = parseAIResponseForSlack(analysisText);
+                const payload = { intent: changeIntent.value, analysis: analysisText, status, icon };
 
                 try {
-                    await fetch(webhookUrl, {
+                    const response = await fetch(gasUrl, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(slackPayload),
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify(payload),
                     });
+                    const result = await response.json();
+                    if (result.status !== 'success') {
+                        throw new Error(result.message || 'The Google Script returned an error.');
+                    }
+                    slackSuccess.textContent = "Posted & logged successfully!";
                     slackSuccess.classList.remove('opacity-0');
                     setTimeout(() => slackSuccess.classList.add('opacity-0'), 5000);
                 } catch (error) {
-                    console.error('Slack post failed:', error);
-                    showAlert('Failed to post to Slack. This might be due to browser security (CORS). Check console.', true);
+                    console.error('Google Script fetch failed:', error);
+                    showAlert(`Error: ${error.message}`, true);
                 } finally {
                     slackButton.disabled = false;
-                    slackButtonText.textContent = 'Post to Slack for Human Review';
+                    slackButtonText.textContent = 'Post to Slack & Log';
                     slackLoader.classList.add('hidden');
                 }
             });
 
-            // --- Initial Setup on Load ---
-            beforeText.addEventListener('input', updateDiff);
-            afterText.addEventListener('input', updateDiff);
+            // --- Initial Load ---
+            beforeText.addEventListener('input', () => { updateDiff(); detectHtmlAndToggleTab(); });
+            afterText.addEventListener('input', () => { updateDiff(); detectHtmlAndToggleTab(); });
             updateDiff();
-            loadApiKey();
+            detectHtmlAndToggleTab();
+            apiKeyManager.loadValue();
+            gasUrlManager.loadValue();
         });
-console.log("yyyy")
+console.log("zzzz")
     </script>
 </body>
 </html>
