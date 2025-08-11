@@ -236,7 +236,6 @@
                     <p class="text-gray-600 mb-4">Paste CSV data of the active portfolio. The script will compare this with the existing data to add new pilots and update existing ones. Format: <code class="bg-gray-200 p-1 rounded">pilotId,startDate,wage,birthdate,gender</code>. No header row.</p>
                     <textarea id="upsert-csv-data" rows="10" class="form-input" placeholder="pilot001,2025-01-01,85500.00,1985-05-20,Male&#10;pilot003,2025-02-01,95000.00,1992-03-10,Male"></textarea>
                     
-                    <!-- MODIFIED: Added a reminder next to the effective date input -->
                     <div class="mt-4">
                         <label for="upsert-effective-date" class="block text-sm font-medium text-gray-700">Effective Date for Updates</label>
                         <div class="flex items-center space-x-4 mt-1">
@@ -675,7 +674,11 @@
                         const currentWage = pilot.subject?.wage || '';
                         const currentBirthdate = pilot.subject?.birthdate ? formatDate(pilot.subject.birthdate) : '';
                         const currentGender = pilot.subject?.gender || '';
-                        const extensionPolicy = pilot.metadata?.policyNumber;
+                        
+                        // ✅ MODIFIED: Check for the new metadata properties to determine upgrade status.
+                        const upgradeRiskItemId = pilot.metadata?.upgradeRiskItemId;
+                        const upgradePolicyId = pilot.metadata?.upgradePolicyId;
+
                         const cip = pilot.premium?.fullTerm?.cip;
                         const gip = pilot.premium?.fullTerm?.gip?.amount;
 
@@ -687,11 +690,12 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
                             </button>
                         `;
-
-                        if (extensionPolicy) {
+                        
+                        // ✅ MODIFIED: Render a link to the new risk item if the pilot has been upgraded.
+                        if (upgradeRiskItemId && upgradePolicyId) {
                             actionsHtml += `
-                                <a href="https://portal-ui.sbx.qover.io/policies/policies/${extensionPolicy}" target="_blank">
-                                    <span class="text-green-600" title="Upgraded: ${extensionPolicy}">
+                                <a href="https://portal-ui.sbx.qover.io/policies/master-policies/${upgradePolicyId}/risk-items/${upgradeRiskItemId}" target="_blank" title="Upgraded. Click to view extension.">
+                                    <span class="text-green-600">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                         </svg>
@@ -727,7 +731,6 @@
                      pilotsTableBody.innerHTML = `<tr><td colspan="10" class="text-center py-4">No pilots found.</td></tr>`;
                 }
                 
-                // Update visibility of columns based on toggles
                 document.querySelectorAll('.col-risk-id').forEach(el => el.classList.toggle('hidden', !toggleShowId.checked));
                 document.querySelectorAll('.col-financials').forEach(el => el.classList.toggle('hidden', !toggleShowFinancials.checked));
 
@@ -898,7 +901,6 @@
                     insuredAmount: parseInt(document.getElementById('upgrade-insuredAmount').value, 10)
                 };
                 
-                // Basic validation
                 for(const key in payload) {
                     if(!payload[key]) {
                         return showToast(`Please fill out all fields. Missing: ${key}`, true);
@@ -969,7 +971,7 @@
                         showToast(message, errors && errors.length > 0);
                         closeModal(upsertConfirmModal);
                         document.getElementById('upsert-csv-data').value = '';
-                        loadPilots(); // Refresh the main list
+                        loadPilots();
                     });
             });
 
@@ -978,7 +980,7 @@
             handleInitialLoad();
         });
         // ✅ Versioning: Helps confirm the latest code is running.
-        console.log("version v1802-effective-date-reminder");
+        console.log("version v1902-upgrade-as-risk-item");
     </script>
 </body>
 </html>
