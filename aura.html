@@ -250,6 +250,8 @@
         #ai-assist-btn:disabled { background: #555; cursor: not-allowed; }
         
         #save-api-key-btn { background: #007bff; }
+        .danger-btn { background: #dc3545 !important; }
+        .danger-btn:hover { background: #c82333 !important; }
         
         .api-help {
             font-size: 12px;
@@ -441,6 +443,17 @@
         <p>Tending to your garden...</p>
     </div>
 
+    <!-- Intro Modal -->
+    <div id="intro-modal" class="modal-container hidden">
+        <div class="modal-content">
+            <h2>Welcome to Aura</h2>
+            <p>Your mind is a garden. Plant your thoughts, watch them grow, and connect your ideas to cultivate clarity. Let's begin.</p>
+            <div class="modal-buttons">
+                <button id="begin-btn">Enter Your Garden</button>
+            </div>
+        </div>
+    </div>
+
     <!-- UI Panel for adding new tasks -->
     <div id="ui-panel" class="ui-panel">
         <span class="close-btn">&times;</span>
@@ -481,6 +494,7 @@
             <p class="api-help">Get your key from <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>.</p>
             <div class="modal-buttons">
                  <button id="save-api-key-btn">Save Key</button>
+                 <button id="clear-api-key-btn" class="danger-btn">Clear Key</button>
             </div>
             
             <div class="settings-section">
@@ -489,6 +503,13 @@
                 <input type="range" id="time-slider" min="0" max="23" step="1">
                 <div class="modal-buttons">
                     <button id="reset-time-btn">Use Automatic Time</button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h2>Data Management</h2>
+                 <div class="modal-buttons">
+                    <button id="clear-garden-btn" class="danger-btn">Clear Entire Garden</button>
                 </div>
             </div>
         </div>
@@ -540,11 +561,12 @@
         // GLOBAL VARIABLES
         // =============================================================================
         let scene, camera, renderer, controls;
-        let sky, sun;
+        let sky, sun, hemisphereLight, directionalLight;
+        let fireflies;
         const taskObjects = []; // To hold the 3D objects
         const connectionLines = []; // To hold the vine meshes
         let gardenData = { tasks: [], connections: [] }; // All data for local storage
-        let gardenSettings = { apiKey: "", timeOverride: null }; // All settings
+        let gardenSettings = { apiKey: "", timeOverride: null, hasVisited: false }; // All settings
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         let selectedTaskObject = null;
@@ -555,6 +577,8 @@
 
         // DOM Elements
         const loader = document.getElementById('loader');
+        const introModal = document.getElementById('intro-modal');
+        const beginBtn = document.getElementById('begin-btn');
         const uiPanel = document.getElementById('ui-panel');
         const togglePanelBtn = document.getElementById('toggle-panel-btn');
         const addTaskBtn = document.getElementById('add-task-btn');
@@ -578,6 +602,8 @@
         const settingsModal = document.getElementById('settings-modal');
         const apiKeyInput = document.getElementById('api-key-input');
         const saveApiKeyBtn = document.getElementById('save-api-key-btn');
+        const clearApiKeyBtn = document.getElementById('clear-api-key-btn');
+        const clearGardenBtn = document.getElementById('clear-garden-btn');
         const timeSlider = document.getElementById('time-slider');
         const timeSliderValue = document.getElementById('time-slider-value');
         const resetTimeBtn = document.getElementById('reset-time-btn');
@@ -605,6 +631,7 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 0.8; // Slightly reduce overall brightness
             document.getElementById('garden-container').appendChild(renderer.domElement);
 
             controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -614,20 +641,28 @@
             controls.minDistance = 5;
             controls.maxDistance = 200;
 
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
-            scene.add(ambientLight);
-
+            // Use a hemisphere light for more natural ambient lighting
+            hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.5);
+            scene.add(hemisphereLight);
+            
+            directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            scene.add(directionalLight);
+            
+            // Create a textured ground plane
             const groundGeometry = new THREE.PlaneGeometry(500, 500);
-            const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x1a2a1a, roughness: 0.9, metalness: 0.1 });
+            const grassTexture = createGrassTexture();
+            const groundMaterial = new THREE.MeshStandardMaterial({ map: grassTexture, roughness: 0.9, metalness: 0.1 });
             const ground = new THREE.Mesh(groundGeometry, groundMaterial);
             ground.rotation.x = -Math.PI / 2;
             scene.add(ground);
             
-            // Setup all event listeners
             setupEventListeners();
-
             loadDataFromLocalStorage();
             loadSettingsFromLocalStorage();
+            
+            if (!gardenSettings.hasVisited) {
+                introModal.classList.remove('hidden');
+            }
             
             initSky();
             updateTime();
@@ -643,7 +678,12 @@
             addTaskBtn.addEventListener('click', handleAddTask);
             uiPanel.querySelector('.close-btn').addEventListener('click', () => uiPanel.classList.remove('visible'));
             
-            // Task Modal Listeners
+            beginBtn.addEventListener('click', () => {
+                introModal.classList.add('hidden');
+                gardenSettings.hasVisited = true;
+                saveSettingsToLocalStorage();
+            });
+            
             taskModal.querySelector('.close-btn').addEventListener('click', () => taskModal.classList.add('hidden'));
             completeTaskBtn.addEventListener('click', handleCompleteTask);
             connectTaskBtn.addEventListener('click', handleStartConnection);
@@ -652,14 +692,14 @@
             aiAssistBtn.addEventListener('click', handleAiAssist);
             cancelConnectionBtn.addEventListener('click', cancelConnection);
             
-            // Settings Modal Listeners
             settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
             settingsModal.querySelector('.close-btn').addEventListener('click', () => settingsModal.classList.add('hidden'));
             saveApiKeyBtn.addEventListener('click', handleSaveApiKey);
+            clearApiKeyBtn.addEventListener('click', handleClearApiKey);
+            clearGardenBtn.addEventListener('click', handleClearGarden);
             timeSlider.addEventListener('input', handleTimeSliderChange);
             resetTimeBtn.addEventListener('click', handleResetTime);
 
-            // List Modal Listeners
             listBtn.addEventListener('click', handleShowList);
             listModal.querySelector('.close-btn').addEventListener('click', () => listModal.classList.add('hidden'));
             taskList.addEventListener('click', handleListNavigation);
@@ -681,14 +721,28 @@
                 : new Date(new Date().toLocaleString("en-US", {timeZone: "Europe/Brussels"})).getHours();
 
             const effectController = {
-                turbidity: 10, rayleigh: 3, mieCoefficient: 0.005,
-                mieDirectionalG: 0.7, elevation: 2, azimuth: 180,
-                exposure: renderer.toneMappingExposure
+                turbidity: 10, rayleigh: 2, mieCoefficient: 0.005,
+                mieDirectionalG: 0.8, elevation: 2, azimuth: 180,
             };
-            if (hour > 5 && hour < 8) { effectController.elevation = 2; effectController.rayleigh = 2; }
-            else if (hour >= 8 && hour < 18) { effectController.elevation = 15; effectController.rayleigh = 0.5; }
-            else if (hour >= 18 && hour < 21) { effectController.elevation = 2; effectController.rayleigh = 3; effectController.turbidity = 20; }
-            else { effectController.elevation = -2; effectController.rayleigh = 0.1; addStars(); }
+            
+            if (hour > 5 && hour < 8) { // Sunrise
+                effectController.elevation = 3; effectController.rayleigh = 2.5;
+                hemisphereLight.intensity = 0.6; directionalLight.intensity = 0.6;
+                addNightEffects(false);
+            } else if (hour >= 8 && hour < 18) { // Daytime
+                effectController.elevation = 15; effectController.rayleigh = 0.8;
+                hemisphereLight.intensity = 0.8; directionalLight.intensity = 1.0;
+                addNightEffects(false);
+            } else if (hour >= 18 && hour < 21) { // Sunset
+                effectController.elevation = 3; effectController.rayleigh = 3; effectController.turbidity = 20;
+                hemisphereLight.intensity = 0.5; directionalLight.intensity = 0.5;
+                addNightEffects(true);
+            } else { // Night
+                effectController.elevation = -2; effectController.rayleigh = 0.2;
+                hemisphereLight.intensity = 0.2; directionalLight.intensity = 0.1;
+                addNightEffects(true);
+            }
+            
             const uniforms = sky.material.uniforms;
             uniforms['turbidity'].value = effectController.turbidity;
             uniforms['rayleigh'].value = effectController.rayleigh;
@@ -698,19 +752,57 @@
             const theta = THREE.MathUtils.degToRad(effectController.azimuth);
             sun.setFromSphericalCoords(1, phi, theta);
             uniforms['sunPosition'].value.copy(sun);
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-            directionalLight.position.set(sun.x, sun.y, sun.z);
-            scene.add(directionalLight);
+            directionalLight.position.copy(sun);
         }
 
-        function addStars() {
-            const starGeometry = new THREE.BufferGeometry();
-            const starVertices = [];
-            for (let i = 0; i < 10000; i++) {
-                starVertices.push((Math.random() - 0.5) * 2000, Math.random() * 500 + 100, (Math.random() - 0.5) * 2000);
+        function addNightEffects(active) {
+            if (active) {
+                if (!fireflies) {
+                    const fireflyGeo = new THREE.BufferGeometry();
+                    const fireflyVertices = [];
+                    for (let i = 0; i < 200; i++) {
+                        fireflyVertices.push(
+                            (Math.random() - 0.5) * 300,
+                            Math.random() * 20 + 2,
+                            (Math.random() - 0.5) * 300
+                        );
+                    }
+                    fireflyGeo.setAttribute('position', new THREE.Float32BufferAttribute(fireflyVertices, 3));
+                    const fireflyMat = new THREE.PointsMaterial({
+                        size: 0.8,
+                        color: 0xffffaa,
+                        blending: THREE.AdditiveBlending,
+                        transparent: true,
+                        depthWrite: false
+                    });
+                    fireflies = new THREE.Points(fireflyGeo, fireflyMat);
+                    scene.add(fireflies);
+                }
+                fireflies.visible = true;
+            } else {
+                if (fireflies) fireflies.visible = false;
             }
-            starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
-            scene.add(new THREE.Points(starGeometry, new THREE.PointsMaterial({ color: 0xffffff, size: 0.5, transparent: true })));
+        }
+        
+        function createGrassTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const context = canvas.getContext('2d');
+            context.fillStyle = '#2c3e2c'; // Dark green base
+            context.fillRect(0, 0, 512, 512);
+            for (let i = 0; i < 20000; i++) {
+                const x = Math.random() * 512;
+                const y = Math.random() * 512;
+                const length = Math.random() * 5 + 2;
+                const angle = Math.random() * Math.PI * 2;
+                context.beginPath();
+                context.moveTo(x, y);
+                context.lineTo(x + Math.cos(angle) * length, y + Math.sin(angle) * length);
+                context.strokeStyle = `rgba(80, 120, 80, ${Math.random() * 0.5 + 0.3})`;
+                context.stroke();
+            }
+            return new THREE.CanvasTexture(canvas);
         }
 
         function animate() {
@@ -722,6 +814,9 @@
                      obj.position.y = obj.userData.originalY + Math.sin(time * obj.userData.bobSpeed) * obj.userData.bobHeight;
                 }
             });
+            if (fireflies && fireflies.visible) {
+                fireflies.rotation.y += 0.001;
+            }
             renderer.render(scene, camera);
         }
 
@@ -964,7 +1059,6 @@
                 const taskId = event.target.dataset.id;
                 const targetObject = taskObjects.find(obj => obj.userData.id === taskId);
                 if (targetObject) {
-                    // Move camera to the object
                     controls.target.copy(targetObject.position);
                     camera.position.set(targetObject.position.x, targetObject.position.y + 15, targetObject.position.z + 20);
                     listModal.classList.add('hidden');
@@ -973,7 +1067,7 @@
         }
 
         // =============================================================================
-        // LOCAL STORAGE
+        // LOCAL STORAGE & DATA
         // =============================================================================
 
         function loadDataFromLocalStorage() {
@@ -1023,13 +1117,29 @@
         
         function handleSaveApiKey() {
             const newKey = apiKeyInput.value.trim();
-            if (newKey) {
-                gardenSettings.apiKey = newKey;
-                saveSettingsToLocalStorage();
-                alert("API Key saved successfully!");
-                settingsModal.classList.add('hidden');
+            gardenSettings.apiKey = newKey;
+            saveSettingsToLocalStorage();
+            alert("API Key saved successfully!");
+            settingsModal.classList.add('hidden');
+        }
+        
+        function handleClearApiKey() {
+            apiKeyInput.value = "";
+            handleSaveApiKey();
+        }
+        
+        function handleClearGarden() {
+            if (clearGardenBtn.dataset.confirm) {
+                gardenData = { tasks: [], connections: [] };
+                saveDataToLocalStorage();
+                location.reload();
             } else {
-                alert("Please enter a valid API key.");
+                clearGardenBtn.textContent = "Are you sure?";
+                clearGardenBtn.dataset.confirm = "true";
+                setTimeout(() => {
+                    clearGardenBtn.textContent = "Clear Entire Garden";
+                    delete clearGardenBtn.dataset.confirm;
+                }, 3000);
             }
         }
 
