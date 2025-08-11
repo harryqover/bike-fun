@@ -121,7 +121,7 @@
 
                 <div id="panel-ai" class="tab-panel hidden">
                      <h3 class="text-xl font-semibold mb-2">AI-Powered Validation</h3>
-                     <!-- NEW: API Key Management Section -->
+                     <!-- API Key Management Section -->
                      <div class="p-4 mb-4 border border-blue-200 dark:border-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800/50">
                         <label for="api-key-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gemini API Key</label>
                         <div class="flex items-center space-x-2">
@@ -131,7 +131,6 @@
                         </div>
                         <p id="api-key-status" class="text-xs text-gray-500 dark:text-gray-400 mt-1 h-4"></p>
                      </div>
-                     <!-- END NEW SECTION -->
                     <div>
                         <label for="change-intent" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Describe your intended change:</label>
                         <input type="text" id="change-intent" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 focus:ring-brand-accent focus:border-brand-accent" placeholder="e.g., 'Updated the hero title and changed the button color'">
@@ -162,34 +161,26 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Input/Output Elements
+            // Element references
             const beforeText = document.getElementById('before-text');
             const afterText = document.getElementById('after-text');
             const diffOutput = document.getElementById('diff-output');
             const renderBefore = document.getElementById('render-before');
             const renderAfter = document.getElementById('render-after');
-            
-            // AI Analysis Elements
             const changeIntent = document.getElementById('change-intent');
             const analyzeButton = document.getElementById('analyze-button');
             const analyzeButtonText = document.getElementById('analyze-button-text');
             const analyzeLoader = document.getElementById('analyze-loader');
             const aiResultContainer = document.getElementById('ai-result-container');
             const aiResult = document.getElementById('ai-result');
-
-            // API Key Elements
             const apiKeyInput = document.getElementById('api-key-input');
             const saveApiKeyButton = document.getElementById('save-api-key');
             const clearApiKeyButton = document.getElementById('clear-api-key');
             const apiKeyStatus = document.getElementById('api-key-status');
-
-            // Slack Elements
             const slackButton = document.getElementById('slack-button');
             const slackButtonText = document.getElementById('slack-button-text');
             const slackLoader = document.getElementById('slack-loader');
             const slackSuccess = document.getElementById('slack-success');
-
-            // Notification Element
             const alertBox = document.getElementById('alert-box');
 
             const tabs = [
@@ -282,7 +273,6 @@
                 const apiKey = localStorage.getItem('geminiApiKey');
                 if (!apiKey) {
                     showAlert('Please save a Gemini API key before running the analysis.', true);
-                    // Switch to the AI tab to make the API key input visible
                     tabs.find(t => t.id === 'ai').button.click();
                     apiKeyInput.focus();
                     return;
@@ -341,17 +331,35 @@
                     return result.candidates[0].content.parts[0].text;
                 } else {
                     console.warn("Unexpected API response structure:", result);
-                    throw new Error("AI analysis returned no content. The change might be too complex or the service is unavailable.");
+                    throw new Error("AI analysis returned no content.");
                 }
             }
 
-            // --- Slack Integration ---
+            // --- Slack Integration (UPDATED) ---
+            const parseAIResponseForSlack = (analysisText) => {
+                const lowerText = analysisText.toLowerCase();
+                let status = 'info';
+                let icon = 'ℹ️';
+
+                if (lowerText.includes('success')) {
+                    status = 'success';
+                    icon = ':white_check_mark:';
+                } else if (lowerText.includes('warning')) {
+                    status = 'warning';
+                    icon = ':warning:';
+                } else if (lowerText.includes('failure')) {
+                    status = 'failure';
+                    icon = ':x:';
+                }
+                return { status, icon, analysis: analysisText };
+            };
+
             slackButton.addEventListener('click', async () => {
                 const intent = changeIntent.value;
-                const analysis = aiResult.textContent;
+                const analysisText = aiResult.textContent;
                 const webhookUrl = "https://hooks.slack.com/services/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";
 
-                if (!analysis) {
+                if (!analysisText) {
                     showAlert("Please run the AI analysis before posting to Slack.", true);
                     return;
                 }
@@ -359,11 +367,55 @@
                 slackButton.disabled = true;
                 slackButtonText.textContent = 'Posting...';
                 slackLoader.classList.remove('hidden');
+                
+                const { icon, status, analysis } = parseAIResponseForSlack(analysisText);
 
-                const slackPayload = { "blocks": [ { "type": "header", "text": { "type": "plain_text", "text": "🚀 New Configuration Change Review", "emoji": true } }, { "type": "section", "text": { "type": "mrkdwn", "text": "*Intended Change:*\n" + intent } }, { "type": "divider" }, { "type": "section", "text": { "type": "mrkdwn", "text": "*🤖 AI Analysis & Verdict:*\n" + analysis } }, { "type": "divider" }, { "type": "section", "text": { "type": "mrkdwn", "text": "👀 *Human review requested.* Please verify the changes and the AI's assessment." } } ] };
+                const slackPayload = {
+                    "blocks": [
+                        {
+                            "type": "header",
+                            "text": {
+                                "type": "plain_text",
+                                "text": `${icon} Configuration Change Review [${status.toUpperCase()}]`,
+                                "emoji": true
+                            }
+                        },
+                        {
+                            "type": "section",
+                            "text": {
+                                "type": "mrkdwn",
+                                "text": "*Intended Change:*\n>" + intent
+                            }
+                        },
+                        { "type": "divider" },
+                        {
+                            "type": "section",
+                            "text": {
+                                "type": "mrkdwn",
+                                "text": "*🤖 AI Analysis & Verdict:*"
+                            }
+                        },
+                        {
+                            "type": "section",
+                            "text": {
+                                "type": "mrkdwn",
+                                "text": "```" + analysis + "```"
+                            }
+                        },
+                        { "type": "divider" },
+                        {
+                            "type": "context",
+                            "elements": [
+                                {
+                                    "type": "mrkdwn",
+                                    "text": "👀 *Human review requested.* Please verify the changes and the AI's assessment."
+                                }
+                            ]
+                        }
+                    ]
+                };
 
                 try {
-                    // Using a proxy is recommended for production to avoid CORS, but this is a best-effort for a self-contained app.
                     await fetch(webhookUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -384,8 +436,8 @@
             // --- Initial Setup on Load ---
             beforeText.addEventListener('input', updateDiff);
             afterText.addEventListener('input', updateDiff);
-            updateDiff(); // Initial diff on load
-            loadApiKey(); // Load API key from local storage
+            updateDiff();
+            loadApiKey();
         });
     </script>
 </body>
