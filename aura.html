@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura - Your Personal Mind Garden</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Body and Font Styling */
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow: hidden; /* Prevents scrollbars from appearing */
+        }
+
+        /* 3D Garden Container */
+        #garden-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        canvas {
+            display: block; /* Removes default canvas margin */
+        }
+
+        /* UI Panel Styling */
+        .ui-panel {
+            position: fixed;
+            bottom: -300px; /* Start hidden */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            transition: bottom 0.5s ease-in-out;
+        }
+
+        .ui-panel.visible {
+            bottom: 0;
+        }
+
+        .ui-panel h2 {
+            margin-top: 0;
+            font-weight: 700;
+            text-align: center;
+            color: #eee;
+        }
+
+        .ui-panel input, .ui-panel textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            box-sizing: border-box;
+        }
+
+        .ui-panel input::placeholder, .ui-panel textarea::placeholder {
+            color: #aaa;
+        }
+
+        .ui-panel button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .ui-panel button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Toggle Button for UI Panel */
+        #toggle-panel-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(45deg, #2575fc, #6a11cb);
+            color: #fff;
+            font-size: 36px;
+            line-height: 60px;
+            text-align: center;
+            cursor: pointer;
+            z-index: 11;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        #toggle-panel-btn.rotated {
+            transform: translateX(-50%) rotate(135deg);
+        }
+
+        /* Modal Styling */
+        .modal-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .modal-content {
+            background: rgba(20, 20, 20, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-content .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .modal-content .close-btn:hover {
+            color: #fff;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: #fff;
+        }
+
+        .modal-content p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        #modal-status {
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 5px;
+        }
+
+        #modal-status.pending {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        #modal-status.completed {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        #complete-task-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 8px;
+            background: #28a745;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #complete-task-btn:hover {
+            background-color: #218838;
+        }
+
+        #complete-task-btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
+        /* Location and Time Info */
+        .location-info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 15px;
+            border-radius: 10px;
+            z-index: 5;
+            text-align: left;
+        }
+
+        .location-info p {
+            margin: 0;
+            font-size: 14px;
+        }
+        
+        /* Saving Indicator */
+        #saving-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 15px;
+            border-radius: 8px;
+            z-index: 5;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        #saving-indicator.visible {
+            opacity: 1;
+        }
+
+        /* Loader Styling */
+        .loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transition: opacity 0.5s ease;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-left-color: #6a11cb;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-container p {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #aaa;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- The 3D canvas will be injected here by Three.js -->
+    <div id="garden-container"></div>
+
+    <!-- Loading Spinner -->
+    <div id="loader" class="loader-container">
+        <div class="spinner"></div>
+        <p>Tending to your garden...</p>
+    </div>
+
+    <!-- UI Panel for adding new tasks -->
+    <div id="ui-panel" class="ui-panel">
+        <h2>Plant a New Thought</h2>
+        <input type="text" id="task-title" placeholder="What's on your mind?">
+        <textarea id="task-details" placeholder="Add more details..."></textarea>
+        <button id="add-task-btn">Plant Seed</button>
+    </div>
+    <button id="toggle-panel-btn">+</button>
+
+    <!-- Modal for displaying task details -->
+    <div id="task-modal" class="modal-container" style="display: none;">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="modal-title">Task Title</h2>
+            <p id="modal-details">Task details will appear here.</p>
+            <p><strong>Status:</strong> <span id="modal-status">Pending</span></p>
+            <button id="complete-task-btn">Mark as Complete</button>
+        </div>
+    </div>
+    
+    <!-- Time and Location Display -->
+    <div class="location-info">
+        <p>Schaerbeek, Brussels</p>
+        <p id="current-time">Loading time...</p>
+    </div>
+    
+    <!-- Saving Indicator -->
+    <div id="saving-indicator">
+        <p>Saved.</p>
+    </div>
+
+    <!-- Three.js and Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/objects/Sky.js"></script>
+    
+    <!-- Main Application Logic -->
+    <script>
+        // =============================================================================
+        // GLOBAL VARIABLES
+        // =============================================================================
+        let scene, camera, renderer, controls;
+        let sky, sun;
+        const taskObjects = []; // To hold the 3D objects representing tasks
+        let allTasks = []; // To hold the raw task data from local storage
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let selectedTaskObject = null;
+
+        // DOM Elements
+        const loader = document.getElementById('loader');
+        const uiPanel = document.getElementById('ui-panel');
+        const togglePanelBtn = document.getElementById('toggle-panel-btn');
+        const addTaskBtn = document.getElementById('add-task-btn');
+        const taskTitleInput = document.getElementById('task-title');
+        const taskDetailsInput = document.getElementById('task-details');
+        const taskModal = document.getElementById('task-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDetails = document.getElementById('modal-details');
+        const modalStatus = document.getElementById('modal-status');
+        const completeTaskBtn = document.getElementById('complete-task-btn');
+        const closeModalBtn = document.querySelector('.close-btn');
+        const timeDisplay = document.getElementById('current-time');
+        const savingIndicator = document.getElementById('saving-indicator');
+
+        // =============================================================================
+        // INITIALIZATION
+        // =============================================================================
+
+        function init() {
+            // Scene setup
+            scene = new THREE.Scene();
+
+            // Camera setup
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.set(0, 20, 50);
+            camera.lookAt(0, 0, 0);
+
+            // Renderer setup
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            document.getElementById('garden-container').appendChild(renderer.domElement);
+
+            // Controls setup
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxPolarAngle = Math.PI / 2 - 0.05; // Prevent camera from going below ground
+            controls.minDistance = 5;
+            controls.maxDistance = 200;
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+            scene.add(ambientLight);
+
+            // Ground Plane
+            const groundGeometry = new THREE.PlaneGeometry(500, 500);
+            const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x1a2a1a, roughness: 0.9, metalness: 0.1 });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            scene.add(ground);
+            
+            // Sky and Sun
+            initSky();
+
+            // Event Listeners
+            window.addEventListener('resize', onWindowResize);
+            document.addEventListener('click', onDocumentMouseClick);
+            togglePanelBtn.addEventListener('click', toggleUIPanel);
+            addTaskBtn.addEventListener('click', handleAddTask);
+            closeModalBtn.addEventListener('click', () => taskModal.style.display = 'none');
+            completeTaskBtn.addEventListener('click', handleCompleteTask);
+
+            // Initial Load
+            loadTasksFromLocalStorage();
+            updateTime();
+            setInterval(updateTime, 1000 * 60); // Update time every minute
+            
+            animate();
+        }
+
+        // =============================================================================
+        // 3D SCENE & ANIMATION
+        // =============================================================================
+
+        function initSky() {
+            // The THREE.Sky constructor is now available thanks to the added script
+            sky = new THREE.Sky();
+            sky.scale.setScalar(450000);
+            scene.add(sky);
+
+            sun = new THREE.Vector3();
+
+            // Time-based sky update for Schaerbeek, Brussels (UTC+2 during summer)
+            const brusselsTime = new Date(new Date().toLocaleString("en-US", {timeZone: "Europe/Brussels"}));
+            const hour = brusselsTime.getHours();
+            
+            const effectController = {
+                turbidity: 10,
+                rayleigh: 3,
+                mieCoefficient: 0.005,
+                mieDirectionalG: 0.7,
+                elevation: 2, // angle of the sun
+                azimuth: 180, // rotation of the sun
+                exposure: renderer.toneMappingExposure
+            };
+
+            // Day/Night Cycle Logic
+            if (hour > 5 && hour < 8) { // Sunrise
+                effectController.elevation = 2;
+                effectController.rayleigh = 2;
+            } else if (hour >= 8 && hour < 18) { // Daytime
+                effectController.elevation = 15;
+                effectController.rayleigh = 0.5;
+            } else if (hour >= 18 && hour < 21) { // Sunset
+                effectController.elevation = 2;
+                effectController.rayleigh = 3;
+                effectController.turbidity = 20;
+            } else { // Night
+                effectController.elevation = -2; // Sun below horizon
+                effectController.rayleigh = 0.1;
+                addStars();
+            }
+
+            const uniforms = sky.material.uniforms;
+            uniforms['turbidity'].value = effectController.turbidity;
+            uniforms['rayleigh'].value = effectController.rayleigh;
+            uniforms['mieCoefficient'].value = effectController.mieCoefficient;
+            uniforms['mieDirectionalG'].value = effectController.mieDirectionalG;
+
+            const phi = THREE.MathUtils.degToRad(90 - effectController.elevation);
+            const theta = THREE.MathUtils.degToRad(effectController.azimuth);
+
+            sun.setFromSphericalCoords(1, phi, theta);
+
+            uniforms['sunPosition'].value.copy(sun);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+            directionalLight.position.set(sun.x, sun.y, sun.z);
+            scene.add(directionalLight);
+        }
+
+        function addStars() {
+            const starGeometry = new THREE.BufferGeometry();
+            const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5, transparent: true });
+
+            const starVertices = [];
+            for (let i = 0; i < 10000; i++) {
+                const x = (Math.random() - 0.5) * 2000;
+                const y = Math.random() * 500 + 100;
+                const z = (Math.random() - 0.5) * 2000;
+                starVertices.push(x, y, z);
+            }
+
+            starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+            const stars = new THREE.Points(starGeometry, starMaterial);
+            scene.add(stars);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            
+            const time = Date.now() * 0.0005;
+            taskObjects.forEach(obj => {
+                obj.position.y = obj.userData.originalY + Math.sin(time * obj.userData.bobSpeed) * obj.userData.bobHeight;
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // =============================================================================
+        // TASK MANAGEMENT (FRONTEND & 3D)
+        // =============================================================================
+
+        function createTaskObject(task) {
+            let geometry, material;
+            const isCompleted = task.status === 'completed';
+
+            if (isCompleted) {
+                geometry = new THREE.SphereGeometry(2, 32, 32);
+                material = new THREE.MeshStandardMaterial({ 
+                    color: 0x28a745, 
+                    emissive: 0x28a745, 
+                    emissiveIntensity: 0.5,
+                    roughness: 0.4 
+                });
+            } else {
+                geometry = new THREE.IcosahedronGeometry(1.5, 0);
+                material = new THREE.MeshStandardMaterial({ 
+                    color: 0x6a11cb, 
+                    roughness: 0.2, 
+                    metalness: 0.8,
+                    transparent: true,
+                    opacity: 0.9
+                });
+            }
+
+            const plant = new THREE.Mesh(geometry, material);
+            plant.position.set(task.x, 2, task.z);
+            
+            plant.userData = { ...task, originalY: 2, bobSpeed: Math.random() * 0.5 + 0.5, bobHeight: Math.random() * 0.2 + 0.1 };
+
+            scene.add(plant);
+            taskObjects.push(plant);
+        }
+
+        function onDocumentMouseClick(event) {
+            if (event.target.closest('.ui-panel, .modal-container, #toggle-panel-btn')) {
+                return;
+            }
+            
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(taskObjects);
+
+            if (intersects.length > 0) {
+                selectedTaskObject = intersects[0].object;
+                showTaskModal(selectedTaskObject.userData);
+            }
+        }
+
+        function showTaskModal(taskData) {
+            modalTitle.textContent = taskData.title;
+            modalDetails.textContent = taskData.details || "No details provided.";
+            modalStatus.textContent = taskData.status;
+            modalStatus.className = taskData.status;
+            
+            completeTaskBtn.disabled = taskData.status === 'completed';
+            completeTaskBtn.textContent = taskData.status === 'completed' ? 'Completed' : 'Mark as Complete';
+
+            taskModal.style.display = 'flex';
+        }
+
+        // =============================================================================
+        // UI INTERACTION
+        // =============================================================================
+
+        function toggleUIPanel() {
+            uiPanel.classList.toggle('visible');
+            togglePanelBtn.classList.toggle('rotated');
+        }
+
+        function updateTime() {
+            const brusselsTime = new Date(new Date().toLocaleString("en-US", {timeZone: "Europe/Brussels"}));
+            const timeString = brusselsTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            timeDisplay.textContent = timeString;
+        }
+
+        function showSavingIndicator() {
+            savingIndicator.classList.add('visible');
+            setTimeout(() => {
+                savingIndicator.classList.remove('visible');
+            }, 1500);
+        }
+
+        // =============================================================================
+        // LOCAL STORAGE
+        // =============================================================================
+
+        function loadTasksFromLocalStorage() {
+            try {
+                const savedTasks = localStorage.getItem('auraMindGardenTasks');
+                allTasks = savedTasks ? JSON.parse(savedTasks) : [];
+                
+                taskObjects.forEach(obj => scene.remove(obj));
+                taskObjects.length = 0;
+                
+                allTasks.forEach(task => createTaskObject(task));
+            } catch (error) {
+                console.error('Could not load tasks from local storage:', error);
+                allTasks = [];
+            } finally {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }
+        }
+
+        function saveTasksToLocalStorage() {
+            try {
+                localStorage.setItem('auraMindGardenTasks', JSON.stringify(allTasks));
+                showSavingIndicator();
+            } catch (error) {
+                console.error('Could not save tasks to local storage:', error);
+                alert('There was an error saving your garden.');
+            }
+        }
+
+        function handleAddTask() {
+            const title = taskTitleInput.value;
+            const details = taskDetailsInput.value;
+
+            if (!title) {
+                alert('Please provide a title for your thought.');
+                return;
+            }
+
+            const newTask = {
+                id: Date.now().toString(),
+                title,
+                details,
+                status: 'pending',
+                x: (Math.random() - 0.5) * 150,
+                z: (Math.random() - 0.5) * 150
+            };
+            
+            allTasks.push(newTask);
+            createTaskObject(newTask);
+            saveTasksToLocalStorage();
+
+            taskTitleInput.value = '';
+            taskDetailsInput.value = '';
+            toggleUIPanel();
+        }
+
+        function handleCompleteTask() {
+            if (!selectedTaskObject) return;
+
+            const taskId = selectedTaskObject.userData.id;
+            const taskIndex = allTasks.findIndex(t => t.id === taskId);
+            if (taskIndex === -1) return;
+
+            // Update data source
+            allTasks[taskIndex].status = 'completed';
+            
+            // Visually update the 3D object
+            selectedTaskObject.userData.status = 'completed';
+            selectedTaskObject.material.color.set(0x28a745);
+            selectedTaskObject.material.emissive.set(0x28a745);
+            selectedTaskObject.material.emissiveIntensity = 0.5;
+            selectedTaskObject.geometry = new THREE.SphereGeometry(2, 32, 32);
+            
+            // "Bloom" effect
+            const bloomLight = new THREE.PointLight(0xffffff, 1, 50);
+            bloomLight.position.copy(selectedTaskObject.position);
+            scene.add(bloomLight);
+            
+            let intensity = 2;
+            const fadeOut = setInterval(() => {
+                intensity -= 0.1;
+                if (intensity <= 0) {
+                    scene.remove(bloomLight);
+                    clearInterval(fadeOut);
+                } else {
+                    bloomLight.intensity = intensity;
+                }
+            }, 50);
+
+            saveTasksToLocalStorage();
+            taskModal.style.display = 'none';
+        }
+
+        // =============================================================================
+        // SCRIPT EXECUTION
+        // =============================================================================
+        init();
+    </script>
+</body>
+</html>
