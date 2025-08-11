@@ -1,23 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" class="">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON Comparison Tool with Gemini AI</title>
+    <title>Contract Version Comparison Tool</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        // Set theme on initial load to prevent FOUC (Flash of Unstyled Content)
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    </script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s, color 0.3s;
         }
         .json-container {
             white-space: pre;
@@ -29,9 +20,6 @@
             border-radius: 0.5rem;
             height: 400px;
             overflow: auto;
-        }
-        .dark .json-container {
-             background-color: #0F172A; /* slate-900 */
         }
         /* Highlighting for the detailed JSON view */
         .diff-add { background-color: rgba(16, 185, 129, 0.15); }
@@ -45,18 +33,12 @@
             padding: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             border: 1px solid #e2e8f0;
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-        .dark .summary-card {
-            background-color: #1E293B; /* slate-800 */
-            border-color: #334155; /* slate-700 */
         }
         .summary-modified-item {
             border-top: 1px solid #e2e8f0;
             padding-top: 1rem;
             margin-top: 1rem;
         }
-        .dark .summary-modified-item { border-color: #334155; }
         .summary-modified-item:first-child { border-top: none; padding-top: 0; margin-top: 0; }
         .summary-value {
             white-space: pre-wrap;
@@ -68,16 +50,10 @@
         }
         .summary-from { background-color: rgba(239, 68, 68, 0.1); color: #b91c1c; }
         .summary-to { background-color: rgba(16, 185, 129, 0.1); color: #047857; }
-        .dark .summary-from { background-color: rgba(239, 68, 68, 0.2); color: #f87171; }
-        .dark .summary-to { background-color: rgba(16, 185, 129, 0.2); color: #34d399; }
         
         #explanation-card {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             border: 1px solid #e2e8f0;
-        }
-        .dark #explanation-card {
-            background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
-            border-color: #475569;
         }
         #explanation-content p { margin-bottom: 1rem; }
         .spinner {
@@ -88,63 +64,67 @@
             border-left-color: #4f46e5;
             animation: spin 1s ease infinite;
         }
-        .dark .spinner { border-left-color: #818cf8; }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-200">
+<body class="bg-slate-50 text-slate-800">
 
     <div class="container mx-auto p-4 sm:p-6 lg:p-8">
         <header class="text-center mb-6">
-            <h1 class="text-4xl font-bold text-slate-900 dark:text-white">JSON Comparison Tool</h1>
-            <p class="mt-2 text-lg text-slate-600 dark:text-slate-400">Paste your two JSON objects below to see a clear comparison.</p>
+            <h1 class="text-4xl font-bold text-slate-900">Contract Version Comparison Tool</h1>
+            <p class="mt-2 text-lg text-slate-600">For CARE Team: Compare two contract versions to understand the changes.</p>
         </header>
 
         <!-- Config Section -->
-        <div id="config-section" class="max-w-2xl mx-auto bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-slate-200 dark:border-slate-700 mb-10">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                <div>
-                    <label for="apiKeyInput" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Gemini API Key</label>
-                    <div class="flex items-center gap-2">
-                        <input type="password" id="apiKeyInput" placeholder="Enter your API key" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
-                        <button id="saveApiKeyBtn" class="bg-indigo-600 text-white font-semibold py-2 px-3 rounded-md shadow-sm hover:bg-indigo-700">Save</button>
-                        <button id="clearApiKeyBtn" class="bg-red-600 text-white font-semibold py-2 px-3 rounded-md shadow-sm hover:bg-red-700">Clear</button>
-                    </div>
-                </div>
-                <div class="flex items-center justify-center md:justify-end">
-                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300 mr-3">Light / Dark</span>
-                    <label for="theme-toggle" class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" value="" id="theme-toggle" class="sr-only peer">
-                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-indigo-600"></div>
-                    </label>
+        <div id="config-section" class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md border border-slate-200 mb-10">
+            <div>
+                <label for="apiKeyInput" class="block text-sm font-medium text-slate-700 mb-1">Gemini API Key</label>
+                <div class="flex items-center gap-2">
+                    <input type="password" id="apiKeyInput" placeholder="Enter your API key" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <button id="saveApiKeyBtn" class="bg-indigo-600 text-white font-semibold py-2 px-3 rounded-md shadow-sm hover:bg-indigo-700">Save</button>
+                    <button id="clearApiKeyBtn" class="bg-red-600 text-white font-semibold py-2 px-3 rounded-md shadow-sm hover:bg-red-700">Clear</button>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
-                <label for="jsonInput1" class="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2 block">JSON 1 (Original)</label>
-                <textarea id="jsonInput1" class="w-full h-96 p-4 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200">{}</textarea>
+                <label for="jsonInput1" class="text-lg font-semibold text-slate-700 mb-2 block">Contract Version 1 (e.g., Old Version)</label>
+                <textarea id="jsonInput1" class="w-full h-96 p-4 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">{}</textarea>
             </div>
             <div>
-                <label for="jsonInput2" class="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2 block">JSON 2 (Changed)</label>
-                <textarea id="jsonInput2" class="w-full h-96 p-4 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200">{}</textarea>
+                <label for="jsonInput2" class="text-lg font-semibold text-slate-700 mb-2 block">Contract Version 2 (e.g., New Version)</label>
+                <textarea id="jsonInput2" class="w-full h-96 p-4 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">{}</textarea>
             </div>
         </div>
 
         <div class="text-center my-8">
             <button id="compareBtn" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-indigo-700 transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300">
-                Compare JSON
+                Compare Contracts
             </button>
         </div>
 
         <div id="results" class="hidden">
             <div id="summary-view" class="mb-10">
                 <div class="flex justify-center items-center mb-6">
-                    <h2 class="text-3xl font-bold text-center text-slate-900 dark:text-white">Comparison Summary</h2>
+                    <h2 class="text-3xl font-bold text-center text-slate-900">Comparison Summary</h2>
                     <button id="explainBtn" class="hidden ml-4 bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-purple-700 transition-all transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-300 disabled:opacity-50 disabled:cursor-not-allowed" title="Add your API key to enable">
                         ✨ Explain Differences
                     </button>
@@ -153,27 +133,40 @@
             </div>
             <div id="explanation-view" class="hidden mb-10">
                 <div id="explanation-card" class="p-6 rounded-lg shadow-lg">
-                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-4">✨ AI Explanation</h3>
+                    <h3 class="text-2xl font-bold text-slate-800 mb-4">✨ AI Explanation</h3>
                     <div id="explanation-loader" class="flex justify-center items-center h-24">
                         <div class="spinner"></div>
                     </div>
-                    <div id="explanation-content" class="text-slate-700 dark:text-slate-300 leading-relaxed"></div>
+                    <div id="explanation-content" class="text-slate-700 leading-relaxed"></div>
                 </div>
             </div>
-            <h2 class="text-3xl font-bold text-center mb-6 text-slate-900 dark:text-white">Detailed Comparison</h2>
+            <h2 class="text-3xl font-bold text-center mb-6 text-slate-900">Detailed Comparison</h2>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div>
-                    <h3 class="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-2">JSON 1 Highlighted</h3>
+                    <h3 class="text-xl font-semibold text-slate-700 mb-2">Contract V1 Highlighted</h3>
                     <div id="jsonOutput1" class="json-container"></div>
                 </div>
                 <div>
-                    <h3 class="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-2">JSON 2 Highlighted</h3>
+                    <h3 class="text-xl font-semibold text-slate-700 mb-2">Contract V2 Highlighted</h3>
                     <div id="jsonOutput2" class="json-container"></div>
                 </div>
             </div>
         </div>
         <div id="messageBox" class="hidden fixed top-5 right-5 bg-red-500 text-white py-3 px-5 rounded-lg shadow-xl">
             <p id="messageText"></p>
+        </div>
+
+        <!-- AI Focus Modal -->
+        <div id="aiFocusModal" class="modal-overlay hidden">
+            <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">Focus the AI Explanation</h3>
+                <p class="text-slate-600 mb-6">To help me focus, is there a specific part of the contract you're interested in? (e.g., pricing, coverage, customer details). Leave blank to summarize all changes.</p>
+                <input type="text" id="focusInput" placeholder="e.g., pricing changes" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 mb-6">
+                <div class="flex justify-end gap-4">
+                    <button id="cancelFocusBtn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-md hover:bg-slate-300">Cancel</button>
+                    <button id="generateExplanationBtn" class="bg-purple-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-purple-700">Generate Explanation</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -182,7 +175,6 @@
         const apiKeyInput = document.getElementById('apiKeyInput');
         const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
         const clearApiKeyBtn = document.getElementById('clearApiKeyBtn');
-        const themeToggle = document.getElementById('theme-toggle');
         const compareBtn = document.getElementById('compareBtn');
         const explainBtn = document.getElementById('explainBtn');
         const jsonInput1 = document.getElementById('jsonInput1');
@@ -196,28 +188,26 @@
         const explanationView = document.getElementById('explanation-view');
         const explanationLoader = document.getElementById('explanation-loader');
         const explanationContent = document.getElementById('explanation-content');
+        const aiFocusModal = document.getElementById('aiFocusModal');
+        const focusInput = document.getElementById('focusInput');
+        const cancelFocusBtn = document.getElementById('cancelFocusBtn');
+        const generateExplanationBtn = document.getElementById('generateExplanationBtn');
 
         // --- State Variables ---
         let userApiKey = '';
         let currentDifferences = {};
 
         // --- Event Listeners ---
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeConfig();
-        });
+        document.addEventListener('DOMContentLoaded', initializeConfig);
         saveApiKeyBtn.addEventListener('click', saveApiKey);
         clearApiKeyBtn.addEventListener('click', clearApiKey);
-        themeToggle.addEventListener('change', handleThemeToggle);
         compareBtn.addEventListener('click', handleComparison);
-        explainBtn.addEventListener('click', handleExplainDifferences);
+        explainBtn.addEventListener('click', showAiFocusModal);
+        cancelFocusBtn.addEventListener('click', hideAiFocusModal);
+        generateExplanationBtn.addEventListener('click', generateFocusedExplanation);
 
         // --- Config and Theme Functions ---
         function initializeConfig() {
-            // Load theme
-            const isDarkMode = localStorage.getItem('theme') === 'dark';
-            themeToggle.checked = isDarkMode;
-            
-            // Load API Key
             const savedKey = localStorage.getItem('geminiApiKey');
             if (savedKey) {
                 userApiKey = savedKey;
@@ -252,14 +242,29 @@
             explainBtn.title = "Add your API key to enable";
         }
 
-        function handleThemeToggle() {
-            if (themeToggle.checked) {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
+        /**
+         * Recursively sorts an object's keys.
+         * @param {*} obj The object or value to sort.
+         * @returns The sorted object or original value.
+         */
+        function sortObject(obj) {
+            if (obj === null || typeof obj !== 'object') {
+                return obj;
             }
+
+            if (Array.isArray(obj)) {
+                // For arrays, we sort each element if it's an object.
+                // A more complex sort (e.g., by an ID) could be implemented here if needed.
+                return obj.map(sortObject);
+            }
+
+            // It's an object, sort its keys
+            const sortedKeys = Object.keys(obj).sort();
+            const sortedObj = {};
+            for (const key of sortedKeys) {
+                sortedObj[key] = sortObject(obj[key]);
+            }
+            return sortedObj;
         }
 
         // --- Main App Functions ---
@@ -273,12 +278,17 @@
                 return;
             }
 
+            // NEW: Sort objects before doing anything else
+            const sortedObj1 = sortObject(obj1);
+            const sortedObj2 = sortObject(obj2);
+
             explanationView.classList.add('hidden');
             explanationContent.innerHTML = '';
 
-            currentDifferences = findDifferences(obj1, obj2);
-            renderJson(jsonOutput1, obj1, currentDifferences, 'from');
-            renderJson(jsonOutput2, obj2, currentDifferences, 'to');
+            // Use sorted objects for finding differences and rendering
+            currentDifferences = findDifferences(sortedObj1, sortedObj2);
+            renderJson(jsonOutput1, sortedObj1, currentDifferences, 'from');
+            renderJson(jsonOutput2, sortedObj2, currentDifferences, 'to');
             renderSummary(currentDifferences);
 
             resultsDiv.classList.remove('hidden');
@@ -289,22 +299,42 @@
             }
             resultsDiv.scrollIntoView({ behavior: 'smooth' });
         }
-
-        async function handleExplainDifferences() {
-            if (!userApiKey) {
+        
+        function showAiFocusModal() {
+             if (!userApiKey) {
                 showMessage("Please enter your Gemini API key in the config section first.");
                 return;
             }
+            aiFocusModal.classList.remove('hidden');
+        }
+
+        function hideAiFocusModal() {
+            aiFocusModal.classList.add('hidden');
+        }
+
+        async function generateFocusedExplanation() {
+            hideAiFocusModal();
             explanationView.classList.remove('hidden');
             explanationLoader.classList.remove('hidden');
             explanationContent.innerHTML = '';
             explanationView.scrollIntoView({ behavior: 'smooth' });
 
+            const userFocus = focusInput.value;
             const { added, removed, changed } = currentDifferences;
-            let prompt = `You are an expert software developer explaining technical changes to a non-technical project manager. Below is a summary of changes between two versions of a JSON data structure. Please explain these changes in simple, clear, easy-to-understand language. Focus on the meaning and potential impact of the changes rather than just listing them. Use paragraphs for readability.\n\nHere are the changes:`;
-            if (Object.keys(added).length > 0) prompt += `\n\n**New Fields Added:**\n${Object.keys(added).map(k => `- ${k}`).join('\n')}`;
-            if (Object.keys(removed).length > 0) prompt += `\n\n**Fields That Were Removed:**\n${Object.keys(removed).map(k => `- ${k}`).join('\n')}`;
-            if (Object.keys(changed).length > 0) prompt += `\n\n**Fields That Were Modified:**\n${Object.keys(changed).map(k => `- The field '${k}' was changed from '${JSON.stringify(changed[k].from)}' to '${JSON.stringify(changed[k].to)}'.`).join('\n')}`;
+            
+            let prompt = `You are an expert in analyzing legal and insurance contracts. Your audience is a customer care agent who needs to understand the key differences between two versions of a customer's contract. 
+            Explain the changes in simple, clear language. Focus on what the changes mean for the customer and how the agent should explain it to them.
+            Use paragraphs for readability.`;
+
+            if(userFocus) {
+                prompt += `\n\nThe agent is specifically interested in: "${userFocus}". Please prioritize this in your explanation.`
+            }
+
+            prompt += "\n\nHere is a summary of all the changes:"
+
+            if (Object.keys(added).length > 0) prompt += `\n\n**New Contract Sections/Fields Added:**\n${Object.keys(added).map(k => `- ${k}`).join('\n')}`;
+            if (Object.keys(removed).length > 0) prompt += `\n\n**Contract Sections/Fields That Were Removed:**\n${Object.keys(removed).map(k => `- ${k}`).join('\n')}`;
+            if (Object.keys(changed).length > 0) prompt += `\n\n**Contract Sections/Fields That Were Modified:**\n${Object.keys(changed).map(k => `- The field '${k}' was changed from '${JSON.stringify(changed[k].from)}' to '${JSON.stringify(changed[k].to)}'.`).join('\n')}`;
 
             try {
                 const explanation = await getExplanationFromGemini(prompt);
@@ -315,6 +345,7 @@
                 explanationContent.innerHTML = `<p class="text-red-600">Sorry, I couldn't generate an explanation. Please check your API key and network connection. Error details are in the console.</p>`;
             } finally {
                 explanationLoader.classList.add('hidden');
+                focusInput.value = ''; // Clear input for next time
             }
         }
 
@@ -391,29 +422,29 @@
             summaryContent.innerHTML = '';
             const { added, removed, changed } = differences;
             if (!Object.keys(added).length && !Object.keys(removed).length && !Object.keys(changed).length) {
-                summaryContent.innerHTML = '<div class="col-span-full text-center p-10 bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 rounded-lg"><p class="text-xl font-medium">No differences found. The JSON objects are identical.</p></div>';
+                summaryContent.innerHTML = '<div class="col-span-full text-center p-10 bg-green-100 text-green-800 rounded-lg"><p class="text-xl font-medium">No differences found. The contracts are identical.</p></div>';
                 return;
             }
             if (Object.keys(added).length > 0) {
-                let cardHtml = '<div class="summary-card"><h3 class="text-xl font-bold mb-3 text-green-600 dark:text-green-400">Added Fields</h3><ul>';
-                for (const key in added) cardHtml += `<li class="mb-2"><strong class="font-semibold text-slate-800 dark:text-slate-200">${key}</strong></li>`;
+                let cardHtml = '<div class="summary-card"><h3 class="text-xl font-bold mb-3 text-green-600">Added Sections</h3><ul>';
+                for (const key in added) cardHtml += `<li class="mb-2"><strong class="font-semibold text-slate-800">${key}</strong></li>`;
                 cardHtml += '</ul></div>';
                 summaryContent.innerHTML += cardHtml;
             }
             if (Object.keys(removed).length > 0) {
-                let cardHtml = '<div class="summary-card"><h3 class="text-xl font-bold mb-3 text-red-600 dark:text-red-400">Removed Fields</h3><ul>';
-                for (const key in removed) cardHtml += `<li class="mb-2"><strong class="font-semibold text-slate-800 dark:text-slate-200">${key}</strong></li>`;
+                let cardHtml = '<div class="summary-card"><h3 class="text-xl font-bold mb-3 text-red-600">Removed Sections</h3><ul>';
+                for (const key in removed) cardHtml += `<li class="mb-2"><strong class="font-semibold text-slate-800">${key}</strong></li>`;
                 cardHtml += '</ul></div>';
                 summaryContent.innerHTML += cardHtml;
             }
             if (Object.keys(changed).length > 0) {
-                let cardHtml = '<div class="summary-card md:col-span-2 lg:col-span-1"><h3 class="text-xl font-bold mb-3 text-amber-600 dark:text-amber-400">Modified Fields</h3><div>';
+                let cardHtml = '<div class="summary-card md:col-span-2 lg:col-span-1"><h3 class="text-xl font-bold mb-3 text-amber-600">Modified Sections</h3><div>';
                 for (const key in changed) {
                     cardHtml += `<div class="summary-modified-item">
-                        <strong class="font-semibold text-slate-800 dark:text-slate-200 block mb-2">${key}</strong>
+                        <strong class="font-semibold text-slate-800 block mb-2">${key}</strong>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><p class="text-sm font-medium text-red-700 dark:text-red-400 mb-1">From</p><pre class="summary-value summary-from"><code>${JSON.stringify(changed[key].from, null, 2)}</code></pre></div>
-                            <div><p class="text-sm font-medium text-green-700 dark:text-green-400 mb-1">To</p><pre class="summary-value summary-to"><code>${JSON.stringify(changed[key].to, null, 2)}</code></pre></div>
+                            <div><p class="text-sm font-medium text-red-700 mb-1">From</p><pre class="summary-value summary-from"><code>${JSON.stringify(changed[key].from, null, 2)}</code></pre></div>
+                            <div><p class="text-sm font-medium text-green-700 mb-1">To</p><pre class="summary-value summary-to"><code>${JSON.stringify(changed[key].to, null, 2)}</code></pre></div>
                         </div></div>`;
                 }
                 cardHtml += '</div></div>';
