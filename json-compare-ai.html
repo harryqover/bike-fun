@@ -1,14 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON Comparison Tool with Gemini AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        // Set theme on initial load to prevent FOUC (Flash of Unstyled Content)
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
         }
         .json-container {
             white-space: pre;
@@ -20,6 +29,9 @@
             border-radius: 0.5rem;
             height: 400px;
             overflow: auto;
+        }
+        .dark .json-container {
+             background-color: #0F172A; /* slate-900 */
         }
         /* Highlighting for the detailed JSON view */
         .diff-add { background-color: rgba(16, 185, 129, 0.15); }
@@ -33,12 +45,18 @@
             padding: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             border: 1px solid #e2e8f0;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .dark .summary-card {
+            background-color: #1E293B; /* slate-800 */
+            border-color: #334155; /* slate-700 */
         }
         .summary-modified-item {
             border-top: 1px solid #e2e8f0;
             padding-top: 1rem;
             margin-top: 1rem;
         }
+        .dark .summary-modified-item { border-color: #334155; }
         .summary-modified-item:first-child { border-top: none; padding-top: 0; margin-top: 0; }
         .summary-value {
             white-space: pre-wrap;
@@ -50,15 +68,18 @@
         }
         .summary-from { background-color: rgba(239, 68, 68, 0.1); color: #b91c1c; }
         .summary-to { background-color: rgba(16, 185, 129, 0.1); color: #047857; }
+        .dark .summary-from { background-color: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .dark .summary-to { background-color: rgba(16, 185, 129, 0.2); color: #34d399; }
         
-        /* Gemini AI Explanation styles */
         #explanation-card {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             border: 1px solid #e2e8f0;
         }
-        #explanation-content p {
-            margin-bottom: 1rem;
+        .dark #explanation-card {
+            background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+            border-color: #475569;
         }
+        #explanation-content p { margin-bottom: 1rem; }
         .spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
             width: 36px;
@@ -67,28 +88,50 @@
             border-left-color: #4f46e5;
             animation: spin 1s ease infinite;
         }
+        .dark .spinner { border-left-color: #818cf8; }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-200">
 
     <div class="container mx-auto p-4 sm:p-6 lg:p-8">
-        <header class="text-center mb-10">
-            <h1 class="text-4xl font-bold text-slate-900">JSON Comparison Tool</h1>
-            <p class="mt-2 text-lg text-slate-600">Paste your two JSON objects below to see a clear comparison.</p>
+        <header class="text-center mb-6">
+            <h1 class="text-4xl font-bold text-slate-900 dark:text-white">JSON Comparison Tool</h1>
+            <p class="mt-2 text-lg text-slate-600 dark:text-slate-400">Paste your two JSON objects below to see a clear comparison.</p>
         </header>
+
+        <!-- Config Section -->
+        <div id="config-section" class="max-w-2xl mx-auto bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-slate-200 dark:border-slate-700 mb-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <div>
+                    <label for="apiKeyInput" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Gemini API Key</label>
+                    <div class="flex items-center gap-2">
+                        <input type="password" id="apiKeyInput" placeholder="Enter your API key" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
+                        <button id="saveApiKeyBtn" class="bg-indigo-600 text-white font-semibold py-2 px-3 rounded-md shadow-sm hover:bg-indigo-700">Save</button>
+                        <button id="clearApiKeyBtn" class="bg-red-600 text-white font-semibold py-2 px-3 rounded-md shadow-sm hover:bg-red-700">Clear</button>
+                    </div>
+                </div>
+                <div class="flex items-center justify-center md:justify-end">
+                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300 mr-3">Light / Dark</span>
+                    <label for="theme-toggle" class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" value="" id="theme-toggle" class="sr-only peer">
+                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-indigo-600"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
-                <label for="jsonInput1" class="text-lg font-semibold text-slate-700 mb-2 block">JSON 1 (Original)</label>
-                <textarea id="jsonInput1" class="w-full h-96 p-4 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">{}</textarea>
+                <label for="jsonInput1" class="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2 block">JSON 1 (Original)</label>
+                <textarea id="jsonInput1" class="w-full h-96 p-4 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200">{}</textarea>
             </div>
             <div>
-                <label for="jsonInput2" class="text-lg font-semibold text-slate-700 mb-2 block">JSON 2 (Changed)</label>
-                <textarea id="jsonInput2" class="w-full h-96 p-4 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">{}</textarea>
+                <label for="jsonInput2" class="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2 block">JSON 2 (Changed)</label>
+                <textarea id="jsonInput2" class="w-full h-96 p-4 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200">{}</textarea>
             </div>
         </div>
 
@@ -99,45 +142,36 @@
         </div>
 
         <div id="results" class="hidden">
-             <!-- Visual Summary -->
             <div id="summary-view" class="mb-10">
                 <div class="flex justify-center items-center mb-6">
-                    <h2 class="text-3xl font-bold text-center text-slate-900">Comparison Summary</h2>
-                    <button id="explainBtn" class="hidden ml-4 bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-purple-700 transition-all transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-300">
+                    <h2 class="text-3xl font-bold text-center text-slate-900 dark:text-white">Comparison Summary</h2>
+                    <button id="explainBtn" class="hidden ml-4 bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-purple-700 transition-all transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-300 disabled:opacity-50 disabled:cursor-not-allowed" title="Add your API key to enable">
                         ✨ Explain Differences
                     </button>
                 </div>
-                <div id="summary-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Summary cards will be injected here -->
-                </div>
+                <div id="summary-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
-
-            <!-- Gemini Explanation View -->
             <div id="explanation-view" class="hidden mb-10">
                 <div id="explanation-card" class="p-6 rounded-lg shadow-lg">
-                    <h3 class="text-2xl font-bold text-slate-800 mb-4">✨ AI Explanation</h3>
+                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-4">✨ AI Explanation</h3>
                     <div id="explanation-loader" class="flex justify-center items-center h-24">
                         <div class="spinner"></div>
                     </div>
-                    <div id="explanation-content" class="text-slate-700 leading-relaxed"></div>
+                    <div id="explanation-content" class="text-slate-700 dark:text-slate-300 leading-relaxed"></div>
                 </div>
             </div>
-
-            <!-- Detailed JSON View -->
-            <h2 class="text-3xl font-bold text-center mb-6 text-slate-900">Detailed Comparison</h2>
+            <h2 class="text-3xl font-bold text-center mb-6 text-slate-900 dark:text-white">Detailed Comparison</h2>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div>
-                    <h3 class="text-xl font-semibold text-slate-700 mb-2">JSON 1 Highlighted</h3>
+                    <h3 class="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-2">JSON 1 Highlighted</h3>
                     <div id="jsonOutput1" class="json-container"></div>
                 </div>
                 <div>
-                    <h3 class="text-xl font-semibold text-slate-700 mb-2">JSON 2 Highlighted</h3>
+                    <h3 class="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-2">JSON 2 Highlighted</h3>
                     <div id="jsonOutput2" class="json-container"></div>
                 </div>
             </div>
         </div>
-
-        <!-- Message Box for Errors -->
         <div id="messageBox" class="hidden fixed top-5 right-5 bg-red-500 text-white py-3 px-5 rounded-lg shadow-xl">
             <p id="messageText"></p>
         </div>
@@ -145,10 +179,14 @@
 
     <script>
         // --- DOM Elements ---
-        const jsonInput1 = document.getElementById('jsonInput1');
-        const jsonInput2 = document.getElementById('jsonInput2');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+        const clearApiKeyBtn = document.getElementById('clearApiKeyBtn');
+        const themeToggle = document.getElementById('theme-toggle');
         const compareBtn = document.getElementById('compareBtn');
         const explainBtn = document.getElementById('explainBtn');
+        const jsonInput1 = document.getElementById('jsonInput1');
+        const jsonInput2 = document.getElementById('jsonInput2');
         const resultsDiv = document.getElementById('results');
         const jsonOutput1 = document.getElementById('jsonOutput1');
         const jsonOutput2 = document.getElementById('jsonOutput2');
@@ -159,16 +197,72 @@
         const explanationLoader = document.getElementById('explanation-loader');
         const explanationContent = document.getElementById('explanation-content');
 
-        // Store differences globally for the explanation feature
+        // --- State Variables ---
+        let userApiKey = '';
         let currentDifferences = {};
 
         // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeConfig();
+        });
+        saveApiKeyBtn.addEventListener('click', saveApiKey);
+        clearApiKeyBtn.addEventListener('click', clearApiKey);
+        themeToggle.addEventListener('change', handleThemeToggle);
         compareBtn.addEventListener('click', handleComparison);
         explainBtn.addEventListener('click', handleExplainDifferences);
 
-        /**
-         * Main function to handle the comparison process.
-         */
+        // --- Config and Theme Functions ---
+        function initializeConfig() {
+            // Load theme
+            const isDarkMode = localStorage.getItem('theme') === 'dark';
+            themeToggle.checked = isDarkMode;
+            
+            // Load API Key
+            const savedKey = localStorage.getItem('geminiApiKey');
+            if (savedKey) {
+                userApiKey = savedKey;
+                apiKeyInput.value = savedKey;
+                explainBtn.disabled = false;
+                explainBtn.title = "Get an AI explanation of the differences";
+            } else {
+                explainBtn.disabled = true;
+                explainBtn.title = "Add your API key to enable";
+            }
+        }
+
+        function saveApiKey() {
+            const key = apiKeyInput.value;
+            if (key) {
+                localStorage.setItem('geminiApiKey', key);
+                userApiKey = key;
+                showMessage("API Key saved successfully!", "success");
+                explainBtn.disabled = false;
+                explainBtn.title = "Get an AI explanation of the differences";
+            } else {
+                showMessage("Please enter an API key to save.");
+            }
+        }
+
+        function clearApiKey() {
+            localStorage.removeItem('geminiApiKey');
+            userApiKey = '';
+            apiKeyInput.value = '';
+            showMessage("API Key cleared.", "info");
+            explainBtn.disabled = true;
+            explainBtn.title = "Add your API key to enable";
+        }
+
+        function handleThemeToggle() {
+            if (themeToggle.checked) {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // --- Main App Functions ---
         function handleComparison() {
             let obj1, obj2;
             try {
@@ -179,7 +273,6 @@
                 return;
             }
 
-            // Reset UI
             explanationView.classList.add('hidden');
             explanationContent.innerHTML = '';
 
@@ -197,104 +290,57 @@
             resultsDiv.scrollIntoView({ behavior: 'smooth' });
         }
 
-        /**
-         * Handles the click on the "Explain Differences" button.
-         */
         async function handleExplainDifferences() {
+            if (!userApiKey) {
+                showMessage("Please enter your Gemini API key in the config section first.");
+                return;
+            }
             explanationView.classList.remove('hidden');
             explanationLoader.classList.remove('hidden');
             explanationContent.innerHTML = '';
             explanationView.scrollIntoView({ behavior: 'smooth' });
 
             const { added, removed, changed } = currentDifferences;
-
-            // Construct a clear prompt for the Gemini API
-            let prompt = `You are an expert software developer explaining technical changes to a non-technical project manager. 
-            Below is a summary of changes between two versions of a JSON data structure. 
-            Please explain these changes in simple, clear, easy-to-understand language. 
-            Focus on the meaning and potential impact of the changes rather than just listing them.
-            Use paragraphs for readability.
-
-            Here are the changes:`;
-
-            if (Object.keys(added).length > 0) {
-                prompt += `\n\n**New Fields Added:**\n${Object.keys(added).map(k => `- ${k}`).join('\n')}`;
-            }
-            if (Object.keys(removed).length > 0) {
-                prompt += `\n\n**Fields That Were Removed:**\n${Object.keys(removed).map(k => `- ${k}`).join('\n')}`;
-            }
-            if (Object.keys(changed).length > 0) {
-                prompt += `\n\n**Fields That Were Modified:**\n${Object.keys(changed).map(k => `- The field '${k}' was changed from '${JSON.stringify(changed[k].from)}' to '${JSON.stringify(changed[k].to)}'.`).join('\n')}`;
-            }
+            let prompt = `You are an expert software developer explaining technical changes to a non-technical project manager. Below is a summary of changes between two versions of a JSON data structure. Please explain these changes in simple, clear, easy-to-understand language. Focus on the meaning and potential impact of the changes rather than just listing them. Use paragraphs for readability.\n\nHere are the changes:`;
+            if (Object.keys(added).length > 0) prompt += `\n\n**New Fields Added:**\n${Object.keys(added).map(k => `- ${k}`).join('\n')}`;
+            if (Object.keys(removed).length > 0) prompt += `\n\n**Fields That Were Removed:**\n${Object.keys(removed).map(k => `- ${k}`).join('\n')}`;
+            if (Object.keys(changed).length > 0) prompt += `\n\n**Fields That Were Modified:**\n${Object.keys(changed).map(k => `- The field '${k}' was changed from '${JSON.stringify(changed[k].from)}' to '${JSON.stringify(changed[k].to)}'.`).join('\n')}`;
 
             try {
                 const explanation = await getExplanationFromGemini(prompt);
-                // Simple markdown to HTML conversion
-                let formattedExplanation = explanation
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
-                    .replace(/\n/g, '<br>'); // Newlines
+                let formattedExplanation = explanation.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
                 explanationContent.innerHTML = `<p>${formattedExplanation}</p>`;
             } catch (error) {
                 console.error("Gemini API Error:", error);
-                explanationContent.innerHTML = `<p class="text-red-600">Sorry, I couldn't generate an explanation at this time. Please check the console for details.</p>`;
+                explanationContent.innerHTML = `<p class="text-red-600">Sorry, I couldn't generate an explanation. Please check your API key and network connection. Error details are in the console.</p>`;
             } finally {
                 explanationLoader.classList.add('hidden');
             }
         }
 
-        /**
-         * Calls the Gemini API to get an explanation.
-         * @param {string} prompt - The prompt to send to the API.
-         * @returns {Promise<string>} The explanation text.
-         */
         async function getExplanationFromGemini(prompt) {
-            const apiKey = "AIzaSyDfml1kLimj-q0WEsteNYtAEbI43YmdxeQ"; // API key will be injected by the environment
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-            
-            const payload = {
-                contents: [{
-                    parts: [{ text: prompt }]
-                }]
-            };
-
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                throw new Error(`API request failed with status ${response.status}`);
-            }
-
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${userApiKey}`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
             const result = await response.json();
-            
-            if (result.candidates && result.candidates.length > 0 &&
-                result.candidates[0].content && result.candidates[0].content.parts &&
-                result.candidates[0].content.parts.length > 0) {
+            if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
                 return result.candidates[0].content.parts[0].text;
             } else {
-                throw new Error("Invalid response structure from API.");
+                throw new Error("Invalid response structure from API. It may be due to an invalid API key or other API issue.");
             }
         }
 
-        /**
-         * Recursively finds differences between two objects.
-         */
         function findDifferences(obj1, obj2, path = '') {
             const added = {}, removed = {}, changed = {};
             const allKeys = new Set([...Object.keys(obj1), ...Object.keys(obj2)]);
-
             allKeys.forEach(key => {
                 const currentPath = path ? `${path}.${key}` : key;
                 const val1 = obj1[key];
                 const val2 = obj2[key];
-
-                if (!(key in obj1)) {
-                    added[currentPath] = val2;
-                } else if (!(key in obj2)) {
-                    removed[currentPath] = val1;
-                } else if (JSON.stringify(val1) !== JSON.stringify(val2)) {
+                if (!(key in obj1)) added[currentPath] = val2;
+                else if (!(key in obj2)) removed[currentPath] = val1;
+                else if (JSON.stringify(val1) !== JSON.stringify(val2)) {
                     if (typeof val1 === 'object' && val1 !== null && typeof val2 === 'object' && val2 !== null && !Array.isArray(val1) && !Array.isArray(val2)) {
                         const nestedDiffs = findDifferences(val1, val2, currentPath);
                         Object.assign(added, nestedDiffs.added);
@@ -308,16 +354,10 @@
             return { added, removed, changed };
         }
 
-        /**
-         * Renders the JSON object into the specified container with highlighting.
-         */
         function renderJson(container, obj, differences, viewType) {
             container.innerHTML = syntaxHighlight(obj, differences, viewType);
         }
 
-        /**
-         * Creates syntax-highlighted and diff-highlighted HTML for a JSON object.
-         */
         function syntaxHighlight(json, differences, viewType, path = '') {
             if (json === null) return '<span class="text-gray-500">null</span>';
             if (typeof json !== 'object') {
@@ -326,96 +366,75 @@
                 if (typeof json === 'boolean') className = 'text-purple-400';
                 return `<span class="${className}">${JSON.stringify(json)}</span>`;
             }
-
             let html = Array.isArray(json) ? '[\n' : '{\n';
             const indent = '  '.repeat(path.split('.').filter(Boolean).length + 1);
-
             const keys = Object.keys(json);
             for (let i = 0; i < keys.length; i++) {
                 const key = keys[i];
                 const currentPath = path ? `${path}.${key}` : key;
-                
                 let lineClass = '';
-                if (differences.changed[currentPath]) {
-                    lineClass = viewType === 'from' ? 'diff-changed-from' : 'diff-changed-to';
-                } else if (differences.removed[currentPath] && viewType === 'from') {
-                    lineClass = 'diff-remove';
-                } else if (differences.added[currentPath] && viewType === 'to') {
-                    lineClass = 'diff-add';
-                }
-
+                if (differences.changed[currentPath]) lineClass = viewType === 'from' ? 'diff-changed-from' : 'diff-changed-to';
+                else if (differences.removed[currentPath] && viewType === 'from') lineClass = 'diff-remove';
+                else if (differences.added[currentPath] && viewType === 'to') lineClass = 'diff-add';
                 html += `${indent}<span class="${lineClass}">`;
-                if (!Array.isArray(json)) {
-                    html += `<span class="text-red-400">"${key}"</span>: `;
-                }
+                if (!Array.isArray(json)) html += `<span class="text-red-400">"${key}"</span>: `;
                 html += syntaxHighlight(json[key], differences, viewType, currentPath);
                 if (i < keys.length - 1) html += ',';
                 html += `</span>\n`;
             }
-
             const closingIndent = '  '.repeat(path.split('.').filter(Boolean).length);
             html += closingIndent + (Array.isArray(json) ? ']' : '}');
             return html;
         }
 
-        /**
-         * Renders the summary view of differences.
-         */
         function renderSummary(differences) {
-            summaryContent.innerHTML = ''; // Clear previous summary
+            summaryContent.innerHTML = '';
             const { added, removed, changed } = differences;
-
             if (!Object.keys(added).length && !Object.keys(removed).length && !Object.keys(changed).length) {
-                 summaryContent.innerHTML = '<div class="col-span-full text-center p-10 bg-green-100 text-green-800 rounded-lg"><p class="text-xl font-medium">No differences found. The JSON objects are identical.</p></div>';
-                 return;
+                summaryContent.innerHTML = '<div class="col-span-full text-center p-10 bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 rounded-lg"><p class="text-xl font-medium">No differences found. The JSON objects are identical.</p></div>';
+                return;
             }
-
             if (Object.keys(added).length > 0) {
-                let cardHtml = '<div class="summary-card"><h3 class="text-xl font-bold mb-3 text-green-600">Added Fields</h3><ul>';
-                for (const key in added) cardHtml += `<li class="mb-2"><strong class="font-semibold text-slate-800">${key}</strong></li>`;
+                let cardHtml = '<div class="summary-card"><h3 class="text-xl font-bold mb-3 text-green-600 dark:text-green-400">Added Fields</h3><ul>';
+                for (const key in added) cardHtml += `<li class="mb-2"><strong class="font-semibold text-slate-800 dark:text-slate-200">${key}</strong></li>`;
                 cardHtml += '</ul></div>';
                 summaryContent.innerHTML += cardHtml;
             }
-
             if (Object.keys(removed).length > 0) {
-                let cardHtml = '<div class="summary-card"><h3 class="text-xl font-bold mb-3 text-red-600">Removed Fields</h3><ul>';
-                for (const key in removed) cardHtml += `<li class="mb-2"><strong class="font-semibold text-slate-800">${key}</strong></li>`;
+                let cardHtml = '<div class="summary-card"><h3 class="text-xl font-bold mb-3 text-red-600 dark:text-red-400">Removed Fields</h3><ul>';
+                for (const key in removed) cardHtml += `<li class="mb-2"><strong class="font-semibold text-slate-800 dark:text-slate-200">${key}</strong></li>`;
                 cardHtml += '</ul></div>';
                 summaryContent.innerHTML += cardHtml;
             }
-
             if (Object.keys(changed).length > 0) {
-                let cardHtml = '<div class="summary-card lg:col-span-2"><h3 class="text-xl font-bold mb-3 text-amber-600">Modified Fields</h3><div>';
+                let cardHtml = '<div class="summary-card md:col-span-2 lg:col-span-1"><h3 class="text-xl font-bold mb-3 text-amber-600 dark:text-amber-400">Modified Fields</h3><div>';
                 for (const key in changed) {
                     cardHtml += `<div class="summary-modified-item">
-                        <strong class="font-semibold text-slate-800 block mb-2">${key}</strong>
+                        <strong class="font-semibold text-slate-800 dark:text-slate-200 block mb-2">${key}</strong>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-sm font-medium text-red-700 mb-1">From</p>
-                                <pre class="summary-value summary-from"><code>${JSON.stringify(changed[key].from, null, 2)}</code></pre>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-green-700 mb-1">To</p>
-                                <pre class="summary-value summary-to"><code>${JSON.stringify(changed[key].to, null, 2)}</code></pre>
-                            </div>
-                        </div>
-                    </div>`;
+                            <div><p class="text-sm font-medium text-red-700 dark:text-red-400 mb-1">From</p><pre class="summary-value summary-from"><code>${JSON.stringify(changed[key].from, null, 2)}</code></pre></div>
+                            <div><p class="text-sm font-medium text-green-700 dark:text-green-400 mb-1">To</p><pre class="summary-value summary-to"><code>${JSON.stringify(changed[key].to, null, 2)}</code></pre></div>
+                        </div></div>`;
                 }
                 cardHtml += '</div></div>';
                 summaryContent.innerHTML += cardHtml;
             }
         }
 
-        /**
-         * Shows a temporary message to the user.
-         */
-        function showMessage(text) {
+        function showMessage(text, type = "error") {
+            messageBox.classList.remove('bg-red-500', 'bg-green-500', 'bg-blue-500');
+            if (type === "success") {
+                messageBox.classList.add('bg-green-500');
+            } else if (type === "info") {
+                messageBox.classList.add('bg-blue-500');
+            } else {
+                messageBox.classList.add('bg-red-500');
+            }
             messageText.textContent = text;
             messageBox.classList.remove('hidden');
             setTimeout(() => messageBox.classList.add('hidden'), 3000);
         }
 
-        // --- Sync Scrolling Logic ---
         const syncScroll = (from, to) => {
             to.scrollTop = from.scrollTop;
             to.scrollLeft = from.scrollLeft;
