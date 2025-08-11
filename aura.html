@@ -182,7 +182,7 @@
             min-height: 50px;
         }
         
-        #modal-details-textarea {
+        #modal-details-textarea, #api-key-input {
             width: 100%;
             min-height: 80px;
             padding: 10px;
@@ -195,6 +195,7 @@
             box-sizing: border-box;
             resize: vertical;
         }
+        #api-key-input { min-height: auto; }
 
         #modal-status {
             font-weight: bold;
@@ -242,6 +243,14 @@
         
         #save-nurture-btn { background: #17a2b8; }
         #save-nurture-btn:hover { background-color: #117a8b; }
+        
+        #ai-assist-btn { background: linear-gradient(45deg, #ff6b6b, #feca57); }
+        #ai-assist-btn:hover { opacity: 0.9; }
+        #ai-assist-btn:disabled { background: #555; cursor: not-allowed; }
+        
+        #save-api-key-btn {
+            background: #007bff;
+        }
 
 
         /* Location and Time Info */
@@ -261,10 +270,32 @@
             font-size: 14px;
         }
         
+        /* Settings Button */
+        #settings-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 12;
+            transition: transform 0.2s;
+        }
+        #settings-btn:hover {
+            transform: rotate(45deg);
+        }
+        
         /* Saving/Connecting Indicator */
         .indicator {
             position: fixed;
-            top: 20px;
+            top: 70px;
             right: 20px;
             background: rgba(0, 0, 0, 0.7);
             padding: 8px 15px;
@@ -369,7 +400,21 @@
                 <button id="complete-task-btn">Mark as Complete</button>
             </div>
             <div id="edit-mode-buttons" class="modal-buttons hidden">
+                <button id="ai-assist-btn">✨ AI Assist</button>
                 <button id="save-nurture-btn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-container hidden">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Settings</h2>
+            <p>Enter your Gemini API Key to enable AI features.</p>
+            <input type="password" id="api-key-input" placeholder="Your Gemini API Key">
+            <div class="modal-buttons">
+                 <button id="save-api-key-btn">Save Key</button>
             </div>
         </div>
     </div>
@@ -379,6 +424,9 @@
         <p>Schaerbeek, Brussels</p>
         <p id="current-time">Loading time...</p>
     </div>
+    
+    <!-- Settings Button -->
+    <div id="settings-btn">⚙️</div>
     
     <!-- Saving Indicator -->
     <div id="saving-indicator" class="indicator">
@@ -407,6 +455,7 @@
         const taskObjects = []; // To hold the 3D objects
         const connectionLines = []; // To hold the vine meshes
         let gardenData = { tasks: [], connections: [] }; // All data for local storage
+        let geminiApiKey = ""; // To hold the API key
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         let selectedTaskObject = null;
@@ -422,6 +471,7 @@
         const addTaskBtn = document.getElementById('add-task-btn');
         const taskTitleInput = document.getElementById('task-title');
         const taskDetailsInput = document.getElementById('task-details');
+        
         const taskModal = document.getElementById('task-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalDetails = document.getElementById('modal-details');
@@ -433,7 +483,13 @@
         const connectTaskBtn = document.getElementById('connect-task-btn');
         const nurtureTaskBtn = document.getElementById('nurture-task-btn');
         const saveNurtureBtn = document.getElementById('save-nurture-btn');
-        const closeModalBtn = document.querySelector('.close-btn');
+        const aiAssistBtn = document.getElementById('ai-assist-btn');
+        
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsModal = document.getElementById('settings-modal');
+        const apiKeyInput = document.getElementById('api-key-input');
+        const saveApiKeyBtn = document.getElementById('save-api-key-btn');
+        
         const timeDisplay = document.getElementById('current-time');
         const savingIndicator = document.getElementById('saving-indicator');
         const connectingIndicator = document.getElementById('connecting-indicator');
@@ -473,22 +529,36 @@
             
             initSky();
 
-            window.addEventListener('resize', onWindowResize);
-            document.addEventListener('click', onDocumentMouseClick);
-            togglePanelBtn.addEventListener('click', toggleUIPanel);
-            addTaskBtn.addEventListener('click', handleAddTask);
-            closeModalBtn.addEventListener('click', () => taskModal.classList.add('hidden'));
-            completeTaskBtn.addEventListener('click', handleCompleteTask);
-            connectTaskBtn.addEventListener('click', handleStartConnection);
-            nurtureTaskBtn.addEventListener('click', handleNurtureTask);
-            saveNurtureBtn.addEventListener('click', handleSaveNurture);
-            cancelConnectionBtn.addEventListener('click', cancelConnection);
+            // Setup all event listeners
+            setupEventListeners();
 
             loadDataFromLocalStorage();
+            loadApiKeyFromLocalStorage();
             updateTime();
             setInterval(updateTime, 1000 * 60);
             
             animate();
+        }
+        
+        function setupEventListeners() {
+            window.addEventListener('resize', onWindowResize);
+            document.addEventListener('click', onDocumentMouseClick);
+            togglePanelBtn.addEventListener('click', toggleUIPanel);
+            addTaskBtn.addEventListener('click', handleAddTask);
+            
+            // Task Modal Listeners
+            taskModal.querySelector('.close-btn').addEventListener('click', () => taskModal.classList.add('hidden'));
+            completeTaskBtn.addEventListener('click', handleCompleteTask);
+            connectTaskBtn.addEventListener('click', handleStartConnection);
+            nurtureTaskBtn.addEventListener('click', handleNurtureTask);
+            saveNurtureBtn.addEventListener('click', handleSaveNurture);
+            aiAssistBtn.addEventListener('click', handleAiAssist);
+            cancelConnectionBtn.addEventListener('click', cancelConnection);
+            
+            // Settings Modal Listeners
+            settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
+            settingsModal.querySelector('.close-btn').addEventListener('click', () => settingsModal.classList.add('hidden'));
+            saveApiKeyBtn.addEventListener('click', handleSaveApiKey);
         }
 
         // =============================================================================
@@ -595,7 +665,7 @@
         }
 
         function onDocumentMouseClick(event) {
-            if (event.target.closest('.ui-panel, .modal-container, #toggle-panel-btn, #cancel-connection-btn')) return;
+            if (event.target.closest('.ui-panel, .modal-container, #toggle-panel-btn, #cancel-connection-btn, #settings-btn')) return;
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
@@ -643,7 +713,7 @@
         // =============================================================================
         // UI & LOGIC
         // =============================================================================
-        function toggleUIPanel() { uiPanel.classList.toggle('visible'); togglePanelBtn.classList.toggle('rotated'); }
+        function toggleUIPanel() { uiPanel.classList.toggle('visible'); }
         function updateTime() { timeDisplay.textContent = new Date(new Date().toLocaleString("en-US", {timeZone: "Europe/Brussels"})).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
         function showSavingIndicator() { savingIndicator.classList.add('visible'); setTimeout(() => savingIndicator.classList.remove('visible'), 1500); }
 
@@ -715,6 +785,55 @@
             saveDataToLocalStorage();
             taskModal.classList.add('hidden');
         }
+        
+        async function handleAiAssist() {
+            if (!geminiApiKey) {
+                alert("Please set your Gemini API key in the settings first.");
+                settingsModal.classList.remove('hidden');
+                return;
+            }
+
+            const task = selectedTaskObject.userData;
+            const prompt = `Based on the following task, break it down into a clear list of sub-tasks or brainstorm related ideas. Task Title: "${task.title}". Current Details: "${modalDetailsTextarea.value}". Provide the response as a simple list.`;
+            
+            aiAssistBtn.disabled = true;
+            aiAssistBtn.textContent = "Thinking...";
+
+            try {
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${geminiApiKey}`;
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const generatedText = result.candidates[0].content.parts[0].text;
+                    const currentText = modalDetailsTextarea.value;
+                    modalDetailsTextarea.value = (currentText ? currentText + "\n\n" : "") + "✨ AI Suggestions:\n" + generatedText;
+                } else {
+                    throw new Error("Invalid response structure from API.");
+                }
+
+            } catch (error) {
+                console.error("Error with Gemini API:", error);
+                alert("Sorry, the AI assistant is currently unavailable. Please check your API key or try again later.");
+            } finally {
+                aiAssistBtn.disabled = false;
+                aiAssistBtn.textContent = "✨ AI Assist";
+            }
+        }
 
         // =============================================================================
         // LOCAL STORAGE
@@ -746,6 +865,26 @@
             } catch (error) {
                 console.error('Could not save data to local storage:', error);
                 alert('There was an error saving your garden.');
+            }
+        }
+        
+        function loadApiKeyFromLocalStorage() {
+            const savedKey = localStorage.getItem('geminiApiKey');
+            if (savedKey) {
+                geminiApiKey = savedKey;
+                apiKeyInput.value = savedKey;
+            }
+        }
+        
+        function handleSaveApiKey() {
+            const newKey = apiKeyInput.value.trim();
+            if (newKey) {
+                geminiApiKey = newKey;
+                localStorage.setItem('geminiApiKey', newKey);
+                alert("API Key saved successfully!");
+                settingsModal.classList.add('hidden');
+            } else {
+                alert("Please enter a valid API key.");
             }
         }
 
