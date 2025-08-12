@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PantryAI: The Culinary Co-pilot</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Lighter gray background */
         }
         .loader {
-            border-top-color: #3498db;
+            border-top-color: #22c55e; /* Green-500 */
             -webkit-animation: spin 1s linear infinite;
             animation: spin 1s linear infinite;
         }
@@ -19,94 +20,99 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* Custom styles for better mobile experience */
-        .btn-primary {
-            @apply w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-green-700 transition-all duration-300 ease-in-out transform hover:-translate-y-1;
-        }
+        /* New Mobile-First Design System */
         .card {
-            @apply bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300;
+            @apply bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300;
+        }
+        .bottom-nav {
+            @apply fixed bottom-0 left-0 right-0 h-20 bg-white/90 backdrop-blur-lg border-t border-gray-200 flex justify-around items-center z-40 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.05)];
         }
         .nav-btn {
-            @apply flex-1 text-center py-3 px-2 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300;
+            @apply flex flex-col items-center justify-center text-gray-400 transition-colors duration-300 h-full w-full;
         }
         .nav-btn.active {
-            @apply text-green-600 border-green-600;
+            @apply text-green-600;
+        }
+        .nav-btn svg {
+            @apply w-7 h-7 mb-1;
+        }
+        .nav-btn span {
+            @apply text-xs font-bold tracking-wide;
+        }
+        .fab {
+            @apply fixed bottom-24 right-6 h-16 w-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center text-white shadow-xl transform hover:scale-110 transition-all duration-300 z-40;
+        }
+        .modal-backdrop {
+             @apply fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300;
+        }
+        .modal-content {
+            @apply bg-white rounded-2xl shadow-2xl p-8 max-w-sm mx-auto w-full transform scale-95 transition-transform duration-300;
+        }
+        .modal-backdrop:not(.hidden) .modal-content {
+            @apply scale-100;
         }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-100">
 
-    <div class="container mx-auto max-w-lg p-4 min-h-screen flex flex-col">
+    <div class="container mx-auto max-w-lg pb-28">
         <!-- Header -->
-        <header class="text-center my-6 relative">
-            <h1 class="text-4xl font-bold text-green-800">PantryAI 🧑‍🍳</h1>
-            <p class="text-gray-600 mt-2">Your Culinary Co-pilot</p>
-            <button id="settings-button" class="absolute top-0 right-0 p-2 text-gray-500 hover:text-green-600">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        <header class="p-4 pt-8 text-center relative">
+            <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight">PantryAI <span class="text-green-500">🧑‍🍳</span></h1>
+            <button id="settings-button" class="absolute top-6 right-4 p-2 text-gray-400 hover:text-green-500 transition-colors duration-300">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </button>
         </header>
 
-        <!-- Navigation -->
-        <nav class="flex border-b border-gray-200 mb-6">
-            <button id="nav-inventory" class="nav-btn active" onclick="showView('inventory-view')">My Pantry</button>
-            <button id="nav-recipes" class="nav-btn" onclick="showView('recipes-view')">Get Recipes</button>
-            <button id="nav-shopping" class="nav-btn" onclick="showView('shopping-list-view')">Shopping List</button>
-        </nav>
-
-        <main class="flex-grow">
-            <!-- Modals -->
-            <div id="loader" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div class="bg-white p-5 rounded-lg flex items-center shadow-xl">
-                    <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
-                    <p id="loader-text" class="ml-4 text-lg font-semibold text-gray-700">Processing...</p>
-                </div>
-            </div>
-            <div id="message-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div class="bg-white rounded-lg shadow-xl p-8 max-w-sm mx-auto text-center">
-                    <p id="message-text" class="text-lg mb-6"></p>
-                    <button onclick="closeModal('message-modal')" class="bg-green-600 text-white font-bold py-2 px-6 rounded-lg">OK</button>
-                </div>
-            </div>
-            <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div class="bg-white rounded-lg shadow-xl p-8 max-w-sm mx-auto w-full">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Settings</h2>
-                    <div class="mb-4">
-                        <label for="api-key-input" class="block text-sm font-medium text-gray-700 mb-1">Gemini API Key</label>
-                        <input type="password" id="api-key-input" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" placeholder="Enter your API Key">
-                    </div>
-                    <div class="flex justify-end space-x-3">
-                        <button onclick="closeModal('settings-modal')" class="bg-gray-200 text-gray-800 font-bold py-2 px-6 rounded-lg">Cancel</button>
-                        <button id="save-settings-button" class="bg-green-600 text-white font-bold py-2 px-6 rounded-lg">Save</button>
-                    </div>
-                </div>
-            </div>
-
+        <main class="px-4">
+            <!-- Modals (no change) -->
+            <div id="loader" class="modal-backdrop hidden"><div class="bg-white p-6 rounded-2xl flex items-center shadow-2xl"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div><p id="loader-text" class="ml-5 text-xl font-semibold text-gray-700">Processing...</p></div></div>
+            <div id="message-modal" class="modal-backdrop hidden"><div class="modal-content"><p id="message-text" class="text-lg text-gray-700 mb-6 text-center"></p><button onclick="closeModal('message-modal')" class="w-full bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition-colors">OK</button></div></div>
+            <div id="settings-modal" class="modal-backdrop hidden"><div class="modal-content"><h2 class="text-3xl font-bold text-gray-800 mb-6">Settings</h2><div class="mb-6"><label for="api-key-input" class="block text-mg font-medium text-gray-700 mb-2">Gemini API Key</label><input type="password" id="api-key-input" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Enter your API Key"></div><div class="flex justify-end space-x-4"><button onclick="closeModal('settings-modal')" class="bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors">Cancel</button><button id="save-settings-button" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition-colors">Save</button></div></div></div>
+            
             <!-- Hidden file input for camera -->
             <input type="file" accept="image/*" capture="environment" id="image-input" class="hidden">
 
             <!-- Inventory View -->
             <div id="inventory-view">
-                <button id="scan-button" class="btn-primary mb-6 flex items-center justify-center">
-                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    Scan Fridge / Pantry
-                </button>
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Current Inventory</h2>
-                <div id="inventory-list" class="space-y-3"></div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">My Inventory</h2>
+                <div id="inventory-list" class="space-y-4"></div>
             </div>
 
             <!-- Recipes View -->
             <div id="recipes-view" class="hidden">
-                <button id="get-recipes-button" class="btn-primary mb-6">✨ Find Recipes I Can Make!</button>
-                <div id="recipes-list" class="space-y-4"></div>
+                 <h2 class="text-3xl font-bold text-gray-800 mb-6">Recipe Ideas</h2>
+                <div id="recipes-list" class="space-y-6"></div>
             </div>
 
             <!-- Shopping List View -->
             <div id="shopping-list-view" class="hidden">
-                 <h2 class="text-2xl font-bold text-gray-800 mb-4">My Shopping List</h2>
-                 <div id="shopping-list-container" class="space-y-3"></div>
+                 <h2 class="text-3xl font-bold text-gray-800 mb-6">Shopping List</h2>
+                 <div id="shopping-list-container" class="space-y-4"></div>
             </div>
         </main>
     </div>
+    
+    <!-- Floating Action Button (FAB) for Scanning -->
+    <button id="scan-button" class="fab">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+    </button>
+
+    <!-- Bottom Tab Bar Navigation -->
+    <nav class="bottom-nav">
+        <button id="nav-inventory" class="nav-btn active" onclick="showView('inventory-view')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4M4 7l8 5 8-5"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12l8 5 8-5"></path></svg>
+            <span>Pantry</span>
+        </button>
+        <button id="nav-recipes" class="nav-btn" onclick="showView('recipes-view')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <span>Recipes</span>
+        </button>
+        <button id="nav-shopping" class="nav-btn" onclick="showView('shopping-list-view')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            <span>Shopping</span>
+        </button>
+    </nav>
 
     <script>
         // --- CONFIGURATION ---
@@ -114,19 +120,10 @@
         let API_KEY = ""; // This will be loaded from localStorage
 
         // --- DOM ELEMENTS ---
-        const views = {
-            inventory: document.getElementById('inventory-view'),
-            recipes: document.getElementById('recipes-view'),
-            shopping: document.getElementById('shopping-list-view'),
-        };
-        const navButtons = {
-            inventory: document.getElementById('nav-inventory'),
-            recipes: document.getElementById('nav-recipes'),
-            shopping: document.getElementById('nav-shopping'),
-        };
+        const views = { inventory: document.getElementById('inventory-view'), recipes: document.getElementById('recipes-view'), shopping: document.getElementById('shopping-list-view'), };
+        const navButtons = { inventory: document.getElementById('nav-inventory'), recipes: document.getElementById('nav-recipes'), shopping: document.getElementById('nav-shopping'), };
         const scanButton = document.getElementById('scan-button');
         const imageInput = document.getElementById('image-input');
-        const getRecipesButton = document.getElementById('get-recipes-button');
         const inventoryList = document.getElementById('inventory-list');
         const recipesList = document.getElementById('recipes-list');
         const shoppingListContainer = document.getElementById('shopping-list-container');
@@ -181,51 +178,32 @@
             
             views[viewName.split('-')[0]].classList.remove('hidden');
             navButtons[viewName.split('-')[0]].classList.add('active');
+
+            // Find recipes automatically when switching to the recipe view if pantry is not empty
+            if (viewName === 'recipes-view') {
+                const pantryItems = document.querySelectorAll('#inventory-list .card');
+                if (pantryItems.length > 0 && recipesList.innerHTML.trim() === '') {
+                    findRecipes();
+                }
+            }
         }
 
         // --- UI & LOADER/MODAL CONTROLS ---
-        function showLoader(text = 'Processing...') {
-            loaderText.textContent = text;
-            loader.classList.remove('hidden');
-        }
-
-        function hideLoader() {
-            loader.classList.add('hidden');
-        }
-        
-        function showMessage(message) {
-            messageText.textContent = message;
-            openModal('message-modal');
-        }
-
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.remove('hidden');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
+        function showLoader(text = 'Processing...') { loaderText.textContent = text; openModal('loader'); }
+        function hideLoader() { closeModal('loader'); }
+        function showMessage(message) { messageText.textContent = message; openModal('message-modal'); }
+        function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
 
         // --- API COMMUNICATION ---
         async function apiCall(action, payload = {}) {
-            if (!SCRIPT_URL) {
-                showMessage("Google Apps Script URL is not configured.");
-                return null;
-            }
+            if (!SCRIPT_URL) { showMessage("Google Apps Script URL is not configured."); return null; }
             showLoader('Connecting to PantryAI...');
             try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action, ...payload })
-                });
-
+                const response = await fetch(SCRIPT_URL, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action, ...payload }) });
                 if (!response.ok) throw new Error(`Server responded with status: ${response.status}`);
-                
                 const result = await response.json();
                 if (result.status === 'success') return result.data;
-                
                 throw new Error(result.message || 'An unknown error occurred.');
             } catch (error) {
                 console.error('API Call Error:', error);
@@ -238,18 +216,12 @@
 
         // --- FEATURE: FRIDGE/PANTRY SCAN ---
         scanButton.addEventListener('click', () => {
-            if (!API_KEY) {
-                showMessage("Please set your Gemini API Key in the settings ⚙️ first.");
-                return;
-            }
+            if (!API_KEY) { showMessage("Please set your Gemini API Key in the settings ⚙️ first."); return; }
             imageInput.click();
         });
-        imageInput.addEventListener('change', handleImageUpload);
-
-        function handleImageUpload(event) {
+        imageInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onloadend = async () => {
                 const base64Image = reader.result.split(',')[1];
@@ -257,45 +229,23 @@
             };
             reader.readAsDataURL(file);
             event.target.value = '';
-        }
+        });
 
         async function identifyAndAddItems(base64Image) {
             showLoader('Analyzing image with AI...');
             try {
-                // CORRECTED: Using the correct model name 'gemini-pro-vision' for image analysis.
-                const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${API_KEY}`;
-                const payload = {
-                    contents: [{
-                        parts: [
-                            { text: "Identify the distinct food items in this image. Respond ONLY with a valid JSON array of strings. For example: [\"apples\", \"milk bottle\", \"eggs\"]. Only include food items." },
-                            { inlineData: { mimeType: "image/jpeg", data: base64Image } }
-                        ]
-                    }]
-                };
-                const response = await fetch(geminiApiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (!response.ok) {
-                    const errorBody = await response.text();
-                    throw new Error(`Gemini API error: ${response.statusText} - ${errorBody}`);
-                }
-
+                const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+                const payload = { contents: [{ parts: [ { text: "Identify the distinct food items in this image. Respond ONLY with a valid JSON array of strings. For example: [\"apples\", \"milk bottle\", \"eggs\"]. Only include food items." }, { inlineData: { mimeType: "image/jpeg", data: base64Image } } ] }] };
+                const response = await fetch(geminiApiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) { const errorBody = await response.text(); throw new Error(`Gemini API error: ${response.statusText} - ${errorBody}`); }
                 const result = await response.json();
                 if (!result.candidates || !result.candidates[0].content) throw new Error("AI returned an empty or invalid response.");
-
                 const textResponse = result.candidates[0].content.parts[0].text;
                 const cleanedText = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
                 const items = JSON.parse(cleanedText);
-
                 if (items && items.length > 0) {
                     const data = await apiCall('addItems', { items });
-                    if (data) {
-                        showMessage(`Added ${items.length} items to your pantry!`);
-                        renderInventory(data);
-                    }
+                    if (data) { showMessage(`Added ${items.length} items to your pantry!`); renderInventory(data); }
                 } else {
                     showMessage("AI couldn't identify any food items. Please try a clearer picture.");
                 }
@@ -308,85 +258,37 @@
         }
 
         // --- FEATURE: INVENTORY MANAGEMENT ---
-        async function loadInventory() {
-            const inventory = await apiCall('getInventory');
-            if (inventory) renderInventory(inventory);
-        }
-
+        async function loadInventory() { const inventory = await apiCall('getInventory'); if (inventory) renderInventory(inventory); }
         function renderInventory(inventory) {
             inventoryList.innerHTML = '';
-            if (inventory.length === 0) {
-                inventoryList.innerHTML = '<p class="text-gray-500">Your pantry is empty. Use the scan button to add items!</p>';
-                return;
-            }
+            if (inventory.length === 0) { inventoryList.innerHTML = '<div class="text-center py-16"><p class="text-gray-500 text-lg">Your pantry is empty.</p><p class="text-gray-400 mt-2">Use the camera button to scan items!</p></div>'; return; }
             inventory.forEach(item => {
                 const itemEl = document.createElement('div');
-                itemEl.className = 'card flex items-center justify-between p-4';
-                itemEl.innerHTML = `
-                    <div>
-                        <p class="font-semibold text-lg capitalize text-gray-800">${item.ItemName}</p>
-                        <p class="text-sm text-gray-500">Added: ${new Date(item.DateAdded).toLocaleDateString()}</p>
-                    </div>
-                    <button onclick="deleteInventoryItem('${item.ItemID}')" class="text-red-500 hover:text-red-700 p-2 rounded-full">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    </button>
-                `;
+                itemEl.className = 'card flex items-center justify-between p-5';
+                itemEl.innerHTML = `<div><p class="font-semibold text-xl capitalize text-gray-800">${item.ItemName}</p><p class="text-sm text-gray-500 mt-1">Added: ${new Date(item.DateAdded).toLocaleDateString()}</p></div><button onclick="deleteInventoryItem('${item.ItemID}')" class="text-gray-400 hover:text-red-500 p-3 rounded-full transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>`;
                 inventoryList.appendChild(itemEl);
             });
         }
-
-        async function deleteInventoryItem(itemId) {
-            const updatedInventory = await apiCall('deleteItem', { id: itemId });
-            if (updatedInventory) {
-                renderInventory(updatedInventory);
-                showMessage("Item removed from pantry.");
-            }
-        }
+        async function deleteInventoryItem(itemId) { const updatedInventory = await apiCall('deleteItem', { id: itemId }); if (updatedInventory) { renderInventory(updatedInventory); showMessage("Item removed from pantry."); } }
 
         // --- FEATURE: RECIPE SUGGESTIONS ---
-        getRecipesButton.addEventListener('click', () => {
-             if (!API_KEY) {
-                showMessage("Please set your Gemini API Key in the settings ⚙️ first.");
-                return;
-            }
-            findRecipes();
-        });
-
         async function findRecipes() {
             showLoader('Asking AI for recipes...');
             const inventory = await apiCall('getInventory');
-            if (!inventory || inventory.length === 0) {
-                showMessage("Your pantry is empty! Add some items before looking for recipes.");
-                return;
-            }
-
+            if (!inventory || inventory.length === 0) { showMessage("Your pantry is empty! Add some items before looking for recipes."); return; }
             const inventoryNames = inventory.map(item => item.ItemName);
             const prompt = `Based on these ingredients in my pantry: ${inventoryNames.join(', ')}. Suggest 3 simple recipes. For each recipe, provide a name, a short description, a list of all ingredients needed (both from the pantry and extra ones), and step-by-step instructions. Respond ONLY with a valid JSON array of objects. Each object must have these keys: "recipeName", "description", "ingredients", "instructions". The "ingredients" key must be an object with two arrays: "pantry" and "shoppingList". The "instructions" key must be an array of strings.`;
-
             try {
-                // CORRECTED: Using the correct model name 'gemini-pro' for text generation.
-                const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
+                const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
                 const payload = { contents: [{ parts: [{ text: prompt }] }] };
-                const response = await fetch(geminiApiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    const errorBody = await response.text();
-                    throw new Error(`Gemini API error: ${response.statusText} - ${errorBody}`);
-                }
-                
+                const response = await fetch(geminiApiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) { const errorBody = await response.text(); throw new Error(`Gemini API error: ${response.statusText} - ${errorBody}`); }
                 const result = await response.json();
                 if (!result.candidates || !result.candidates[0].content) throw new Error("AI returned an empty or invalid response for recipes.");
-
                 const textResponse = result.candidates[0].content.parts[0].text;
                 const cleanedText = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
                 const recipes = JSON.parse(cleanedText);
-                
                 renderRecipes(recipes);
-
             } catch (error) {
                 console.error('Recipe Generation Error:', error);
                 showMessage(`Could not get recipes: ${error.message}`);
@@ -397,81 +299,32 @@
 
         function renderRecipes(recipes) {
             recipesList.innerHTML = '';
-            if (!recipes || recipes.length === 0) {
-                recipesList.innerHTML = '<p class="text-gray-500 text-center mt-8">The AI couldn\'t come up with any recipes. Try adding more items to your pantry!</p>';
-                return;
-            }
+            if (!recipes || recipes.length === 0) { recipesList.innerHTML = '<div class="text-center py-16"><p class="text-gray-500 text-lg">The AI couldn\'t find recipes.</p><p class="text-gray-400 mt-2">Try adding more items to your pantry!</p></div>'; return; }
             recipes.forEach(recipe => {
                 const recipeEl = document.createElement('div');
-                recipeEl.className = 'card p-5';
-                
-                const ingredientsHtml = `
-                    <h4 class="font-semibold mt-4 mb-2">Ingredients:</h4>
-                    <ul class="list-disc list-inside text-sm">
-                        ${(recipe.ingredients.pantry || []).map(i => `<li class="text-green-700">✔️ ${i} (from pantry)</li>`).join('')}
-                        ${(recipe.ingredients.shoppingList || []).map(i => `<li class="text-orange-600">🛒 ${i} (needed)</li>`).join('')}
-                    </ul>`;
-
-                const instructionsHtml = `
-                    <h4 class="font-semibold mt-4 mb-2">Instructions:</h4>
-                    <ol class="list-decimal list-inside text-sm space-y-1">
-                        ${(recipe.instructions || []).map(step => `<li>${step}</li>`).join('')}
-                    </ol>`;
-
+                recipeEl.className = 'card p-6';
+                const ingredientsHtml = `<h4 class="font-semibold text-lg mt-4 mb-2 text-gray-700">Ingredients:</h4><ul class="list-disc list-inside text-gray-600 space-y-1">${(recipe.ingredients.pantry || []).map(i => `<li class="text-green-700">✔️ <span class="text-gray-700">${i} (from pantry)</span></li>`).join('')}${(recipe.ingredients.shoppingList || []).map(i => `<li class="text-orange-500">🛒 <span class="text-gray-700">${i} (needed)</span></li>`).join('')}</ul>`;
+                const instructionsHtml = `<h4 class="font-semibold text-lg mt-6 mb-2 text-gray-700">Instructions:</h4><ol class="list-decimal list-inside text-gray-600 space-y-2">${(recipe.instructions || []).map(step => `<li>${step}</li>`).join('')}</ol>`;
                 const shoppingListItems = JSON.stringify(recipe.ingredients.shoppingList || []);
-
-                recipeEl.innerHTML = `
-                    <h3 class="text-xl font-bold text-green-800">${recipe.recipeName}</h3>
-                    <p class="text-gray-600 mt-1">${recipe.description}</p>
-                    ${ingredientsHtml}
-                    ${instructionsHtml}
-                    ${(recipe.ingredients.shoppingList && recipe.ingredients.shoppingList.length > 0) ? `<button onclick='addMissingToShoppingList(${shoppingListItems})' class="mt-4 bg-orange-500 text-white font-bold py-2 px-4 rounded-lg w-full hover:bg-orange-600 transition-all">Add ${recipe.ingredients.shoppingList.length} Missing Items to List</button>` : ''}
-                `;
+                recipeEl.innerHTML = `<h3 class="text-2xl font-bold text-gray-800">${recipe.recipeName}</h3><p class="text-gray-500 mt-2">${recipe.description}</p><div class="my-6 border-t border-gray-200"></div>${ingredientsHtml}${instructionsHtml}${(recipe.ingredients.shoppingList && recipe.ingredients.shoppingList.length > 0) ? `<button onclick='addMissingToShoppingList(${shoppingListItems})' class="mt-6 w-full bg-orange-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-600 transition-all">Add ${recipe.ingredients.shoppingList.length} Missing Items to List</button>` : ''}`;
                 recipesList.appendChild(recipeEl);
             });
         }
 
         // --- FEATURE: SHOPPING LIST ---
-        async function addMissingToShoppingList(items) {
-            const updatedList = await apiCall('addToShoppingList', { items });
-            if (updatedList) {
-                renderShoppingList(updatedList);
-                showMessage("Items added to your shopping list!");
-                showView('shopping-list-view');
-            }
-        }
-        
-        async function loadShoppingList() {
-            const shoppingList = await apiCall('getShoppingList');
-            if (shoppingList) renderShoppingList(shoppingList);
-        }
-
+        async function addMissingToShoppingList(items) { const updatedList = await apiCall('addToShoppingList', { items }); if (updatedList) { renderShoppingList(updatedList); showMessage("Items added to your shopping list!"); showView('shopping-list-view'); } }
+        async function loadShoppingList() { const shoppingList = await apiCall('getShoppingList'); if (shoppingList) renderShoppingList(shoppingList); }
         function renderShoppingList(list) {
             shoppingListContainer.innerHTML = '';
-            if (list.length === 0) {
-                shoppingListContainer.innerHTML = '<p class="text-gray-500">Your shopping list is empty.</p>';
-                return;
-            }
+            if (list.length === 0) { shoppingListContainer.innerHTML = '<div class="text-center py-16"><p class="text-gray-500 text-lg">Your shopping list is empty.</p></div>'; return; }
             list.forEach(item => {
                 const itemEl = document.createElement('div');
-                itemEl.className = 'card flex items-center justify-between p-4';
-                itemEl.innerHTML = `
-                    <p class="font-semibold text-lg capitalize text-gray-800">${item.ItemName}</p>
-                    <button onclick="deleteShoppingItem('${item.ItemID}')" class="text-red-500 hover:text-red-700 p-2 rounded-full">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    </button>
-                `;
+                itemEl.className = 'card flex items-center justify-between p-5';
+                itemEl.innerHTML = `<p class="font-semibold text-xl capitalize text-gray-800">${item.ItemName}</p><button onclick="deleteShoppingItem('${item.ItemID}')" class="text-gray-400 hover:text-red-500 p-3 rounded-full transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>`;
                 shoppingListContainer.appendChild(itemEl);
             });
         }
-
-        async function deleteShoppingItem(itemId) {
-            const updatedList = await apiCall('deleteShoppingItem', { id: itemId });
-            if (updatedList) {
-                renderShoppingList(updatedList);
-                showMessage("Item removed from shopping list.");
-            }
-        }
+        async function deleteShoppingItem(itemId) { const updatedList = await apiCall('deleteShoppingItem', { id: itemId }); if (updatedList) { renderShoppingList(updatedList); showMessage("Item removed from shopping list."); } }
 
     </script>
 </body>
