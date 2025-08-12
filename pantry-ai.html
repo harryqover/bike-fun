@@ -446,7 +446,7 @@ header.top-bar .logo {
             });
         }
         async function deleteShoppingItem(itemId) { const updatedList = await apiCall('deleteShoppingItem', { id: itemId }); if (updatedList) { renderShoppingList(updatedList); showMessage("Item removed from shopping list."); } }
-
+console.log("own css")
     </script>
 </body>
 </html>
