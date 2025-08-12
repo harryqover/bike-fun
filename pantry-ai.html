@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PantryAI: The Culinary Co-pilot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .loader {
+            border-top-color: #3498db;
+            -webkit-animation: spin 1s linear infinite;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Custom styles for better mobile experience */
+        .btn-primary {
+            @apply w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-green-700 transition-all duration-300 ease-in-out transform hover:-translate-y-1;
+        }
+        .card {
+            @apply bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300;
+        }
+        .nav-btn {
+            @apply flex-1 text-center py-3 px-2 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300;
+        }
+        .nav-btn.active {
+            @apply text-green-600 border-green-600;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <div class="container mx-auto max-w-lg p-4 min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="text-center my-6">
+            <h1 class="text-4xl font-bold text-green-800">PantryAI 🧑‍🍳</h1>
+            <p class="text-gray-600 mt-2">Your Culinary Co-pilot</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="flex border-b border-gray-200 mb-6">
+            <button id="nav-inventory" class="nav-btn active" onclick="showView('inventory-view')">My Pantry</button>
+            <button id="nav-recipes" class="nav-btn" onclick="showView('recipes-view')">Get Recipes</button>
+            <button id="nav-shopping" class="nav-btn" onclick="showView('shopping-list-view')">Shopping List</button>
+        </nav>
+
+        <main class="flex-grow">
+            <!-- Loading Spinner -->
+            <div id="loader" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                 <div class="bg-white p-5 rounded-lg flex items-center shadow-xl">
+                    <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
+                    <p id="loader-text" class="ml-4 text-lg font-semibold text-gray-700">Processing...</p>
+                </div>
+            </div>
+
+            <!-- Message Modal -->
+            <div id="message-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="bg-white rounded-lg shadow-xl p-8 max-w-sm mx-auto text-center">
+                    <p id="message-text" class="text-lg mb-6"></p>
+                    <button onclick="closeModal()" class="bg-green-600 text-white font-bold py-2 px-6 rounded-lg">OK</button>
+                </div>
+            </div>
+
+            <!-- Hidden file input for camera -->
+            <input type="file" accept="image/*" capture="environment" id="image-input" class="hidden">
+
+            <!-- Inventory View -->
+            <div id="inventory-view">
+                <button id="scan-button" class="btn-primary mb-6 flex items-center justify-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    Scan Fridge / Pantry
+                </button>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Current Inventory</h2>
+                <div id="inventory-list" class="space-y-3">
+                    <!-- Inventory items will be injected here -->
+                    <p class="text-gray-500">Your pantry is empty. Use the scan button to add items!</p>
+                </div>
+            </div>
+
+            <!-- Recipes View -->
+            <div id="recipes-view" class="hidden">
+                <button id="get-recipes-button" class="btn-primary mb-6">✨ Find Recipes I Can Make!</button>
+                <div id="recipes-list" class="space-y-4">
+                    <!-- Recipe suggestions will be injected here -->
+                    <p class="text-gray-500 text-center mt-8">Click the button to get recipe ideas based on your pantry.</p>
+                </div>
+            </div>
+
+            <!-- Shopping List View -->
+            <div id="shopping-list-view" class="hidden">
+                 <h2 class="text-2xl font-bold text-gray-800 mb-4">My Shopping List</h2>
+                 <div id="shopping-list-container" class="space-y-3">
+                    <!-- Shopping list items will be injected here -->
+                    <p class="text-gray-500">Your shopping list is empty.</p>
+                 </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        // IMPORTANT: Replace this with your actual Google Apps Script Web App URL after deployment.
+        const SCRIPT_URL = ""; 
+        // IMPORTANT: Add your Gemini API Key here.
+        const API_KEY = "";
+
+        // --- DOM ELEMENTS ---
+        const views = {
+            inventory: document.getElementById('inventory-view'),
+            recipes: document.getElementById('recipes-view'),
+            shopping: document.getElementById('shopping-list-view'),
+        };
+        const navButtons = {
+            inventory: document.getElementById('nav-inventory'),
+            recipes: document.getElementById('nav-recipes'),
+            shopping: document.getElementById('nav-shopping'),
+        };
+        const scanButton = document.getElementById('scan-button');
+        const imageInput = document.getElementById('image-input');
+        const getRecipesButton = document.getElementById('get-recipes-button');
+        const inventoryList = document.getElementById('inventory-list');
+        const recipesList = document.getElementById('recipes-list');
+        const shoppingListContainer = document.getElementById('shopping-list-container');
+        const loader = document.getElementById('loader');
+        const loaderText = document.getElementById('loader-text');
+        const messageModal = document.getElementById('message-modal');
+        const messageText = document.getElementById('message-text');
+
+        // --- APP STATE & INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!SCRIPT_URL || !API_KEY) {
+                showMessage("Configuration Incomplete! Please follow the setup guide to add your Google Apps Script URL and Gemini API Key to the HTML file.");
+            }
+            loadInventory();
+            loadShoppingList();
+        });
+
+        // --- NAVIGATION ---
+        function showView(viewName) {
+            Object.values(views).forEach(view => view.classList.add('hidden'));
+            Object.values(navButtons).forEach(btn => btn.classList.remove('active'));
+            
+            views[viewName.split('-')[0]].classList.remove('hidden');
+            navButtons[viewName.split('-')[0]].classList.add('active');
+        }
+
+        // --- UI & LOADER CONTROLS ---
+        function showLoader(text = 'Processing...') {
+            loaderText.textContent = text;
+            loader.classList.remove('hidden');
+        }
+
+        function hideLoader() {
+            loader.classList.add('hidden');
+        }
+        
+        function showMessage(message) {
+            messageText.textContent = message;
+            messageModal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            messageModal.classList.add('hidden');
+        }
+
+        // --- API COMMUNICATION ---
+        async function apiCall(action, payload = {}) {
+            if (!SCRIPT_URL) {
+                showMessage("Google Apps Script URL is not configured.");
+                return null;
+            }
+            showLoader('Connecting to PantryAI...');
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8', // Apps Script requirement
+                    },
+                    body: JSON.stringify({ action, ...payload })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    return result.data;
+                } else {
+                    throw new Error(result.message || 'An unknown error occurred.');
+                }
+            } catch (error) {
+                console.error('API Call Error:', error);
+                showMessage(`Error: ${error.message}`);
+                return null;
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // --- FEATURE: FRIDGE/PANTRY SCAN ---
+        scanButton.addEventListener('click', () => imageInput.click());
+        imageInput.addEventListener('change', handleImageUpload);
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                const base64Image = reader.result.split(',')[1];
+                await identifyAndAddItems(base64Image);
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        async function identifyAndAddItems(base64Image) {
+            if (!API_KEY) {
+                showMessage("Gemini API Key is not configured.");
+                return;
+            }
+            showLoader('Analyzing image with AI...');
+
+            try {
+                const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-preview-0514:generateContent?key=${API_KEY}`;
+                
+                const payload = {
+                    contents: [{
+                        parts: [
+                            { text: "Identify the distinct food items in this image. Respond ONLY with a valid JSON array of strings. For example: [\"apples\", \"milk bottle\", \"eggs\"]. Only include food items." },
+                            { inlineData: { mimeType: "image/jpeg", data: base64Image } }
+                        ]
+                    }]
+                };
+
+                const response = await fetch(geminiApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    throw new Error(`Gemini API error: ${response.statusText} - ${errorBody}`);
+                }
+
+                const result = await response.json();
+                if (!result.candidates || result.candidates.length === 0 || !result.candidates[0].content) {
+                    throw new Error("AI returned an empty or invalid response.");
+                }
+
+                const textResponse = result.candidates[0].content.parts[0].text;
+                const cleanedText = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+                const items = JSON.parse(cleanedText);
+
+                if (items && items.length > 0) {
+                    showLoader('Adding items to pantry...');
+                    const data = await apiCall('addItems', { items });
+                    if (data) {
+                        showMessage(`Added ${items.length} items to your pantry!`);
+                        renderInventory(data);
+                    }
+                } else {
+                    showMessage("AI couldn't identify any food items. Please try a clearer picture.");
+                }
+
+            } catch (error) {
+                console.error('Gemini API Error:', error);
+                showMessage(`AI analysis failed: ${error.message}`);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // --- FEATURE: INVENTORY MANAGEMENT ---
+        async function loadInventory() {
+            const inventory = await apiCall('getInventory');
+            if (inventory) {
+                renderInventory(inventory);
+            }
+        }
+
+        function renderInventory(inventory) {
+            inventoryList.innerHTML = '';
+            if (inventory.length === 0) {
+                inventoryList.innerHTML = '<p class="text-gray-500">Your pantry is empty. Use the scan button to add items!</p>';
+                return;
+            }
+            inventory.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'card flex items-center justify-between p-4';
+                itemEl.innerHTML = `
+                    <div>
+                        <p class="font-semibold text-lg capitalize text-gray-800">${item.name}</p>
+                        <p class="text-sm text-gray-500">Added: ${new Date(item.added).toLocaleDateString()}</p>
+                    </div>
+                    <button onclick="deleteInventoryItem('${item.id}')" class="text-red-500 hover:text-red-700 p-2 rounded-full">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                `;
+                inventoryList.appendChild(itemEl);
+            });
+        }
+
+        async function deleteInventoryItem(itemId) {
+            const updatedInventory = await apiCall('deleteItem', { id: itemId });
+            if (updatedInventory) {
+                renderInventory(updatedInventory);
+                showMessage("Item removed from pantry.");
+            }
+        }
+
+        // --- FEATURE: RECIPE SUGGESTIONS ---
+        getRecipesButton.addEventListener('click', findRecipes);
+
+        async function findRecipes() {
+            showLoader('Asking AI for recipes...');
+            const inventory = await apiCall('getInventory');
+            if (!inventory || inventory.length === 0) {
+                showMessage("Your pantry is empty! Add some items before looking for recipes.");
+                return;
+            }
+
+            const inventoryNames = inventory.map(item => item.name);
+            const prompt = `Based on these ingredients in my pantry: ${inventoryNames.join(', ')}. Suggest 3 simple recipes. For each recipe, provide a name, a short description, a list of all ingredients needed (both from the pantry and extra ones), and step-by-step instructions. Respond ONLY with a valid JSON array of objects. Each object must have these keys: "recipeName", "description", "ingredients", "instructions". The "ingredients" key must be an object with two arrays: "pantry" and "shoppingList". The "instructions" key must be an array of strings.`;
+
+            try {
+                const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-preview-0514:generateContent?key=${API_KEY}`;
+                const payload = { contents: [{ parts: [{ text: prompt }] }] };
+
+                const response = await fetch(geminiApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    throw new Error(`Gemini API error: ${response.statusText} - ${errorBody}`);
+                }
+                
+                const result = await response.json();
+                if (!result.candidates || result.candidates.length === 0 || !result.candidates[0].content) {
+                    throw new Error("AI returned an empty or invalid response for recipes.");
+                }
+
+                const textResponse = result.candidates[0].content.parts[0].text;
+                const cleanedText = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+                const recipes = JSON.parse(cleanedText);
+                
+                renderRecipes(recipes);
+
+            } catch (error) {
+                console.error('Recipe Generation Error:', error);
+                showMessage(`Could not get recipes: ${error.message}`);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function renderRecipes(recipes) {
+            recipesList.innerHTML = '';
+            if (!recipes || recipes.length === 0) {
+                recipesList.innerHTML = '<p class="text-gray-500 text-center mt-8">The AI couldn\'t come up with any recipes. Try adding more items to your pantry!</p>';
+                return;
+            }
+            recipes.forEach(recipe => {
+                const recipeEl = document.createElement('div');
+                recipeEl.className = 'card p-5';
+                
+                const ingredientsHtml = `
+                    <h4 class="font-semibold mt-4 mb-2">Ingredients:</h4>
+                    <ul class="list-disc list-inside text-sm">
+                        ${(recipe.ingredients.pantry || []).map(i => `<li class="text-green-700">✔️ ${i} (from pantry)</li>`).join('')}
+                        ${(recipe.ingredients.shoppingList || []).map(i => `<li class="text-orange-600">🛒 ${i} (needed)</li>`).join('')}
+                    </ul>
+                `;
+
+                const instructionsHtml = `
+                    <h4 class="font-semibold mt-4 mb-2">Instructions:</h4>
+                    <ol class="list-decimal list-inside text-sm space-y-1">
+                        ${(recipe.instructions || []).map(step => `<li>${step}</li>`).join('')}
+                    </ol>
+                `;
+
+                const shoppingListItems = JSON.stringify(recipe.ingredients.shoppingList || []);
+
+                recipeEl.innerHTML = `
+                    <h3 class="text-xl font-bold text-green-800">${recipe.recipeName}</h3>
+                    <p class="text-gray-600 mt-1">${recipe.description}</p>
+                    ${ingredientsHtml}
+                    ${instructionsHtml}
+                    ${(recipe.ingredients.shoppingList && recipe.ingredients.shoppingList.length > 0) ? `<button onclick='addMissingToShoppingList(${shoppingListItems})' class="mt-4 bg-orange-500 text-white font-bold py-2 px-4 rounded-lg w-full hover:bg-orange-600 transition-all">Add ${recipe.ingredients.shoppingList.length} Missing Items to List</button>` : ''}
+                `;
+                recipesList.appendChild(recipeEl);
+            });
+        }
+
+        // --- FEATURE: SHOPPING LIST ---
+        async function addMissingToShoppingList(items) {
+            const updatedList = await apiCall('addToShoppingList', { items });
+            if (updatedList) {
+                renderShoppingList(updatedList);
+                showMessage("Items added to your shopping list!");
+                showView('shopping-list-view');
+            }
+        }
+        
+        async function loadShoppingList() {
+            const shoppingList = await apiCall('getShoppingList');
+            if (shoppingList) {
+                renderShoppingList(shoppingList);
+            }
+        }
+
+        function renderShoppingList(list) {
+            shoppingListContainer.innerHTML = '';
+            if (list.length === 0) {
+                shoppingListContainer.innerHTML = '<p class="text-gray-500">Your shopping list is empty.</p>';
+                return;
+            }
+            list.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'card flex items-center justify-between p-4';
+                itemEl.innerHTML = `
+                    <p class="font-semibold text-lg capitalize text-gray-800">${item.name}</p>
+                    <button onclick="deleteShoppingItem('${item.id}')" class="text-red-500 hover:text-red-700 p-2 rounded-full">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                `;
+                shoppingListContainer.appendChild(itemEl);
+            });
+        }
+
+        async function deleteShoppingItem(itemId) {
+            const updatedList = await apiCall('deleteShoppingItem', { id: itemId });
+            if (updatedList) {
+                renderShoppingList(updatedList);
+                showMessage("Item removed from shopping list.");
+            }
+        }
+
+    </script>
+</body>
+</html>
