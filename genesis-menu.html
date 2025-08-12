@@ -12,6 +12,7 @@
             --border-color: #dce1e6;
             --success-color: #28a745;
             --error-color: #dc3545;
+            --info-color: #17a2b8;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         body {
@@ -32,8 +33,9 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
-        h1 {
+        h1, h2 {
             color: var(--primary-color);
         }
         .card {
@@ -42,6 +44,16 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: var(--shadow);
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media (min-width: 992px) {
+            .grid-container {
+                grid-template-columns: 2fr 1fr;
+            }
         }
         .meal-plan-grid {
             display: grid;
@@ -105,77 +117,42 @@
         button.secondary:hover {
             background-color: #5a6268;
         }
-        /* Settings Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-        }
-        .modal-header {
+        /* New UI Sections */
+        .suggestion-item, .shopping-list-item {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .close-button {
-            cursor: pointer;
-            font-size: 1.5rem;
-            font-weight: bold;
+        .shopping-list-item {
+            grid-template-columns: 1fr auto auto;
+            display: grid;
+            gap: 10px;
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .form-group input {
-            width: calc(100% - 22px);
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-        }
+        .shopping-list-item .name { font-weight: bold; }
+        .shopping-list-item .quantity { color: var(--primary-color); }
+        .shopping-list-item .unit { color: #6c757d; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+        .modal-content { background-color: #fff; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; }
+        .close-button { cursor: pointer; font-size: 1.5rem; font-weight: bold; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; }
+        .form-group input { width: calc(100% - 22px); padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; }
+        
         /* Loader and Toasts */
-        .loader {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            display: none;
-            padding: 10px 15px;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 5px;
-            box-shadow: var(--shadow);
-        }
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 15px 25px;
-            border-radius: 5px;
-            color: white;
-            opacity: 0;
-            transition: opacity 0.5s;
-            visibility: hidden;
-        }
-        .toast.show {
-            opacity: 1;
-            visibility: visible;
-        }
+        .loader { position: fixed; top: 10px; right: 10px; display: none; padding: 10px 15px; background-color: var(--primary-color); color: white; border-radius: 5px; box-shadow: var(--shadow); z-index: 1001; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 5px; color: white; opacity: 0; transition: opacity 0.5s, visibility 0.5s; visibility: hidden; z-index: 1001; }
+        .toast.show { opacity: 1; visibility: visible; }
         .toast.success { background-color: var(--success-color); }
         .toast.error { background-color: var(--error-color); }
+        .toast.info { background-color: var(--info-color); }
     </style>
 </head>
 <body>
@@ -194,15 +171,34 @@
                 <button id="get-suggestions-btn" class="secondary">Get AI Recipe Suggestions</button>
             </div>
         </div>
-
-        <div class="card">
-            <h2>Meal Plan (Next 7 Days)</h2>
-            <div id="meal-plan-grid" class="meal-plan-grid">
+        
+        <div class="grid-container">
+            <div class="main-content">
+                <div class="card">
+                    <h2>Meal Plan (Next 7 Days)</h2>
+                    <div id="meal-plan-grid" class="meal-plan-grid">
+                        <!-- Day cards will be generated by JavaScript -->
+                    </div>
                 </div>
+            </div>
+            <div class="sidebar">
+                <div class="card" id="shopping-list-card">
+                    <h2>Shopping List</h2>
+                    <div id="shopping-list-container">
+                        <p>Click "Generate Shopping List" to populate.</p>
+                    </div>
+                </div>
+                <div class="card" id="suggestions-card">
+                    <h2>AI Suggestions</h2>
+                    <div id="suggestions-container">
+                        <p>Click "Get AI Recipe Suggestions" for ideas.</p>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-        </div>
-
+    <!-- Settings Modal -->
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -212,7 +208,7 @@
             <form id="settings-form">
                 <div class="form-group">
                     <label for="gemini-api-key">Gemini API Key</label>
-                    <input type="password" id="gemini-api-key" name="geminiApiKey">
+                    <input type="password" id="gemini-api-key" name="geminiApiKey" placeholder="Enter your key">
                 </div>
                 <hr>
                 <h3>Family Size</h3>
@@ -224,10 +220,6 @@
                     <label for="num-kids">Kids</label>
                     <input type="number" id="num-kids" name="numKids" min="0" value="0">
                 </div>
-                <div class="form-group">
-                    <label for="num-babies">Babies</label>
-                    <input type="number" id="num-babies" name="numBabies" min="0" value="0">
-                </div>
                 <button type="submit">Save Settings</button>
             </form>
         </div>
@@ -237,8 +229,8 @@
     <div id="toast" class="toast"></div>
 
     <script>
-        // ✅ The AppScript Alchemist - Genesis Menu v1.0: Initial framework with caching and UI.
-        console.log('Version: 1.0 - Genesis Menu');
+        // ✅ The AppScript Alchemist - Genesis Menu v2.0: AI & Shopping List Live
+        console.log('Version: 2.0 - Genesis Menu');
 
         document.addEventListener('DOMContentLoaded', () => {
             const state = {
@@ -252,8 +244,9 @@
             const savePlanBtn = document.getElementById('save-plan-btn');
             const generateListBtn = document.getElementById('generate-list-btn');
             const getSuggestionsBtn = document.getElementById('get-suggestions-btn');
+            const suggestionsContainer = document.getElementById('suggestions-container');
+            const shoppingListContainer = document.getElementById('shopping-list-container');
             
-            // Settings Modal Elements
             const settingsModal = document.getElementById('settings-modal');
             const settingsBtn = document.getElementById('settings-btn');
             const closeBtn = document.querySelector('.close-button');
@@ -265,7 +258,7 @@
                 state.isLoading = show;
             };
 
-            const showToast = (message, type = 'success', duration = 3000) => {
+            const showToast = (message, type = 'success', duration = 4000) => {
                 const toast = document.getElementById('toast');
                 toast.textContent = message;
                 toast.className = `toast show ${type}`;
@@ -274,25 +267,41 @@
                 }, duration);
             };
             
+            // --- Data Logic ---
+            const getCurrentMealPlanFromUI = () => {
+                const mealPlan = [];
+                document.querySelectorAll('.day-card').forEach(card => {
+                    const date = card.dataset.date;
+                    card.querySelectorAll('.meal-slot').forEach(slot => {
+                        const mealType = slot.dataset.mealType;
+                        const recipeName = slot.querySelector('input[type="text"]').value.trim();
+                        const isRestaurant = slot.querySelector('input[type="checkbox"]').checked;
+                        if (recipeName || isRestaurant) {
+                            mealPlan.push({ date, mealType, recipeName, isRestaurant });
+                        }
+                    });
+                });
+                return mealPlan;
+            };
+
             // --- Data Fetching & Caching ---
             const fetchData = () => {
                 showLoader(true);
                 google.script.run
                     .withSuccessHandler(response => {
+                        showLoader(false);
                         if (response.error) {
                             showToast(response.error, 'error');
                             return;
                         }
-                        // Save to state and cache
                         state.data = response;
                         localStorage.setItem('mealPlannerData', JSON.stringify(response));
                         localStorage.setItem('mealPlannerCacheTimestamp', Date.now());
                         render();
-                        showLoader(false);
                     })
                     .withFailureHandler(error => {
-                        showToast(`Error: ${error.message}`, 'error');
                         showLoader(false);
+                        showToast(`Error: ${error.message}`, 'error');
                     })
                     .getAllData();
             };
@@ -300,14 +309,11 @@
             const loadInitialData = () => {
                 const cachedData = localStorage.getItem('mealPlannerData');
                 const cacheTimestamp = localStorage.getItem('mealPlannerCacheTimestamp');
-                
-                // Use cache if it exists and is less than 1 hour old
                 if (cachedData && cacheTimestamp && (Date.now() - cacheTimestamp < 3600000)) {
                     console.log("Loading data from cache.");
                     state.data = JSON.parse(cachedData);
                     render();
-                    // Fetch fresh data in the background anyway
-                    fetchData();
+                    fetchData(); // Refresh in background
                 } else {
                     console.log("Cache is empty or stale. Fetching from server.");
                     fetchData();
@@ -322,7 +328,7 @@
             };
 
             const renderMealPlan = () => {
-                mealPlanGrid.innerHTML = ''; // Clear previous content
+                mealPlanGrid.innerHTML = '';
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
@@ -330,21 +336,17 @@
                     const dayDate = new Date(today);
                     dayDate.setDate(today.getDate() + i);
                     const dateString = dayDate.toISOString().split('T')[0];
-
                     const dayCard = document.createElement('div');
                     dayCard.className = 'day-card';
                     dayCard.dataset.date = dateString;
-
                     const dayName = dayDate.toLocaleDateString('en-US', { weekday: 'long' });
                     const dayMonth = dayDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
-
                     dayCard.innerHTML = `<h3>${dayName}, ${dayMonth}</h3>`;
 
                     ['Lunch', 'Dinner'].forEach(mealType => {
                         const mealData = state.data.meals.find(m => m.Date.startsWith(dateString) && m.MealType === mealType) || {};
                         const mealId = `${dateString}-${mealType}`;
                         const isRestaurantChecked = mealData.IsRestaurant ? 'checked' : '';
-                        
                         dayCard.innerHTML += `
                             <div class="meal-slot" data-meal-type="${mealType}">
                                 <label for="${mealId}">${mealType}</label>
@@ -353,8 +355,7 @@
                                     <input type="checkbox" id="resto-${mealId}" ${isRestaurantChecked}>
                                     <label for="resto-${mealId}">At Restaurant</label>
                                 </div>
-                            </div>
-                        `;
+                            </div>`;
                     });
                     mealPlanGrid.appendChild(dayCard);
                 }
@@ -366,32 +367,50 @@
                 settingsForm.elements.geminiApiKey.value = settings.geminiApiKey || '';
                 settingsForm.elements.numAdults.value = settings.numAdults || '2';
                 settingsForm.elements.numKids.value = settings.numKids || '0';
-                settingsForm.elements.numBabies.value = settings.numBabies || '0';
               }
+            };
+            
+            const renderSuggestions = (suggestions) => {
+                suggestionsContainer.innerHTML = '';
+                if (!suggestions || suggestions.length === 0) {
+                    suggestionsContainer.innerHTML = '<p>No suggestions available.</p>';
+                    return;
+                }
+                suggestions.forEach(name => {
+                    const item = document.createElement('div');
+                    item.className = 'suggestion-item';
+                    item.textContent = name;
+                    suggestionsContainer.appendChild(item);
+                });
+            };
+            
+            const renderShoppingList = (list) => {
+                shoppingListContainer.innerHTML = '';
+                 if (!list || list.length === 0) {
+                    shoppingListContainer.innerHTML = '<p>Your shopping list is empty!</p>';
+                    return;
+                }
+                list.forEach(item => {
+                    const listItem = document.createElement('div');
+                    listItem.className = 'shopping-list-item';
+                    listItem.innerHTML = `
+                        <span class="name">${item.name}</span>
+                        <span class="quantity">${item.quantity}</span>
+                        <span class="unit">${item.unit}</span>
+                    `;
+                    shoppingListContainer.appendChild(listItem);
+                });
             };
 
             // --- Event Handlers ---
             const handleSavePlan = () => {
-                const mealPlan = [];
-                document.querySelectorAll('.day-card').forEach(card => {
-                    const date = card.dataset.date;
-                    card.querySelectorAll('.meal-slot').forEach(slot => {
-                        const mealType = slot.dataset.mealType;
-                        const recipeName = slot.querySelector('input[type="text"]').value.trim();
-                        const isRestaurant = slot.querySelector('input[type="checkbox"]').checked;
-
-                        if (recipeName || isRestaurant) { // Only save if there's data
-                            mealPlan.push({ date, mealType, recipeName, isRestaurant });
-                        }
-                    });
-                });
-                
+                const mealPlan = getCurrentMealPlanFromUI();
                 showLoader(true);
                 google.script.run
                     .withSuccessHandler(response => {
                         showLoader(false);
                         showToast(response.message, response.status);
-                        fetchData(); // Refresh data after saving
+                        fetchData();
                     })
                     .withFailureHandler(err => {
                         showLoader(false);
@@ -404,7 +423,6 @@
               e.preventDefault();
               const formData = new FormData(settingsForm);
               const settings = Object.fromEntries(formData.entries());
-              
               showLoader(true);
               google.script.run
                 .withSuccessHandler(response => {
@@ -412,8 +430,7 @@
                     showToast(response.message, response.status);
                     if(response.status === 'success'){
                       settingsModal.style.display = 'none';
-                      // Update local state immediately for responsiveness
-                      state.data.settings = settings;
+                      state.data.settings = settings; // Update local state
                     }
                 })
                 .withFailureHandler(err => {
@@ -423,8 +440,59 @@
                 .saveSettings(settings);
             };
 
+            const handleGetSuggestions = () => {
+                if (!state.data || !state.data.recipes) {
+                    showToast("Recipe data not loaded yet.", 'info');
+                    return;
+                }
+                const pastRecipes = [...new Set(state.data.recipes.map(r => r.RecipeName))];
+                showLoader(true);
+                google.script.run
+                    .withSuccessHandler(response => {
+                        showLoader(false);
+                        if (response.error) {
+                            showToast(response.error, 'error');
+                            return;
+                        }
+                        renderSuggestions(response.suggestions);
+                        showToast("AI suggestions loaded!", 'success');
+                    })
+                    .withFailureHandler(err => {
+                        showLoader(false);
+                        showToast(err.message, 'error');
+                    })
+                    .getRecipeSuggestions(pastRecipes);
+            };
+
+            const handleGenerateList = () => {
+                if (!state.data || !state.data.recipes) {
+                    showToast("Recipe data not loaded yet.", 'info');
+                    return;
+                }
+                const mealPlan = getCurrentMealPlanFromUI();
+                showLoader(true);
+                google.script.run
+                    .withSuccessHandler(response => {
+                        showLoader(false);
+                        if (response.error) {
+                            showToast(response.error, 'error');
+                            return;
+                        }
+                        renderShoppingList(response.shoppingList);
+                        showToast("Shopping list generated!", 'success');
+                    })
+                    .withFailureHandler(err => {
+                        showLoader(false);
+                        showToast(err.message, 'error');
+                    })
+                    .generateShoppingList(mealPlan, state.data.recipes);
+            };
+
             // --- Event Listeners ---
             savePlanBtn.addEventListener('click', handleSavePlan);
+            getSuggestionsBtn.addEventListener('click', handleGetSuggestions);
+            generateListBtn.addEventListener('click', handleGenerateList);
+            
             settingsBtn.addEventListener('click', () => settingsModal.style.display = 'flex');
             closeBtn.addEventListener('click', () => settingsModal.style.display = 'none');
             window.addEventListener('click', (e) => {
@@ -433,10 +501,6 @@
                 }
             });
             settingsForm.addEventListener('submit', handleSaveSettings);
-
-            // Placeholder listeners
-            generateListBtn.addEventListener('click', () => showToast('Feature coming soon!', 'info'));
-            getSuggestionsBtn.addEventListener('click', () => showToast('Feature coming soon!', 'info'));
 
             // --- Initialization ---
             loadInitialData();
