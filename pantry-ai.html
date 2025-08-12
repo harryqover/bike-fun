@@ -9,7 +9,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc; /* Lighter gray background */
+            background-color: #f1f5f9; /* Slate-100 for a slightly cooler background */
         }
         .loader {
             border-top-color: #22c55e; /* Green-500 */
@@ -20,27 +20,31 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* New Mobile-First Design System */
+        /* Complete UX/UI Overhaul */
         .card {
-            @apply bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300;
+            @apply bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-300;
         }
         .bottom-nav {
-            @apply fixed bottom-0 left-0 right-0 h-20 bg-white/90 backdrop-blur-lg border-t border-gray-200 flex justify-around items-center z-40 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.05)];
+            @apply fixed bottom-0 left-0 right-0 h-24 bg-white/80 backdrop-blur-xl border-t border-gray-200 flex justify-around items-center z-40;
         }
         .nav-btn {
-            @apply flex flex-col items-center justify-center text-gray-400 transition-colors duration-300 h-full w-full;
+            @apply flex-1 flex flex-col items-center justify-center text-gray-500 transition-all duration-300 h-full relative;
         }
         .nav-btn.active {
             @apply text-green-600;
+        }
+        .nav-btn.active::before {
+            content: '';
+            @apply absolute top-0 left-1/2 -translate-x-1/2 w-10 h-1 bg-green-500 rounded-b-full;
         }
         .nav-btn svg {
             @apply w-7 h-7 mb-1;
         }
         .nav-btn span {
-            @apply text-xs font-bold tracking-wide;
+            @apply text-sm font-semibold tracking-wide;
         }
         .fab {
-            @apply fixed bottom-24 right-6 h-16 w-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center text-white shadow-xl transform hover:scale-110 transition-all duration-300 z-40;
+            @apply fixed bottom-[7.5rem] right-6 h-16 w-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center text-white shadow-lg transform hover:scale-110 hover:shadow-xl transition-all duration-300 z-40;
         }
         .modal-backdrop {
              @apply fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300;
@@ -53,13 +57,13 @@
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-slate-100">
 
-    <div class="container mx-auto max-w-lg pb-28">
+    <div class="container mx-auto max-w-lg pb-32">
         <!-- Header -->
         <header class="p-4 pt-8 text-center relative">
-            <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight">PantryAI <span class="text-green-500">🧑‍🍳</span></h1>
-            <button id="settings-button" class="absolute top-6 right-4 p-2 text-gray-400 hover:text-green-500 transition-colors duration-300">
+            <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">PantryAI <span class="text-green-500">🧑‍🍳</span></h1>
+            <button id="settings-button" class="absolute top-6 right-4 p-2 text-slate-400 hover:text-green-500 transition-colors duration-300">
                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </button>
         </header>
@@ -75,19 +79,19 @@
 
             <!-- Inventory View -->
             <div id="inventory-view">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">My Inventory</h2>
+                <h2 class="text-3xl font-bold text-slate-800 mb-6">My Inventory</h2>
                 <div id="inventory-list" class="space-y-4"></div>
             </div>
 
             <!-- Recipes View -->
             <div id="recipes-view" class="hidden">
-                 <h2 class="text-3xl font-bold text-gray-800 mb-6">Recipe Ideas</h2>
+                 <h2 class="text-3xl font-bold text-slate-800 mb-6">Recipe Ideas</h2>
                 <div id="recipes-list" class="space-y-6"></div>
             </div>
 
             <!-- Shopping List View -->
             <div id="shopping-list-view" class="hidden">
-                 <h2 class="text-3xl font-bold text-gray-800 mb-6">Shopping List</h2>
+                 <h2 class="text-3xl font-bold text-slate-800 mb-6">Shopping List</h2>
                  <div id="shopping-list-container" class="space-y-4"></div>
             </div>
         </main>
@@ -179,7 +183,6 @@
             views[viewName.split('-')[0]].classList.remove('hidden');
             navButtons[viewName.split('-')[0]].classList.add('active');
 
-            // Find recipes automatically when switching to the recipe view if pantry is not empty
             if (viewName === 'recipes-view') {
                 const pantryItems = document.querySelectorAll('#inventory-list .card');
                 if (pantryItems.length > 0 && recipesList.innerHTML.trim() === '') {
