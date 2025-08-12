@@ -4,20 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Genesis Menu - Meal Planner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/phosphor-icons"></script>
     <style>
         :root {
-            --primary-color: #4a90e2;
-            --secondary-color: #f5f7fa;
-            --text-color: #333;
-            --border-color: #dce1e6;
-            --success-color: #28a745;
-            --error-color: #dc3545;
-            --info-color: #17a2b8;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --background-start: #f5f7fa;
+            --background-end: #e6e9f0;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-color: rgba(255, 255, 255, 0.4);
+            --card-bg: rgba(255, 255, 255, 0.6);
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --info-color: #3b82f6;
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+        * {
+            box-sizing: border-box;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--secondary-color);
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(120deg, var(--background-start) 0%, var(--background-end) 100%);
             color: var(--text-color);
             margin: 0;
             padding: 20px;
@@ -26,29 +41,50 @@
         }
         .container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
+            animation: fadeIn 0.5s ease-out;
         }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             flex-wrap: wrap;
         }
-        h1, h2 {
-            color: var(--primary-color);
+        h1 {
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        h2 {
+            color: var(--text-color);
+            font-weight: 600;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         .card {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
             box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 36px 0 rgba(31, 38, 135, 0.2);
         }
         .grid-container {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 20px;
+            gap: 25px;
         }
         @media (min-width: 992px) {
             .grid-container {
@@ -57,102 +93,108 @@
         }
         .meal-plan-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
         }
         .day-card {
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            padding: 20px;
+            background: rgba(255,255,255,0.8);
+            transition: all 0.3s ease;
         }
         .day-card h3 {
             margin-top: 0;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid #e2e8f0;
             padding-bottom: 10px;
-        }
-        .meal-slot {
-            margin-bottom: 15px;
+            font-weight: 600;
         }
         .meal-slot label {
+            font-weight: 500;
+            margin-bottom: 8px;
             display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
         }
         .meal-slot input[type="text"] {
-            width: calc(100% - 20px);
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.2s ease;
+        }
+        .meal-slot input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
         }
         .restaurant-toggle {
-            display: flex;
-            align-items: center;
             font-size: 0.9em;
-            margin-top: 8px;
-        }
-        .restaurant-toggle input {
-            margin-right: 8px;
+            margin-top: 10px;
         }
         .actions {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             flex-wrap: wrap;
         }
         button {
-            padding: 10px 15px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 5px;
-            background-color: var(--primary-color);
+            border-radius: 8px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             color: white;
             font-size: 1em;
+            font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px 0 rgba(45, 55, 68, 0.2);
         }
         button:hover {
-            background-color: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px 0 rgba(45, 55, 68, 0.3);
         }
         button.secondary {
-            background-color: #6c757d;
+            background: #64748b;
         }
-        button.secondary:hover {
-            background-color: #5a6268;
-        }
-        /* New UI Sections */
+        /* UI Sections */
         .suggestion-item, .shopping-list-item {
-            background-color: #f8f9fa;
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 8px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            animation: fadeIn 0.3s ease-out;
+            background: #f1f5f9;
+        }
+        .suggestion-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .shopping-list-item {
-            grid-template-columns: 1fr auto auto;
             display: grid;
+            grid-template-columns: 1fr auto auto;
             gap: 10px;
+            align-items: center;
         }
-        .shopping-list-item .name { font-weight: bold; }
-        .shopping-list-item .quantity { color: var(--primary-color); }
-        .shopping-list-item .unit { color: #6c757d; }
+        .shopping-list-item .name { font-weight: 500; }
+        .shopping-list-item .quantity { font-weight: 600; color: var(--primary-color); }
+        .shopping-list-item .unit { color: var(--text-light); }
         
         /* Modal */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-        .modal-content { background-color: #fff; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 30px; border-radius: 16px; width: 90%; max-width: 500px; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; }
-        .close-button { cursor: pointer; font-size: 1.5rem; font-weight: bold; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; }
-        .form-group input { width: calc(100% - 22px); padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; }
+        .close-button { cursor: pointer; font-size: 1.5rem; font-weight: bold; color: var(--text-light); }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; }
         
         /* Loader and Toasts */
-        .loader { position: fixed; top: 10px; right: 10px; display: none; padding: 10px 15px; background-color: var(--primary-color); color: white; border-radius: 5px; box-shadow: var(--shadow); z-index: 1001; }
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 5px; color: white; opacity: 0; transition: opacity 0.5s, visibility 0.5s; visibility: hidden; z-index: 1001; }
-        .toast.show { opacity: 1; visibility: visible; }
-        .toast.success { background-color: var(--success-color); }
-        .toast.error { background-color: var(--error-color); }
-        .toast.info { background-color: var(--info-color); }
+        .loader { position: fixed; top: 20px; right: 20px; display: none; padding: 12px 20px; background: white; color: var(--text-color); border-radius: 8px; box-shadow: var(--shadow); z-index: 1001; font-weight: 500; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 8px; color: white; opacity: 0; transition: all 0.5s; visibility: hidden; z-index: 1001; box-shadow: var(--shadow); }
+        .toast.show { opacity: 1; visibility: visible; transform: translate(-50%, -10px); }
+        .toast.success { background: var(--success-color); }
+        .toast.error { background: var(--error-color); }
+        .toast.info { background: var(--info-color); }
     </style>
 </head>
 <body>
@@ -160,36 +202,33 @@
     <div class="container">
         <div class="header">
             <h1>Genesis Menu</h1>
-            <button id="settings-btn">⚙️ Settings</button>
+            <button id="settings-btn"><i class="ph-gear"></i> Settings</button>
         </div>
 
         <div class="card">
-            <h2>Actions</h2>
             <div class="actions">
-                <button id="save-plan-btn">Save Meal Plan</button>
-                <button id="generate-list-btn" class="secondary">Generate Shopping List</button>
-                <button id="get-suggestions-btn" class="secondary">Get AI Recipe Suggestions</button>
+                <button id="save-plan-btn"><i class="ph-floppy-disk"></i>Save Meal Plan</button>
+                <button id="generate-list-btn" class="secondary"><i class="ph-list-checks"></i>Generate Shopping List</button>
+                <button id="get-suggestions-btn" class="secondary"><i class="ph-sparkle"></i>Get AI Suggestions</button>
             </div>
         </div>
         
         <div class="grid-container">
             <div class="main-content">
                 <div class="card">
-                    <h2>Meal Plan (Next 7 Days)</h2>
-                    <div id="meal-plan-grid" class="meal-plan-grid">
-                        <!-- Day cards will be generated by JavaScript -->
-                    </div>
+                    <h2><i class="ph-calendar"></i>Meal Plan (Next 7 Days)</h2>
+                    <div id="meal-plan-grid" class="meal-plan-grid"></div>
                 </div>
             </div>
             <div class="sidebar">
                 <div class="card" id="shopping-list-card">
-                    <h2>Shopping List</h2>
+                    <h2><i class="ph-shopping-cart-simple"></i>Shopping List</h2>
                     <div id="shopping-list-container">
                         <p>Click "Generate Shopping List" to populate.</p>
                     </div>
                 </div>
                 <div class="card" id="suggestions-card">
-                    <h2>AI Suggestions</h2>
+                    <h2><i class="ph-lightbulb"></i>AI Suggestions</h2>
                     <div id="suggestions-container">
                         <p>Click "Get AI Recipe Suggestions" for ideas.</p>
                     </div>
@@ -210,7 +249,7 @@
                     <label for="gemini-api-key">Gemini API Key</label>
                     <input type="password" id="gemini-api-key" name="geminiApiKey" placeholder="Enter your key">
                 </div>
-                <hr>
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
                 <h3>Family Size</h3>
                 <div class="form-group">
                     <label for="num-adults">Adults</label>
@@ -220,7 +259,7 @@
                     <label for="num-kids">Kids</label>
                     <input type="number" id="num-kids" name="numKids" min="0" value="0">
                 </div>
-                <button type="submit">Save Settings</button>
+                <button type="submit"><i class="ph-check-circle"></i>Save Settings</button>
             </form>
         </div>
     </div>
@@ -229,8 +268,8 @@
     <div id="toast" class="toast"></div>
 
     <script>
-        // ✅ The AppScript Alchemist - Genesis Menu v2.1: Switched to Fetch API
-        console.log('Version: 2.1 - Genesis Menu');
+        // ✅ The AppScript Alchemist - Genesis Menu v2.2: Redesigned UI & CORS Fix
+        console.log('Version: 2.2 - Genesis Menu');
 
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmmmags5BBnAZ3vQ7u-H8BjY40L-kMImTjtRVUW2ZmlnyujI8DGraNgzHLhNeKUsmcEA/exec";
 
@@ -240,7 +279,6 @@
                 isLoading: false,
             };
 
-            // --- DOM Elements ---
             const loader = document.getElementById('loader');
             const mealPlanGrid = document.getElementById('meal-plan-grid');
             const savePlanBtn = document.getElementById('save-plan-btn');
@@ -254,9 +292,8 @@
             const closeBtn = document.querySelector('.close-button');
             const settingsForm = document.getElementById('settings-form');
 
-            // --- Utility Functions ---
             const showLoader = (show) => {
-                loader.style.display = show ? 'block' : 'none';
+                loader.style.display = show ? 'flex' : 'none';
                 state.isLoading = show;
             };
 
@@ -269,12 +306,6 @@
                 }, duration);
             };
             
-            /**
-             * @description Generic function to call Google Apps Script backend.
-             * @param {string} functionName - The name of the function to call in Code.gs.
-             * @param {Array} [args=[]] - The arguments to pass to the function.
-             * @returns {Promise<any>} The response from the backend.
-             */
             const callGoogleScript = async (functionName, args = []) => {
                 showLoader(true);
                 try {
@@ -292,21 +323,19 @@
                     }
                     
                     const result = await res.json();
-                    if (result.error) {
+                    if (result.status === 'error') {
                         throw new Error(result.error);
                     }
                     return result.data;
 
                 } catch (error) {
                     showToast(error.message, 'error');
-                    // Re-throw the error to be caught by the calling function if needed
                     throw error;
                 } finally {
                     showLoader(false);
                 }
             };
 
-            // --- Data Logic ---
             const getCurrentMealPlanFromUI = () => {
                 const mealPlan = [];
                 document.querySelectorAll('.day-card').forEach(card => {
@@ -323,7 +352,6 @@
                 return mealPlan;
             };
 
-            // --- Data Fetching & Caching ---
             const fetchData = async () => {
                 try {
                     const response = await callGoogleScript('getAllData');
@@ -343,14 +371,13 @@
                     console.log("Loading data from cache.");
                     state.data = JSON.parse(cachedData);
                     render();
-                    fetchData(); // Refresh in background
+                    fetchData();
                 } else {
                     console.log("Cache is empty or stale. Fetching from server.");
                     fetchData();
                 }
             };
 
-            // --- Rendering ---
             const render = () => {
                 if (!state.data) return;
                 renderMealPlan();
@@ -378,7 +405,7 @@
                         const mealId = `${dateString}-${mealType}`;
                         const isRestaurantChecked = mealData.IsRestaurant ? 'checked' : '';
                         dayCard.innerHTML += `
-                            <div class="meal-slot" data-meal-type="${mealType}">
+                            <div class="meal-slot" style="margin-bottom: 15px;">
                                 <label for="${mealId}">${mealType}</label>
                                 <input type="text" id="${mealId}" value="${mealData.RecipeName || ''}" placeholder="Enter recipe...">
                                 <div class="restaurant-toggle">
@@ -409,7 +436,7 @@
                 suggestions.forEach(name => {
                     const item = document.createElement('div');
                     item.className = 'suggestion-item';
-                    item.textContent = name;
+                    item.innerHTML = `<span>${name}</span><i class="ph-plus-circle" style="cursor:pointer; color: var(--primary-color); font-size: 1.2rem;" title="Add to plan"></i>`;
                     suggestionsContainer.appendChild(item);
                 });
             };
@@ -420,7 +447,7 @@
                     shoppingListContainer.innerHTML = '<p>Your shopping list is empty!</p>';
                     return;
                 }
-                list.forEach(item => {
+                list.sort((a, b) => a.name.localeCompare(b.name)).forEach(item => {
                     const listItem = document.createElement('div');
                     listItem.className = 'shopping-list-item';
                     listItem.innerHTML = `
@@ -432,12 +459,11 @@
                 });
             };
 
-            // --- Event Handlers ---
             const handleSavePlan = async () => {
                 const mealPlan = getCurrentMealPlanFromUI();
                 try {
                     const response = await callGoogleScript('saveMealPlan', [mealPlan]);
-                    showToast(response.message, response.status);
+                    showToast(response.message, 'success');
                     fetchData();
                 } catch (error) {
                     console.error("Failed to save plan:", error);
@@ -450,11 +476,9 @@
                 const settings = Object.fromEntries(formData.entries());
                 try {
                     const response = await callGoogleScript('saveSettings', [settings]);
-                    showToast(response.message, response.status);
-                    if(response.status === 'success'){
-                      settingsModal.style.display = 'none';
-                      state.data.settings = settings; // Update local state
-                    }
+                    showToast(response.message, 'success');
+                    settingsModal.style.display = 'none';
+                    state.data.settings = settings;
                 } catch (error) {
                     console.error("Failed to save settings:", error);
                 }
@@ -490,7 +514,6 @@
                 }
             };
 
-            // --- Event Listeners ---
             savePlanBtn.addEventListener('click', handleSavePlan);
             getSuggestionsBtn.addEventListener('click', handleGetSuggestions);
             generateListBtn.addEventListener('click', handleGenerateList);
@@ -504,7 +527,6 @@
             });
             settingsForm.addEventListener('submit', handleSaveSettings);
 
-            // --- Initialization ---
             loadInitialData();
         });
     </script>
