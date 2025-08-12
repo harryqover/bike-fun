@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genesis Menu - Meal Planner</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5f7fa;
+            --text-color: #333;
+            --border-color: #dce1e6;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: var(--primary-color);
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+        .meal-plan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .day-card {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+        }
+        .day-card h3 {
+            margin-top: 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .meal-slot {
+            margin-bottom: 15px;
+        }
+        .meal-slot label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .meal-slot input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        .restaurant-toggle {
+            display: flex;
+            align-items: center;
+            font-size: 0.9em;
+            margin-top: 8px;
+        }
+        .restaurant-toggle input {
+            margin-right: 8px;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #357abd;
+        }
+        button.secondary {
+            background-color: #6c757d;
+        }
+        button.secondary:hover {
+            background-color: #5a6268;
+        }
+        /* Settings Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .close-button {
+            cursor: pointer;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        /* Loader and Toasts */
+        .loader {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: none;
+            padding: 10px 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 5px;
+            box-shadow: var(--shadow);
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.5s;
+            visibility: hidden;
+        }
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .toast.success { background-color: var(--success-color); }
+        .toast.error { background-color: var(--error-color); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Genesis Menu</h1>
+            <button id="settings-btn">⚙️ Settings</button>
+        </div>
+
+        <div class="card">
+            <h2>Actions</h2>
+            <div class="actions">
+                <button id="save-plan-btn">Save Meal Plan</button>
+                <button id="generate-list-btn" class="secondary">Generate Shopping List</button>
+                <button id="get-suggestions-btn" class="secondary">Get AI Recipe Suggestions</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Meal Plan (Next 7 Days)</h2>
+            <div id="meal-plan-grid" class="meal-plan-grid">
+                </div>
+        </div>
+
+        </div>
+
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <span class="close-button">&times;</span>
+            </div>
+            <form id="settings-form">
+                <div class="form-group">
+                    <label for="gemini-api-key">Gemini API Key</label>
+                    <input type="password" id="gemini-api-key" name="geminiApiKey">
+                </div>
+                <hr>
+                <h3>Family Size</h3>
+                <div class="form-group">
+                    <label for="num-adults">Adults</label>
+                    <input type="number" id="num-adults" name="numAdults" min="0" value="2">
+                </div>
+                <div class="form-group">
+                    <label for="num-kids">Kids</label>
+                    <input type="number" id="num-kids" name="numKids" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="num-babies">Babies</label>
+                    <input type="number" id="num-babies" name="numBabies" min="0" value="0">
+                </div>
+                <button type="submit">Save Settings</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="loader" class="loader">Loading...</div>
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // ✅ The AppScript Alchemist - Genesis Menu v1.0: Initial framework with caching and UI.
+        console.log('Version: 1.0 - Genesis Menu');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const state = {
+                data: null,
+                isLoading: false,
+            };
+
+            // --- DOM Elements ---
+            const loader = document.getElementById('loader');
+            const mealPlanGrid = document.getElementById('meal-plan-grid');
+            const savePlanBtn = document.getElementById('save-plan-btn');
+            const generateListBtn = document.getElementById('generate-list-btn');
+            const getSuggestionsBtn = document.getElementById('get-suggestions-btn');
+            
+            // Settings Modal Elements
+            const settingsModal = document.getElementById('settings-modal');
+            const settingsBtn = document.getElementById('settings-btn');
+            const closeBtn = document.querySelector('.close-button');
+            const settingsForm = document.getElementById('settings-form');
+
+            // --- Utility Functions ---
+            const showLoader = (show) => {
+                loader.style.display = show ? 'block' : 'none';
+                state.isLoading = show;
+            };
+
+            const showToast = (message, type = 'success', duration = 3000) => {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.className = `toast show ${type}`;
+                setTimeout(() => {
+                    toast.className = 'toast';
+                }, duration);
+            };
+            
+            // --- Data Fetching & Caching ---
+            const fetchData = () => {
+                showLoader(true);
+                google.script.run
+                    .withSuccessHandler(response => {
+                        if (response.error) {
+                            showToast(response.error, 'error');
+                            return;
+                        }
+                        // Save to state and cache
+                        state.data = response;
+                        localStorage.setItem('mealPlannerData', JSON.stringify(response));
+                        localStorage.setItem('mealPlannerCacheTimestamp', Date.now());
+                        render();
+                        showLoader(false);
+                    })
+                    .withFailureHandler(error => {
+                        showToast(`Error: ${error.message}`, 'error');
+                        showLoader(false);
+                    })
+                    .getAllData();
+            };
+
+            const loadInitialData = () => {
+                const cachedData = localStorage.getItem('mealPlannerData');
+                const cacheTimestamp = localStorage.getItem('mealPlannerCacheTimestamp');
+                
+                // Use cache if it exists and is less than 1 hour old
+                if (cachedData && cacheTimestamp && (Date.now() - cacheTimestamp < 3600000)) {
+                    console.log("Loading data from cache.");
+                    state.data = JSON.parse(cachedData);
+                    render();
+                    // Fetch fresh data in the background anyway
+                    fetchData();
+                } else {
+                    console.log("Cache is empty or stale. Fetching from server.");
+                    fetchData();
+                }
+            };
+
+            // --- Rendering ---
+            const render = () => {
+                if (!state.data) return;
+                renderMealPlan();
+                renderSettingsForm();
+            };
+
+            const renderMealPlan = () => {
+                mealPlanGrid.innerHTML = ''; // Clear previous content
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                for (let i = 0; i < 7; i++) {
+                    const dayDate = new Date(today);
+                    dayDate.setDate(today.getDate() + i);
+                    const dateString = dayDate.toISOString().split('T')[0];
+
+                    const dayCard = document.createElement('div');
+                    dayCard.className = 'day-card';
+                    dayCard.dataset.date = dateString;
+
+                    const dayName = dayDate.toLocaleDateString('en-US', { weekday: 'long' });
+                    const dayMonth = dayDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+
+                    dayCard.innerHTML = `<h3>${dayName}, ${dayMonth}</h3>`;
+
+                    ['Lunch', 'Dinner'].forEach(mealType => {
+                        const mealData = state.data.meals.find(m => m.Date.startsWith(dateString) && m.MealType === mealType) || {};
+                        const mealId = `${dateString}-${mealType}`;
+                        const isRestaurantChecked = mealData.IsRestaurant ? 'checked' : '';
+                        
+                        dayCard.innerHTML += `
+                            <div class="meal-slot" data-meal-type="${mealType}">
+                                <label for="${mealId}">${mealType}</label>
+                                <input type="text" id="${mealId}" value="${mealData.RecipeName || ''}" placeholder="Enter recipe...">
+                                <div class="restaurant-toggle">
+                                    <input type="checkbox" id="resto-${mealId}" ${isRestaurantChecked}>
+                                    <label for="resto-${mealId}">At Restaurant</label>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    mealPlanGrid.appendChild(dayCard);
+                }
+            };
+            
+            const renderSettingsForm = () => {
+              if (state.data && state.data.settings) {
+                const settings = state.data.settings;
+                settingsForm.elements.geminiApiKey.value = settings.geminiApiKey || '';
+                settingsForm.elements.numAdults.value = settings.numAdults || '2';
+                settingsForm.elements.numKids.value = settings.numKids || '0';
+                settingsForm.elements.numBabies.value = settings.numBabies || '0';
+              }
+            };
+
+            // --- Event Handlers ---
+            const handleSavePlan = () => {
+                const mealPlan = [];
+                document.querySelectorAll('.day-card').forEach(card => {
+                    const date = card.dataset.date;
+                    card.querySelectorAll('.meal-slot').forEach(slot => {
+                        const mealType = slot.dataset.mealType;
+                        const recipeName = slot.querySelector('input[type="text"]').value.trim();
+                        const isRestaurant = slot.querySelector('input[type="checkbox"]').checked;
+
+                        if (recipeName || isRestaurant) { // Only save if there's data
+                            mealPlan.push({ date, mealType, recipeName, isRestaurant });
+                        }
+                    });
+                });
+                
+                showLoader(true);
+                google.script.run
+                    .withSuccessHandler(response => {
+                        showLoader(false);
+                        showToast(response.message, response.status);
+                        fetchData(); // Refresh data after saving
+                    })
+                    .withFailureHandler(err => {
+                        showLoader(false);
+                        showToast(err.message, 'error');
+                    })
+                    .saveMealPlan(mealPlan);
+            };
+            
+            const handleSaveSettings = (e) => {
+              e.preventDefault();
+              const formData = new FormData(settingsForm);
+              const settings = Object.fromEntries(formData.entries());
+              
+              showLoader(true);
+              google.script.run
+                .withSuccessHandler(response => {
+                    showLoader(false);
+                    showToast(response.message, response.status);
+                    if(response.status === 'success'){
+                      settingsModal.style.display = 'none';
+                      // Update local state immediately for responsiveness
+                      state.data.settings = settings;
+                    }
+                })
+                .withFailureHandler(err => {
+                    showLoader(false);
+                    showToast(err.message, 'error');
+                })
+                .saveSettings(settings);
+            };
+
+            // --- Event Listeners ---
+            savePlanBtn.addEventListener('click', handleSavePlan);
+            settingsBtn.addEventListener('click', () => settingsModal.style.display = 'flex');
+            closeBtn.addEventListener('click', () => settingsModal.style.display = 'none');
+            window.addEventListener('click', (e) => {
+                if (e.target == settingsModal) {
+                    settingsModal.style.display = 'none';
+                }
+            });
+            settingsForm.addEventListener('submit', handleSaveSettings);
+
+            // Placeholder listeners
+            generateListBtn.addEventListener('click', () => showToast('Feature coming soon!', 'info'));
+            getSuggestionsBtn.addEventListener('click', () => showToast('Feature coming soon!', 'info'));
+
+            // --- Initialization ---
+            loadInitialData();
+        });
+    </script>
+</body>
+</html>
