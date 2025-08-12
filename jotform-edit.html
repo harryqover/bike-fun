@@ -9,10 +9,14 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* gray-100 */
+            background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
         }
         #config-panel {
-            transition: transform 0.3s ease-in-out;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            background-color: rgba(255, 255, 255, 0.7);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
         }
         .toast {
             position: fixed;
@@ -25,73 +29,106 @@
             transform: translateY(100px);
             transition: all 0.4s ease-in-out;
             z-index: 100;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
         .toast.show {
             opacity: 1;
             transform: translateY(0);
         }
-        .toast.success { background-color: #28a745; }
-        .toast.error { background-color: #dc3545; }
-        .toast.info { background-color: #17a2b8; }
+        .toast.success { background: linear-gradient(to right, #1d976c, #93f9b9); }
+        .toast.error { background: linear-gradient(to right, #d31027, #ea384d); }
+        .toast.info { background: linear-gradient(to right, #2193b0, #6dd5ed); }
+        
         .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #4f46e5; /* indigo-600 */
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
+            width: 50px;
+            height: 50px;
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        .question-card {
+             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn-primary {
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
         }
     </style>
 </head>
 <body class="text-gray-800">
 
     <!-- Config Panel Toggle Button -->
-    <button id="toggle-config-btn" class="fixed top-4 right-4 z-30 bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+    <button id="toggle-config-btn" class="fixed top-5 right-5 z-30 bg-white/70 backdrop-blur-sm text-indigo-600 p-3 rounded-full shadow-lg hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 hover:scale-110">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
     </button>
 
     <!-- Config Panel (Sidebar) -->
-    <div id="config-panel" class="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl p-6 z-20 transform -translate-x-full">
-        <h2 class="text-2xl font-bold mb-6 text-gray-800">Configuration</h2>
-        <div class="space-y-4">
+    <div id="config-panel" class="fixed top-0 left-0 h-full w-80 p-8 z-20 transform -translate-x-full">
+        <h2 class="text-3xl font-bold mb-8 text-gray-800">Configuration</h2>
+        <div class="space-y-6">
             <div>
-                <label for="google-script-url" class="block text-sm font-medium text-gray-700">Google Script URL</label>
-                <input type="url" id="google-script-url" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="https://script.google.com/...">
+                <label for="google-script-url" class="block text-sm font-medium text-gray-700 mb-1">Google Script URL</label>
+                <input type="url" id="google-script-url" class="mt-1 block w-full px-4 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="https://script.google.com/...">
             </div>
             <div>
-                <label for="form-id" class="block text-sm font-medium text-gray-700">Form ID</label>
-                <input type="text" id="form-id" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <label for="form-id" class="block text-sm font-medium text-gray-700 mb-1">Form ID</label>
+                <input type="text" id="form-id" class="mt-1 block w-full px-4 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </div>
         </div>
-        <div class="mt-8 space-y-3">
-            <button id="save-config" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save Config</button>
-            <button id="clear-config" class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Clear Config</button>
+        <div class="mt-10 space-y-4">
+            <button id="save-config" class="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 btn-primary">Save Config</button>
+            <button id="clear-config" class="w-full bg-red-600 text-white py-2.5 px-4 rounded-lg shadow-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 btn-primary">Clear Config</button>
         </div>
-        <div class="mt-8 border-t pt-6">
-            <button id="get-questions" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 font-semibold">Fetch Questions</button>
+        <div class="absolute bottom-8 left-8 right-8 border-t pt-6">
+            <button id="get-questions" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg shadow-xl hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 font-semibold btn-primary text-lg">Fetch Questions</button>
         </div>
     </div>
 
     <!-- Main Content -->
     <div id="main-content" class="container mx-auto p-4 md:p-8">
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-gray-900">Jotform Question Editor</h1>
-            <p class="text-lg text-gray-600 mt-2">Edit unique names for your form questions efficiently.</p>
+        <div class="text-center my-12">
+            <h1 class="text-5xl font-bold text-gray-900 tracking-tight">Jotform Question Editor</h1>
+            <p class="text-xl text-gray-600 mt-4 max-w-2xl mx-auto">A sleek and efficient way to edit unique names for your form questions.</p>
         </div>
-        <div id="search-container" class="mb-6 hidden">
-             <input type="text" id="search-input" placeholder="🔍 Search by question text or unique name..." class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+        <div id="search-container" class="mb-8 hidden">
+             <input type="text" id="search-input" placeholder="🔍 Search by question text or unique name..." class="w-full p-4 border border-gray-300 rounded-xl shadow-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-lg">
         </div>
-        <div id="questions-container" class="space-y-4">
-            <div id="initial-message" class="text-center py-12 px-6 bg-white rounded-lg shadow-md">
-                <h3 class="text-xl font-medium text-gray-700">Welcome!</h3>
-                <p class="text-gray-500 mt-2">Use the settings panel to enter your Google Script URL and Form ID, then click "Fetch Questions" to begin.</p>
+        <div id="questions-container" class="space-y-6">
+            <div id="initial-message" class="text-center py-20 px-6 bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg border">
+                <h3 class="text-2xl font-medium text-gray-700">Welcome!</h3>
+                <p class="text-gray-500 mt-3 max-w-md mx-auto">Open the settings panel to enter your Google Script URL and Form ID, then click "Fetch Questions" to start.</p>
             </div>
         </div>
-        <div id="loader-container" class="hidden justify-center items-center py-12">
+        <div id="loader-container" class="hidden justify-center items-center py-20">
             <div class="loader"></div>
         </div>
     </div>
@@ -222,7 +259,6 @@
                     const response = await fetch(scriptUrl, {
                         method: 'POST',
                         headers: {
-                            // The Google Script doPost expects a stringified payload.
                            'Content-Type': 'text/plain;charset=utf-8',
                         },
                         body: JSON.stringify(payload)
@@ -254,30 +290,31 @@
                 const questions = Object.values(questionsObject);
 
                 if (questions.length === 0) {
-                    questionsContainer.innerHTML = `<div class="text-center p-8 bg-white rounded-lg shadow">No questions found for this form.</div>`;
+                    questionsContainer.innerHTML = `<div class="text-center p-8 bg-white/60 rounded-lg shadow">No questions found for this form.</div>`;
                     return;
                 }
                 
-                questions.forEach(q => {
+                questions.forEach((q, index) => {
                     if (typeof q.name === 'undefined') return;
 
                     const card = document.createElement('div');
-                    card.className = 'question-card bg-white p-5 rounded-lg shadow-md border border-gray-200';
+                    card.className = 'question-card p-6 rounded-2xl shadow-lg';
+                    card.style.animationDelay = `${index * 50}ms`;
                     card.dataset.text = q.text ? q.text.toLowerCase() : '';
                     card.dataset.name = q.name.toLowerCase();
 
                     card.innerHTML = `
-                        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                            <div class="flex-grow mb-4 md:mb-0">
-                                <p class="text-sm text-gray-500">QID: ${q.qid}</p>
-                                <p class="font-semibold text-lg text-gray-800">${q.text || '<i>No question text</i>'}</p>
-                                <p class="text-sm text-indigo-600 font-mono mt-1">
-                                    Current Name: <span id="name-display-${q.qid}" class="font-bold">${q.name}</span>
+                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                            <div class="flex-grow mb-4 lg:mb-0 lg:pr-6">
+                                <p class="text-sm text-gray-500 font-medium">QID: ${q.qid}</p>
+                                <p class="font-semibold text-xl text-gray-800 mt-1">${q.text || '<i>No question text</i>'}</p>
+                                <p class="text-sm text-indigo-600 font-mono mt-2">
+                                    Current Name: <span id="name-display-${q.qid}" class="font-bold bg-indigo-100/50 text-indigo-700 py-0.5 px-2 rounded">${q.name}</span>
                                 </p>
                             </div>
-                            <div class="flex items-center space-x-2 flex-shrink-0">
-                                <input type="text" value="${q.name}" class="name-input w-48 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="New unique name">
-                                <button class="update-btn bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Update</button>
+                            <div class="flex items-center space-x-3 flex-shrink-0">
+                                <input type="text" value="${q.name}" class="name-input w-full lg:w-56 px-3 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                <button class="update-btn bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 btn-primary flex-shrink-0">Update</button>
                             </div>
                         </div>
                     `;
