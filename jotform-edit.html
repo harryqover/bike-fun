@@ -15,7 +15,7 @@
             transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            background-color: rgba(255, 255, 255, 0.7);
+            background-color: rgba(255, 255, 255, 0.75);
             border-right: 1px solid rgba(255, 255, 255, 0.2);
         }
         .toast {
@@ -92,23 +92,31 @@
     </button>
 
     <!-- Config Panel (Sidebar) -->
-    <div id="config-panel" class="fixed top-0 left-0 h-full w-80 p-8 z-20 transform -translate-x-full">
-        <h2 class="text-3xl font-bold mb-8 text-gray-800">Configuration</h2>
-        <div class="space-y-6">
+    <div id="config-panel" class="fixed top-0 left-0 h-full w-96 p-8 z-20 transform -translate-x-full overflow-y-auto">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800">Configuration</h2>
+        
+        <div class="space-y-4">
+            <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">Core Settings</h3>
             <div>
                 <label for="google-script-url" class="block text-sm font-medium text-gray-700 mb-1">Google Script URL</label>
-                <input type="url" id="google-script-url" class="mt-1 block w-full px-4 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="https://script.google.com/...">
+                <input type="url" id="google-script-url" class="mt-1 block w-full px-4 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="https://script.google.com/...">
             </div>
             <div>
-                <label for="form-id" class="block text-sm font-medium text-gray-700 mb-1">Form ID</label>
-                <input type="text" id="form-id" class="mt-1 block w-full px-4 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <label for="form-id" class="block text-sm font-medium text-gray-700 mb-1">Jotform Form ID</label>
+                <input type="text" id="form-id" class="mt-1 block w-full px-4 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <h3 class="text-lg font-semibold text-gray-700 border-b pb-2 pt-4">AI Settings</h3>
+             <div>
+                <label for="gemini-api-key" class="block text-sm font-medium text-gray-700 mb-1">Gemini API Key</label>
+                <input type="password" id="gemini-api-key" class="mt-1 block w-full px-4 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
         </div>
-        <div class="mt-10 space-y-4">
+        <div class="mt-8 space-y-4">
             <button id="save-config" class="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 btn-primary">Save Config</button>
             <button id="clear-config" class="w-full bg-red-600 text-white py-2.5 px-4 rounded-lg shadow-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 btn-primary">Clear Config</button>
         </div>
-        <div class="absolute bottom-8 left-8 right-8 border-t pt-6">
+        <div class="mt-8 border-t pt-6">
             <button id="get-questions" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg shadow-xl hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 font-semibold btn-primary text-lg">Fetch Questions</button>
         </div>
     </div>
@@ -125,7 +133,7 @@
         <div id="questions-container" class="space-y-6">
             <div id="initial-message" class="text-center py-20 px-6 bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg border">
                 <h3 class="text-2xl font-medium text-gray-700">Welcome!</h3>
-                <p class="text-gray-500 mt-3 max-w-md mx-auto">Open the settings panel to enter your Google Script URL and Form ID, then click "Fetch Questions" to start.</p>
+                <p class="text-gray-500 mt-3 max-w-md mx-auto">Open the settings panel to enter your configuration, then click "Fetch Questions" to start.</p>
             </div>
         </div>
         <div id="loader-container" class="hidden justify-center items-center py-20">
@@ -139,8 +147,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- DOM Elements ---
-            const googleScriptUrlInput = document.getElementById('google-script-url');
-            const formIdInput = document.getElementById('form-id');
+            const configPanel = document.getElementById('config-panel');
+            const toggleConfigBtn = document.getElementById('toggle-config-btn');
             const saveConfigBtn = document.getElementById('save-config');
             const clearConfigBtn = document.getElementById('clear-config');
             const getQuestionsBtn = document.getElementById('get-questions');
@@ -149,62 +157,70 @@
             const loaderContainer = document.getElementById('loader-container');
             const searchContainer = document.getElementById('search-container');
             const searchInput = document.getElementById('search-input');
-            const configPanel = document.getElementById('config-panel');
-            const toggleConfigBtn = document.getElementById('toggle-config-btn');
+            
+            // Config Inputs
+            const configInputs = {
+                googleScriptUrl: document.getElementById('google-script-url'),
+                formId: document.getElementById('form-id'),
+                geminiApiKey: document.getElementById('gemini-api-key')
+            };
 
             // --- Configuration Panel Logic ---
-            let isConfigPanelOpen = false;
-            toggleConfigBtn.addEventListener('click', () => {
-                isConfigPanelOpen = !isConfigPanelOpen;
-                configPanel.classList.toggle('-translate-x-full');
-            });
+            toggleConfigBtn.addEventListener('click', () => configPanel.classList.toggle('-translate-x-full'));
 
             // --- Local Storage & Config ---
+            const getConfigValues = () => {
+                let config = {};
+                for (const key in configInputs) {
+                    config[key] = configInputs[key].value;
+                }
+                return config;
+            };
+            
             const loadConfig = () => {
                 console.log('Loading config from localStorage.');
-                const scriptUrl = localStorage.getItem('jotform_google_script_url');
-                const formId = localStorage.getItem('jotform_form_id');
-                if (scriptUrl) googleScriptUrlInput.value = scriptUrl;
-                if (formId) formIdInput.value = formId;
-                if (scriptUrl && formId) {
-                    console.log('Config loaded successfully.');
+                for (const key in configInputs) {
+                    const savedValue = localStorage.getItem(`jotform_config_${key}`);
+                    if (savedValue) {
+                        configInputs[key].value = savedValue;
+                    }
+                }
+                if (localStorage.getItem('jotform_config_googleScriptUrl')) {
                     showToast('Config loaded from memory.', 'info');
                 }
             };
 
             const saveConfig = () => {
                 console.log('Saving config to localStorage.');
-                if (googleScriptUrlInput.value && formIdInput.value) {
-                    localStorage.setItem('jotform_google_script_url', googleScriptUrlInput.value);
-                    localStorage.setItem('jotform_form_id', formIdInput.value);
-                    console.log('Config saved.');
+                const config = getConfigValues();
+                if (config.googleScriptUrl && config.formId) {
+                    for (const key in config) {
+                        localStorage.setItem(`jotform_config_${key}`, config[key]);
+                    }
                     showToast('Configuration saved successfully!', 'success');
                 } else {
-                    showToast('Google Script URL and Form ID cannot be empty.', 'error');
+                    showToast('Google Script URL and Form ID are required.', 'error');
                 }
             };
 
             const clearConfig = () => {
                 console.log('Clearing config from localStorage.');
-                localStorage.removeItem('jotform_google_script_url');
-                localStorage.removeItem('jotform_form_id');
-                googleScriptUrlInput.value = '';
-                formIdInput.value = '';
-                console.log('Config cleared.');
+                for (const key in configInputs) {
+                    localStorage.removeItem(`jotform_config_${key}`);
+                    configInputs[key].value = '';
+                }
                 showToast('Configuration cleared.', 'info');
             };
 
             // --- API Calls via Google Script ---
             const getQuestions = async () => {
-                const scriptUrl = googleScriptUrlInput.value;
-                const formId = formIdInput.value;
-
-                if (!scriptUrl || !formId) {
-                    showToast('Please provide both Google Script URL and Form ID.', 'error');
+                const config = getConfigValues();
+                if (!config.googleScriptUrl || !config.formId) {
+                    showToast('Please provide Google Script URL and Form ID.', 'error');
                     return;
                 }
                 
-                const endpoint = `${scriptUrl}?formId=${formId}`;
+                const endpoint = `${config.googleScriptUrl}?formId=${config.formId}`;
                 console.log('Calling Google Script GET endpoint:', endpoint);
 
                 initialMessage.classList.add('hidden');
@@ -228,55 +244,41 @@
                 } catch (error) {
                     console.error('Error fetching questions via Google Script:', error);
                     showToast(`Error: ${error.message}`, 'error');
-                    questionsContainer.innerHTML = `<div class="text-center p-8 bg-red-100 text-red-700 rounded-lg shadow">Failed to load questions. Check your Script URL, Form ID, and console.</div>`;
+                    questionsContainer.innerHTML = `<div class="text-center p-8 bg-red-100 text-red-700 rounded-lg shadow">Failed to load questions. Check your config and console.</div>`;
                 } finally {
                     loaderContainer.style.display = 'none';
                 }
             };
 
             const updateQuestionName = async (questionId, newName, originalText, originalOrder, updateButton) => {
-                const scriptUrl = googleScriptUrlInput.value;
-                const formId = formIdInput.value;
-
-                console.log(`Attempting to update QID: ${questionId} with new name: "${newName}" via Google Script.`);
-                
+                const config = getConfigValues();
                 const payload = {
-                    formId,
+                    action: 'updateQuestion',
+                    formId: config.formId,
                     questionId,
                     newName,
                     originalText,
                     originalOrder
                 };
 
-                console.log('Calling Google Script POST endpoint:', scriptUrl);
-                console.log('Request Body:', payload);
-                
                 const originalButtonText = updateButton.innerHTML;
                 updateButton.innerHTML = `<svg class="animate-spin h-5 w-5 text-white mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
                 updateButton.disabled = true;
 
                 try {
-                    const response = await fetch(scriptUrl, {
+                    const response = await fetch(config.googleScriptUrl, {
                         method: 'POST',
-                        headers: {
-                           'Content-Type': 'text/plain;charset=utf-8',
-                        },
+                        headers: {'Content-Type': 'text/plain;charset=utf-8'},
                         body: JSON.stringify(payload)
                     });
-
                     const data = await response.json();
-                    console.log('Google Script Update Response:', data);
-
-                    if (data.error || data.responseCode !== 200) {
-                        throw new Error(data.message || data.error || 'Update failed.');
-                    }
+                    if (data.error || data.responseCode !== 200) throw new Error(data.message || data.error || 'Update failed.');
                     
                     showToast(`Question ${questionId} updated successfully!`, 'success');
                     const nameDisplay = document.querySelector(`#name-display-${questionId}`);
                     if(nameDisplay) nameDisplay.textContent = newName;
 
                 } catch (error) {
-                    console.error('Error updating question:', error);
                     showToast(`Update Error: ${error.message}`, 'error');
                 } finally {
                     updateButton.innerHTML = originalButtonText;
@@ -284,25 +286,58 @@
                 }
             };
 
+            const getSuggestedName = async (questionText, nameInput, suggestButton) => {
+                const config = getConfigValues();
+                 if (!config.geminiApiKey) {
+                    showToast('Gemini API Key is missing from config.', 'error');
+                    return;
+                }
+
+                const payload = {
+                    action: 'suggestName',
+                    geminiApiKey: config.geminiApiKey,
+                    questionText: questionText
+                };
+
+                const originalButtonContent = suggestButton.innerHTML;
+                suggestButton.innerHTML = `<svg class="animate-spin h-5 w-5 text-white mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+                suggestButton.disabled = true;
+
+                try {
+                    const response = await fetch(config.googleScriptUrl, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await response.json();
+                    if (data.error || !data.suggestedName) throw new Error(data.error || 'Could not get suggestion.');
+
+                    nameInput.value = data.suggestedName;
+                    showToast('Suggestion applied!', 'success');
+
+                } catch (error) {
+                    showToast(`Suggestion Error: ${error.message}`, 'error');
+                } finally {
+                    suggestButton.innerHTML = originalButtonContent;
+                    suggestButton.disabled = false;
+                }
+            };
+
             // --- DOM Rendering ---
             const renderQuestions = (questionsObject) => {
                 questionsContainer.innerHTML = '';
                 const questions = Object.values(questionsObject);
-
                 if (questions.length === 0) {
                     questionsContainer.innerHTML = `<div class="text-center p-8 bg-white/60 rounded-lg shadow">No questions found for this form.</div>`;
                     return;
                 }
-                
                 questions.forEach((q, index) => {
                     if (typeof q.name === 'undefined') return;
-
                     const card = document.createElement('div');
                     card.className = 'question-card p-6 rounded-2xl shadow-lg';
                     card.style.animationDelay = `${index * 50}ms`;
                     card.dataset.text = q.text ? q.text.toLowerCase() : '';
                     card.dataset.name = q.name.toLowerCase();
-
                     card.innerHTML = `
                         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                             <div class="flex-grow mb-4 lg:mb-0 lg:pr-6">
@@ -313,31 +348,27 @@
                                 </p>
                             </div>
                             <div class="flex items-center space-x-3 flex-shrink-0">
-                                <input type="text" value="${q.name}" class="name-input w-full lg:w-56 px-3 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                <input type="text" value="${q.name}" class="name-input w-full lg:w-48 px-3 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm">
+                                <button class="suggest-btn bg-purple-600 text-white py-2 px-3 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 btn-primary flex-shrink-0" title="Suggest a name using Gemini AI">✨ Suggest</button>
                                 <button class="update-btn bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 btn-primary flex-shrink-0">Update</button>
                             </div>
-                        </div>
-                    `;
-                    
+                        </div>`;
                     const updateBtn = card.querySelector('.update-btn');
+                    const suggestBtn = card.querySelector('.suggest-btn');
                     const nameInput = card.querySelector('.name-input');
-                    
-                    updateBtn.addEventListener('click', () => {
-                        updateQuestionName(q.qid, nameInput.value, q.text, q.order, updateBtn);
-                    });
-
+                    updateBtn.addEventListener('click', () => updateQuestionName(q.qid, nameInput.value, q.text, q.order, updateBtn));
+                    suggestBtn.addEventListener('click', () => getSuggestedName(q.text, nameInput, suggestBtn));
                     questionsContainer.appendChild(card);
                 });
             };
             
-            // --- "Wow" Features ---
+            // --- Utilities ---
             const showToast = (message, type = 'info') => {
                 const toastContainer = document.getElementById('toast-container');
                 const toast = document.createElement('div');
                 toast.className = `toast ${type}`;
                 toast.textContent = message;
                 toastContainer.appendChild(toast);
-
                 setTimeout(() => { toast.classList.add('show'); }, 100);
                 setTimeout(() => {
                     toast.classList.remove('show');
