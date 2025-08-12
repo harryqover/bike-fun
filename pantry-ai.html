@@ -6,188 +6,138 @@
     <title>PantryAI: The Culinary Co-pilot</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>/* --- Root Variables for Consistent Theming --- */
-/* Using the same variables from the navigation bar CSS */
-:root {
-    --primary-color: #4f46e5;      /* Indigo-600 */
-    --primary-color-light: #e0e7ff; /* Indigo-100 */
-    --text-color-dark: #111827;     /* Gray-900 */
-    --text-color-light: #6b7280;    /* Gray-500 */
-    --background-color: #f9fafb;    /* Gray-50 */
-    --surface-color: #ffffff;
-    --border-color: #e5e7eb;        /* Gray-200 */
-    --shadow-color: rgba(0, 0, 0, 0.05);
-    --border-radius: 12px;
-    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
+    <style>
+        /* --- Root Variables for Easy Theming --- */
+        :root {
+            --nav-bg: #ffffff;
+            --nav-icon-size: 24px;
+            --nav-text-color: #6b7280; /* Gray-500 */
+            --nav-active-color: #16a34a; /* Green-600 */
+            --nav-shadow-color: rgba(0, 0, 0, 0.08);
+            --primary-action-bg: #16a34a;
+        }
 
-/* --- Global & Body Styles --- */
-body {
-    font-family: var(--font-family);
-    background-color: var(--background-color);
-    color: var(--text-color-dark);
-    margin: 0;
-    /* Add padding to prevent content from hiding behind fixed header/nav */
-    padding-top: 70px;
-    padding-bottom: 80px;
-}
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* Slate-100 */
+            padding-bottom: 80px; /* Adjust this value based on nav height */
+        }
+        .loader {
+            border-top-color: #22c55e; /* Green-500 */
+            -webkit-animation: spin 1s linear infinite;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* General App Styles */
+        .card {
+            @apply bg-white rounded-2xl shadow-md overflow-hidden;
+        }
+        .modal-backdrop {
+             @apply fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-[60] transition-opacity duration-300;
+        }
+        .modal-content {
+            @apply bg-white rounded-2xl shadow-2xl p-8 max-w-sm mx-auto w-full transform scale-95 transition-transform duration-300;
+        }
+        .modal-backdrop:not(.hidden) .modal-content {
+            @apply scale-100;
+        }
 
-/* --- Header Styling --- */
-header.top-bar {
-    /* Positioning & Layout */
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+        /* --- Bottom Navigation Container --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 80px; /* Increased height for better touch targets */
+            background-color: var(--nav-bg);
+            box-shadow: 0 -2px 10px var(--nav-shadow-color);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
 
-    /* Styling */
-    height: 60px;
-    padding: 0 16px;
-    background-color: var(--surface-color);
-    border-bottom: 1px solid var(--border-color);
-}
+        /* --- Standard Navigation Buttons --- */
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            background: none;
+            border: none;
+            cursor: pointer;
+            height: 100%;
+            padding: 8px 0;
+            color: var(--nav-text-color);
+            transition: color 0.2s ease-in-out;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-header.top-bar .logo {
-    font-size: 20px;
-    font-weight: bold;
-    color: var(--primary-color);
-}
+        .nav-btn svg {
+            width: var(--nav-icon-size);
+            height: var(--nav-icon-size);
+            stroke: currentColor;
+            margin-bottom: 4px;
+            transition: transform 0.2s ease-in-out;
+        }
 
-/* --- Main Content & View Container --- */
-.view {
-    padding: 16px;
-}
+        .nav-btn span {
+            font-size: 12px;
+            font-weight: 600;
+        }
 
-/* --- Add Item Form --- */
-.add-item-form {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 24px;
-}
+        .nav-btn.active {
+            color: var(--nav-active-color);
+        }
+        
+        .nav-btn.active svg {
+             transform: scale(1.1);
+        }
 
-#item-input {
-    /* Layout */
-    flex-grow: 1;
+        /* --- Primary Action Button (Scan) --- */
+        .nav-btn-primary {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            background: var(--primary-action-bg);
+            border-radius: 9999px;
+            border: 4px solid #f1f5f9; /* Match body background */
+            color: white;
+            transform: translateY(-20px);
+            box-shadow: 0 10px 20px -5px rgba(22, 163, 74, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        
+        .nav-btn-primary:hover {
+            transform: translateY(-25px) scale(1.05);
+            box-shadow: 0 12px 25px -5px rgba(22, 163, 74, 0.5);
+        }
 
-    /* Styling */
-    border: 1px solid var(--border-color);
-    background-color: var(--surface-color);
-    border-radius: 8px;
-    padding: 12px 14px;
-    font-size: 16px;
-
-    /* Transitions */
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-/* Focus state for the input */
-#item-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px var(--primary-color-light);
-}
-
-/* --- Main "Add" Button --- */
-#add-item-btn {
-    /* Reset default button styles */
-    border: none;
-    cursor: pointer;
-
-    /* Styling */
-    background-color: var(--primary-color);
-    color: white;
-    font-size: 16px;
-    font-weight: 500;
-    padding: 0 20px;
-    border-radius: 8px;
-
-    /* Layout */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    /* Transitions */
-    transition: background-color 0.2s;
-}
-
-#add-item-btn:hover {
-    background-color: #4338ca; /* Darker Indigo */
-}
-
-/* --- Pantry Item Card Styling --- */
-.pantry-item {
-    /* Layout */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    /* Styling */
-    background-color: var(--surface-color);
-    padding: 16px;
-    border-radius: var(--border-radius);
-    margin-bottom: 12px;
-    box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -2px var(--shadow-color);
-    transition: transform 0.2s ease-in-out;
-}
-
-.pantry-item:hover {
-    transform: translateY(-2px);
-}
-
-.pantry-item span {
-    font-size: 16px;
-    font-weight: 500;
-}
-
-/* --- Delete Button on Cards --- */
-.pantry-item button {
-    /* Reset default styles */
-    background: none;
-    border: none;
-    cursor: pointer;
-
-    /* Styling */
-    color: var(--text-color-light);
-    padding: 4px;
-    border-radius: 50%;
-    
-    /* Layout */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    /* Transitions */
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.pantry-item button:hover {
-    background-color: #fee2e2; /* Red-100 */
-    color: #ef4444; /* Red-500 */
-}
-
-.pantry-item button svg {
-    width: 20px;
-    height: 20px;
-}
+        .nav-btn-primary svg {
+            width: 32px;
+            height: 32px;
+        }
     </style>
 </head>
 <body class="bg-slate-100">
 
-    <div class="container mx-auto max-w-lg pb-32">
+    <div class="container mx-auto max-w-lg">
         <!-- Header -->
         <header class="p-4 pt-8 text-center relative">
-            <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">PantryAI <span class="text-green-500">🧑‍🍳</span></h1>
-            <button id="settings-button" class="absolute top-6 right-4 p-2 text-slate-400 hover:text-green-500 transition-colors duration-300">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-            </button>
+             <h1 id="page-title" class="text-3xl font-bold text-slate-800">My Inventory</h1>
         </header>
 
-        <main class="px-4">
-            <!-- Modals (no change) -->
+        <main class="px-4 pb-8">
+            <!-- Modals -->
             <div id="loader" class="modal-backdrop hidden"><div class="bg-white p-6 rounded-2xl flex items-center shadow-2xl"><div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div><p id="loader-text" class="ml-5 text-xl font-semibold text-gray-700">Processing...</p></div></div>
             <div id="message-modal" class="modal-backdrop hidden"><div class="modal-content"><p id="message-text" class="text-lg text-gray-700 mb-6 text-center"></p><button onclick="closeModal('message-modal')" class="w-full bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition-colors">OK</button></div></div>
             <div id="settings-modal" class="modal-backdrop hidden"><div class="modal-content"><h2 class="text-3xl font-bold text-gray-800 mb-6">Settings</h2><div class="mb-6"><label for="api-key-input" class="block text-mg font-medium text-gray-700 mb-2">Gemini API Key</label><input type="password" id="api-key-input" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Enter your API Key"></div><div class="flex justify-end space-x-4"><button onclick="closeModal('settings-modal')" class="bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors">Cancel</button><button id="save-settings-button" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition-colors">Save</button></div></div></div>
@@ -195,31 +145,19 @@ header.top-bar .logo {
             <!-- Hidden file input for camera -->
             <input type="file" accept="image/*" capture="environment" id="image-input" class="hidden">
 
-            <!-- Inventory View -->
-            <div id="inventory-view">
-                <h2 class="text-3xl font-bold text-slate-800 mb-6">My Inventory</h2>
+            <!-- Views -->
+            <div id="inventory-view" class="mt-6">
                 <div id="inventory-list" class="space-y-4"></div>
             </div>
-
-            <!-- Recipes View -->
-            <div id="recipes-view" class="hidden">
-                 <h2 class="text-3xl font-bold text-slate-800 mb-6">Recipe Ideas</h2>
+            <div id="recipes-view" class="hidden mt-6">
                 <div id="recipes-list" class="space-y-6"></div>
             </div>
-
-            <!-- Shopping List View -->
-            <div id="shopping-list-view" class="hidden">
-                 <h2 class="text-3xl font-bold text-slate-800 mb-6">Shopping List</h2>
+            <div id="shopping-list-view" class="hidden mt-6">
                  <div id="shopping-list-container" class="space-y-4"></div>
             </div>
         </main>
     </div>
     
-    <!-- Floating Action Button (FAB) for Scanning -->
-    <button id="scan-button" class="fab">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-    </button>
-
     <!-- Bottom Tab Bar Navigation -->
     <nav class="bottom-nav">
         <button id="nav-inventory" class="nav-btn active" onclick="showView('inventory-view')">
@@ -230,12 +168,21 @@ header.top-bar .logo {
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
             <span>Recipes</span>
         </button>
+
+        <button id="scan-button" class="nav-btn-primary">
+             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        </button>
+
         <button id="nav-shopping" class="nav-btn" onclick="showView('shopping-list-view')">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
             <span>Shopping</span>
         </button>
+        <button id="settings-button" class="nav-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            <span>Settings</span>
+        </button>
     </nav>
-
+    
     <script>
         // --- CONFIGURATION ---
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJlldZeRYHLOSjzwM5xJRejQr2ykDQkMMGLnb8jPZ-h3LyChuecN-wGc7iek2k9gV1TA/exec"; 
@@ -243,7 +190,7 @@ header.top-bar .logo {
 
         // --- DOM ELEMENTS ---
         const views = { inventory: document.getElementById('inventory-view'), recipes: document.getElementById('recipes-view'), shopping: document.getElementById('shopping-list-view'), };
-        const navButtons = { inventory: document.getElementById('nav-inventory'), recipes: document.getElementById('nav-recipes'), shopping: document.getElementById('nav-shopping'), };
+        const navButtons = { inventory: document.getElementById('nav-inventory'), recipes: document.getElementById('nav-recipes'), shopping: document.getElementById('nav-shopping'), settings: document.getElementById('settings-button') };
         const scanButton = document.getElementById('scan-button');
         const imageInput = document.getElementById('image-input');
         const inventoryList = document.getElementById('inventory-list');
@@ -251,8 +198,9 @@ header.top-bar .logo {
         const shoppingListContainer = document.getElementById('shopping-list-container');
         const loader = document.getElementById('loader');
         const loaderText = document.getElementById('loader-text');
+        const pageTitle = document.getElementById('page-title');
         
-        // Modal Elements
+        // Modal & Menu Elements
         const messageModal = document.getElementById('message-modal');
         const messageText = document.getElementById('message-text');
         const settingsModal = document.getElementById('settings-modal');
@@ -266,19 +214,40 @@ header.top-bar .logo {
             loadInventory();
             loadShoppingList();
             
+            // Event Listeners
             settingsButton.addEventListener('click', () => openModal('settings-modal'));
             saveSettingsButton.addEventListener('click', saveConfig);
         });
 
+        // --- NAVIGATION ---
+        function showView(viewName) {
+            const viewKey = viewName.split('-')[0];
+            Object.values(views).forEach(view => view.classList.add('hidden'));
+            Object.values(navButtons).forEach(btn => btn.classList.remove('active'));
+            
+            views[viewKey].classList.remove('hidden');
+            navButtons[viewKey].classList.add('active');
+            
+            // Update page title
+            pageTitle.textContent = {
+                inventory: "My Inventory",
+                recipes: "Recipe Ideas",
+                shopping: "Shopping List"
+            }[viewKey];
+
+            if (viewName === 'recipes-view') {
+                const pantryItems = document.querySelectorAll('#inventory-list .card');
+                if (pantryItems.length > 0 && recipesList.innerHTML.trim() === '') {
+                    findRecipes();
+                }
+            }
+        }
+
         // --- CONFIG & SETTINGS ---
         function loadConfig() {
             const savedApiKey = localStorage.getItem('geminiApiKey');
-            if (savedApiKey) {
-                API_KEY = savedApiKey;
-                apiKeyInput.value = savedApiKey;
-            } else {
-                showMessage("Welcome! Please add your Gemini API Key in the settings (click the gear icon ⚙️) to enable AI features.");
-            }
+            if (savedApiKey) { API_KEY = savedApiKey; apiKeyInput.value = savedApiKey; } 
+            else { showMessage("Welcome! Please add your Gemini API Key in the settings to enable AI features."); }
         }
 
         function saveConfig() {
@@ -290,22 +259,6 @@ header.top-bar .logo {
                 showMessage("API Key saved successfully!");
             } else {
                 showMessage("API Key cannot be empty.");
-            }
-        }
-
-        // --- NAVIGATION ---
-        function showView(viewName) {
-            Object.values(views).forEach(view => view.classList.add('hidden'));
-            Object.values(navButtons).forEach(btn => btn.classList.remove('active'));
-            
-            views[viewName.split('-')[0]].classList.remove('hidden');
-            navButtons[viewName.split('-')[0]].classList.add('active');
-
-            if (viewName === 'recipes-view') {
-                const pantryItems = document.querySelectorAll('#inventory-list .card');
-                if (pantryItems.length > 0 && recipesList.innerHTML.trim() === '') {
-                    findRecipes();
-                }
             }
         }
 
@@ -445,8 +398,8 @@ header.top-bar .logo {
                 shoppingListContainer.appendChild(itemEl);
             });
         }
-        async function deleteShoppingItem(itemId) { const updatedList = await apiCall('deleteShoppingItem', { id: itemId }); if (updatedList) { renderShoppingList(updatedList); showMessage("Item removed from shopping list."); } }
-console.log("own css")
+        async function deleteShoppingItem(itemId) { const updatedList = await apiCall('deleteShopping', { id: itemId }); if (updatedList) { renderShoppingList(updatedList); showMessage("Item removed from shopping list."); } }
+
     </script>
 </body>
 </html>
