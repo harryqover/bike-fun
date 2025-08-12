@@ -6,162 +6,173 @@
     <title>PantryAI: The Culinary Co-pilot</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        /* --- Root Variables for Easy Theming --- */
+    <style>/* --- Root Variables for Consistent Theming --- */
+/* Using the same variables from the navigation bar CSS */
 :root {
-  --nav-bg: #ffffff;
-  --nav-icon-size: 24px;
-  --nav-text-color: #6b7280; /* Gray-500 */
-  --nav-active-color: #4f46e5; /* Indigo-600 */
-  --nav-shadow-color: rgba(0, 0, 0, 0.08);
-  --nav-hover-bg: #f3f4f6; /* Gray-100 */
+    --primary-color: #4f46e5;      /* Indigo-600 */
+    --primary-color-light: #e0e7ff; /* Indigo-100 */
+    --text-color-dark: #111827;     /* Gray-900 */
+    --text-color-light: #6b7280;    /* Gray-500 */
+    --background-color: #f9fafb;    /* Gray-50 */
+    --surface-color: #ffffff;
+    --border-color: #e5e7eb;        /* Gray-200 */
+    --shadow-color: rgba(0, 0, 0, 0.05);
+    --border-radius: 12px;
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* --- Basic Body Style (for demonstration) --- */
-/* Add padding to the bottom of the body to prevent content
-   from being hidden behind the fixed navigation bar */
+/* --- Global & Body Styles --- */
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
-  padding-bottom: 80px; /* Adjust this value based on nav height */
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    color: var(--text-color-dark);
+    margin: 0;
+    /* Add padding to prevent content from hiding behind fixed header/nav */
+    padding-top: 70px;
+    padding-bottom: 80px;
 }
 
-/* --- Bottom Navigation Container --- */
-.bottom-nav {
-  /* Positioning */
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
+/* --- Header Styling --- */
+header.top-bar {
+    /* Positioning & Layout */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-  /* Layout */
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-
-  /* Styling */
-  height: 65px;
-  background-color: var(--nav-bg);
-  box-shadow: 0 -2px 5px var(--nav-shadow-color);
-
-  /* Safe Area for iPhones with a notch */
-  padding-bottom: env(safe-area-inset-bottom);
+    /* Styling */
+    height: 60px;
+    padding: 0 16px;
+    background-color: var(--surface-color);
+    border-bottom: 1px solid var(--border-color);
 }
 
-/* --- Navigation Buttons --- */
-.nav-btn {
-  /* Layout */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex-grow: 1; /* Ensures buttons share space equally */
-  
-  /* Remove default button styling */
-  background: none;
-  border: none;
-  cursor: pointer;
-  
-  /* Sizing & Spacing */
-  height: 100%;
-  padding: 8px 0;
-  
-  /* Text & Icon Color */
-  color: var(--nav-text-color);
-  
-  /* Smooth transitions for a polished feel */
-  transition: color 0.2s ease-in-out, transform 0.15s ease-in-out;
-  -webkit-tap-highlight-color: transparent; /* Removes flash on mobile tap */
+header.top-bar .logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--primary-color);
 }
 
-/* --- Button Icons (SVG) --- */
-.nav-btn svg {
-  width: var(--nav-icon-size);
-  height: var(--nav-icon-size);
-  /* Inherits color from the parent .nav-btn */
-  stroke: currentColor;
-  margin-bottom: 4px;
+/* --- Main Content & View Container --- */
+.view {
+    padding: 16px;
 }
 
-/* --- Button Labels (Span) --- */
-.nav-btn span {
-  font-size: 12px;
-  font-weight: 500;
+/* --- Add Item Form --- */
+.add-item-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
 }
 
-/* --- Active State --- */
-.nav-btn.active {
-  /* Sets the color for the icon and text */
-  color: var(--nav-active-color);
-  /* A subtle "pop" effect for the active button */
-  transform: translateY(-3px);
+#item-input {
+    /* Layout */
+    flex-grow: 1;
+
+    /* Styling */
+    border: 1px solid var(--border-color);
+    background-color: var(--surface-color);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 16px;
+
+    /* Transitions */
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* --- Interaction States (Hover & Focus) --- */
-/* Add a background on hover for non-touch devices */
-@media (hover: hover) {
-  .nav-btn:not(.active):hover {
-    background-color: var(--nav-hover-bg);
-    color: var(--nav-active-color);
-  }
+/* Focus state for the input */
+#item-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-color-light);
 }
 
-/* Accessibility: Style for keyboard navigation */
-.nav-btn:focus-visible {
-  outline: 2px solid var(--nav-active-color);
-  outline-offset: -4px;
-  border-radius: 8px;
+/* --- Main "Add" Button --- */
+#add-item-btn {
+    /* Reset default button styles */
+    border: none;
+    cursor: pointer;
+
+    /* Styling */
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 0 20px;
+    border-radius: 8px;
+
+    /* Layout */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Transitions */
+    transition: background-color 0.2s;
 }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f1f5f9; /* Slate-100 for a slightly cooler background */
-        }
-        .loader {
-            border-top-color: #22c55e; /* Green-500 */
-            -webkit-animation: spin 1s linear infinite;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        /* Complete UX/UI Overhaul */
-        .card {
-            @apply bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-300;
-        }
-        .bottom-nav {
-            @apply fixed bottom-0 left-0 right-0 h-24 bg-white/80 backdrop-blur-xl border-t border-gray-200 flex justify-around items-center z-40;
-        }
-        .nav-btn {
-            @apply flex-1 flex flex-col items-center justify-center text-gray-500 transition-all duration-300 h-full relative;
-        }
-        .nav-btn.active {
-            @apply text-green-600;
-        }
-        .nav-btn.active::before {
-            content: '';
-            @apply absolute top-0 left-1/2 -translate-x-1/2 w-10 h-1 bg-green-500 rounded-b-full;
-        }
-        .nav-btn svg {
-            @apply w-7 h-7 mb-1;
-        }
-        .nav-btn span {
-            @apply text-sm font-semibold tracking-wide;
-        }
-        .fab {
-            @apply fixed bottom-[7.5rem] right-6 h-16 w-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center text-white shadow-lg transform hover:scale-110 hover:shadow-xl transition-all duration-300 z-40;
-        }
-        .modal-backdrop {
-             @apply fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300;
-        }
-        .modal-content {
-            @apply bg-white rounded-2xl shadow-2xl p-8 max-w-sm mx-auto w-full transform scale-95 transition-transform duration-300;
-        }
-        .modal-backdrop:not(.hidden) .modal-content {
-            @apply scale-100;
-        }
+
+#add-item-btn:hover {
+    background-color: #4338ca; /* Darker Indigo */
+}
+
+/* --- Pantry Item Card Styling --- */
+.pantry-item {
+    /* Layout */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    /* Styling */
+    background-color: var(--surface-color);
+    padding: 16px;
+    border-radius: var(--border-radius);
+    margin-bottom: 12px;
+    box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -2px var(--shadow-color);
+    transition: transform 0.2s ease-in-out;
+}
+
+.pantry-item:hover {
+    transform: translateY(-2px);
+}
+
+.pantry-item span {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* --- Delete Button on Cards --- */
+.pantry-item button {
+    /* Reset default styles */
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    /* Styling */
+    color: var(--text-color-light);
+    padding: 4px;
+    border-radius: 50%;
+    
+    /* Layout */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Transitions */
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.pantry-item button:hover {
+    background-color: #fee2e2; /* Red-100 */
+    color: #ef4444; /* Red-500 */
+}
+
+.pantry-item button svg {
+    width: 20px;
+    height: 20px;
+}
     </style>
 </head>
 <body class="bg-slate-100">
