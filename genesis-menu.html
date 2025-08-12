@@ -229,8 +229,10 @@
     <div id="toast" class="toast"></div>
 
     <script>
-        // ✅ The AppScript Alchemist - Genesis Menu v2.0: AI & Shopping List Live
-        console.log('Version: 2.0 - Genesis Menu');
+        // ✅ The AppScript Alchemist - Genesis Menu v2.1: Switched to Fetch API
+        console.log('Version: 2.1 - Genesis Menu');
+
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmmmags5BBnAZ3vQ7u-H8BjY40L-kMImTjtRVUW2ZmlnyujI8DGraNgzHLhNeKUsmcEA/exec";
 
         document.addEventListener('DOMContentLoaded', () => {
             const state = {
@@ -267,6 +269,43 @@
                 }, duration);
             };
             
+            /**
+             * @description Generic function to call Google Apps Script backend.
+             * @param {string} functionName - The name of the function to call in Code.gs.
+             * @param {Array} [args=[]] - The arguments to pass to the function.
+             * @returns {Promise<any>} The response from the backend.
+             */
+            const callGoogleScript = async (functionName, args = []) => {
+                showLoader(true);
+                try {
+                    const res = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ functionName, parameters: args }),
+                    });
+
+                    if (!res.ok) {
+                        throw new Error(`Network response was not ok: ${res.statusText}`);
+                    }
+                    
+                    const result = await res.json();
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                    return result.data;
+
+                } catch (error) {
+                    showToast(error.message, 'error');
+                    // Re-throw the error to be caught by the calling function if needed
+                    throw error;
+                } finally {
+                    showLoader(false);
+                }
+            };
+
             // --- Data Logic ---
             const getCurrentMealPlanFromUI = () => {
                 const mealPlan = [];
@@ -285,25 +324,16 @@
             };
 
             // --- Data Fetching & Caching ---
-            const fetchData = () => {
-                showLoader(true);
-                google.script.run
-                    .withSuccessHandler(response => {
-                        showLoader(false);
-                        if (response.error) {
-                            showToast(response.error, 'error');
-                            return;
-                        }
-                        state.data = response;
-                        localStorage.setItem('mealPlannerData', JSON.stringify(response));
-                        localStorage.setItem('mealPlannerCacheTimestamp', Date.now());
-                        render();
-                    })
-                    .withFailureHandler(error => {
-                        showLoader(false);
-                        showToast(`Error: ${error.message}`, 'error');
-                    })
-                    .getAllData();
+            const fetchData = async () => {
+                try {
+                    const response = await callGoogleScript('getAllData');
+                    state.data = response;
+                    localStorage.setItem('mealPlannerData', JSON.stringify(response));
+                    localStorage.setItem('mealPlannerCacheTimestamp', Date.now());
+                    render();
+                } catch (error) {
+                    console.error("Failed to fetch data:", error);
+                }
             };
 
             const loadInitialData = () => {
@@ -403,89 +433,61 @@
             };
 
             // --- Event Handlers ---
-            const handleSavePlan = () => {
+            const handleSavePlan = async () => {
                 const mealPlan = getCurrentMealPlanFromUI();
-                showLoader(true);
-                google.script.run
-                    .withSuccessHandler(response => {
-                        showLoader(false);
-                        showToast(response.message, response.status);
-                        fetchData();
-                    })
-                    .withFailureHandler(err => {
-                        showLoader(false);
-                        showToast(err.message, 'error');
-                    })
-                    .saveMealPlan(mealPlan);
+                try {
+                    const response = await callGoogleScript('saveMealPlan', [mealPlan]);
+                    showToast(response.message, response.status);
+                    fetchData();
+                } catch (error) {
+                    console.error("Failed to save plan:", error);
+                }
             };
             
-            const handleSaveSettings = (e) => {
-              e.preventDefault();
-              const formData = new FormData(settingsForm);
-              const settings = Object.fromEntries(formData.entries());
-              showLoader(true);
-              google.script.run
-                .withSuccessHandler(response => {
-                    showLoader(false);
+            const handleSaveSettings = async (e) => {
+                e.preventDefault();
+                const formData = new FormData(settingsForm);
+                const settings = Object.fromEntries(formData.entries());
+                try {
+                    const response = await callGoogleScript('saveSettings', [settings]);
                     showToast(response.message, response.status);
                     if(response.status === 'success'){
                       settingsModal.style.display = 'none';
                       state.data.settings = settings; // Update local state
                     }
-                })
-                .withFailureHandler(err => {
-                    showLoader(false);
-                    showToast(err.message, 'error');
-                })
-                .saveSettings(settings);
+                } catch (error) {
+                    console.error("Failed to save settings:", error);
+                }
             };
 
-            const handleGetSuggestions = () => {
+            const handleGetSuggestions = async () => {
                 if (!state.data || !state.data.recipes) {
                     showToast("Recipe data not loaded yet.", 'info');
                     return;
                 }
                 const pastRecipes = [...new Set(state.data.recipes.map(r => r.RecipeName))];
-                showLoader(true);
-                google.script.run
-                    .withSuccessHandler(response => {
-                        showLoader(false);
-                        if (response.error) {
-                            showToast(response.error, 'error');
-                            return;
-                        }
-                        renderSuggestions(response.suggestions);
-                        showToast("AI suggestions loaded!", 'success');
-                    })
-                    .withFailureHandler(err => {
-                        showLoader(false);
-                        showToast(err.message, 'error');
-                    })
-                    .getRecipeSuggestions(pastRecipes);
+                try {
+                    const response = await callGoogleScript('getRecipeSuggestions', [pastRecipes]);
+                    renderSuggestions(response.suggestions);
+                    showToast("AI suggestions loaded!", 'success');
+                } catch (error) {
+                    console.error("Failed to get suggestions:", error);
+                }
             };
 
-            const handleGenerateList = () => {
+            const handleGenerateList = async () => {
                 if (!state.data || !state.data.recipes) {
                     showToast("Recipe data not loaded yet.", 'info');
                     return;
                 }
                 const mealPlan = getCurrentMealPlanFromUI();
-                showLoader(true);
-                google.script.run
-                    .withSuccessHandler(response => {
-                        showLoader(false);
-                        if (response.error) {
-                            showToast(response.error, 'error');
-                            return;
-                        }
-                        renderShoppingList(response.shoppingList);
-                        showToast("Shopping list generated!", 'success');
-                    })
-                    .withFailureHandler(err => {
-                        showLoader(false);
-                        showToast(err.message, 'error');
-                    })
-                    .generateShoppingList(mealPlan, state.data.recipes);
+                try {
+                    const response = await callGoogleScript('generateShoppingList', [mealPlan, state.data.recipes]);
+                    renderShoppingList(response.shoppingList);
+                    showToast("Shopping list generated!", 'success');
+                } catch (error) {
+                    console.error("Failed to generate list:", error);
+                }
             };
 
             // --- Event Listeners ---
