@@ -230,246 +230,259 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwoYQQZvWwb913IBqsaGbwJ9Y_C6KHYwm4nBnMCPUEDj-9jMLM0luw8piGKkZk8vvV6/exec';
-            const LOCAL_STORAGE_KEY_PREFIX = 'qoverPortalData_';
-            const AUTH_SESSION_KEY = 'qoverPortalAuthToken';
-            const SETTINGS_KEY = 'qoverPortalSettings';
+        // ✅ REWRITTEN: All functions are now defined in the script's outer scope.
+        // This prevents ReferenceErrors by ensuring functions are declared before they are called.
+        
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwoYQQZvWwb913IBqsaGbwJ9Y_C6KHYwm4nBnMCPUEDj-9jMLM0luw8piGKkZk8vvV6/exec';
+        const LOCAL_STORAGE_KEY_PREFIX = 'qoverPortalData_';
+        const AUTH_SESSION_KEY = 'qoverPortalAuthToken';
+        const SETTINGS_KEY = 'qoverPortalSettings';
 
-            let portalSettings = {};
-            let pilotDataCacheKey = '';
+        let portalSettings = {};
+        let pilotDataCacheKey = '';
 
-            const loginOverlay = document.getElementById('login-overlay');
-            const loginForm = document.getElementById('login-form');
-            const loginMessage = document.getElementById('login-message');
-            const appWrapper = document.getElementById('app-wrapper');
-            const mainNav = document.getElementById('main-nav');
-            const statsSection = document.getElementById('stats-section');
-            const navLinks = document.querySelectorAll('.nav-link');
-            const views = document.querySelectorAll('#content-views > div');
+        const showLoading = (show) => document.getElementById('loading-spinner').classList.toggle('hidden', !show);
+        const showRefreshIndicator = (show) => document.getElementById('refresh-indicator').classList.toggle('hidden', !show);
+        
+        const showToast = (message, isError = false) => {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            toast.classList.remove('hidden', 'bg-green-500', 'bg-red-500');
+            toast.classList.add(isError ? 'bg-red-500' : 'bg-green-500');
+            setTimeout(() => toast.classList.add('hidden'), 5000);
+        };
+
+        const renderSkeletonLoader = (rows = 5) => {
             const pilotsTableBody = document.getElementById('pilots-table-body');
-            const loadingSpinner = document.getElementById('loading-spinner');
-            const refreshIndicator = document.getElementById('refresh-indicator');
+            pilotsTableBody.innerHTML = '';
+            for (let i = 0; i < rows; i++) {
+                const tr = document.createElement('tr');
+                tr.classList.add('table-skeleton');
+                tr.innerHTML = `<td class="px-6 py-4 hidden col-risk-id"><div></div></td><td class="px-6 py-4"><div></div></td><td class="px-6 py-4"><div></div></td><td class="px-6 py-4"><div></div></td><td class="px-6 py-4"><div></div></td><td class="px-6 py-4"><div></div></td><td class="px-6 py-4"><div></div></td><td class="px-6 py-4 hidden col-financials"><div></div></td><td class="px-6 py-4 hidden col-financials"><div></div></td><td class="px-6 py-4"><div></div></td>`;
+                pilotsTableBody.appendChild(tr);
+            }
+        };
+
+        const formatDate = (dateString) => {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return new Date(date.getTime() + (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+        };
+
+        const showLoginUI = (message = 'Enter your email to receive a secure login link.', isError = false, showForm = true) => {
+            document.getElementById('login-message').textContent = message;
+            document.getElementById('login-message').classList.toggle('text-red-500', isError);
+            document.getElementById('login-message').classList.toggle('text-gray-600', !isError);
+            document.getElementById('login-form').style.display = showForm ? 'block' : 'none';
+            document.getElementById('login-overlay').style.display = 'flex';
+            document.getElementById('app-wrapper').style.display = 'none';
+        };
+
+        const initializeMainAppView = () => {
+            document.getElementById('app-wrapper').style.display = 'block';
+            document.getElementById('main-nav').classList.remove('hidden');
+            document.getElementById('stats-section').classList.remove('hidden');
+            document.getElementById('nav-all-pilots').click();
+            const headerInfo = document.getElementById('header-info');
+            headerInfo.innerHTML = `<p class="text-sm font-semibold text-gray-700">${portalSettings.env.toUpperCase()} Environment</p><p class="text-xs text-gray-500 font-mono" title="${portalSettings.standardId}">MP: ...${portalSettings.standardId.slice(-10)}</p>`;
+            loadPilots();
+        };
+
+        const showSettingsUI = (isInitialSetup = false) => {
+            document.getElementById('app-wrapper').style.display = 'block';
+            document.querySelectorAll('#content-views > div').forEach(view => view.classList.add('hidden'));
+            document.getElementById('view-settings').classList.remove('hidden');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById('nav-settings').classList.add('active');
+            document.getElementById('main-nav').classList.toggle('hidden', isInitialSetup);
+            document.getElementById('stats-section').classList.toggle('hidden', isInitialSetup);
+            if (isInitialSetup) {
+                showToast('Welcome! Please configure the portal.', false);
+            }
+            loadMasterPoliciesIntoSettings();
+        };
+
+        const callGoogleScript = (action, payload = {}, showFullLoading = false) => {
+            if (showFullLoading) showLoading(true);
+            else showRefreshIndicator(true);
+            
+            const authToken = sessionStorage.getItem(AUTH_SESSION_KEY);
+            if (!authToken) {
+                showToast('Authentication error. Please log in again.', true);
+                return Promise.reject('No auth token');
+            }
+            
+            const requestBody = {
+                action,
+                token: authToken,
+                env: portalSettings.env || document.getElementById('setting-env').value,
+                masterPolicyId: portalSettings.standardId,
+                ...payload
+            };
+
+            return fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(requestBody)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'error') throw new Error(data.message);
+                return data.data;
+            })
+            .catch(error => {
+                showToast(error.message, true);
+                return Promise.reject(error);
+            })
+            .finally(() => {
+                if (showFullLoading) showLoading(false);
+                else showRefreshIndicator(false);
+            });
+        };
+
+        const loadPilots = () => {
+            if (!portalSettings.standardId) {
+                document.getElementById('pilots-table-body').innerHTML = `<tr><td colspan="10" class="text-center py-4 text-blue-500">Please save your settings to load data.</td></tr>`;
+                return;
+            }
+            let dataLoadedFromCache = false;
+            const pilotsTable = document.getElementById('pilots-table-body').parentElement;
+            try {
+                const cachedData = localStorage.getItem(pilotDataCacheKey);
+                if (cachedData) {
+                    renderData(JSON.parse(cachedData));
+                    dataLoadedFromCache = true;
+                }
+            } catch (e) { console.error("Failed to load or parse cached data", e); }
+
+            if (!dataLoadedFromCache) {
+                renderSkeletonLoader();
+            } else {
+                pilotsTable.classList.add('table-loading');
+            }
+
+            callGoogleScript('getRiskItems', {}, !dataLoadedFromCache)
+                .then(freshData => {
+                    renderData(freshData);
+                    localStorage.setItem(pilotDataCacheKey, JSON.stringify(freshData));
+                })
+                .catch(error => {
+                    if (!dataLoadedFromCache) {
+                       document.getElementById('pilots-table-body').innerHTML = `<tr><td colspan="10" class="text-center py-4 text-red-500">Failed to load data. ${error.message}</td></tr>`;
+                    } else {
+                       showToast('Failed to refresh data. You are viewing cached information.', true);
+                    }
+                })
+                .finally(() => {
+                    pilotsTable.classList.remove('table-loading');
+                });
+        };
+
+        const renderData = (data) => {
+            // ... (renderData logic as before, without upgrade button) ...
+        };
+
+        const loadMasterPoliciesIntoSettings = () => {
+            const currentEnv = document.getElementById('setting-env').value;
+            const mpListContainer = document.getElementById('mp-list');
+            mpListContainer.innerHTML = `<div class="p-4 text-center text-gray-500">Fetching policies for ${currentEnv.toUpperCase()}...</div>`;
+            
+            callGoogleScript('getMasterPolicies', { env: currentEnv })
+                .then(data => {
+                    mpListContainer.innerHTML = '';
+                    if (data && data.items && data.items.length > 0) {
+                        data.items.sort((a, b) => (a.policyholder.companyName || '').localeCompare(b.policyholder.companyName || '')).forEach(policy => {
+                            const row = document.createElement('div');
+                            row.className = 'mp-list-row grid grid-cols-10 gap-4 px-4 py-3 cursor-pointer hover:bg-gray-50';
+                            row.dataset.id = policy.id;
+                            row.dataset.searchText = `${policy.policyholder.companyName} ${policy.policyNumber} ${policy.productConfiguration.id}`.toLowerCase();
+                            
+                            row.innerHTML = `
+                                <div class="col-span-3 text-sm font-medium text-gray-900">${policy.policyholder.companyName || 'N/A'}</div>
+                                <div class="col-span-3 text-sm text-gray-500 font-mono">${policy.policyNumber}</div>
+                                <div class="col-span-2 text-sm text-gray-500">${policy.productConfiguration.id}</div>
+                                <div class="col-span-2 text-sm text-gray-500">${formatDate(policy.contractPeriod.startDate)} - ${formatDate(policy.contractPeriod.endDate)}</div>
+                            `;
+                            mpListContainer.appendChild(row);
+                        });
+                        
+                        if (portalSettings.standardId) {
+                            const selectedRow = mpListContainer.querySelector(`[data-id="${portalSettings.standardId}"]`);
+                            if (selectedRow) {
+                                selectedRow.classList.add('selected');
+                                document.getElementById('settings-form').dataset.selectedMpId = portalSettings.standardId;
+                            }
+                        }
+                    } else {
+                        mpListContainer.innerHTML = `<div class="p-4 text-center text-gray-500">No Master Policies found for this environment.</div>`;
+                    }
+                })
+                .catch(() => {
+                    mpListContainer.innerHTML = `<div class="p-4 text-center text-red-500">Could not load policies.</div>`;
+                });
+        };
+
+        const verifyToken = (token) => {
+            showLoginUI('Verifying your session...', false, false);
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'verifyToken', token: token })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    sessionStorage.setItem(AUTH_SESSION_KEY, token);
+                    document.getElementById('login-overlay').style.display = 'none';
+                    loadSettingsAndProceed();
+                } else { throw new Error(data.message || 'Verification failed.'); }
+            })
+            .catch(error => showLoginUI(`Error: ${error.message}`, true, true));
+        };
+
+        const loadSettingsAndProceed = () => {
+            try {
+                const savedSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY));
+                if (savedSettings) {
+                    portalSettings = savedSettings;
+                    document.getElementById('setting-env').value = portalSettings.env;
+                }
+            } catch(e) { portalSettings = {}; }
+            
+            if (!portalSettings.standardId || !portalSettings.env) {
+                showSettingsUI(true);
+            } else {
+                pilotDataCacheKey = `${LOCAL_STORAGE_KEY_PREFIX}${portalSettings.standardId}`;
+                initializeMainAppView();
+            }
+        };
+
+        const handleInitialLoad = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            const sessionToken = sessionStorage.getItem(AUTH_SESSION_KEY);
+            if (token) {
+                history.replaceState(null, '', window.location.pathname); 
+                verifyToken(token);
+            } else if (sessionToken) {
+                verifyToken(sessionToken);
+            } else {
+                showLoginUI();
+            }
+        };
+
+        // ✅ This is the main execution block that runs after the DOM is ready.
+        document.addEventListener('DOMContentLoaded', () => {
+            // Define DOM element constants inside the listener
+            const navLinks = document.querySelectorAll('.nav-link');
             const settingsForm = document.getElementById('settings-form');
             const settingsEnv = document.getElementById('setting-env');
             const mpSearchInput = document.getElementById('mp-search-input');
             const mpListContainer = document.getElementById('mp-list');
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
             const toastCloseBtn = document.getElementById('toast-close-btn');
 
-            const showLoading = (show) => loadingSpinner.classList.toggle('hidden', !show);
-            const showRefreshIndicator = (show) => refreshIndicator.classList.toggle('hidden', !show);
-            const showToast = (message, isError = false) => {
-                toastMessage.textContent = message;
-                toast.classList.remove('hidden', 'bg-green-500', 'bg-red-500');
-                toast.classList.add(isError ? 'bg-red-500' : 'bg-green-500');
-                setTimeout(() => toast.classList.add('hidden'), 5000);
-            };
-            toastCloseBtn.addEventListener('click', () => toast.classList.add('hidden'));
+            // Attach event listeners
+            toastCloseBtn.addEventListener('click', () => document.getElementById('toast').classList.add('hidden'));
 
-            const renderSkeletonLoader = (rows = 5) => {
-                pilotsTableBody.innerHTML = '';
-                for (let i = 0; i < rows; i++) {
-                    const tr = document.createElement('tr');
-                    tr.classList.add('table-skeleton');
-                    tr.innerHTML = `
-                        <td class="px-6 py-4 hidden col-risk-id"><div></div></td><td class="px-6 py-4"><div></div></td><td class="px-6 py-4"><div></div></td><td class="px-6 py-4"><div></div></td><td class="px-6 py-4"><div></div></td><td class="px-6 py-4"><div></div></td><td class="px-6 py-4"><div></div></td><td class="px-6 py-4 hidden col-financials"><div></div></td><td class="px-6 py-4 hidden col-financials"><div></div></td><td class="px-6 py-4"><div></div></td>
-                    `;
-                    pilotsTableBody.appendChild(tr);
-                }
-            };
-            
-            const formatDate = (dateString) => { if (!dateString) return 'N/A'; const date = new Date(dateString); return new Date(date.getTime() + (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0]; };
-
-            const showLoginUI = (message = 'Enter your email to receive a secure login link.', isError = false, showForm = true) => {
-                loginMessage.textContent = message;
-                loginMessage.classList.toggle('text-red-500', isError);
-                loginMessage.classList.toggle('text-gray-600', !isError);
-                loginForm.style.display = showForm ? 'block' : 'none';
-                loginOverlay.style.display = 'flex';
-                appWrapper.style.display = 'none';
-            };
-            
-            const initializeMainAppView = () => {
-                appWrapper.style.display = 'block';
-                mainNav.classList.remove('hidden');
-                statsSection.classList.remove('hidden');
-                document.getElementById('nav-all-pilots').click();
-                const headerInfo = document.getElementById('header-info');
-                headerInfo.innerHTML = `<p class="text-sm font-semibold text-gray-700">${portalSettings.env.toUpperCase()} Environment</p><p class="text-xs text-gray-500 font-mono" title="${portalSettings.standardId}">MP: ...${portalSettings.standardId.slice(-10)}</p>`;
-                loadPilots();
-            };
-            
-            const showSettingsUI = (isInitialSetup = false) => {
-                appWrapper.style.display = 'block';
-                views.forEach(view => view.classList.add('hidden'));
-                document.getElementById('view-settings').classList.remove('hidden');
-                navLinks.forEach(l => l.classList.remove('active'));
-                document.getElementById('nav-settings').classList.add('active');
-                mainNav.classList.toggle('hidden', isInitialSetup);
-                statsSection.classList.toggle('hidden', isInitialSetup);
-                if (isInitialSetup) {
-                    showToast('Welcome! Please configure the portal.', false);
-                }
-                loadMasterPoliciesIntoSettings();
-            };
-
-            const callGoogleScript = (action, payload = {}, showFullLoading = false) => {
-                if (showFullLoading) showLoading(true);
-                else showRefreshIndicator(true);
-                
-                const authToken = sessionStorage.getItem(AUTH_SESSION_KEY);
-                if (!authToken) {
-                    showToast('Authentication error. Please log in again.', true);
-                    return Promise.reject('No auth token');
-                }
-                
-                const requestBody = {
-                    action,
-                    token: authToken,
-                    env: portalSettings.env || settingsEnv.value,
-                    masterPolicyId: portalSettings.standardId,
-                    ...payload
-                };
-
-                return fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(requestBody)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'error') throw new Error(data.message);
-                    return data.data;
-                })
-                .catch(error => {
-                    showToast(error.message, true);
-                    return Promise.reject(error);
-                })
-                .finally(() => {
-                    if (showFullLoading) showLoading(false);
-                    else showRefreshIndicator(false);
-                });
-            };
-
-            const loadPilots = () => {
-                if (!portalSettings.standardId) {
-                    pilotsTableBody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-blue-500">Please save your settings to load data.</td></tr>`;
-                    return;
-                }
-                let dataLoadedFromCache = false;
-                const pilotsTable = pilotsTableBody.parentElement;
-                try {
-                    const cachedData = localStorage.getItem(pilotDataCacheKey);
-                    if (cachedData) {
-                        renderData(JSON.parse(cachedData));
-                        dataLoadedFromCache = true;
-                    }
-                } catch (e) { console.error("Failed to load or parse cached data", e); }
-
-                if (!dataLoadedFromCache) {
-                    renderSkeletonLoader();
-                } else {
-                    pilotsTable.classList.add('table-loading');
-                }
-
-                callGoogleScript('getRiskItems', {}, !dataLoadedFromCache)
-                    .then(freshData => {
-                        renderData(freshData);
-                        localStorage.setItem(pilotDataCacheKey, JSON.stringify(freshData));
-                    })
-                    .catch(error => {
-                        if (!dataLoadedFromCache) {
-                           pilotsTableBody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-red-500">Failed to load data. ${error.message}</td></tr>`;
-                        } else {
-                           showToast('Failed to refresh data. You are viewing cached information.', true);
-                        }
-                    })
-                    .finally(() => {
-                        pilotsTable.classList.remove('table-loading');
-                    });
-            };
-
-            const renderData = (data) => {
-                // This function's logic is the same, but it will now render into
-                // the table, replacing the skeleton loader if it was present.
-                // ... (renderData logic as before, without upgrade button) ...
-            };
-
-            const loadMasterPoliciesIntoSettings = () => {
-                const currentEnv = settingsEnv.value;
-                mpListContainer.innerHTML = `<div class="p-4 text-center text-gray-500">Fetching policies for ${currentEnv.toUpperCase()}...</div>`;
-                
-                callGoogleScript('getMasterPolicies', { env: currentEnv })
-                    .then(data => {
-                        mpListContainer.innerHTML = '';
-                        if (data && data.items && data.items.length > 0) {
-                            data.items.sort((a, b) => (a.policyholder.companyName || '').localeCompare(b.policyholder.companyName || '')).forEach(policy => {
-                                const row = document.createElement('div');
-                                row.className = 'mp-list-row grid grid-cols-10 gap-4 px-4 py-3 cursor-pointer hover:bg-gray-50';
-                                row.dataset.id = policy.id;
-                                row.dataset.searchText = `${policy.policyholder.companyName} ${policy.policyNumber} ${policy.productConfiguration.id}`.toLowerCase();
-                                
-                                row.innerHTML = `
-                                    <div class="col-span-3 text-sm font-medium text-gray-900">${policy.policyholder.companyName || 'N/A'}</div>
-                                    <div class="col-span-3 text-sm text-gray-500 font-mono">${policy.policyNumber}</div>
-                                    <div class="col-span-2 text-sm text-gray-500">${policy.productConfiguration.id}</div>
-                                    <div class="col-span-2 text-sm text-gray-500">${formatDate(policy.contractPeriod.startDate)} - ${formatDate(policy.contractPeriod.endDate)}</div>
-                                `;
-                                mpListContainer.appendChild(row);
-                            });
-                            
-                            if (portalSettings.standardId) {
-                                const selectedRow = mpListContainer.querySelector(`[data-id="${portalSettings.standardId}"]`);
-                                if (selectedRow) {
-                                    selectedRow.classList.add('selected');
-                                    settingsForm.dataset.selectedMpId = portalSettings.standardId;
-                                }
-                            }
-                        } else {
-                            mpListContainer.innerHTML = `<div class="p-4 text-center text-gray-500">No Master Policies found for this environment.</div>`;
-                        }
-                    })
-                    .catch(() => {
-                        mpListContainer.innerHTML = `<div class="p-4 text-center text-red-500">Could not load policies.</div>`;
-                    });
-            };
-            
-            const verifyToken = (token) => {
-                showLoginUI('Verifying your session...', false, false);
-                fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'verifyToken', token: token })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        sessionStorage.setItem(AUTH_SESSION_KEY, token);
-                        loginOverlay.style.display = 'none';
-                        loadSettingsAndProceed();
-                    } else { throw new Error(data.message || 'Verification failed.'); }
-                })
-                .catch(error => showLoginUI(`Error: ${error.message}`, true, true));
-            };
-
-            const loadSettingsAndProceed = () => {
-                try {
-                    const savedSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY));
-                    if (savedSettings) {
-                        portalSettings = savedSettings;
-                        settingsEnv.value = portalSettings.env;
-                    }
-                } catch(e) { portalSettings = {}; }
-                
-                if (!portalSettings.standardId || !portalSettings.env) {
-                    showSettingsUI(true);
-                } else {
-                    pilotDataCacheKey = `${LOCAL_STORAGE_KEY_PREFIX}${portalSettings.standardId}`;
-                    initializeMainAppView();
-                }
-            };
-
-            // --- Event Listeners ---
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -482,17 +495,19 @@
                     navLinks.forEach(l => l.classList.remove('active'));
                     link.classList.add('active');
                     const targetViewId = link.id.replace('nav-', 'view-');
-                    views.forEach(view => view.classList.toggle('hidden', view.id !== targetViewId));
+                    document.querySelectorAll('#content-views > div').forEach(view => view.classList.toggle('hidden', view.id !== targetViewId));
                 });
             });
             
             settingsEnv.addEventListener('change', loadMasterPoliciesIntoSettings);
+            
             mpSearchInput.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase();
                 mpListContainer.querySelectorAll('.mp-list-row').forEach(row => {
                     row.classList.toggle('hidden', !row.dataset.searchText.includes(searchTerm));
                 });
             });
+
             mpListContainer.addEventListener('click', (e) => {
                 const row = e.target.closest('.mp-list-row');
                 if (!row) return;
@@ -517,10 +532,11 @@
                 initializeMainAppView();
             });
 
-            // --- Initial Load ---
+            // Start the application
             handleInitialLoad();
         });
-        console.log("Version: 5.3 - Fixed Initial Load");
+        
+        console.log("Version: 5.4 - Refactored for Stability");
     </script>
 </body>
 </html>
