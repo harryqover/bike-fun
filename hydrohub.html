@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HydroHub - Your Water Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -74,12 +75,22 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 200;
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen">
 
-    <!-- Background Bubbles -->
+    <!-- Background & Animation Elements -->
     <div id="background-bubbles"></div>
+    <canvas id="confetti-canvas"></canvas>
 
     <div class="glass-container p-6 md:p-8 w-11/12 max-w-md mx-auto text-center relative z-10">
         <h1 class="text-3xl md:text-4xl font-bold mb-2">HydroHub</h1>
@@ -116,49 +127,44 @@
         </div>
     </div>
 
-    <!-- Settings Modal -->
+    <!-- Modals -->
     <div id="settings-modal" class="modal">
         <div class="glass-container p-6 md:p-8 w-11/12 max-w-md mx-auto text-center relative z-10">
             <h2 class="text-2xl font-bold mb-4">Settings</h2>
-            
-            <div class="mb-4 text-left">
-                <label for="daily-goal" class="block mb-2">Daily Goal (ml)</label>
-                <input type="number" id="daily-goal" class="w-full p-2 rounded bg-white/20 border-none text-white focus:ring-2 focus:ring-blue-400" value="2000">
+            <div class="space-y-4 text-left">
+                <div>
+                    <label for="daily-goal" class="block mb-2">Daily Goal (ml)</label>
+                    <input type="number" id="daily-goal" class="w-full p-2 rounded bg-white/20 border-none text-white focus:ring-2 focus:ring-blue-400" value="2000">
+                </div>
+                <div>
+                    <label for="gemini-api-key" class="block mb-2">Gemini API Key</label>
+                    <input type="password" id="gemini-api-key" class="w-full p-2 rounded bg-white/20 border-none text-white focus:ring-2 focus:ring-blue-400" placeholder="Enter your API key">
+                </div>
+                <div>
+                    <label for="gsheet-url" class="block mb-2">Google Sheet Web App URL</label>
+                    <input type="text" id="gsheet-url" class="w-full p-2 rounded bg-white/20 border-none text-white focus:ring-2 focus:ring-blue-400" placeholder="Optional">
+                    <button onclick="openGasInstructions()" class="text-xs text-blue-200 hover:underline mt-1">How to get this URL?</button>
+                </div>
+                <div>
+                    <label for="pushover-token" class="block mb-2">Pushover API Token/Key</label>
+                    <input type="password" id="pushover-token" class="w-full p-2 rounded bg-white/20 border-none text-white focus:ring-2 focus:ring-blue-400" placeholder="Optional">
+                </div>
+                <div>
+                    <label for="pushover-user" class="block mb-2">Pushover User Key</label>
+                    <input type="password" id="pushover-user" class="w-full p-2 rounded bg-white/20 border-none text-white focus:ring-2 focus:ring-blue-400" placeholder="Optional">
+                </div>
             </div>
-            
-            <div class="mb-4 text-left">
-                <label for="gemini-api-key" class="block mb-2">Gemini API Key</label>
-                <input type="password" id="gemini-api-key" class="w-full p-2 rounded bg-white/20 border-none text-white focus:ring-2 focus:ring-blue-400" placeholder="Enter your API key">
-            </div>
-
-            <div class="mb-4 text-left">
-                <label for="gsheet-url" class="block mb-2">Google Sheet Web App URL</label>
-                <input type="text" id="gsheet-url" class="w-full p-2 rounded bg-white/20 border-none text-white focus:ring-2 focus:ring-blue-400" placeholder="Optional">
-            </div>
-
-            <div class="mb-4 text-left">
-                <label for="pushover-token" class="block mb-2">Pushover API Token/Key</label>
-                <input type="password" id="pushover-token" class="w-full p-2 rounded bg-white/20 border-none text-white focus:ring-2 focus:ring-blue-400" placeholder="Optional">
-            </div>
-
-            <div class="mb-6 text-left">
-                <label for="pushover-user" class="block mb-2">Pushover User Key</label>
-                <input type="password" id="pushover-user" class="w-full p-2 rounded bg-white/20 border-none text-white focus:ring-2 focus:ring-blue-400" placeholder="Optional">
-            </div>
-
-            <div class="flex justify-end gap-4">
+            <div class="flex justify-end gap-4 mt-6">
                  <button onclick="closeSettings()" class="bg-gray-500/50 hover:bg-gray-500/70 text-white font-bold py-2 px-4 rounded-lg">Cancel</button>
                 <button onclick="saveSettings()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Save</button>
             </div>
         </div>
     </div>
     
-    <!-- Gemini Tip Modal -->
     <div id="gemini-tip-modal" class="modal flex">
         <div class="glass-container p-6 md:p-8 w-11/12 max-w-md mx-auto text-center relative z-10">
              <h2 class="text-2xl font-bold mb-4 text-purple-200">✨ Hydration Tip!</h2>
              <div id="gemini-tip-content" class="min-h-[100px] flex items-center justify-center">
-                <!-- Loader will be shown here -->
                 <div class="loader"></div>
              </div>
              <div class="text-right mt-6">
@@ -167,6 +173,65 @@
         </div>
     </div>
 
+    <div id="goal-celebration-modal" class="modal flex">
+        <div class="glass-container p-6 md:p-8 w-11/12 max-w-md mx-auto text-center relative z-10">
+             <h2 class="text-3xl font-bold mb-4 text-yellow-300">🎉 Goal Reached! 🎉</h2>
+             <div id="goal-message-content" class="min-h-[100px] flex items-center justify-center text-lg">
+                <div class="loader"></div>
+             </div>
+             <div class="text-right mt-6">
+                <button onclick="closeGoalModal()" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg">Awesome!</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="gas-instructions-modal" class="modal">
+        <div class="glass-container p-6 md:p-8 w-11/12 max-w-2xl mx-auto text-left relative z-10 mt-10 overflow-y-auto max-h-screen">
+            <h2 class="text-2xl font-bold mb-4">Google Apps Script Setup</h2>
+            <p class="mb-4">To log your water intake to a Google Sheet, follow these steps:</p>
+            <ol class="list-decimal list-inside mb-4 space-y-2 text-blue-100">
+                <li>Go to <a href="https://script.google.com/" target="_blank" class="text-blue-300 underline">script.google.com</a> and create a new project.</li>
+                <li>Copy the code below and paste it into the script editor, replacing any existing code.</li>
+                <li>Click the "Deploy" button, select "New deployment".</li>
+                <li>For "Select type", choose "Web app".</li>
+                <li>In the "New deployment" dialog:
+                    <ul class="list-disc list-inside ml-6 mt-2">
+                        <li>Give it a description (e.g., "Water Tracker").</li>
+                        <li>Set "Execute as" to "Me".</li>
+                        <li>Set "Who has access" to "Anyone". <strong>Important:</strong> This makes your web app public but only able to add data, not read it.</li>
+                    </ul>
+                </li>
+                <li>Click "Deploy". You will need to authorize the script to access your Google Sheets.</li>
+                <li>Copy the "Web app URL" provided and paste it into the settings of this water tracker app.</li>
+            </ol>
+            <pre class="bg-gray-900/50 p-4 rounded-lg overflow-x-auto text-sm"><code>function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("WaterIntake");
+    if (!sheet) {
+      sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("WaterIntake");
+      sheet.appendRow(["Timestamp", "Amount (ml)", "Total Today (ml)"]);
+    }
+    
+    var data = JSON.parse(e.postData.contents);
+    var timestamp = new Date();
+    
+    sheet.appendRow([timestamp, data.amount, data.total]);
+    
+    return ContentService.createTextOutput(JSON.stringify({ "status": "success" }))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ "status": "error", "message": error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}</code></pre>
+            <div class="text-right mt-6">
+                <button onclick="document.getElementById('gas-instructions-modal').style.display='none'" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Close</button>
+            </div>
+        </div>
+    </div>
+
+
     <script>
         const totalIntakeEl = document.getElementById('total-intake');
         const waterLevelEl = document.getElementById('water-level');
@@ -174,12 +239,18 @@
         const settingsModal = document.getElementById('settings-modal');
         const geminiTipModal = document.getElementById('gemini-tip-modal');
         const geminiTipContentEl = document.getElementById('gemini-tip-content');
+        const goalModal = document.getElementById('goal-celebration-modal');
+        const goalMessageContentEl = document.getElementById('goal-message-content');
+        const gasInstructionsModal = document.getElementById('gas-instructions-modal');
+        const confettiCanvas = document.getElementById('confetti-canvas');
+        const myConfetti = confetti.create(confettiCanvas, { resize: true });
 
         // App State
         let state = {
             total: 0,
             goal: 2000,
             lastDrinkTimestamp: null,
+            goalReachedToday: false,
             gsheetUrl: '',
             pushoverToken: '',
             pushoverUser: '',
@@ -191,6 +262,13 @@
         function addWater(amount) {
             state.total += amount;
             state.lastDrinkTimestamp = Date.now();
+            
+            // Check for goal completion
+            if (state.total >= state.goal && !state.goalReachedToday) {
+                state.goalReachedToday = true;
+                celebrateGoal();
+            }
+            
             saveState();
             updateUI();
             logToGoogleSheet(amount, state.total);
@@ -207,16 +285,50 @@
         }
         
         function resetData() {
-            // Replaced confirm with a custom modal for better UX in iframes
-            if (window.confirm("Are you sure you want to reset your progress for today?")) {
+            if (confirm("Are you sure you want to reset your progress for today?")) {
                 state.total = 0;
                 state.lastDrinkTimestamp = null;
+                state.goalReachedToday = false;
                 saveState();
                 updateUI();
             }
         }
 
-        // --- Settings ---
+        // --- Goal Celebration ---
+        
+        async function celebrateGoal() {
+            // 1. Trigger Confetti
+            myConfetti({
+                particleCount: 150,
+                spread: 180,
+                origin: { y: 0.6 }
+            });
+
+            // 2. Show modal and get AI message
+            goalModal.style.display = 'flex';
+            goalMessageContentEl.innerHTML = `<div class="loader"></div>`;
+            
+            if (!state.geminiApiKey) {
+                goalMessageContentEl.innerHTML = `<p class="text-lg">You are amazing! You've reached your hydration goal for today!</p>`;
+                return;
+            }
+
+            const prompt = "Write a short, fun, and very enthusiastic congratulatory message for someone who just reached their daily water drinking goal. Keep it under 25 words.";
+            try {
+                const text = await callGemini(prompt);
+                goalMessageContentEl.innerHTML = `<p class="text-lg">${text}</p>`;
+            } catch (error) {
+                console.error('Error fetching goal message:', error);
+                goalMessageContentEl.innerHTML = `<p class="text-lg">You are amazing! You've reached your hydration goal for today!</p>`;
+            }
+        }
+
+        function closeGoalModal() {
+            goalModal.style.display = 'none';
+        }
+
+
+        // --- Settings & Instructions ---
         
         function openSettings() {
             document.getElementById('daily-goal').value = state.goal;
@@ -244,6 +356,10 @@
             closeSettings();
         }
 
+        function openGasInstructions() {
+            gasInstructionsModal.style.display = 'flex';
+        }
+
         // --- Data Persistence ---
 
         function saveState() {
@@ -260,6 +376,7 @@
                 if (today === lastSavedDate) {
                     state = parsedState;
                 } else {
+                    // New day, reset progress but keep settings
                     state.goal = parsedState.goal || 2000;
                     state.gsheetUrl = parsedState.gsheetUrl || '';
                     state.pushoverToken = parsedState.pushoverToken || '';
@@ -267,6 +384,7 @@
                     state.geminiApiKey = parsedState.geminiApiKey || '';
                     state.total = 0;
                     state.lastDrinkTimestamp = null;
+                    state.goalReachedToday = false;
                     saveState();
                 }
             }
@@ -276,6 +394,22 @@
 
         function closeGeminiModal() {
             geminiTipModal.style.display = 'none';
+        }
+        
+        async function callGemini(prompt) {
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${state.geminiApiKey}`;
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            return result.candidates[0].content.parts[0].text;
         }
 
         async function getHydrationTip() {
@@ -289,23 +423,10 @@
             geminiTipContentEl.innerHTML = `<div class="loader"></div>`;
 
             const prompt = "Give me a short, fun, and encouraging fact or tip about staying hydrated. Make it sound exciting and keep it to one or two sentences.";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${state.geminiApiKey}`;
-
+            
             try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API Error: ${response.statusText}`);
-                }
-
-                const result = await response.json();
-                const text = result.candidates[0].content.parts[0].text;
+                const text = await callGemini(prompt);
                 geminiTipContentEl.innerHTML = `<p class="text-lg">${text}</p>`;
-
             } catch (error) {
                 console.error('Error fetching Gemini tip:', error);
                 geminiTipContentEl.innerHTML = `<p class="text-red-300">Sorry, I couldn't fetch a tip right now. Please check your API key and try again.</p>`;
@@ -351,6 +472,7 @@
 
         function createBubbles() {
             const container = document.getElementById('background-bubbles');
+            if (!container) return;
             const bubbleCount = 20;
             for (let i = 0; i < bubbleCount; i++) {
                 const bubble = document.createElement('div');
@@ -375,6 +497,8 @@
         window.onclick = function(event) {
             if (event.target == settingsModal) closeSettings();
             if (event.target == geminiTipModal) closeGeminiModal();
+            if (event.target == goalModal) closeGoalModal();
+            if (event.target == gasInstructionsModal) gasInstructionsModal.style.display = 'none';
         }
 
     </script>
