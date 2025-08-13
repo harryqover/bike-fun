@@ -230,9 +230,6 @@
     </div>
 
     <script>
-        // ✅ REWRITTEN: All functions are now defined in the script's outer scope.
-        // This prevents ReferenceErrors by ensuring functions are declared before they are called.
-        
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwoYQQZvWwb913IBqsaGbwJ9Y_C6KHYwm4nBnMCPUEDj-9jMLM0luw8piGKkZk8vvV6/exec';
         const LOCAL_STORAGE_KEY_PREFIX = 'qoverPortalData_';
         const AUTH_SESSION_KEY = 'qoverPortalAuthToken';
@@ -378,8 +375,49 @@
                 });
         };
 
+        // ✅ FIXED: This function now correctly handles the API response structure.
         const renderData = (data) => {
-            // ... (renderData logic as before, without upgrade button) ...
+            const pilotsTableBody = document.getElementById('pilots-table-body');
+            pilotsTableBody.innerHTML = ''; 
+            let activePilots = 0, endedPilots = 0, totalPremium = 0;
+            const items = data.items || []; // Ensure items is an array
+
+            if (items.length > 0) {
+                items.sort((a, b) => (a.reference || '').localeCompare(b.reference || ''));
+                items.forEach(pilot => {
+                    const tr = document.createElement('tr');
+                    const pilotId = pilot.reference || 'N/A';
+                    const currentWage = pilot.subject?.wage || '';
+                    const currentBirthdate = pilot.subject?.birthdate ? formatDate(pilot.subject.birthdate) : '';
+                    const currentGender = pilot.subject?.gender || '';
+                    const cip = pilot.premium?.fullTerm?.cip;
+                    const gip = pilot.premium?.fullTerm?.gip?.amount;
+                    
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 hidden col-risk-id">${pilot.id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${pilotId}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(pilot.contractPeriod?.startDate)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${pilot.contractPeriod?.endDate ? formatDate(pilot.contractPeriod.endDate) : 'Active'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${pilot.policyNumber || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentWage}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentBirthdate}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden col-financials">${cip ? `€${cip.toFixed(2)}` : 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden col-financials">${gip ? `€${gip.toFixed(2)}` : 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-3">
+                            <button class="text-gray-600 hover:qover-text-purple endorse-btn" title="Endorse" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-wage="${currentWage}" data-birthdate="${currentBirthdate}" data-gender="${currentGender}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></button>
+                            <button class="text-gray-600 hover:text-red-600 cancel-btn" title="Cancel" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg></button>
+                        </td>`;
+                    pilotsTableBody.appendChild(tr);
+
+                    if (pilot.status === 'CONTRACT_STATUS_ACTIVE') activePilots++; else endedPilots++;
+                    if (pilot.premium?.fullTerm?.cip) totalPremium += pilot.premium.fullTerm.cip;
+                });
+            } else {
+                 pilotsTableBody.innerHTML = `<tr><td colspan="10" class="text-center py-4">No policies found for this Master Policy.</td></tr>`;
+            }
+            document.getElementById('stats-active-pilots').textContent = activePilots;
+            document.getElementById('stats-ended-pilots').textContent = endedPilots;
+            document.getElementById('stats-total-premium').textContent = `€${totalPremium.toFixed(2)}`;
         };
 
         const loadMasterPoliciesIntoSettings = () => {
@@ -470,9 +508,7 @@
             }
         };
 
-        // ✅ This is the main execution block that runs after the DOM is ready.
         document.addEventListener('DOMContentLoaded', () => {
-            // Define DOM element constants inside the listener
             const navLinks = document.querySelectorAll('.nav-link');
             const settingsForm = document.getElementById('settings-form');
             const settingsEnv = document.getElementById('setting-env');
@@ -480,7 +516,6 @@
             const mpListContainer = document.getElementById('mp-list');
             const toastCloseBtn = document.getElementById('toast-close-btn');
 
-            // Attach event listeners
             toastCloseBtn.addEventListener('click', () => document.getElementById('toast').classList.add('hidden'));
 
             navLinks.forEach(link => {
@@ -532,11 +567,10 @@
                 initializeMainAppView();
             });
 
-            // Start the application
             handleInitialLoad();
         });
         
-        console.log("Version: 5.4 - Refactored for Stability");
+        console.log("Version: 5.5 - Corrected Data Handling");
     </script>
 </body>
 </html>
