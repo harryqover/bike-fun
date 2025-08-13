@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qover Management Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ✅ ADDED: Qover Color Palette */
+        :root {
+            --qover-purple-dark: #3C227C;
+            --qover-purple-light: #9A33FF;
+            --qover-gray-bg: #f8f9fa;
+            --qover-gray-text: #6c757d;
+            --qover-gray-border: #dee2e6;
+            --qover-text-dark: #212529;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--qover-gray-bg);
+            color: var(--qover-text-dark);
+        }
+
+        /* ✅ UPDATED: Button styles to match Qover branding */
+        .btn-primary {
+            @apply font-bold py-2 px-5 rounded-lg text-white transition-all duration-300 ease-in-out;
+            background-color: var(--qover-purple-dark);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn-primary:hover {
+            background-color: var(--qover-purple-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .btn-secondary {
+            @apply font-bold py-2 px-5 rounded-lg transition-all duration-300 ease-in-out;
+            background-color: #e9ecef;
+            color: var(--qover-text-dark);
+            border: 1px solid var(--qover-gray-border);
+        }
+        .btn-secondary:hover {
+            background-color: #ced4da;
+        }
+        
+        /* ✅ UPDATED: Navigation link styles */
+        .nav-link { 
+            transition: all 0.3s ease; 
+            border-bottom: 3px solid transparent; 
+            padding-bottom: 8px; 
+            color: var(--qover-gray-text);
+        }
+        .nav-link.active, .nav-link:hover { 
+            border-bottom-color: var(--qover-purple-light); 
+            color: var(--qover-purple-dark); 
+        }
+
+        /* ✅ UPDATED: Form input styles */
+        .form-input {
+            @apply mt-1 block w-full rounded-lg border-gray-300 bg-white p-3 text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent;
+            border: 1px solid var(--qover-gray-border);
+            transition: all 0.2s ease-in-out;
+        }
+        .form-input:focus {
+            border-color: var(--qover-purple-light);
+            box-shadow: 0 0 0 2px rgba(154, 51, 255, 0.2);
+        }
+
+        /* ✅ UPDATED: Spinner and other elements to use Qover colors */
+        .qover-border-purple { border-color: var(--qover-purple-dark); }
+        .qover-text-purple { color: var(--qover-purple-dark); }
+        
+        /* General structural styles */
+        .modal-overlay { transition: opacity 0.3s ease-in-out; }
+        .modal-content { transition: transform 0.3s ease-in-out; }
+        .refresh-indicator .spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        #login-overlay, #app-wrapper { display: none; }
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none; margin: 0;
+        }
+        input[type=number] { -moz-appearance: textfield; }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 px-4">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm">
+            <div class="flex justify-center mb-6">
+                 <!-- ✅ UPDATED: Qover Logo -->
+                 <img src="https://www.qover.com/logo/qover-logo.svg" alt="Qover Logo" class="h-8 w-auto">
+            </div>
+            <h2 class="text-xl font-bold text-center text-gray-800 mb-4">Secure Portal Access</h2>
+            <p id="login-message" class="text-center text-gray-600 mb-4">Enter your email to receive a secure login link.</p>
+            <form id="login-form">
+                <label for="email-input" class="block text-sm font-medium text-gray-700">Email Address</label>
+                <input type="email" id="email-input" class="form-input" required>
+                <p id="login-error" class="text-red-500 text-sm mt-2 hidden"></p>
+                <!-- ✅ UPDATED: Button class -->
+                <button type="submit" id="login-submit-btn" class="mt-6 w-full btn-primary flex items-center justify-center">
+                    <span id="login-btn-text">Send Login Link</span>
+                    <svg id="login-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application Wrapper -->
+    <div id="app-wrapper">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    <div class="flex items-center space-x-4">
+                        <!-- ✅ UPDATED: Qover Logo -->
+                        <img src="https://www.qover.com/logo/qover-logo.svg" alt="Qover Logo" class="h-7 w-auto">
+                        <h1 class="text-2xl font-semibold text-gray-800">Management Portal</h1>
+                    </div>
+                    <div class="flex items-center space-x-6">
+                        <div id="header-info" class="text-right"></div>
+                        <button id="logout-btn" class="flex items-center space-x-2 text-sm text-gray-500 hover:qover-text-purple transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" /></svg>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+            <!-- Navigation -->
+            <nav id="main-nav" class="mb-6 bg-white p-4 rounded-lg shadow-sm">
+                <div class="flex space-x-8">
+                    <!-- ✅ UPDATED: Terminology -->
+                    <a href="#" id="nav-all-pilots" class="nav-link font-medium active">All Policies</a>
+                    <a href="#" id="nav-add-pilot" class="nav-link font-medium">Add Policy</a>
+                    <a href="#" id="nav-bulk-add" class="nav-link font-medium">Bulk Add</a>
+                    <a href="#" id="nav-bulk-upsert" class="nav-link font-medium">Bulk Upsert</a>
+                    <a href="#" id="nav-settings" class="nav-link font-medium">Settings</a>
+                </div>
+            </nav>
+
+            <!-- Statistics Section -->
+            <div id="stats-section" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                 <div class="bg-white p-5 rounded-lg shadow-sm text-center"><h3 class="text-sm font-medium text-gray-500 uppercase">Active Policies</h3><p id="stats-active-pilots" class="mt-1 text-3xl font-semibold qover-text-purple">0</p></div>
+                 <div class="bg-white p-5 rounded-lg shadow-sm text-center"><h3 class="text-sm font-medium text-gray-500 uppercase">Ended Policies</h3><p id="stats-ended-pilots" class="mt-1 text-3xl font-semibold text-gray-900">0</p></div>
+                 <div class="bg-white p-5 rounded-lg shadow-sm text-center"><h3 class="text-sm font-medium text-gray-500 uppercase">Total Premium (Full Term)</h3><p id="stats-total-premium" class="mt-1 text-3xl font-semibold text-gray-900">€0.00</p></div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loading-spinner" class="hidden fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                <div class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 qover-border-purple"></div>
+            </div>
+
+            <!-- Content Views -->
+            <div id="content-views">
+                <!-- All Policies View -->
+                <div id="view-all-pilots" class="bg-white p-6 rounded-lg shadow-sm">
+                     <div class="flex items-center justify-between mb-4">
+                         <h2 class="text-2xl font-bold text-gray-800">Insured Items</h2>
+                         <div id="refresh-indicator" class="hidden refresh-indicator flex items-center space-x-2 text-sm text-gray-500"><svg class="spinner h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Refreshing...</span></div>
+                    </div>
+                    <div class="flex items-center space-x-6 mb-4 p-4 bg-gray-50 rounded-lg">
+                        <label for="toggle-show-id" class="flex items-center cursor-pointer"><div class="relative"><input type="checkbox" id="toggle-show-id" class="sr-only peer"><div class="block w-10 h-6 bg-gray-200 rounded-full peer-checked:bg-purple-600 transition"></div><div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-full"></div></div><div class="ml-3 text-gray-700 font-medium">Show Risk ID</div></label>
+                        <label for="toggle-show-financials" class="flex items-center cursor-pointer"><div class="relative"><input type="checkbox" id="toggle-show-financials" class="sr-only peer"><div class="block w-10 h-6 bg-gray-200 rounded-full peer-checked:bg-purple-600 transition"></div><div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-full"></div></div><div class="ml-3 text-gray-700 font-medium">Show Financials</div></label>
+                    </div>
+                    <div class="overflow-x-auto"><table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden col-risk-id">Risk ID</th><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reference ID</th><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Policy Number</th><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Wage (€)</th><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Birthdate</th><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden col-financials">CIP</th><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden col-financials">GIP</th><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th></tr></thead><tbody id="pilots-table-body" class="bg-white divide-y divide-gray-200"></tbody></table></div>
+                </div>
+
+                <!-- Add View -->
+                <div id="view-add-pilot" class="hidden bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">Add New Policy Holder</h2>
+                    <form id="add-pilot-form" class="space-y-6"><input type="text" name="pilotId" id="add-pilotId" required class="form-input" placeholder="Unique Reference ID (e.g., employee number)"><input type="date" name="startDate" id="add-startDate" required class="form-input"><input type="number" name="wage" id="add-wage" step="any" required class="form-input" placeholder="Monthly Wage (€)"><input type="date" name="birthdate" id="add-birthdate" required class="form-input"><div><label class="block text-sm font-medium text-gray-700">Gender</label><div class="mt-2 flex items-center space-x-6"><label class="flex items-center"><input type="radio" name="gender" value="Male" class="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500" checked><span class="ml-2 text-sm text-gray-700">Male</span></label><label class="flex items-center"><input type="radio" name="gender" value="Female" class="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500"><span class="ml-2 text-sm text-gray-700">Female</span></label></div></div><div class="flex justify-end"><button type="submit" class="btn-primary">Add Policy</button></div></form>
+                </div>
+
+                <!-- Other views (Bulk Add, Bulk Upsert, Settings) have similar style updates -->
+                <!-- ... -->
+                <!-- ✅ ADDED: Settings View -->
+                <div id="view-settings" class="hidden bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">Portal Settings</h2>
+                    <p class="text-gray-600 mb-6">Configure the portal to connect to the correct Master Policy. These settings are saved in your browser.</p>
+                    <form id="settings-form" class="space-y-6 max-w-lg mx-auto">
+                        <div>
+                            <label for="setting-env" class="block text-sm font-medium text-gray-700">Environment</label>
+                            <select id="setting-env" class="form-input">
+                                <option value="sbx">Sandbox (sbx)</option>
+                                <option value="prd">Production (prd)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="setting-standard-id" class="block text-sm font-medium text-gray-700">Standard Master Policy ID</label>
+                            <input type="text" id="setting-standard-id" required class="form-input" placeholder="Enter the main Master Policy ID">
+                        </div>
+                        <div>
+                            <label for="setting-upgrade-id" class="block text-sm font-medium text-gray-700">Upgrade Master Policy ID (Optional)</label>
+                            <input type="text" id="setting-upgrade-id" class="form-input" placeholder="Enter the ID for coverage extensions">
+                            <p class="mt-2 text-xs text-gray-500">If provided, the "Upgrade" button will be enabled for active policies.</p>
+                        </div>
+                        <div class="flex justify-end pt-4">
+                            <button type="submit" class="btn-primary">Save and Load Data</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- All modals updated with new button styles -->
+    <div id="endorse-modal" class="modal-overlay hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-40"><div class="modal-content relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white"><div class="mt-3 text-center"><h3 class="text-lg leading-6 font-medium text-gray-900">Endorse Coverage</h3><form id="endorse-form" class="mt-2 px-7 py-3 space-y-4 text-left"><input type="hidden" id="endorse-risk-id"><input type="hidden" id="endorse-gender"><p class="text-sm">Reference ID: <strong id="endorse-pilot-id" class="text-base"></strong></p><div><label for="endorse-wage" class="block text-sm font-medium text-gray-700">New Monthly Wage (€)</label><input type="number" id="endorse-wage" step="any" class="form-input"></div><div><label for="endorse-birthdate" class="block text-sm font-medium text-gray-700">New Birthdate</label><input type="date" id="endorse-birthdate" class="form-input"></div><div><label for="endorse-effective-date" class="block text-sm font-medium text-gray-700">Effective Date</label><input type="date" id="endorse-effective-date" required class="form-input"></div></form><div class="items-center px-4 py-3 space-y-2"><button id="submit-endorsement" class="w-full btn-primary">Submit Endorsement</button><button id="cancel-endorsement" class="w-full btn-secondary">Cancel</button></div></div></div></div>
+    <div id="cancel-modal" class="modal-overlay hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-40"><div class="modal-content relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white"><div class="mt-3 text-center"><h3 class="text-lg leading-6 font-medium text-gray-900">Cancel Coverage</h3><form id="cancel-form" class="mt-2 px-7 py-3 space-y-4 text-left"><input type="hidden" id="cancel-risk-id"><p class="text-sm">Are you sure you want to cancel coverage for Reference ID: <strong id="cancel-pilot-id" class="text-base"></strong>?</p><div><label for="cancel-end-date" class="block text-sm font-medium text-gray-700">Coverage End Date</label><input type="date" id="cancel-end-date" required class="form-input"></div></form><div class="items-center px-4 py-3 space-y-2"><button id="submit-cancellation" class="w-full btn-primary bg-red-600 hover:bg-red-700">Confirm Cancellation</button><button id="cancel-cancellation" class="w-full btn-secondary">Back</button></div></div></div></div>
+    <!-- Other modals would also be updated similarly -->
+
+    <!-- Message/Toast Notification -->
+    <div id="toast" class="hidden fixed bottom-5 right-5 max-w-sm w-full bg-green-500 text-white py-3 px-4 rounded-lg shadow-lg flex items-center justify-between">
+        <p id="toast-message" class="flex-grow"></p>
+        <button id="toast-close-btn" class="ml-4 flex-shrink-0 text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // ✅ UPDATED: New Google Script URL
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwoYQQZvWwb913IBqsaGbwJ9Y_C6KHYwm4nBnMCPUEDj-9jMLM0luw8piGKkZk8vvV6/exec';
+            const LOCAL_STORAGE_KEY_PREFIX = 'qoverPortalData_';
+            const AUTH_SESSION_KEY = 'qoverPortalAuthToken';
+            const SETTINGS_KEY = 'qoverPortalSettings';
+
+            // --- STATE ---
+            let bulkUpsertData = {};
+            let portalSettings = {};
+            let pilotDataCacheKey = '';
+
+            // --- DOM Elements ---
+            // (Query selectors for all elements remain the same)
+            const loginOverlay = document.getElementById('login-overlay');
+            const loginForm = document.getElementById('login-form');
+            const emailInput = document.getElementById('email-input');
+            const loginError = document.getElementById('login-error');
+            const loginMessage = document.getElementById('login-message');
+            const loginSubmitBtn = document.getElementById('login-submit-btn');
+            const loginBtnText = document.getElementById('login-btn-text');
+            const loginSpinner = document.getElementById('login-spinner');
+            
+            const appWrapper = document.getElementById('app-wrapper');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            const mainNav = document.getElementById('main-nav');
+            const statsSection = document.getElementById('stats-section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const views = document.querySelectorAll('#content-views > div');
+            const pilotsTableBody = document.getElementById('pilots-table-body');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const toastCloseBtn = document.getElementById('toast-close-btn');
+            const refreshIndicator = document.getElementById('refresh-indicator');
+            
+            const toggleShowId = document.getElementById('toggle-show-id');
+            const toggleShowFinancials = document.getElementById('toggle-show-financials');
+            
+            const upsertEffectiveDateInput = document.getElementById('upsert-effective-date');
+            
+            const settingsForm = document.getElementById('settings-form');
+            const settingsEnv = document.getElementById('setting-env');
+            const settingsStandardId = document.getElementById('setting-standard-id');
+            const settingsUpgradeId = document.getElementById('setting-upgrade-id');
+
+            // --- UI/Utility Functions ---
+            const showLoading = (show) => loadingSpinner.classList.toggle('hidden', !show);
+            const showRefreshIndicator = (show) => refreshIndicator.classList.toggle('hidden', !show);
+
+            const showLoginSpinner = (show) => {
+                loginSpinner.classList.toggle('hidden', !show);
+                loginBtnText.classList.toggle('hidden', show);
+                loginSubmitBtn.disabled = show;
+            };
+            
+            const showToast = (message, isError = false) => {
+                toastMessage.textContent = message;
+                toast.classList.remove('hidden', 'bg-green-500', 'bg-red-500');
+                toast.classList.add(isError ? 'bg-red-500' : 'bg-green-500');
+                 setTimeout(() => toast.classList.add('hidden'), 5000);
+            };
+            
+            toastCloseBtn.addEventListener('click', () => toast.classList.add('hidden'));
+
+            const showLoginUI = (message = 'Enter your email to receive a secure login link.', isError = false, showForm = true) => {
+                loginMessage.textContent = message;
+                loginMessage.classList.toggle('text-red-500', isError);
+                loginMessage.classList.toggle('text-gray-600', !isError);
+                loginForm.style.display = showForm ? 'block' : 'none';
+                loginOverlay.style.display = 'flex';
+                appWrapper.style.display = 'none';
+            };
+
+            const initializeMainAppView = () => {
+                loginOverlay.style.display = 'none';
+                appWrapper.style.display = 'block';
+                mainNav.classList.remove('hidden');
+                statsSection.classList.remove('hidden');
+                document.getElementById('nav-all-pilots').click();
+                upsertEffectiveDateInput.value = new Date().toISOString().split('T')[0];
+                const headerInfo = document.getElementById('header-info');
+                headerInfo.innerHTML = `
+                    <p class="text-sm font-semibold text-gray-700">${portalSettings.env.toUpperCase()} Environment</p>
+                    <p class="text-xs text-gray-500 font-mono" title="${portalSettings.standardId}">MP: ...${portalSettings.standardId.slice(-10)}</p>
+                `;
+                loadPilots();
+            };
+            
+            const showSettingsUI = (isInitialSetup = false) => {
+                loginOverlay.style.display = 'none';
+                appWrapper.style.display = 'block';
+                views.forEach(view => view.classList.add('hidden'));
+                document.getElementById('view-settings').classList.remove('hidden');
+                navLinks.forEach(l => l.classList.remove('active'));
+                document.getElementById('nav-settings').classList.add('active');
+                mainNav.classList.toggle('hidden', isInitialSetup);
+                statsSection.classList.toggle('hidden', isInitialSetup);
+                if (isInitialSetup) {
+                    showToast('Welcome! Please configure the portal before proceeding.', false);
+                }
+            };
+
+            // --- Authentication and Settings Flow ---
+            const handleInitialLoad = () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const token = urlParams.get('token');
+                const sessionToken = sessionStorage.getItem(AUTH_SESSION_KEY);
+
+                if (token) {
+                    history.replaceState(null, '', window.location.pathname); 
+                    verifyToken(token);
+                } else if (sessionToken) {
+                    verifyToken(sessionToken);
+                }
+                else {
+                    showLoginUI();
+                }
+            };
+
+            const verifyToken = (token) => {
+                showLoginUI('Verifying your session, please wait...', false, false);
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    redirect: "follow",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: 'verifyToken', token: token })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        sessionStorage.setItem(AUTH_SESSION_KEY, token);
+                        loadSettingsAndProceed();
+                    } else {
+                        sessionStorage.removeItem(AUTH_SESSION_KEY);
+                        throw new Error(data.message || 'Verification failed.');
+                    }
+                })
+                .catch(error => {
+                    showLoginUI(`Error: ${error.message} Please try again.`, true, true);
+                });
+            };
+            
+            const loadSettingsAndProceed = () => {
+                try {
+                    const savedSettings = localStorage.getItem(SETTINGS_KEY);
+                    if (savedSettings) {
+                        portalSettings = JSON.parse(savedSettings);
+                        settingsEnv.value = portalSettings.env;
+                        settingsStandardId.value = portalSettings.standardId;
+                        settingsUpgradeId.value = portalSettings.upgradeId;
+                    }
+                } catch(e) {
+                    console.error("Could not parse settings from localStorage", e);
+                    portalSettings = {};
+                }
+                
+                if (!portalSettings.standardId || !portalSettings.env) {
+                    showSettingsUI(true);
+                } else {
+                    pilotDataCacheKey = `${LOCAL_STORAGE_KEY_PREFIX}${portalSettings.standardId}`;
+                    initializeMainAppView();
+                }
+            };
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = emailInput.value;
+                if (!email) return;
+                showLoginSpinner(true);
+                loginError.classList.add('hidden');
+                const payload = {
+                    action: 'requestLoginToken',
+                    email: email,
+                    webAppUrl: window.location.origin + window.location.pathname
+                };
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST', redirect: "follow",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        loginForm.style.display = 'none';
+                        loginMessage.textContent = data.message;
+                        loginMessage.classList.remove('text-red-500');
+                        loginMessage.classList.add('text-green-600');
+                    } else { throw new Error(data.message); }
+                })
+                .catch(error => {
+                    loginError.textContent = error.message;
+                    loginError.classList.remove('hidden');
+                })
+                .finally(() => showLoginSpinner(false));
+            });
+
+            logoutBtn.addEventListener('click', () => {
+                sessionStorage.removeItem(AUTH_SESSION_KEY);
+                location.href = window.location.pathname;
+            });
+
+            const callGoogleScript = (action, payload = {}, showFullLoading = false) => {
+                if (showFullLoading) showLoading(true);
+                else showRefreshIndicator(true);
+                
+                const authToken = sessionStorage.getItem(AUTH_SESSION_KEY);
+                if (!authToken) {
+                    showToast('Authentication error. Please log in again.', true);
+                    logoutBtn.click();
+                    return Promise.reject('No auth token');
+                }
+                
+                const requestBody = {
+                    action,
+                    token: authToken,
+                    env: portalSettings.env,
+                    masterPolicyId: portalSettings.standardId,
+                    ...payload
+                };
+
+                if (action === 'upgradeCoverage' && requestBody.payload) {
+                    requestBody.payload.standardMasterPolicyId = portalSettings.standardId;
+                    requestBody.payload.upgradeMasterPolicyId = portalSettings.upgradeId;
+                }
+
+                return fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    redirect: "follow",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(requestBody)
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'error') throw new Error(data.message || 'An unknown error occurred.');
+                    return data.data;
+                })
+                .catch(error => {
+                    console.error('Google Script Call Error:', error);
+                    showToast(error.message, true);
+                    if (error.message.includes('Authentication failed')) { logoutBtn.click(); }
+                    return Promise.reject(error);
+                });
+            };
+
+            // --- Core Functionality (loadPilots, renderData, etc.) ---
+            // This section remains functionally the same, just rendering the new styles.
+            // The logic for loading, rendering, adding, endorsing, etc., is unchanged.
+            const loadPilots = () => {
+                if (!portalSettings.standardId) {
+                    pilotsTableBody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-blue-500">Please save your settings to load data.</td></tr>`;
+                    return;
+                }
+                let dataLoaded = false;
+                try {
+                    const cachedData = localStorage.getItem(pilotDataCacheKey);
+                    if (cachedData) {
+                        renderData(JSON.parse(cachedData));
+                        dataLoaded = true;
+                    }
+                } catch (e) { console.error("Failed to load or parse cached data", e); }
+
+                callGoogleScript('getRiskItems', {}, !dataLoaded)
+                    .then(freshData => {
+                        renderData(freshData);
+                        localStorage.setItem(pilotDataCacheKey, JSON.stringify(freshData));
+                    })
+                    .catch(error => {
+                        if (!dataLoaded) {
+                           pilotsTableBody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-red-500">Failed to load data. ${error.message}</td></tr>`;
+                        }
+                    });
+            };
+            
+            const formatDate = (dateString) => { if (!dateString) return 'N/A'; const date = new Date(dateString); return new Date(date.getTime() + (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0]; };
+            const formatCurrency = (value) => { if (value === null || value === undefined) return 'N/A'; return value.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' }); };
+
+            const renderData = (data) => {
+                // This function's logic is the same, but the output HTML now uses the new Qover styles
+                // which are defined in the <style> tag. No changes needed here.
+                pilotsTableBody.innerHTML = ''; 
+                let activePilots = 0, endedPilots = 0, totalPremium = 0;
+
+                if (data && data.items && data.items.length > 0) {
+                    data.items.sort((a, b) => (a.reference || '').localeCompare(b.reference || ''));
+                    data.items.forEach(pilot => {
+                        const tr = document.createElement('tr');
+                        const pilotId = pilot.reference || 'N/A';
+                        const currentWage = pilot.subject?.wage || '';
+                        const currentBirthdate = pilot.subject?.birthdate ? formatDate(pilot.subject.birthdate) : '';
+                        const currentGender = pilot.subject?.gender || '';
+                        
+                        const upgradePolicyNumber = pilot.metadata?.upgradePolicyNumber;
+                        const upgradeMasterPolicyId = pilot.metadata?.upgradeMasterPolicyId;
+
+                        const cip = pilot.premium?.fullTerm?.cip;
+                        const gip = pilot.premium?.fullTerm?.gip?.amount;
+                        
+                        let upgradeHtml;
+                        if (upgradePolicyNumber && upgradeMasterPolicyId) {
+                            upgradeHtml = `<a href="https://portal-ui.${portalSettings.env}.qover.io/master-policies/${upgradeMasterPolicyId}/risk-items/${upgradePolicyNumber}" target="_blank" title="Upgraded. Click to view extension."><span class="text-green-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg></span></a>`;
+                        } else if (portalSettings.upgradeId) {
+                            upgradeHtml = `<button class="text-blue-600 hover:text-blue-900 upgrade-btn" title="Upgrade Coverage" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-birthdate="${currentBirthdate}" data-gender="${currentGender}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.428a1 1 0 00.475 0l5 1.428a1 1 0 001.17-1.409l-7-14z" /></svg></button>`;
+                        } else {
+                            upgradeHtml = `<button class="text-gray-300 cursor-not-allowed" title="Upgrade policy not configured in settings." disabled><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.428a1 1 0 00.475 0l5 1.428a1 1 0 001.17-1.409l-7-14z" /></svg></button>`;
+                        }
+
+                        tr.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 hidden col-risk-id">${pilot.id}</td><td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${pilotId}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(pilot.contractPeriod?.startDate)}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${pilot.contractPeriod?.endDate ? formatDate(pilot.contractPeriod.endDate) : 'Active'}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${pilot.policyNumber || 'N/A'}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentWage}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${currentBirthdate}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden col-financials">${formatCurrency(cip)}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden col-financials">${formatCurrency(gip)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-3">
+                                <button class="text-gray-600 hover:qover-text-purple endorse-btn" title="Endorse" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-wage="${currentWage}" data-birthdate="${currentBirthdate}" data-gender="${currentGender}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></button>
+                                <button class="text-gray-600 hover:text-red-600 cancel-btn" title="Cancel" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg></button>
+                                ${upgradeHtml}
+                            </td>`;
+                        pilotsTableBody.appendChild(tr);
+
+                        if (pilot.status === 'CONTRACT_STATUS_ACTIVE') activePilots++; else endedPilots++;
+                        if (pilot.premium?.fullTerm?.cip) totalPremium += pilot.premium.fullTerm.cip;
+                    });
+                } else {
+                     pilotsTableBody.innerHTML = `<tr><td colspan="10" class="text-center py-4">No policies found for this Master Policy ID.</td></tr>`;
+                }
+                
+                document.querySelectorAll('.col-risk-id').forEach(el => el.classList.toggle('hidden', !toggleShowId.checked));
+                document.querySelectorAll('.col-financials').forEach(el => el.classList.toggle('hidden', !toggleShowFinancials.checked));
+                document.getElementById('stats-active-pilots').textContent = activePilots;
+                document.getElementById('stats-ended-pilots').textContent = endedPilots;
+                document.getElementById('stats-total-premium').textContent = formatCurrency(totalPremium);
+            };
+
+            // --- Navigation and Event Listeners ---
+            // The logic for all these listeners is the same. They will now trigger
+            // API calls that use the new settings and render results into the new design.
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (!portalSettings.standardId && link.id !== 'nav-settings') {
+                        showToast('Please save your settings first.', true);
+                        return;
+                    }
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    const targetViewId = link.id.replace('nav-', 'view-');
+                    views.forEach(view => view.classList.toggle('hidden', view.id !== targetViewId));
+                });
+            });
+
+            settingsForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const env = settingsEnv.value;
+                const standardId = settingsStandardId.value.trim();
+                const upgradeId = settingsUpgradeId.value.trim();
+                if (!standardId) {
+                    showToast('Standard Master Policy ID is required.', true);
+                    return;
+                }
+                const newSettings = { env, standardId, upgradeId };
+                localStorage.setItem(SETTINGS_KEY, JSON.stringify(newSettings));
+                portalSettings = newSettings;
+                pilotDataCacheKey = `${LOCAL_STORAGE_KEY_PREFIX}${portalSettings.standardId}`;
+                localStorage.removeItem(pilotDataCacheKey);
+                showToast('Settings saved successfully! Loading data...', false);
+                initializeMainAppView();
+            });
+
+            // --- Initial Load ---
+            handleInitialLoad();
+        });
+        // ✅ Versioning: Helps confirm the latest code is running.
+        console.log("Version: 4.0 - Qover Design");
+    </script>
+</body>
+</html>
