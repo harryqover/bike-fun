@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Updater</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Simple transition for better UX */
+        .transition-all {
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-lg mx-auto p-6 md:p-8 bg-gray-800 rounded-2xl shadow-2xl">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-white">Contract Metadata Updater</h1>
+            <p class="text-gray-400 mt-2">Update the renewal purchase date for a contract.</p>
+        </div>
+
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="mb-6 bg-gray-700/50 p-5 rounded-xl">
+            <h2 class="text-xl font-semibold text-white mb-4">Settings</h2>
+            <div>
+                <label for="apiKey" class="block mb-2 text-sm font-medium text-gray-300">API Key</label>
+                <div class="flex items-center space-x-3">
+                    <input type="password" id="apiKey" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="sk_...">
+                    <button id="saveApiKeyBtn" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all">Save</button>
+                </div>
+                <p id="apiKeyStatus" class="text-xs text-green-400 mt-2 h-4"></p>
+            </div>
+        </div>
+
+        <!-- Main Form -->
+        <div id="update-form">
+            <div class="mb-5">
+                <label for="contractId" class="block mb-2 text-sm font-medium text-gray-300">Contract ID</label>
+                <input type="text" id="contractId" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="032045d2-9dbb-416a-b6fa-9231e84d0150" required>
+            </div>
+            <div class="mb-5">
+                <label for="renewPurchaseDate" class="block mb-2 text-sm font-medium text-gray-300">Renew Purchase Date</label>
+                <input type="datetime-local" id="renewPurchaseDate" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+            </div>
+            <button id="updateBtn" class="w-full text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-3 text-center transition-all flex items-center justify-center">
+                <span id="button-text">Update Contract</span>
+                <svg id="loading-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Result Display -->
+        <div id="result" class="mt-6 p-4 rounded-lg text-center h-20 flex items-center justify-center transition-all"></div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Element References ---
+            const apiKeyInput = document.getElementById('apiKey');
+            const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+            const apiKeyStatus = document.getElementById('apiKeyStatus');
+            const contractIdInput = document.getElementById('contractId');
+            const renewPurchaseDateInput = document.getElementById('renewPurchaseDate');
+            const updateBtn = document.getElementById('updateBtn');
+            const resultDiv = document.getElementById('result');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const buttonText = document.getElementById('button-text');
+
+            // --- Function to manage UI loading state ---
+            const setLoading = (isLoading) => {
+                if (isLoading) {
+                    updateBtn.disabled = true;
+                    updateBtn.classList.add('cursor-not-allowed', 'bg-green-800');
+                    loadingSpinner.classList.remove('hidden');
+                    buttonText.classList.add('hidden');
+                } else {
+                    updateBtn.disabled = false;
+                    updateBtn.classList.remove('cursor-not-allowed', 'bg-green-800');
+                    loadingSpinner.classList.add('hidden');
+                    buttonText.classList.remove('hidden');
+                }
+            };
+
+            // --- Function to display results ---
+            const showResult = (message, isSuccess) => {
+                resultDiv.innerHTML = message;
+                resultDiv.classList.remove('bg-green-500/20', 'text-green-300', 'bg-red-500/20', 'text-red-300');
+                if (isSuccess) {
+                    resultDiv.classList.add('bg-green-500/20', 'text-green-300');
+                } else {
+                    resultDiv.classList.add('bg-red-500/20', 'text-red-300');
+                }
+            };
+            
+            // --- Settings Logic ---
+
+            // Load API key from session storage on page load
+            const loadApiKey = () => {
+                const storedKey = sessionStorage.getItem('qoverApiKey');
+                if (storedKey) {
+                    apiKeyInput.value = storedKey;
+                    apiKeyStatus.textContent = 'API Key loaded from session.';
+                     setTimeout(() => apiKeyStatus.textContent = '', 3000);
+                }
+            };
+
+            // Save API key to session storage
+            saveApiKeyBtn.addEventListener('click', () => {
+                const key = apiKeyInput.value.trim();
+                if (key) {
+                    sessionStorage.setItem('qoverApiKey', key);
+                    apiKeyStatus.textContent = 'API Key saved for this session!';
+                    setTimeout(() => apiKeyStatus.textContent = '', 3000);
+                } else {
+                    apiKeyStatus.textContent = 'Please enter an API Key.';
+                }
+            });
+
+            // --- API Call Logic ---
+            updateBtn.addEventListener('click', async () => {
+                // Clear previous results and set loading state
+                showResult('', false);
+                setLoading(true);
+
+                // 1. Get data from inputs
+                const apiKey = sessionStorage.getItem('qoverApiKey');
+                const contractId = contractIdInput.value.trim();
+                const renewPurchaseDateValue = renewPurchaseDateInput.value;
+
+                // 2. Validate inputs
+                if (!apiKey) {
+                    showResult('Error: API Key is not set. Please save it in the settings panel.', false);
+                    setLoading(false);
+                    return;
+                }
+                if (!contractId || !renewPurchaseDateValue) {
+                    showResult('Error: Please fill in both Contract ID and Renew Purchase Date.', false);
+                    setLoading(false);
+                    return;
+                }
+
+                // 3. Format the date to ISO 8601 UTC format (e.g., 2025-08-04T11:12:13.014Z)
+                const isoDate = new Date(renewPurchaseDateValue).toISOString();
+
+                // 4. Prepare for the API call
+                const apiUrl = `https://api.prd.qover.io/bike/v1/ancillary/${contractId}/metadata`;
+                const requestBody = {
+                    metadata: [{
+                        key: "renewPurchaseDate",
+                        value: isoDate
+                    }]
+                };
+
+                // 5. Make the API call using fetch
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': apiKey,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+
+                    // 6. Handle the response
+                    if (response.ok) {
+                        const portalLink = `https://admin-ui.prd.qover.io/pim/contracts/${contractId}/overview`;
+                        const successMessage = `
+                            <strong>Success!</strong> Contract updated.
+                            <br>
+                            <a href="${portalLink}" target="_blank" class="underline hover:text-white font-semibold mt-2 inline-block">View in Admin Portal</a>
+                        `;
+                        showResult(successMessage, true);
+                    } else {
+                        // Try to get a meaningful error from the response body
+                        const errorData = await response.json().catch(() => ({ message: 'An unknown error occurred.' }));
+                        const errorMessage = `Error: ${response.status} ${response.statusText}. ${errorData.message || ''}`;
+                        showResult(errorMessage, false);
+                    }
+                } catch (error) {
+                    // Handle network errors
+                    console.error('Fetch Error:', error);
+                    showResult('Network Error: Could not connect to the API. Check your connection.', false);
+                } finally {
+                    // Always remove loading state
+                    setLoading(false);
+                }
+            });
+
+            // --- Initializations ---
+            loadApiKey();
+        });
+    </script>
+</body>
+</html>
