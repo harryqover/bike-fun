@@ -6,13 +6,15 @@
     <title>HydroHub - Your Water Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #1e3a8a, #3b82f6);
             color: white;
-            overflow: hidden;
+            /* Allow scrolling for the graph */
+            overflow: auto; 
         }
         .glass-container {
             background: rgba(255, 255, 255, 0.1);
@@ -29,6 +31,7 @@
             background: rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             animation: rise 10s infinite ease-in;
+            z-index: -1;
         }
         @keyframes rise {
             0% { transform: translateY(0); opacity: 1; }
@@ -84,48 +87,62 @@
             pointer-events: none;
             z-index: 200;
         }
+        #history-container {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1rem;
+        }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen">
+<body class="flex items-center justify-center min-h-screen py-8">
 
     <!-- Background & Animation Elements -->
     <div id="background-bubbles"></div>
     <canvas id="confetti-canvas"></canvas>
 
-    <div class="glass-container p-6 md:p-8 w-11/12 max-w-md mx-auto text-center relative z-10">
-        <h1 class="text-3xl md:text-4xl font-bold mb-2">HydroHub</h1>
-        <p class="text-blue-200 mb-6">Stay hydrated, stay healthy.</p>
+    <main class="w-11/12 max-w-md mx-auto">
+        <div class="glass-container p-6 md:p-8 text-center relative z-10">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">HydroHub</h1>
+            <p class="text-blue-200 mb-6">Stay hydrated, stay healthy.</p>
 
-        <!-- Main Water Display -->
-        <div class="relative w-48 h-72 md:w-56 md:h-80 mx-auto mb-6 border-4 border-white/50 rounded-t-3xl rounded-b-lg overflow-hidden bg-white/10">
-            <div id="water-level" class="water-level absolute bottom-0 left-0 w-full bg-blue-400"></div>
-            <div class="absolute inset-0 flex flex-col justify-end items-center p-4">
-                <span id="total-intake" class="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">0</span>
-                <span class="text-lg text-white/80">ml</span>
+            <!-- Main Water Display -->
+            <div class="relative w-48 h-72 md:w-56 md:h-80 mx-auto mb-6 border-4 border-white/50 rounded-t-3xl rounded-b-lg overflow-hidden bg-white/10">
+                <div id="water-level" class="water-level absolute bottom-0 left-0 w-full bg-blue-400"></div>
+                <div class="absolute inset-0 flex flex-col justify-end items-center p-4">
+                    <span id="total-intake" class="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">0</span>
+                    <span class="text-lg text-white/80">ml</span>
+                </div>
+            </div>
+            
+            <p class="mb-4">Goal: <span id="goal-display">2000</span> ml</p>
+
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <button onclick="addWater(250)" class="btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg text-lg">+250 ml</button>
+                <button onclick="addWater(500)" class="btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg text-lg">+500 ml</button>
+            </div>
+            
+            <!-- Gemini Feature Button -->
+            <div class="mb-6">
+                <button onclick="getHydrationTip()" class="btn bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-lg w-full flex items-center justify-center">
+                    <span class="mr-2">✨</span> Get Hydration Tip
+                </button>
+            </div>
+
+            <!-- Controls -->
+            <div class="flex justify-between items-center">
+                <button onclick="resetData()" class="text-blue-200 hover:text-white transition">Reset Day</button>
+                <button onclick="toggleHistory()" class="text-blue-200 hover:text-white transition">View History</button>
+                <button onclick="openSettings()" class="text-blue-200 hover:text-white transition">Settings</button>
             </div>
         </div>
-        
-        <p class="mb-4">Goal: <span id="goal-display">2000</span> ml</p>
 
-        <!-- Action Buttons -->
-        <div class="grid grid-cols-2 gap-4 mb-6">
-            <button onclick="addWater(250)" class="btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg text-lg">+250 ml</button>
-            <button onclick="addWater(500)" class="btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg text-lg">+500 ml</button>
+        <!-- History Graph -->
+        <div id="history-container" class="glass-container">
+            <h2 class="text-xl font-bold text-center mb-4">Last 20 Days</h2>
+            <canvas id="history-chart"></canvas>
         </div>
-        
-        <!-- Gemini Feature Button -->
-        <div class="mb-6">
-            <button onclick="getHydrationTip()" class="btn bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-lg w-full flex items-center justify-center">
-                <span class="mr-2">✨</span> Get Hydration Tip
-            </button>
-        </div>
-
-        <!-- Reset and Settings -->
-        <div class="flex justify-between items-center">
-            <button onclick="resetData()" class="text-blue-200 hover:text-white transition">Reset Day</button>
-            <button onclick="openSettings()" class="text-blue-200 hover:text-white transition">Settings</button>
-        </div>
-    </div>
+    </main>
 
     <!-- Modals -->
     <div id="settings-modal" class="modal">
@@ -233,6 +250,7 @@
 
 
     <script>
+        // DOM Elements
         const totalIntakeEl = document.getElementById('total-intake');
         const waterLevelEl = document.getElementById('water-level');
         const goalDisplayEl = document.getElementById('goal-display');
@@ -242,35 +260,48 @@
         const goalModal = document.getElementById('goal-celebration-modal');
         const goalMessageContentEl = document.getElementById('goal-message-content');
         const gasInstructionsModal = document.getElementById('gas-instructions-modal');
+        const historyContainer = document.getElementById('history-container');
         const confettiCanvas = document.getElementById('confetti-canvas');
         const myConfetti = confetti.create(confettiCanvas, { resize: true });
+        const historyChartCanvas = document.getElementById('history-chart');
 
         // App State
         let state = {
             total: 0,
-            goal: 2000,
             lastDrinkTimestamp: null,
             goalReachedToday: false,
+        };
+        let settings = {
+            goal: 2000,
             gsheetUrl: '',
             pushoverToken: '',
             pushoverUser: '',
             geminiApiKey: '',
         };
+        let history = {};
+        let chartInstance = null;
+
+        // --- Date Helper ---
+        function getTodayDateString() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
 
         // --- Core Logic ---
-
         function addWater(amount) {
             state.total += amount;
             state.lastDrinkTimestamp = Date.now();
             
-            // Check for goal completion
-            if (state.total >= state.goal && !state.goalReachedToday) {
+            if (state.total >= settings.goal && !state.goalReachedToday) {
                 state.goalReachedToday = true;
                 celebrateGoal();
             }
             
-            saveState();
             updateUI();
+            saveCurrentDay();
             logToGoogleSheet(amount, state.total);
             
             totalIntakeEl.style.transform = 'scale(1.2)';
@@ -279,197 +310,213 @@
 
         function updateUI() {
             totalIntakeEl.textContent = state.total;
-            goalDisplayEl.textContent = state.goal;
-            const percentage = Math.min((state.total / state.goal) * 100, 100);
+            goalDisplayEl.textContent = settings.goal;
+            const percentage = Math.min((state.total / settings.goal) * 100, 100);
             waterLevelEl.style.height = `${percentage}%`;
+            if (historyContainer.style.display === 'block') {
+                renderHistoryGraph();
+            }
         }
         
         function resetData() {
-            if (confirm("Are you sure you want to reset your progress for today?")) {
+            if (confirm("Are you sure you want to reset your progress for today? This cannot be undone.")) {
                 state.total = 0;
                 state.lastDrinkTimestamp = null;
                 state.goalReachedToday = false;
-                saveState();
                 updateUI();
+                saveCurrentDay();
             }
         }
 
         // --- Goal Celebration ---
-        
         async function celebrateGoal() {
-            // 1. Trigger Confetti
-            myConfetti({
-                particleCount: 150,
-                spread: 180,
-                origin: { y: 0.6 }
-            });
-
-            // 2. Show modal and get AI message
+            myConfetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
             goalModal.style.display = 'flex';
             goalMessageContentEl.innerHTML = `<div class="loader"></div>`;
             
-            if (!state.geminiApiKey) {
+            if (!settings.geminiApiKey) {
                 goalMessageContentEl.innerHTML = `<p class="text-lg">You are amazing! You've reached your hydration goal for today!</p>`;
                 return;
             }
-
             const prompt = "Write a short, fun, and very enthusiastic congratulatory message for someone who just reached their daily water drinking goal. Keep it under 25 words.";
             try {
                 const text = await callGemini(prompt);
                 goalMessageContentEl.innerHTML = `<p class="text-lg">${text}</p>`;
             } catch (error) {
-                console.error('Error fetching goal message:', error);
                 goalMessageContentEl.innerHTML = `<p class="text-lg">You are amazing! You've reached your hydration goal for today!</p>`;
             }
         }
-
-        function closeGoalModal() {
-            goalModal.style.display = 'none';
-        }
-
+        function closeGoalModal() { goalModal.style.display = 'none'; }
 
         // --- Settings & Instructions ---
-        
         function openSettings() {
-            document.getElementById('daily-goal').value = state.goal;
-            document.getElementById('gsheet-url').value = state.gsheetUrl || '';
-            document.getElementById('pushover-token').value = state.pushoverToken || '';
-            document.getElementById('pushover-user').value = state.pushoverUser || '';
-            document.getElementById('gemini-api-key').value = state.geminiApiKey || '';
+            document.getElementById('daily-goal').value = settings.goal;
+            document.getElementById('gsheet-url').value = settings.gsheetUrl || '';
+            document.getElementById('pushover-token').value = settings.pushoverToken || '';
+            document.getElementById('pushover-user').value = settings.pushoverUser || '';
+            document.getElementById('gemini-api-key').value = settings.geminiApiKey || '';
             settingsModal.style.display = 'flex';
         }
-
-        function closeSettings() {
-            settingsModal.style.display = 'none';
-        }
-
+        function closeSettings() { settingsModal.style.display = 'none'; }
         function saveSettings() {
             const newGoal = parseInt(document.getElementById('daily-goal').value, 10);
-            state.goal = isNaN(newGoal) || newGoal < 1 ? 2000 : newGoal;
-            state.gsheetUrl = document.getElementById('gsheet-url').value.trim();
-            state.pushoverToken = document.getElementById('pushover-token').value.trim();
-            state.pushoverUser = document.getElementById('pushover-user').value.trim();
-            state.geminiApiKey = document.getElementById('gemini-api-key').value.trim();
+            settings.goal = isNaN(newGoal) || newGoal < 1 ? 2000 : newGoal;
+            settings.gsheetUrl = document.getElementById('gsheet-url').value.trim();
+            settings.pushoverToken = document.getElementById('pushover-token').value.trim();
+            settings.pushoverUser = document.getElementById('pushover-user').value.trim();
+            settings.geminiApiKey = document.getElementById('gemini-api-key').value.trim();
             
-            saveState();
+            localStorage.setItem('hydroHubSettings', JSON.stringify(settings));
             updateUI();
             closeSettings();
         }
-
-        function openGasInstructions() {
-            gasInstructionsModal.style.display = 'flex';
-        }
+        function openGasInstructions() { gasInstructionsModal.style.display = 'flex'; }
 
         // --- Data Persistence ---
-
-        function saveState() {
-            localStorage.setItem('hydroHubState', JSON.stringify(state));
+        function saveCurrentDay() {
+            const todayStr = getTodayDateString();
+            history[todayStr] = {
+                total: state.total,
+                goalReached: state.goalReachedToday
+            };
+            localStorage.setItem('hydroHubHistory', JSON.stringify(history));
         }
 
-        function loadState() {
-            const savedState = localStorage.getItem('hydroHubState');
-            if (savedState) {
-                const parsedState = JSON.parse(savedState);
-                const today = new Date().toDateString();
-                const lastSavedDate = parsedState.lastDrinkTimestamp ? new Date(parsedState.lastDrinkTimestamp).toDateString() : null;
+        function loadData() {
+            const savedSettings = localStorage.getItem('hydroHubSettings');
+            if (savedSettings) {
+                settings = JSON.parse(savedSettings);
+            }
+            const savedHistory = localStorage.getItem('hydroHubHistory');
+            if (savedHistory) {
+                history = JSON.parse(savedHistory);
+            }
 
-                if (today === lastSavedDate) {
-                    state = parsedState;
-                } else {
-                    // New day, reset progress but keep settings
-                    state.goal = parsedState.goal || 2000;
-                    state.gsheetUrl = parsedState.gsheetUrl || '';
-                    state.pushoverToken = parsedState.pushoverToken || '';
-                    state.pushoverUser = parsedState.pushoverUser || '';
-                    state.geminiApiKey = parsedState.geminiApiKey || '';
-                    state.total = 0;
-                    state.lastDrinkTimestamp = null;
-                    state.goalReachedToday = false;
-                    saveState();
-                }
+            const todayStr = getTodayDateString();
+            const todayData = history[todayStr];
+            if (todayData) {
+                state.total = todayData.total;
+                state.goalReachedToday = todayData.goalReached;
+            } else {
+                state.total = 0;
+                state.goalReachedToday = false;
             }
         }
 
-        // --- Gemini API Integration ---
-
-        function closeGeminiModal() {
-            geminiTipModal.style.display = 'none';
+        // --- History Graph ---
+        function toggleHistory() {
+            if (historyContainer.style.display === 'block') {
+                historyContainer.style.display = 'none';
+            } else {
+                historyContainer.style.display = 'block';
+                renderHistoryGraph();
+            }
         }
-        
+
+        function renderHistoryGraph() {
+            const labels = [];
+            const data = [];
+            
+            for (let i = 19; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                labels.push(date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }));
+                data.push(history[dateStr]?.total || 0);
+            }
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(historyChartCanvas, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Water Intake (ml)',
+                        data: data,
+                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255, 255, 255, 0.2)' }
+                        },
+                        x: {
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- Gemini API Integration ---
+        function closeGeminiModal() { geminiTipModal.style.display = 'none'; }
         async function callGemini(prompt) {
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${state.geminiApiKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${settings.geminiApiKey}`;
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
-
-            if (!response.ok) {
-                throw new Error(`API Error: ${response.statusText}`);
-            }
-
+            if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
             const result = await response.json();
             return result.candidates[0].content.parts[0].text;
         }
-
         async function getHydrationTip() {
-            if (!state.geminiApiKey) {
+            if (!settings.geminiApiKey) {
                 alert("Please add your Gemini API Key in the settings to use this feature.");
                 openSettings();
                 return;
             }
-
             geminiTipModal.style.display = 'flex';
             geminiTipContentEl.innerHTML = `<div class="loader"></div>`;
-
             const prompt = "Give me a short, fun, and encouraging fact or tip about staying hydrated. Make it sound exciting and keep it to one or two sentences.";
-            
             try {
                 const text = await callGemini(prompt);
                 geminiTipContentEl.innerHTML = `<p class="text-lg">${text}</p>`;
             } catch (error) {
-                console.error('Error fetching Gemini tip:', error);
-                geminiTipContentEl.innerHTML = `<p class="text-red-300">Sorry, I couldn't fetch a tip right now. Please check your API key and try again.</p>`;
+                geminiTipContentEl.innerHTML = `<p class="text-red-300">Sorry, I couldn't fetch a tip. Please check your API key.</p>`;
             }
         }
 
-
         // --- Other Integrations ---
-
         function logToGoogleSheet(amount, total) {
-            if (!state.gsheetUrl) return;
-            fetch(state.gsheetUrl, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
+            if (!settings.gsheetUrl) return;
+            fetch(settings.gsheetUrl, {
+                method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount, total }),
             }).catch(error => console.error('Error logging to Google Sheet:', error));
         }
-
         function sendPushoverReminder() {
-            if (!state.pushoverToken || !state.pushoverUser || state.total >= state.goal) return;
-
+            if (!settings.pushoverToken || !settings.pushoverUser || state.total >= settings.goal) return;
             const now = Date.now();
             const twoHours = 2 * 60 * 60 * 1000;
-            
             if (state.lastDrinkTimestamp && (now - state.lastDrinkTimestamp > twoHours)) {
-                const message = `Time for some water! You've had ${state.total}ml out of your ${state.goal}ml goal today.`;
+                const message = `Time for some water! You've had ${state.total}ml out of your ${settings.goal}ml goal today.`;
                 fetch('https://api.pushover.net/1/messages.json', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        token: state.pushoverToken,
-                        user: state.pushoverUser,
-                        message: message,
-                        title: "💧 HydroHub Reminder"
-                    }),
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: settings.pushoverToken, user: settings.pushoverUser, message: message, title: "💧 HydroHub Reminder" }),
                 }).catch(error => console.error('Error sending Pushover notification:', error));
             }
         }
 
-
-        // --- Background Effects & Init ---
-
+        // --- Init & Background ---
         function createBubbles() {
             const container = document.getElementById('background-bubbles');
             if (!container) return;
@@ -488,7 +535,7 @@
         }
 
         window.onload = () => {
-            loadState();
+            loadData();
             updateUI();
             createBubbles();
             setInterval(sendPushoverReminder, 30 * 60 * 1000);
@@ -500,7 +547,6 @@
             if (event.target == goalModal) closeGoalModal();
             if (event.target == gasInstructionsModal) gasInstructionsModal.style.display = 'none';
         }
-
     </script>
 </body>
 </html>
