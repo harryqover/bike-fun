@@ -13,8 +13,12 @@
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #1e3a8a, #3b82f6);
             color: white;
-            /* Allow scrolling for the graph */
             overflow: auto; 
+            transition: background 0.5s ease;
+        }
+        /* Beer Mode Theme */
+        body.beer-mode {
+            background: linear-gradient(135deg, #fBB679, #f7924a);
         }
         .glass-container {
             background: rgba(255, 255, 255, 0.1);
@@ -23,8 +27,12 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
-        .water-level {
-            transition: height 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        .liquid {
+            transition: height 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55), background-color 0.5s ease;
+            background-color: #3b82f6; /* Water color */
+        }
+        body.beer-mode .liquid {
+            background-color: #fca903; /* Beer color */
         }
         .bubble {
             position: absolute;
@@ -91,7 +99,18 @@
             display: none;
             margin-top: 1.5rem;
             padding: 1rem;
-            height: 320px; /* FIX: Constrain height to prevent infinite growth */
+            height: 320px;
+        }
+        #app-title {
+            cursor: pointer;
+            user-select: none;
+            animation: shake 8s infinite ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            2%, 6% { transform: rotate(0.5deg); }
+            4%, 8% { transform: rotate(-0.5deg); }
+            10% { transform: rotate(0deg); }
         }
     </style>
 </head>
@@ -103,29 +122,33 @@
 
     <main class="w-11/12 max-w-md mx-auto">
         <div class="glass-container p-6 md:p-8 text-center relative z-10">
-            <h1 class="text-3xl md:text-4xl font-bold mb-2">HydroHub</h1>
-            <p class="text-blue-200 mb-6">Stay hydrated, stay healthy.</p>
+            <h1 id="app-title" onclick="toggleMode()" class="text-3xl md:text-4xl font-bold mb-2">HydroHub</h1>
+            <p id="app-subtitle" class="text-blue-200 mb-2">Stay hydrated, stay healthy.</p>
+            <p id="time-display" class="text-sm text-blue-200/70 mb-6"></p>
 
-            <!-- Main Water Display -->
-            <div class="relative w-48 h-72 md:w-56 md:h-80 mx-auto mb-6 border-4 border-white/50 rounded-t-3xl rounded-b-lg overflow-hidden bg-white/10">
-                <div id="water-level" class="water-level absolute bottom-0 left-0 w-full bg-blue-400"></div>
+            <!-- Main Drink Display -->
+            <div class="relative w-48 h-72 md:w-56 md:h-80 mx-auto mb-6">
+                <div id="glass-container" class="relative w-full h-full">
+                    <!-- SVG for the glass will be inserted here -->
+                </div>
+                <div id="liquid" class="liquid absolute bottom-0 left-0 w-full"></div>
                 <div class="absolute inset-0 flex flex-col justify-end items-center p-4">
                     <span id="total-intake" class="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">0</span>
-                    <span class="text-lg text-white/80">ml</span>
+                    <span id="unit-display" class="text-lg text-white/80">ml</span>
                 </div>
             </div>
             
-            <p class="mb-4">Goal: <span id="goal-display">2000</span> ml</p>
+            <p class="mb-4">Goal: <span id="goal-display">2000</span> <span id="goal-unit-display">ml</span></p>
 
             <!-- Action Buttons -->
             <div class="grid grid-cols-2 gap-4 mb-6">
-                <button onclick="addWater(250)" class="btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg text-lg">+250 ml</button>
-                <button onclick="addWater(500)" class="btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg text-lg">+500 ml</button>
+                <button id="add-btn-1" onclick="addDrink(250)" class="btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg text-lg">+250 ml</button>
+                <button id="add-btn-2" onclick="addDrink(500)" class="btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg text-lg">+500 ml</button>
             </div>
             
             <!-- Gemini Feature Button -->
             <div class="mb-6">
-                <button onclick="getHydrationTip()" class="btn bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-lg w-full flex items-center justify-center">
+                <button id="gemini-btn" onclick="getTip()" class="btn bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-lg w-full flex items-center justify-center">
                     <span class="mr-2">✨</span> Get Hydration Tip
                 </button>
             </div>
@@ -140,7 +163,7 @@
 
         <!-- History Graph -->
         <div id="history-container" class="glass-container">
-            <h2 class="text-xl font-bold text-center mb-4">Last 20 Days</h2>
+            <h2 id="history-title" class="text-xl font-bold text-center mb-4">Last 20 Days</h2>
             <canvas id="history-chart"></canvas>
         </div>
     </main>
@@ -179,21 +202,21 @@
         </div>
     </div>
     
-    <div id="gemini-tip-modal" class="modal">
+    <div id="tip-modal" class="modal">
         <div class="glass-container p-6 md:p-8 w-11/12 max-w-md mx-auto text-center relative z-10">
-             <h2 class="text-2xl font-bold mb-4 text-purple-200">✨ Hydration Tip!</h2>
-             <div id="gemini-tip-content" class="min-h-[100px] flex items-center justify-center">
+             <h2 id="tip-title" class="text-2xl font-bold mb-4 text-purple-200">✨ Hydration Tip!</h2>
+             <div id="tip-content" class="min-h-[100px] flex items-center justify-center">
                 <div class="loader"></div>
              </div>
              <div class="text-right mt-6">
-                <button onclick="closeGeminiModal()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg">Close</button>
+                <button onclick="closeTipModal()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg">Close</button>
             </div>
         </div>
     </div>
 
     <div id="goal-celebration-modal" class="modal">
         <div class="glass-container p-6 md:p-8 w-11/12 max-w-md mx-auto text-center relative z-10">
-             <h2 class="text-3xl font-bold mb-4 text-yellow-300">🎉 Goal Reached! 🎉</h2>
+             <h2 id="goal-title" class="text-3xl font-bold mb-4 text-yellow-300">🎉 Goal Reached! 🎉</h2>
              <div id="goal-message-content" class="min-h-[100px] flex items-center justify-center text-lg">
                 <div class="loader"></div>
              </div>
@@ -224,16 +247,19 @@
             </ol>
             <pre class="bg-gray-900/50 p-4 rounded-lg overflow-x-auto text-sm"><code>function doPost(e) {
   try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("WaterIntake");
+    // Modified to handle different modes
+    const data = JSON.parse(e.postData.contents);
+    const sheetName = data.mode === 'beer' ? 'BeerIntake' : 'WaterIntake';
+    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    let sheet = spreadsheet.getSheetByName(sheetName);
+
     if (!sheet) {
-      sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("WaterIntake");
-      sheet.appendRow(["Timestamp", "Amount (ml)", "Total Today (ml)"]);
+      sheet = spreadsheet.insertSheet(sheetName);
+      sheet.appendRow(["Timestamp", "Amount", "Unit", "Total Today"]);
     }
     
-    var data = JSON.parse(e.postData.contents);
-    var timestamp = new Date();
-    
-    sheet.appendRow([timestamp, data.amount, data.total]);
+    const timestamp = new Date();
+    sheet.appendRow([timestamp, data.amount, data.unit, data.total]);
     
     return ContentService.createTextOutput(JSON.stringify({ "status": "success" }))
       .setMimeType(ContentService.MimeType.JSON);
@@ -252,14 +278,21 @@
 
     <script>
         // DOM Elements
+        const bodyEl = document.body;
         const totalIntakeEl = document.getElementById('total-intake');
-        const waterLevelEl = document.getElementById('water-level');
+        const liquidEl = document.getElementById('liquid');
+        const glassContainerEl = document.getElementById('glass-container');
         const goalDisplayEl = document.getElementById('goal-display');
+        const unitDisplayEl = document.getElementById('unit-display');
+        const goalUnitDisplayEl = document.getElementById('goal-unit-display');
+        const timeDisplayEl = document.getElementById('time-display');
         const settingsModal = document.getElementById('settings-modal');
-        const geminiTipModal = document.getElementById('gemini-tip-modal');
-        const geminiTipContentEl = document.getElementById('gemini-tip-content');
+        const tipModal = document.getElementById('tip-modal');
+        const tipContentEl = document.getElementById('tip-content');
+        const tipTitleEl = document.getElementById('tip-title');
         const goalModal = document.getElementById('goal-celebration-modal');
         const goalMessageContentEl = document.getElementById('goal-message-content');
+        const goalTitleEl = document.getElementById('goal-title');
         const gasInstructionsModal = document.getElementById('gas-instructions-modal');
         const historyContainer = document.getElementById('history-container');
         const confettiCanvas = document.getElementById('confetti-canvas');
@@ -271,19 +304,24 @@
             total: 0,
             lastDrinkTimestamp: null,
             goalReachedToday: false,
-            appLoadTimestamp: null, // Track when the app was opened
+            appLoadTimestamp: null,
         };
         let settings = {
-            goal: 2000,
+            mode: 'water', // 'water' or 'beer'
+            waterGoal: 2000,
+            beerGoal: 100,
             gsheetUrl: '',
             pushoverToken: '',
             pushoverUser: '',
             geminiApiKey: '',
         };
-        let history = {};
+        let history = { water: {}, beer: {} };
         let chartInstance = null;
+        
+        const waterGlassSVG = `<svg viewBox="0 0 100 150" class="w-full h-full"><path d="M10 0 L0 150 H100 L90 0 Z" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/></svg>`;
+        const beerMugSVG = `<svg viewBox="0 0 120 150" class="w-full h-full"><path d="M10 0 H90 V140 A10 10 0 0 1 80 150 H20 A10 10 0 0 1 10 140 Z" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/><path d="M90 30 H110 A10 10 0 0 1 120 40 V100 A10 10 0 0 1 110 110 H90 Z" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/></svg>`;
 
-        // --- Date Helper ---
+        // --- Date & Time Helper ---
         function getTodayDateString() {
             const today = new Date();
             const year = today.getFullYear();
@@ -292,12 +330,61 @@
             return `${year}-${month}-${day}`;
         }
 
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            timeDisplayEl.textContent = `${hours}:${minutes}`;
+        }
+
+        // --- Mode & Theme ---
+        function toggleMode() {
+            settings.mode = settings.mode === 'water' ? 'beer' : 'water';
+            localStorage.setItem('hydroHubSettings', JSON.stringify(settings));
+            loadData(); // Reload data for the new mode
+            updateTheme();
+            updateUI();
+        }
+
+        function updateTheme() {
+            const isWater = settings.mode === 'water';
+            bodyEl.classList.toggle('beer-mode', !isWater);
+
+            document.getElementById('app-title').textContent = isWater ? 'HydroHub' : 'BrewHub';
+            document.getElementById('app-subtitle').textContent = isWater ? 'Stay hydrated, stay healthy.' : 'Cheers to good times!';
+            
+            glassContainerEl.innerHTML = isWater ? waterGlassSVG : beerMugSVG;
+            
+            // FIX: Removed clip-path to allow liquid to fill the container shape naturally.
+            liquidEl.style.clipPath = '';
+
+            const goal = isWater ? settings.waterGoal : settings.beerGoal;
+            const unit = isWater ? 'ml' : 'cl';
+            const btn1Amount = isWater ? 250 : 25;
+            const btn2Amount = isWater ? 500 : 50;
+
+            goalDisplayEl.textContent = goal;
+            unitDisplayEl.textContent = unit;
+            goalUnitDisplayEl.textContent = unit;
+            
+            const btn1 = document.getElementById('add-btn-1');
+            btn1.textContent = `+${btn1Amount} ${unit}`;
+            btn1.onclick = () => addDrink(btn1Amount);
+
+            const btn2 = document.getElementById('add-btn-2');
+            btn2.textContent = `+${btn2Amount} ${unit}`;
+            btn2.onclick = () => addDrink(btn2Amount);
+            
+            document.getElementById('gemini-btn').innerHTML = `<span class="mr-2">✨</span> Get ${isWater ? 'Hydration' : 'Beer'} Tip`;
+        }
+
         // --- Core Logic ---
-        function addWater(amount) {
+        function addDrink(amount) {
             state.total += amount;
             state.lastDrinkTimestamp = Date.now();
             
-            if (state.total >= settings.goal && !state.goalReachedToday) {
+            const currentGoal = settings.mode === 'water' ? settings.waterGoal : settings.beerGoal;
+            if (state.total >= currentGoal && !state.goalReachedToday) {
                 state.goalReachedToday = true;
                 celebrateGoal();
             }
@@ -312,9 +399,11 @@
 
         function updateUI() {
             totalIntakeEl.textContent = state.total;
-            goalDisplayEl.textContent = settings.goal;
-            const percentage = Math.min((state.total / settings.goal) * 100, 100);
-            waterLevelEl.style.height = `${percentage}%`;
+            const currentGoal = settings.mode === 'water' ? settings.waterGoal : settings.beerGoal;
+            goalDisplayEl.textContent = currentGoal;
+            const percentage = Math.min((state.total / currentGoal) * 100, 100);
+            liquidEl.style.height = `${percentage}%`;
+
             if (historyContainer.style.display === 'block') {
                 renderHistoryGraph();
             }
@@ -336,33 +425,44 @@
             goalModal.style.display = 'flex';
             goalMessageContentEl.innerHTML = `<div class="loader"></div>`;
             
+            const isWater = settings.mode === 'water';
+            goalTitleEl.textContent = isWater ? '🎉 Goal Reached! 🎉' : '🍻 Bottoms Up! 🍻';
+
             if (!settings.geminiApiKey) {
-                goalMessageContentEl.innerHTML = `<p class="text-lg">You are amazing! You've reached your hydration goal for today!</p>`;
+                goalMessageContentEl.innerHTML = `<p class="text-lg">You are amazing! You've reached your goal for today!</p>`;
                 return;
             }
-            const prompt = "Write a short, fun, and very enthusiastic congratulatory message for someone who just reached their daily water drinking goal. Keep it under 25 words.";
+            const prompt = isWater 
+                ? "Write a short, fun, and very enthusiastic congratulatory message for someone who just reached their daily water drinking goal. Keep it under 25 words."
+                : "Write a short, fun, and witty congratulatory message for someone who just reached their beer drinking goal for the day. Keep it under 25 words.";
             try {
                 const text = await callGemini(prompt);
                 goalMessageContentEl.innerHTML = `<p class="text-lg">${text}</p>`;
             } catch (error) {
-                goalMessageContentEl.innerHTML = `<p class="text-lg">You are amazing! You've reached your hydration goal for today!</p>`;
+                goalMessageContentEl.innerHTML = `<p class="text-lg">You are amazing! You've reached your goal for today!</p>`;
             }
         }
         function closeGoalModal() { goalModal.style.display = 'none'; }
 
         // --- Settings & Instructions ---
         function openSettings() {
-            document.getElementById('daily-goal').value = settings.goal;
+            const isWater = settings.mode === 'water';
+            document.querySelector('label[for="daily-goal"]').textContent = `Daily ${isWater ? 'Water' : 'Beer'} Goal (${isWater ? 'ml' : 'cl'})`;
+            document.getElementById('daily-goal').value = isWater ? settings.waterGoal : settings.beerGoal;
+            document.getElementById('gemini-api-key').value = settings.geminiApiKey || '';
             document.getElementById('gsheet-url').value = settings.gsheetUrl || '';
             document.getElementById('pushover-token').value = settings.pushoverToken || '';
             document.getElementById('pushover-user').value = settings.pushoverUser || '';
-            document.getElementById('gemini-api-key').value = settings.geminiApiKey || '';
             settingsModal.style.display = 'flex';
         }
         function closeSettings() { settingsModal.style.display = 'none'; }
         function saveSettings() {
             const newGoal = parseInt(document.getElementById('daily-goal').value, 10);
-            settings.goal = isNaN(newGoal) || newGoal < 1 ? 2000 : newGoal;
+            if (settings.mode === 'water') {
+                settings.waterGoal = isNaN(newGoal) || newGoal < 1 ? 2000 : newGoal;
+            } else {
+                settings.beerGoal = isNaN(newGoal) || newGoal < 1 ? 100 : newGoal;
+            }
             settings.gsheetUrl = document.getElementById('gsheet-url').value.trim();
             settings.pushoverToken = document.getElementById('pushover-token').value.trim();
             settings.pushoverUser = document.getElementById('pushover-user').value.trim();
@@ -377,26 +477,24 @@
         // --- Data Persistence ---
         function saveCurrentDay() {
             const todayStr = getTodayDateString();
-            history[todayStr] = {
+            if (!history[settings.mode]) history[settings.mode] = {};
+            history[settings.mode][todayStr] = {
                 total: state.total,
                 goalReached: state.goalReachedToday
             };
-            // We only save history, not the live state like lastDrinkTimestamp
             localStorage.setItem('hydroHubHistory', JSON.stringify(history));
         }
 
         function loadData() {
             const savedSettings = localStorage.getItem('hydroHubSettings');
-            if (savedSettings) {
-                settings = JSON.parse(savedSettings);
-            }
+            if (savedSettings) settings = { ...settings, ...JSON.parse(savedSettings) };
+            
             const savedHistory = localStorage.getItem('hydroHubHistory');
-            if (savedHistory) {
-                history = JSON.parse(savedHistory);
-            }
+            if (savedHistory) history = JSON.parse(savedHistory);
 
             const todayStr = getTodayDateString();
-            const todayData = history[todayStr];
+            const todayData = history[settings.mode]?.[todayStr];
+
             if (todayData) {
                 state.total = todayData.total;
                 state.goalReachedToday = todayData.goalReached;
@@ -419,57 +517,44 @@
         function renderHistoryGraph() {
             const labels = [];
             const data = [];
+            const isWater = settings.mode === 'water';
+            const modeHistory = history[settings.mode] || {};
             
+            document.getElementById('history-title').textContent = `Last 20 Days (${isWater ? 'Water' : 'Beer'})`;
+
             for (let i = 19; i >= 0; i--) {
                 const date = new Date();
                 date.setDate(date.getDate() - i);
                 const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
                 labels.push(date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }));
-                data.push(history[dateStr]?.total || 0);
+                data.push(modeHistory[dateStr]?.total || 0);
             }
 
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
+            if (chartInstance) chartInstance.destroy();
 
             chartInstance = new Chart(historyChartCanvas, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Water Intake (ml)',
+                        label: `Intake (${isWater ? 'ml' : 'cl'})`,
                         data: data,
-                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                        borderColor: 'rgba(59, 130, 246, 1)',
+                        backgroundColor: isWater ? 'rgba(59, 130, 246, 0.5)' : 'rgba(252, 169, 3, 0.5)',
+                        borderColor: isWater ? 'rgba(59, 130, 246, 1)' : 'rgba(252, 169, 3, 1)',
                         borderWidth: 1,
                         borderRadius: 5,
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { color: 'white' },
-                            grid: { color: 'rgba(255, 255, 255, 0.2)' }
-                        },
-                        x: {
-                            ticks: { color: 'white' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, ticks: { color: 'white' }, grid: { color: 'rgba(255, 255, 255, 0.2)' } }, x: { ticks: { color: 'white' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } } },
+                    plugins: { legend: { display: false } }
                 }
             });
         }
 
         // --- Gemini API Integration ---
-        function closeGeminiModal() { geminiTipModal.style.display = 'none'; }
+        function closeTipModal() { tipModal.style.display = 'none'; }
         async function callGemini(prompt) {
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${settings.geminiApiKey}`;
             const response = await fetch(apiUrl, {
@@ -481,69 +566,58 @@
             const result = await response.json();
             return result.candidates[0].content.parts[0].text;
         }
-        async function getHydrationTip() {
+        async function getTip() {
             if (!settings.geminiApiKey) {
                 alert("Please add your Gemini API Key in the settings to use this feature.");
                 openSettings();
                 return;
             }
-            geminiTipModal.style.display = 'flex';
-            geminiTipContentEl.innerHTML = `<div class="loader"></div>`;
-            const prompt = "Give me a short, fun, and encouraging fact or tip about staying hydrated. Make it sound exciting and keep it to one or two sentences.";
+            tipModal.style.display = 'flex';
+            tipContentEl.innerHTML = `<div class="loader"></div>`;
+            const isWater = settings.mode === 'water';
+            tipTitleEl.textContent = `✨ ${isWater ? 'Hydration' : 'Beer'} Tip! ✨`;
+            const prompt = isWater
+                ? "Give me a short, fun, and encouraging fact or tip about staying hydrated. Make it sound exciting and keep it to one or two sentences."
+                : "Give me a short, fun, and interesting fact about beer. Keep it to one or two sentences.";
             try {
                 const text = await callGemini(prompt);
-                geminiTipContentEl.innerHTML = `<p class="text-lg">${text}</p>`;
+                tipContentEl.innerHTML = `<p class="text-lg">${text}</p>`;
             } catch (error) {
-                geminiTipContentEl.innerHTML = `<p class="text-red-300">Sorry, I couldn't fetch a tip. Please check your API key.</p>`;
+                tipContentEl.innerHTML = `<p class="text-red-300">Sorry, I couldn't fetch a tip. Please check your API key.</p>`;
             }
         }
 
         // --- Other Integrations ---
         function logToGoogleSheet(amount, total) {
             if (!settings.gsheetUrl) return;
+            const isWater = settings.mode === 'water';
+            const payload = {
+                mode: settings.mode,
+                amount: amount,
+                total: total,
+                unit: isWater ? 'ml' : 'cl'
+            };
             fetch(settings.gsheetUrl, {
                 method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount, total }),
+                body: JSON.stringify(payload),
             }).catch(error => console.error('Error logging to Google Sheet:', error));
         }
-
         function sendPushoverReminder() {
-            // Exit if notifications are not configured or goal is already met
-            if (!settings.pushoverToken || !settings.pushoverUser || state.total >= settings.goal) {
-                return;
-            }
-
+            if (settings.mode !== 'water' || !settings.pushoverToken || !settings.pushoverUser || state.total >= settings.waterGoal) return;
             const now = Date.now();
             const twoHours = 2 * 60 * 60 * 1000;
             let shouldSend = false;
-            
-            // Check if it's been 2 hours since the last drink
             if (state.lastDrinkTimestamp) {
-                if ((now - state.lastDrinkTimestamp > twoHours)) {
-                    shouldSend = true;
-                }
-            } 
-            // If no drinks yet today, check if it's been 2 hours since the app was opened
-            else if (state.appLoadTimestamp) {
-                if ((now - state.appLoadTimestamp > twoHours)) {
-                    shouldSend = true;
-                }
+                if ((now - state.lastDrinkTimestamp > twoHours)) shouldSend = true;
+            } else if (state.appLoadTimestamp) {
+                if ((now - state.appLoadTimestamp > twoHours)) shouldSend = true;
             }
-
             if (shouldSend) {
-                const message = `Time for some water! You've had ${state.total}ml out of your ${settings.goal}ml goal today.`;
+                const message = `Time for some water! You've had ${state.total}ml out of your ${settings.waterGoal}ml goal today.`;
                 fetch('https://api.pushover.net/1/messages.json', {
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        token: settings.pushoverToken, 
-                        user: settings.pushoverUser, 
-                        message: message, 
-                        title: "💧 HydroHub Reminder" 
-                    }),
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: settings.pushoverToken, user: settings.pushoverUser, message: message, title: "💧 HydroHub Reminder" }),
                 }).catch(error => console.error('Error sending Pushover notification:', error));
-                
-                // To avoid spamming, we can update the timestamp to now after sending a notification
                 state.lastDrinkTimestamp = now; 
             }
         }
@@ -568,15 +642,18 @@
 
         window.onload = () => {
             loadData();
-            state.appLoadTimestamp = Date.now(); // Set the app load time for reminders
+            state.appLoadTimestamp = Date.now();
+            updateTheme();
             updateUI();
             createBubbles();
-            setInterval(sendPushoverReminder, 30 * 60 * 1000); // Check every 30 minutes
+            updateTime(); // Initial call
+            setInterval(updateTime, 1000); // Update time every second
+            setInterval(sendPushoverReminder, 30 * 60 * 1000);
         };
         
         window.onclick = function(event) {
             if (event.target == settingsModal) closeSettings();
-            if (event.target == geminiTipModal) closeGeminiModal();
+            if (event.target == tipModal) closeTipModal();
             if (event.target == goalModal) closeGoalModal();
             if (event.target == gasInstructionsModal) gasInstructionsModal.style.display = 'none';
         }
