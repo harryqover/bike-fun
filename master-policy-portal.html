@@ -261,9 +261,16 @@
             }
         };
 
+        // ✅ FIXED: This function now handles invalid date strings gracefully.
         const formatDate = (dateString) => {
-            if (!dateString) return 'N/A';
+            if (!dateString || dateString === 'Invalid DateTime') {
+                return 'N/A'; // Return a display-friendly string for invalid dates
+            }
             const date = new Date(dateString);
+            if (isNaN(date.getTime())) {
+                return 'N/A'; // Double-check if the date object is valid
+            }
+            // Correct for timezone offset to display the date as it appears in the string
             return new Date(date.getTime() + (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
         };
 
@@ -403,20 +410,11 @@
             const mpListContainer = document.getElementById('mp-list');
             mpListContainer.innerHTML = `<div class="p-4 text-center text-gray-500">Fetching policies for ${currentEnv.toUpperCase()}...</div>`;
             
-            // ✅ ADDED: console.log to show the raw response from the server.
             callGoogleScript('getMasterPolicies', { env: currentEnv })
                 .then(data => {
-                    console.log("Received data from getMasterPolicies:", data);
                     mpListContainer.innerHTML = '';
-                    
-                    // ✅ ADDED: console.log to check the condition for populating the list.
-                    console.log("Checking condition: data && data.items && data.items.length > 0", data && data.items && data.items.length > 0);
-
                     if (data && data.items && data.items.length > 0) {
                         data.items.sort((a, b) => (a.policyholder.companyName || '').localeCompare(b.policyholder.companyName || '')).forEach(policy => {
-                            // ✅ ADDED: console.log to see each policy object as it's being processed.
-                            console.log("Processing policy:", policy);
-
                             const row = document.createElement('div');
                             row.className = 'mp-list-row grid grid-cols-10 gap-4 px-4 py-3 cursor-pointer hover:bg-gray-50';
                             row.dataset.id = policy.id;
@@ -426,7 +424,7 @@
                                 <div class="col-span-3 text-sm font-medium text-gray-900">${policy.policyholder.companyName || 'N/A'}</div>
                                 <div class="col-span-3 text-sm text-gray-500 font-mono">${policy.policyNumber}</div>
                                 <div class="col-span-2 text-sm text-gray-500">${policy.productConfiguration.id}</div>
-                                <div class="col-span-2 text-sm text-gray-500"></div>
+                                <div class="col-span-2 text-sm text-gray-500">${formatDate(policy.contractPeriod.startDate)} - ${formatDate(policy.contractPeriod.endDate)}</div>
                             `;
                             mpListContainer.appendChild(row);
                         });
@@ -443,8 +441,6 @@
                     }
                 })
                 .catch((error) => {
-                    // ✅ ADDED: console.error to log any errors during the fetch.
-                    console.error("Error loading master policies:", error);
                     mpListContainer.innerHTML = `<div class="p-4 text-center text-red-500">Could not load policies.</div>`;
                 });
         };
@@ -558,7 +554,7 @@
             handleInitialLoad();
         });
         
-        console.log("Version: 5.7 - Added Debugging harry");
+        console.log("Version: 5.8 - Date Handling Fix");
     </script>
 </body>
 </html>
