@@ -33,6 +33,13 @@
             <h2 class="text-xl font-semibold text-white mb-4">Settings</h2>
             <div>
                 <label for="apiKey" class="block mb-2 text-sm font-medium text-gray-300">API Key</label>
+                <!-- Info message with link -->
+                <p class="text-xs text-gray-400 mb-2">
+                    You can get your API key from the 
+                    <a href="https://iam.qover.com/directory/b2b/services/" target="_blank" class="text-blue-400 hover:underline">
+                        Qover IAM Console
+                    </a>.
+                </p>
                 <div class="flex items-center space-x-3">
                     <input type="password" id="apiKey" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="sk_...">
                     <button id="saveApiKeyBtn" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all">Save</button>
@@ -45,7 +52,7 @@
         <div id="update-form">
             <div class="mb-5">
                 <label for="contractId" class="block mb-2 text-sm font-medium text-gray-300">Contract ID</label>
-                <input type="text" id="contractId" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="032045d2-9dbb-416a-b6fa-9231e84d0150" required>
+                <input type="text" id="contractId" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="xxxx-xxxx-xxxx-xxxx-xxxx" required>
             </div>
             <div class="mb-5">
                 <label for="renewPurchaseDate" class="block mb-2 text-sm font-medium text-gray-300">Renew Purchase Date</label>
