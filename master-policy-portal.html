@@ -139,7 +139,8 @@
                     <a href="#" id="nav-add-pilot" class="nav-link font-medium">Add Policy</a>
                     <a href="#" id="nav-bulk-add" class="nav-link font-medium">Bulk Add</a>
                     <a href="#" id="nav-bulk-upsert" class="nav-link font-medium">Bulk Upsert</a>
-                    <a href="#" id="nav-settings" class="nav-link font-medium">Settings</a>
+                    <!-- ✅ UPDATED: Renamed "Settings" to "Master policies" -->
+                    <a href="#" id="nav-settings" class="nav-link font-medium">Master policies</a>
                 </div>
             </nav>
 
@@ -177,7 +178,8 @@
 
                 <!-- Settings View -->
                 <div id="view-settings" class="hidden bg-white p-6 rounded-lg shadow-sm">
-                    <h2 class="text-2xl font-bold mb-4 text-gray-800">Portal Settings</h2>
+                    <!-- ✅ UPDATED: Renamed title -->
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">Master policies</h2>
                     <form id="settings-form" class="space-y-6">
                         <div>
                             <label for="setting-env" class="block text-sm font-medium text-gray-700">Environment</label>
@@ -342,45 +344,26 @@
                 document.getElementById('pilots-table-body').innerHTML = `<tr><td colspan="10" class="text-center py-4 text-blue-500">Please save your settings to load data.</td></tr>`;
                 return;
             }
-            let dataLoadedFromCache = false;
-            const pilotsTable = document.getElementById('pilots-table-body').parentElement;
-            try {
-                const cachedData = localStorage.getItem(pilotDataCacheKey);
-                if (cachedData) {
-                    renderData(JSON.parse(cachedData));
-                    dataLoadedFromCache = true;
-                }
-            } catch (e) { console.error("Failed to load or parse cached data", e); }
+            
+            // ✅ FIXED: Caching is now disabled to prevent quota errors.
+            // The app will always fetch fresh data.
+            renderSkeletonLoader();
 
-            if (!dataLoadedFromCache) {
-                renderSkeletonLoader();
-            } else {
-                pilotsTable.classList.add('table-loading');
-            }
-
-            callGoogleScript('getRiskItems', {}, !dataLoadedFromCache)
+            callGoogleScript('getRiskItems', {}, true) // Always show full loader since there's no cache
                 .then(freshData => {
                     renderData(freshData);
-                    localStorage.setItem(pilotDataCacheKey, JSON.stringify(freshData));
+                    // ✅ REMOVED: localStorage.setItem call is removed to prevent quota errors.
                 })
                 .catch(error => {
-                    if (!dataLoadedFromCache) {
-                       document.getElementById('pilots-table-body').innerHTML = `<tr><td colspan="10" class="text-center py-4 text-red-500">Failed to load data. ${error.message}</td></tr>`;
-                    } else {
-                       showToast('Failed to refresh data. You are viewing cached information.', true);
-                    }
-                })
-                .finally(() => {
-                    pilotsTable.classList.remove('table-loading');
+                    document.getElementById('pilots-table-body').innerHTML = `<tr><td colspan="10" class="text-center py-4 text-red-500">Failed to load data. ${error.message}</td></tr>`;
                 });
         };
 
-        // ✅ FIXED: This function now correctly handles the API response structure.
         const renderData = (data) => {
             const pilotsTableBody = document.getElementById('pilots-table-body');
             pilotsTableBody.innerHTML = ''; 
             let activePilots = 0, endedPilots = 0, totalPremium = 0;
-            const items = data.items || []; // Ensure items is an array
+            const items = data.items || [];
 
             if (items.length > 0) {
                 items.sort((a, b) => (a.reference || '').localeCompare(b.reference || ''));
@@ -562,7 +545,6 @@
                 localStorage.setItem(SETTINGS_KEY, JSON.stringify(newSettings));
                 portalSettings = newSettings;
                 pilotDataCacheKey = `${LOCAL_STORAGE_KEY_PREFIX}${portalSettings.standardId}`;
-                localStorage.removeItem(pilotDataCacheKey);
                 showToast('Settings saved successfully! Loading data...', false);
                 initializeMainAppView();
             });
@@ -570,7 +552,7 @@
             handleInitialLoad();
         });
         
-        console.log("Version: 5.5 - Corrected Data Handling");
+        console.log("Version: 5.6 - LocalStorage Fix");
     </script>
 </body>
 </html>
