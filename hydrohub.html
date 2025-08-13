@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroHub - Your Water Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+            overflow: hidden;
+        }
+        .glass-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        .water-level {
+            transition: height 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: rise 10s infinite ease-in;
+        }
+        @keyframes rise {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100vh); opacity: 0; }
+        }
+        .btn {
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .btn:active {
+            transform: translateY(-1px) scale(1.02);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            animation: fadeIn 0.5s;
+            align-items: center;
+            justify-content: center;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <!-- Background Bubbles -->
+    <div id="background-bubbles"></div>
+
+    <div class="glass-container p-6 md:p-8 w-11/12 max-w-md mx-auto text-center relative z-10">
+        <h1 class="text-3xl md:text-4xl font-bold mb-2">HydroHub</h1>
+        <p class="text-blue-200 mb-6">Stay hydrated, stay healthy.</p>
+
+        <!-- Main Water Display -->
+        <div class="relative w-48 h-72 md:w-56 md:h-80 mx-auto mb-6 border-4 border-white/50 rounded-t-3xl rounded-b-lg overflow-hidden bg-white/10">
+            <div id="water-level" class="water-level absolute bottom-0 left-0 w-full bg-blue-400"></div>
+            <div class="absolute inset-0 flex flex-col justify-end items-center p-4">
+                <span id="total-intake" class="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">0</span>
+                <span class="text-lg text-white/80">ml</span>
+            </div>
+        </div>
+        
+        <p class="mb-4">Goal: <span id="goal-display">2000</span> ml</p>
+
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <button onclick="addWater(250)" class="btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg text-lg">+250 ml</button>
+            <button onclick="addWater(500)" class="btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg text-lg">+500 ml</button>
+        </div>
+        
+        <!-- Gemini Feature Button -->
+        <div class="mb-6">
+            <button onclick="getHydrationTip()" class="btn bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-lg w-full flex items-center justify-center">
+                <span class="mr-2">✨</span> Get Hydration Tip
+            </button>
+        </div>
+
+        <!-- Reset and Settings -->
+        <div class="flex justify-between items-center">
+            <button onclick="resetData()" class="text-blue-200 hover:text-white transition">Reset Day</button>
+            <button onclick="openSettings()" class="text-blue-200 hover:text-white transition">Settings</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="glass-container p-6 md:p-8 w-11/12 max-w-md mx-auto text-center relative z-10">
+            <h2 class="text-2xl font-bold mb-4">Settings</h2>
+            
+            <div class="mb-4 text-left">
+                <label for="daily-goal" class="block mb-2">Daily Goal (ml)</label>
+                <input type="number" id="daily-goal" class="w-full p-2 rounded bg-white/20 border-none text-white focus:ring-2 focus:ring-blue-400" value="2000">
+            </div>
+            
+            <div class="mb-4 text-left">
+                <label for="gemini-api-key" class="block mb-2">Gemini API Key</label>
+                <input type="password" id="gemini-api-key" class="w-full p-2 rounded bg-white/20 border-none text-white focus:ring-2 focus:ring-blue-400" placeholder="Enter your API key">
+            </div>
+
+            <div class="mb-4 text-left">
+                <label for="gsheet-url" class="block mb-2">Google Sheet Web App URL</label>
+                <input type="text" id="gsheet-url" class="w-full p-2 rounded bg-white/20 border-none text-white focus:ring-2 focus:ring-blue-400" placeholder="Optional">
+            </div>
+
+            <div class="mb-4 text-left">
+                <label for="pushover-token" class="block mb-2">Pushover API Token/Key</label>
+                <input type="password" id="pushover-token" class="w-full p-2 rounded bg-white/20 border-none text-white focus:ring-2 focus:ring-blue-400" placeholder="Optional">
+            </div>
+
+            <div class="mb-6 text-left">
+                <label for="pushover-user" class="block mb-2">Pushover User Key</label>
+                <input type="password" id="pushover-user" class="w-full p-2 rounded bg-white/20 border-none text-white focus:ring-2 focus:ring-blue-400" placeholder="Optional">
+            </div>
+
+            <div class="flex justify-end gap-4">
+                 <button onclick="closeSettings()" class="bg-gray-500/50 hover:bg-gray-500/70 text-white font-bold py-2 px-4 rounded-lg">Cancel</button>
+                <button onclick="saveSettings()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Save</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gemini Tip Modal -->
+    <div id="gemini-tip-modal" class="modal flex">
+        <div class="glass-container p-6 md:p-8 w-11/12 max-w-md mx-auto text-center relative z-10">
+             <h2 class="text-2xl font-bold mb-4 text-purple-200">✨ Hydration Tip!</h2>
+             <div id="gemini-tip-content" class="min-h-[100px] flex items-center justify-center">
+                <!-- Loader will be shown here -->
+                <div class="loader"></div>
+             </div>
+             <div class="text-right mt-6">
+                <button onclick="closeGeminiModal()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const totalIntakeEl = document.getElementById('total-intake');
+        const waterLevelEl = document.getElementById('water-level');
+        const goalDisplayEl = document.getElementById('goal-display');
+        const settingsModal = document.getElementById('settings-modal');
+        const geminiTipModal = document.getElementById('gemini-tip-modal');
+        const geminiTipContentEl = document.getElementById('gemini-tip-content');
+
+        // App State
+        let state = {
+            total: 0,
+            goal: 2000,
+            lastDrinkTimestamp: null,
+            gsheetUrl: '',
+            pushoverToken: '',
+            pushoverUser: '',
+            geminiApiKey: '',
+        };
+
+        // --- Core Logic ---
+
+        function addWater(amount) {
+            state.total += amount;
+            state.lastDrinkTimestamp = Date.now();
+            saveState();
+            updateUI();
+            logToGoogleSheet(amount, state.total);
+            
+            totalIntakeEl.style.transform = 'scale(1.2)';
+            setTimeout(() => { totalIntakeEl.style.transform = 'scale(1)'; }, 300);
+        }
+
+        function updateUI() {
+            totalIntakeEl.textContent = state.total;
+            goalDisplayEl.textContent = state.goal;
+            const percentage = Math.min((state.total / state.goal) * 100, 100);
+            waterLevelEl.style.height = `${percentage}%`;
+        }
+        
+        function resetData() {
+            // Replaced confirm with a custom modal for better UX in iframes
+            if (window.confirm("Are you sure you want to reset your progress for today?")) {
+                state.total = 0;
+                state.lastDrinkTimestamp = null;
+                saveState();
+                updateUI();
+            }
+        }
+
+        // --- Settings ---
+        
+        function openSettings() {
+            document.getElementById('daily-goal').value = state.goal;
+            document.getElementById('gsheet-url').value = state.gsheetUrl || '';
+            document.getElementById('pushover-token').value = state.pushoverToken || '';
+            document.getElementById('pushover-user').value = state.pushoverUser || '';
+            document.getElementById('gemini-api-key').value = state.geminiApiKey || '';
+            settingsModal.style.display = 'flex';
+        }
+
+        function closeSettings() {
+            settingsModal.style.display = 'none';
+        }
+
+        function saveSettings() {
+            const newGoal = parseInt(document.getElementById('daily-goal').value, 10);
+            state.goal = isNaN(newGoal) || newGoal < 1 ? 2000 : newGoal;
+            state.gsheetUrl = document.getElementById('gsheet-url').value.trim();
+            state.pushoverToken = document.getElementById('pushover-token').value.trim();
+            state.pushoverUser = document.getElementById('pushover-user').value.trim();
+            state.geminiApiKey = document.getElementById('gemini-api-key').value.trim();
+            
+            saveState();
+            updateUI();
+            closeSettings();
+        }
+
+        // --- Data Persistence ---
+
+        function saveState() {
+            localStorage.setItem('hydroHubState', JSON.stringify(state));
+        }
+
+        function loadState() {
+            const savedState = localStorage.getItem('hydroHubState');
+            if (savedState) {
+                const parsedState = JSON.parse(savedState);
+                const today = new Date().toDateString();
+                const lastSavedDate = parsedState.lastDrinkTimestamp ? new Date(parsedState.lastDrinkTimestamp).toDateString() : null;
+
+                if (today === lastSavedDate) {
+                    state = parsedState;
+                } else {
+                    state.goal = parsedState.goal || 2000;
+                    state.gsheetUrl = parsedState.gsheetUrl || '';
+                    state.pushoverToken = parsedState.pushoverToken || '';
+                    state.pushoverUser = parsedState.pushoverUser || '';
+                    state.geminiApiKey = parsedState.geminiApiKey || '';
+                    state.total = 0;
+                    state.lastDrinkTimestamp = null;
+                    saveState();
+                }
+            }
+        }
+
+        // --- Gemini API Integration ---
+
+        function closeGeminiModal() {
+            geminiTipModal.style.display = 'none';
+        }
+
+        async function getHydrationTip() {
+            if (!state.geminiApiKey) {
+                alert("Please add your Gemini API Key in the settings to use this feature.");
+                openSettings();
+                return;
+            }
+
+            geminiTipModal.style.display = 'flex';
+            geminiTipContentEl.innerHTML = `<div class="loader"></div>`;
+
+            const prompt = "Give me a short, fun, and encouraging fact or tip about staying hydrated. Make it sound exciting and keep it to one or two sentences.";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${state.geminiApiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                const text = result.candidates[0].content.parts[0].text;
+                geminiTipContentEl.innerHTML = `<p class="text-lg">${text}</p>`;
+
+            } catch (error) {
+                console.error('Error fetching Gemini tip:', error);
+                geminiTipContentEl.innerHTML = `<p class="text-red-300">Sorry, I couldn't fetch a tip right now. Please check your API key and try again.</p>`;
+            }
+        }
+
+
+        // --- Other Integrations ---
+
+        function logToGoogleSheet(amount, total) {
+            if (!state.gsheetUrl) return;
+            fetch(state.gsheetUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount, total }),
+            }).catch(error => console.error('Error logging to Google Sheet:', error));
+        }
+
+        function sendPushoverReminder() {
+            if (!state.pushoverToken || !state.pushoverUser || state.total >= state.goal) return;
+
+            const now = Date.now();
+            const twoHours = 2 * 60 * 60 * 1000;
+            
+            if (state.lastDrinkTimestamp && (now - state.lastDrinkTimestamp > twoHours)) {
+                const message = `Time for some water! You've had ${state.total}ml out of your ${state.goal}ml goal today.`;
+                fetch('https://api.pushover.net/1/messages.json', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token: state.pushoverToken,
+                        user: state.pushoverUser,
+                        message: message,
+                        title: "💧 HydroHub Reminder"
+                    }),
+                }).catch(error => console.error('Error sending Pushover notification:', error));
+            }
+        }
+
+
+        // --- Background Effects & Init ---
+
+        function createBubbles() {
+            const container = document.getElementById('background-bubbles');
+            const bubbleCount = 20;
+            for (let i = 0; i < bubbleCount; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                const size = Math.random() * 20 + 5 + 'px';
+                bubble.style.width = size;
+                bubble.style.height = size;
+                bubble.style.left = Math.random() * 100 + 'vw';
+                bubble.style.animationDuration = Math.random() * 5 + 5 + 's';
+                bubble.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(bubble);
+            }
+        }
+
+        window.onload = () => {
+            loadState();
+            updateUI();
+            createBubbles();
+            setInterval(sendPushoverReminder, 30 * 60 * 1000);
+        };
+        
+        window.onclick = function(event) {
+            if (event.target == settingsModal) closeSettings();
+            if (event.target == geminiTipModal) closeGeminiModal();
+        }
+
+    </script>
+</body>
+</html>
