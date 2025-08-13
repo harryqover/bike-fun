@@ -91,6 +91,7 @@
             display: none;
             margin-top: 1.5rem;
             padding: 1rem;
+            height: 320px; /* FIX: Constrain height to prevent infinite growth */
         }
     </style>
 </head>
@@ -270,6 +271,7 @@
             total: 0,
             lastDrinkTimestamp: null,
             goalReachedToday: false,
+            appLoadTimestamp: null, // Track when the app was opened
         };
         let settings = {
             goal: 2000,
@@ -379,6 +381,7 @@
                 total: state.total,
                 goalReached: state.goalReachedToday
             };
+            // We only save history, not the live state like lastDrinkTimestamp
             localStorage.setItem('hydroHubHistory', JSON.stringify(history));
         }
 
@@ -503,16 +506,45 @@
                 body: JSON.stringify({ amount, total }),
             }).catch(error => console.error('Error logging to Google Sheet:', error));
         }
+
         function sendPushoverReminder() {
-            if (!settings.pushoverToken || !settings.pushoverUser || state.total >= settings.goal) return;
+            // Exit if notifications are not configured or goal is already met
+            if (!settings.pushoverToken || !settings.pushoverUser || state.total >= settings.goal) {
+                return;
+            }
+
             const now = Date.now();
             const twoHours = 2 * 60 * 60 * 1000;
-            if (state.lastDrinkTimestamp && (now - state.lastDrinkTimestamp > twoHours)) {
+            let shouldSend = false;
+            
+            // Check if it's been 2 hours since the last drink
+            if (state.lastDrinkTimestamp) {
+                if ((now - state.lastDrinkTimestamp > twoHours)) {
+                    shouldSend = true;
+                }
+            } 
+            // If no drinks yet today, check if it's been 2 hours since the app was opened
+            else if (state.appLoadTimestamp) {
+                if ((now - state.appLoadTimestamp > twoHours)) {
+                    shouldSend = true;
+                }
+            }
+
+            if (shouldSend) {
                 const message = `Time for some water! You've had ${state.total}ml out of your ${settings.goal}ml goal today.`;
                 fetch('https://api.pushover.net/1/messages.json', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: settings.pushoverToken, user: settings.pushoverUser, message: message, title: "💧 HydroHub Reminder" }),
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        token: settings.pushoverToken, 
+                        user: settings.pushoverUser, 
+                        message: message, 
+                        title: "💧 HydroHub Reminder" 
+                    }),
                 }).catch(error => console.error('Error sending Pushover notification:', error));
+                
+                // To avoid spamming, we can update the timestamp to now after sending a notification
+                state.lastDrinkTimestamp = now; 
             }
         }
 
@@ -536,9 +568,10 @@
 
         window.onload = () => {
             loadData();
+            state.appLoadTimestamp = Date.now(); // Set the app load time for reminders
             updateUI();
             createBubbles();
-            setInterval(sendPushoverReminder, 30 * 60 * 1000);
+            setInterval(sendPushoverReminder, 30 * 60 * 1000); // Check every 30 minutes
         };
         
         window.onclick = function(event) {
