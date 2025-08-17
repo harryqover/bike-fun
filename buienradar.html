@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Weather Radar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .timeline-container::-webkit-scrollbar {
+            display: none;
+        }
+        .timeline-container {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .active-map-btn {
+            background-color: #5b21b6;
+            color: white;
+            box-shadow: 0 4px 14px 0 rgb(0 0 0 / 10%);
+        }
+        /* Simple loader */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #5b21b6;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
+
+    <!-- Loading Overlay -->
+    <div id="loader-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex flex-col justify-center items-center z-50">
+        <div class="loader"></div>
+        <p id="loader-text" class="mt-4 text-gray-300">Fetching your location...</p>
+    </div>
+
+    <div id="app-container" class="container mx-auto p-4 sm:p-6 max-w-7xl hidden">
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Left Column: Current Weather & Forecast -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Header -->
+                <header class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight">Weather</h1>
+                        <p id="location-text" class="text-gray-400 text-sm">Loading location...</p>
+                    </div>
+                    <button class="p-2 rounded-full hover:bg-gray-800 transition-colors">
+                        <i data-feather="settings" class="w-5 h-5 text-gray-400"></i>
+                    </button>
+                </header>
+
+                <!-- Current Weather Card -->
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400">Now</p>
+                            <p id="current-temp" class="text-5xl font-bold">--&deg;C</p>
+                            <p id="current-condition" class="text-violet-400 font-medium">--</p>
+                        </div>
+                        <div id="current-icon" class="text-right">
+                             <i data-feather="sun" class="w-20 h-20 text-yellow-300"></i>
+                        </div>
+                    </div>
+                    <div class="mt-6 border-t border-gray-700 pt-4 text-sm text-gray-400 space-y-2">
+                        <div class="flex justify-between"><span><i data-feather="wind" class="w-4 h-4 inline-block mr-2"></i>Wind</span> <span id="current-wind" class="font-medium text-white">-- km/h</span></div>
+                        <div class="flex justify-between"><span><i data-feather="droplet" class="w-4 h-4 inline-block mr-2"></i>Humidity</span> <span id="current-humidity" class="font-medium text-white">--%</span></div>
+                        <div class="flex justify-between"><span><i data-feather="eye" class="w-4 h-4 inline-block mr-2"></i>Visibility</span> <span id="current-visibility" class="font-medium text-white">-- km</span></div>
+                    </div>
+                </div>
+
+                <!-- Rain Forecast Card -->
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+                    <h2 class="font-semibold text-lg mb-4">Precipitation Next 3 Hours</h2>
+                    <div class="relative">
+                        <p id="precipitation-summary" class="text-violet-300 font-medium text-center mb-4">--</p>
+                        <div id="timeline-container" class="timeline-container overflow-x-auto pb-4">
+                            <svg id="timeline-svg" width="720" height="120"></svg>
+                        </div>
+                         <div class="absolute top-1/2 -left-3 -translate-y-1/2 bg-gray-900 p-1 rounded-full shadow-lg cursor-pointer"><i data-feather="chevron-left" class="w-5 h-5 text-gray-400"></i></div>
+                        <div class="absolute top-1/2 -right-3 -translate-y-1/2 bg-gray-900 p-1 rounded-full shadow-lg cursor-pointer"><i data-feather="chevron-right" class="w-5 h-5 text-gray-400"></i></div>
+                    </div>
+                </div>
+
+                <!-- 5-Day Forecast -->
+                <div id="forecast-container" class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+                    <h2 class="font-semibold text-lg mb-4">5-Day Forecast</h2>
+                    <div class="space-y-3">
+                        <!-- Forecast items will be injected here by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Map -->
+            <div class="lg:col-span-2 bg-gray-800 rounded-2xl shadow-lg flex flex-col overflow-hidden min-h-[500px] lg:min-h-0">
+                <div class="p-4 flex-shrink-0">
+                    <div class="flex flex-wrap items-center justify-center sm:justify-between gap-2">
+                        <div class="flex items-center space-x-2 bg-gray-900 p-1 rounded-full">
+                            <button id="btn-rain" class="map-btn active-map-btn px-4 py-2 text-sm font-medium rounded-full transition-colors">Rain</button>
+                            <button id="btn-clouds" class="map-btn text-gray-400 hover:text-white px-4 py-2 text-sm font-medium rounded-full transition-colors">Clouds</button>
+                            <button id="btn-wind" class="map-btn text-gray-400 hover:text-white px-4 py-2 text-sm font-medium rounded-full transition-colors">Wind</button>
+                        </div>
+                        <div class="flex items-center space-x-2 text-sm">
+                            <button class="p-2 bg-gray-900 rounded-full hover:bg-gray-700 transition-colors"><i data-feather="minus" class="w-5 h-5"></i></button>
+                            <button class="p-2 bg-gray-900 rounded-full hover:bg-gray-700 transition-colors"><i data-feather="plus" class="w-5 h-5"></i></button>
+                            <button class="p-2 bg-gray-900 rounded-full hover:bg-gray-700 transition-colors"><i data-feather="crosshair" class="w-5 h-5"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Map Area -->
+                <div id="map-container" class="flex-grow bg-gray-700 relative">
+                    <img id="map-image" src="https://api.buienradar.nl/image/1.0/radarmapbe" alt="Weather map" class="absolute h-full w-full object-cover transition-opacity duration-300 ease-in-out">
+                    <div class="absolute bottom-4 left-4 bg-gray-900/70 backdrop-blur-sm p-3 rounded-lg text-xs">
+                        <p class="font-semibold mb-2">Precipitation (mm/h)</p>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-4 h-4 rounded-sm bg-blue-200"></div>
+                            <div class="w-4 h-4 rounded-sm bg-blue-400"></div>
+                            <div class="w-4 h-4 rounded-sm bg-green-400"></div>
+                            <div class="w-4 h-4 rounded-sm bg-yellow-400"></div>
+                            <div class="w-4 h-4 rounded-sm bg-red-500"></div>
+                            <div class="w-4 h-4 rounded-sm bg-purple-500"></div>
+                        </div>
+                        <div class="flex justify-between mt-1"><span>Light</span><span>Heavy</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const loaderOverlay = document.getElementById('loader-overlay');
+            const loaderText = document.getElementById('loader-text');
+            const appContainer = document.getElementById('app-container');
+
+            // --- Weather Data Fetching and Processing ---
+
+            const WMO_CODES = {
+                0: { description: "Clear sky", icon: "sun" }, 1: { description: "Mainly clear", icon: "sun" },
+                2: { description: "Partly cloudy", icon: "cloud" }, 3: { description: "Overcast", icon: "cloud" },
+                45: { description: "Fog", icon: "cloud-drizzle" }, 48: { description: "Depositing rime fog", icon: "cloud-drizzle" },
+                51: { description: "Light drizzle", icon: "cloud-drizzle" }, 53: { description: "Moderate drizzle", icon: "cloud-drizzle" },
+                55: { description: "Dense drizzle", icon: "cloud-drizzle" }, 56: { description: "Light freezing drizzle", icon: "cloud-rain" },
+                57: { description: "Dense freezing drizzle", icon: "cloud-rain" }, 61: { description: "Slight rain", icon: "cloud-rain" },
+                63: { description: "Moderate rain", icon: "cloud-rain" }, 65: { description: "Heavy rain", icon: "cloud-rain" },
+                66: { description: "Light freezing rain", icon: "cloud-snow" }, 67: { description: "Heavy freezing rain", icon: "cloud-snow" },
+                71: { description: "Slight snow fall", icon: "cloud-snow" }, 73: { description: "Moderate snow fall", icon: "cloud-snow" },
+                75: { description: "Heavy snow fall", icon: "cloud-snow" }, 77: { description: "Snow grains", icon: "cloud-snow" },
+                80: { description: "Slight rain showers", icon: "cloud-lightning" }, 81: { description: "Moderate rain showers", icon: "cloud-lightning" },
+                82: { description: "Violent rain showers", icon: "cloud-lightning" }, 85: { description: "Slight snow showers", icon: "cloud-snow" },
+                86: { description: "Heavy snow showers", icon: "cloud-snow" }, 95: { description: "Thunderstorm", icon: "cloud-lightning" },
+                96: { description: "Thunderstorm with slight hail", icon: "cloud-lightning" }, 99: { description: "Thunderstorm with heavy hail", icon: "cloud-lightning" },
+            };
+
+            const getWeather = async (lat, lon) => {
+                loaderText.textContent = 'Fetching weather data...';
+                try {
+                    const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&hourly=precipitation_probability,precipitation,weather_code,visibility&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) throw new Error('Weather data not available.');
+                    const data = await response.json();
+                    updateUI(data);
+                    loaderOverlay.classList.add('hidden');
+                    appContainer.classList.remove('hidden');
+                } catch (error) {
+                    loaderText.textContent = `Error: ${error.message} Using default location.`;
+                    console.error("Weather fetch error:", error);
+                    // Fallback to a default location if API fails for user's location
+                    getWeather(50.85, 4.35); // Brussels
+                }
+            };
+            
+            const getLocationName = async (lat, lon) => {
+                try {
+                    // Using a free, no-key reverse geocoding API
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                    if (!response.ok) throw new Error('Could not fetch location name.');
+                    const data = await response.json();
+                    const city = data.address.city || data.address.town || data.address.village || 'Unknown location';
+                    const country = data.address.country || '';
+                    document.getElementById('location-text').textContent = `${city}, ${country}`;
+                } catch (error) {
+                    console.error("Reverse geocoding error:", error);
+                    document.getElementById('location-text').textContent = 'Unknown location';
+                }
+            };
+
+            const updateUI = (data) => {
+                // Current Weather
+                document.getElementById('current-temp').textContent = `${Math.round(data.current.temperature_2m)}°C`;
+                const currentCode = WMO_CODES[data.current.weather_code] || { description: "Unknown", icon: "help-circle" };
+                document.getElementById('current-condition').textContent = currentCode.description;
+                document.getElementById('current-wind').textContent = `${Math.round(data.current.wind_speed_10m)} km/h`;
+                document.getElementById('current-humidity').textContent = `${data.current.relative_humidity_2m}%`;
+                
+                // Find current hour index for visibility
+                const now = new Date();
+                const currentHourIndex = data.hourly.time.findIndex(t => new Date(t) > now) - 1;
+                if(currentHourIndex >= 0) {
+                    document.getElementById('current-visibility').textContent = `${Math.round(data.hourly.visibility[currentHourIndex] / 1000)} km`;
+                } else {
+                    document.getElementById('current-visibility').textContent = '-- km';
+                }
+
+                const iconHtml = `<i data-feather="${currentCode.icon}" class="w-20 h-20 text-yellow-300"></i>`;
+                document.getElementById('current-icon').innerHTML = iconHtml;
+
+                // Precipitation Timeline
+                drawPrecipitationChart(data.hourly);
+
+                // 5-Day Forecast
+                const forecastContainer = document.querySelector('#forecast-container .space-y-3');
+                forecastContainer.innerHTML = ''; // Clear old forecast
+                for (let i = 0; i < 5; i++) {
+                    const dayData = {
+                        date: new Date(data.daily.time[i]),
+                        maxTemp: Math.round(data.daily.temperature_2m_max[i]),
+                        minTemp: Math.round(data.daily.temperature_2m_min[i]),
+                        code: WMO_CODES[data.daily.weather_code[i]] || { icon: "help-circle" }
+                    };
+                    const dayName = i === 0 ? 'Today' : dayData.date.toLocaleDateString('en-US', { weekday: 'long' });
+                    const forecastItem = `
+                        <div class="flex items-center justify-between ${i === 0 ? 'bg-gray-700/50' : ''} p-3 rounded-lg">
+                            <span class="font-medium w-1/3">${dayName}</span>
+                            <i data-feather="${dayData.code.icon}" class="w-6 h-6 text-yellow-400"></i>
+                            <div class="w-1/3 text-right">
+                                <span class="font-medium">${dayData.maxTemp}°</span>
+                                <span class="text-gray-400">/ ${dayData.minTemp}°</span>
+                            </div>
+                        </div>`;
+                    forecastContainer.innerHTML += forecastItem;
+                }
+                
+                feather.replace();
+            };
+
+            const drawPrecipitationChart = (hourlyData) => {
+                const svg = document.getElementById('timeline-svg');
+                svg.innerHTML = ''; // Clear previous chart
+                
+                const now = new Date();
+                const startIndex = hourlyData.time.findIndex(t => new Date(t) > now) -1;
+                if (startIndex < 0) return;
+
+                const next3HoursData = hourlyData.precipitation.slice(startIndex, startIndex + 12); // 12 points for 3 hours (15min intervals from API)
+                
+                const svgWidth = 720;
+                const svgHeight = 120;
+                const barWidth = 16;
+                const barMargin = 4;
+                const maxVal = 5; // Max mm/h for chart scaling
+
+                let totalPrecipitation = 0;
+                let firstRainIndex = -1;
+
+                next3HoursData.forEach((d, i) => {
+                    totalPrecipitation += d;
+                    if(d > 0.1 && firstRainIndex === -1) firstRainIndex = i;
+
+                    const barHeight = Math.min((d / maxVal) * (svgHeight - 40), svgHeight - 40);
+                    const x = i * (barWidth + barMargin);
+                    
+                    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    rect.setAttribute('x', x);
+                    rect.setAttribute('y', svgHeight - barHeight - 20);
+                    rect.setAttribute('width', barWidth);
+                    rect.setAttribute('height', barHeight);
+                    rect.setAttribute('rx', 8);
+                    rect.setAttribute('ry', 8);
+                    
+                    let barColor = 'fill-gray-700';
+                    if (d > 0.1) barColor = 'fill-blue-500';
+                    if (d > 1) barColor = 'fill-green-400';
+                    if (d > 2.5) barColor = 'fill-yellow-400';
+                    
+                    rect.setAttribute('class', barColor);
+                    svg.appendChild(rect);
+                });
+
+                // Summary text
+                const summaryEl = document.getElementById('precipitation-summary');
+                if (totalPrecipitation < 0.1) {
+                    summaryEl.textContent = "No precipitation expected in the next 3 hours.";
+                } else if (firstRainIndex !== -1) {
+                    const minutesToRain = (firstRainIndex + 1) * 15;
+                    summaryEl.textContent = `Light rain starting in about ${minutesToRain} minutes.`;
+                }
+
+                // Time labels
+                const timeLabels = ['Now', '+30m', '+1h', '+1.5h', '+2h', '+2.5h'];
+                timeLabels.forEach((label, i) => {
+                    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    text.setAttribute('x', i * 2 * (barWidth + barMargin)); // 2 bars per 30 min
+                    text.setAttribute('y', svgHeight);
+                    text.setAttribute('class', 'text-xs fill-gray-400');
+                    text.textContent = label;
+                    svg.appendChild(text);
+                });
+            };
+
+            // --- Geolocation ---
+            const init = () => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const { latitude, longitude } = position.coords;
+                            getLocationName(latitude, longitude);
+                            getWeather(latitude, longitude);
+                        },
+                        (error) => {
+                            console.warn("Geolocation error:", error.message);
+                            loaderText.textContent = 'Location access denied. Using default location.';
+                            getLocationName(50.85, 4.35); // Brussels
+                            getWeather(50.85, 4.35);
+                        }
+                    );
+                } else {
+                    loaderText.textContent = 'Geolocation not supported. Using default location.';
+                    getLocationName(50.85, 4.35); // Brussels
+                    getWeather(50.85, 4.35);
+                }
+            };
+
+            init();
+            feather.replace();
+
+            // --- Map Layer Switching with Live Images ---
+            const mapBtns = document.querySelectorAll('.map-btn');
+            const mapImage = document.getElementById('map-image');
+            
+            // NOTE: Using live image feeds from public meteorological services.
+            // Wind map is a placeholder as free, direct static image feeds for wind are rare.
+            const mapData = {
+                'rain': { 
+                    src: 'https://api.buienradar.nl/image/1.0/radarmapbe', 
+                    alt: 'Live rain radar map for Belgium' 
+                },
+                'clouds': { 
+                    src: 'https://www.dwd.de/DWD/wetter/wv_spez/hobbymet/wetterkarten/europa_ir108_jet.png', 
+                    alt: 'Live satellite cloud cover for Europe' 
+                },
+                'wind': { 
+                    src: 'https://placehold.co/1200x800/374151/a78bfa?text=Live+Wind+Map+(Not+Available)', 
+                    alt: 'Wind speed map (placeholder)' 
+                }
+            };
+            
+            mapBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    mapBtns.forEach(b => b.classList.remove('active-map-btn'));
+                    btn.classList.add('active-map-btn');
+                    const mapType = btn.id.split('-')[1];
+                    mapImage.style.opacity = 0;
+                    
+                    setTimeout(() => {
+                        // Append a timestamp to the URL to bypass browser cache and get the latest image
+                        const imageUrl = mapData[mapType].src + '?t=' + new Date().getTime();
+                        mapImage.src = imageUrl;
+                        mapImage.alt = mapData[mapType].alt;
+                        mapImage.style.opacity = 1;
+                    }, 300);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
