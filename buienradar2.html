@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Weather Radar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Press+Start+2P&family=Cinzel+Decorative:wght@700&family=Orbitron:wght@500&family=Lora:ital@1&family=Koulen&family=Uncial+Antiqua&family=Bangers&family=Creepster&family=Metal+Mania&family=Nosifier&family=Special+Elite&family=Rye&family=Pirata+One&family=Eater&family=Monoton&family=Rubik+Glitch&family=Grenze+Gotisch:wght@500&family=Sixties+Style&family=Frijole&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --font-family: 'Inter', sans-serif;
+            --bg-primary: #111827;
+            --bg-secondary: #1f2937;
+            --bg-tertiary: rgba(55, 65, 81, 0.5);
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+            --accent-color: #8b5cf6;
+            --accent-color-light: #a78bfa;
+            --icon-color: #facc15;
+            --border-color: #374151;
+        }
+        [data-theme="retro-arcade"] {
+            --font-family: '"Press Start 2P"', cursive;
+            --bg-primary: #000000;
+            --bg-secondary: #1a001a;
+            --bg-tertiary: rgba(50, 0, 50, 0.7);
+            --text-primary: #00ff00;
+            --text-secondary: #008000;
+            --accent-color: #ff00ff;
+            --accent-color-light: #ff80ff;
+            --icon-color: #ffff00;
+            --border-color: #330033;
+        }
+        [data-theme="steampunk"] {
+            --font-family: '"Cinzel Decorative"', serif;
+            --bg-primary: #5a3e2b;
+            --bg-secondary: #8b5e34;
+            --bg-tertiary: rgba(101, 67, 33, 0.6);
+            --text-primary: #f3e5ab;
+            --text-secondary: #d4ac6e;
+            --accent-color: #cd7f32;
+            --accent-color-light: #e0a96d;
+            --icon-color: #ffd700;
+            --border-color: #654321;
+        }
+        [data-theme="cyberpunk"] {
+            --font-family: 'Orbitron', sans-serif;
+            --bg-primary: #0d0221;
+            --bg-secondary: #241e4e;
+            --bg-tertiary: rgba(58, 16, 108, 0.5);
+            --text-primary: #00f0ff;
+            --text-secondary: #8a2be2;
+            --accent-color: #f50057;
+            --accent-color-light: #ff5983;
+            --icon-color: #fef200;
+            --border-color: #3a106c;
+        }
+        [data-theme="whimsical-forest"] {
+            --font-family: 'Lora', serif;
+            --bg-primary: #2f4f4f;
+            --bg-secondary: #556b2f;
+            --bg-tertiary: rgba(85, 107, 47, 0.5);
+            --text-primary: #f5fffa;
+            --text-secondary: #90ee90;
+            --accent-color: #daa520;
+            --accent-color-light: #f0e68c;
+            --icon-color: #ffd700;
+            --border-color: #2e8b57;
+        }
+        [data-theme="nautical"] {
+            --font-family: 'Koulen', sans-serif;
+            --bg-primary: #000080;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: rgba(255, 255, 255, 0.2);
+            --text-primary: #000080;
+            --text-secondary: #dc143c;
+            --accent-color: #ff4500;
+            --accent-color-light: #ff8c00;
+            --icon-color: #ffd700;
+            --border-color: #add8e6;
+        }
+        [data-theme="space-age"] {
+            --font-family: 'Orbitron', sans-serif;
+            --bg-primary: #e6e6e6;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: rgba(0, 122, 122, 0.2);
+            --text-primary: #333333;
+            --text-secondary: #007a7a;
+            --accent-color: #ff6f61;
+            --accent-color-light: #ff8b80;
+            --icon-color: #ff6f61;
+            --border-color: #cccccc;
+        }
+        [data-theme="medieval-fantasy"] {
+            --font-family: '"Uncial Antiqua"', cursive;
+            --bg-primary: #2f1b0c;
+            --bg-secondary: #4a2c17;
+            --bg-tertiary: rgba(139, 69, 19, 0.4);
+            --text-primary: #e6d5b8;
+            --text-secondary: #c8a97e;
+            --accent-color: #b8860b;
+            --accent-color-light: #daa520;
+            --icon-color: #ffd700;
+            --border-color: #8b4513;
+        }
+        [data-theme="comic-book"] {
+            --font-family: 'Bangers', cursive;
+            --bg-primary: #f0f0f0;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: rgba(0, 0, 0, 0.1);
+            --text-primary: #000000;
+            --text-secondary: #555555;
+            --accent-color: #ff0000;
+            --accent-color-light: #ff6666;
+            --icon-color: #0000ff;
+            --border-color: #000000;
+        }
+        [data-theme="noir-detective"] {
+            --font-family: 'Special Elite', cursive;
+            --bg-primary: #000000;
+            --bg-secondary: #222222;
+            --bg-tertiary: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #aaaaaa;
+            --accent-color: #ffcc00;
+            --accent-color-light: #ffdd44;
+            --icon-color: #ffcc00;
+            --border-color: #444444;
+        }
+        [data-theme="western"] {
+            --font-family: 'Rye', cursive;
+            --bg-primary: #543927;
+            --bg-secondary: #8b4513;
+            --bg-tertiary: rgba(210, 105, 30, 0.3);
+            --text-primary: #f5deb3;
+            --text-secondary: #deb887;
+            --accent-color: #cd853f;
+            --accent-color-light: #d2b48c;
+            --icon-color: #ffc107;
+            --border-color: #a0522d;
+        }
+        [data-theme="art-deco"] {
+            --font-family: '"Cinzel Decorative"', serif;
+            --bg-primary: #000000;
+            --bg-secondary: #2c2c2c;
+            --bg-tertiary: rgba(218, 165, 32, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #c0c0c0;
+            --accent-color: #daa520;
+            --accent-color-light: #f0e68c;
+            --icon-color: #daa520;
+            --border-color: #4a4a4a;
+        }
+        [data-theme="japanese-edo"] {
+            --font-family: 'Lora', serif;
+            --bg-primary: #f4f1e8;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: rgba(139, 0, 0, 0.1);
+            --text-primary: #333333;
+            --text-secondary: #8b0000;
+            --accent-color: #b22222;
+            --accent-color-light: #dc143c;
+            --icon-color: #b22222;
+            --border-color: #e0e0e0;
+        }
+        [data-theme="viking-nordic"] {
+            --font-family: '"Uncial Antiqua"', cursive;
+            --bg-primary: #3c3c3c;
+            --bg-secondary: #5a5a5a;
+            --bg-tertiary: rgba(224, 224, 224, 0.2);
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --accent-color: #a52a2a;
+            --accent-color-light: #cd5c5c;
+            --icon-color: #a52a2a;
+            --border-color: #2c2c2c;
+        }
+        [data-theme="pirate-adventure"] {
+            --font-family: '"Pirata One"', cursive;
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #3e2723;
+            --bg-tertiary: rgba(93, 64, 55, 0.5);
+            --text-primary: #e0be8a;
+            --text-secondary: #a1887f;
+            --accent-color: #ffab00;
+            --accent-color-light: #ffd600;
+            --icon-color: #ffab00;
+            --border-color: #5d4037;
+        }
+        [data-theme="mad-scientist"] {
+            --font-family: 'Creepster', cursive;
+            --bg-primary: #1d2a3a;
+            --bg-secondary: #2c3e50;
+            --bg-tertiary: rgba(76, 175, 80, 0.2);
+            --text-primary: #76ff03;
+            --text-secondary: #4caf50;
+            --accent-color: #ffeb3b;
+            --accent-color-light: #fff176;
+            --icon-color: #ffeb3b;
+            --border-color: #38506b;
+        }
+        [data-theme="circus-carnival"] {
+            --font-family: 'Bangers', cursive;
+            --bg-primary: #fffacd;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: rgba(255, 69, 0, 0.2);
+            --text-primary: #000000;
+            --text-secondary: #ff4500;
+            --accent-color: #1e90ff;
+            --accent-color-light: #6495ed;
+            --icon-color: #ff4500;
+            --border-color: #ffd700;
+        }
+        [data-theme="dystopian-grunge"] {
+            --font-family: 'Rubik Glitch', cursive;
+            --bg-primary: #333333;
+            --bg-secondary: #444444;
+            --bg-tertiary: rgba(0, 0, 0, 0.3);
+            --text-primary: #a5a5a5;
+            --text-secondary: #777777;
+            --accent-color: #ff4500;
+            --accent-color-light: #ff6a33;
+            --icon-color: #ff4500;
+            --border-color: #222222;
+        }
+        [data-theme="gothic-victorian"] {
+            --font-family: '"Grenze Gotisch"', serif;
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-tertiary: rgba(224, 52, 81, 0.2);
+            --text-primary: #e94560;
+            --text-secondary: #c7c7d2;
+            --accent-color: #ffffff;
+            --accent-color-light: #f0f0f0;
+            --icon-color: #e94560;
+            --border-color: #0f3460;
+        }
+        [data-theme="swinging-sixties"] {
+            --font-family: 'Monoton', cursive;
+            --bg-primary: #ff6f61;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: rgba(255, 255, 255, 0.3);
+            --text-primary: #000000;
+            --text-secondary: #555555;
+            --accent-color: #0092cc;
+            --accent-color-light: #00bfff;
+            --icon-color: #f9d648;
+            --border-color: #000000;
+        }
+        [data-theme="post-apocalyptic"] {
+            --font-family: 'Frijole', cursive;
+            --bg-primary: #4a4a4a;
+            --bg-secondary: #6b6b6b;
+            --bg-tertiary: rgba(255, 204, 0, 0.2);
+            --text-primary: #dcdcdc;
+            --text-secondary: #a9a9a9;
+            --accent-color: #ffcc00;
+            --accent-color-light: #ffdd44;
+            --icon-color: #ffcc00;
+            --border-color: #333333;
+        }
+
+        body {
+            font-family: var(--font-family);
+            -webkit-tap-highlight-color: transparent;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        .timeline-container::-webkit-scrollbar { display: none; }
+        .timeline-container { -ms-overflow-style: none; scrollbar-width: none; }
+        .active-map-btn {
+            background-color: var(--accent-color);
+            color: var(--bg-secondary) !important;
+            box-shadow: 0 4px 14px 0 rgba(0,0,0,0.1);
+        }
+        .loader {
+            border: 4px solid var(--bg-secondary);
+            border-radius: 50%;
+            border-top: 4px solid var(--accent-color);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Theme Settings Modal -->
+    <div id="theme-modal" class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4 hidden">
+        <div id="theme-modal-content" class="bg-[var(--bg-secondary)] p-6 rounded-2xl shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Select a Theme</h2>
+                <button id="close-modal-btn" class="p-2 rounded-full hover:bg-[var(--bg-tertiary)] transition-colors">
+                    <i data-feather="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <!-- Theme buttons will be injected here by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loader-overlay" class="fixed inset-0 bg-[var(--bg-primary)] bg-opacity-80 flex flex-col justify-center items-center z-40">
+        <div class="loader"></div>
+        <p id="loader-text" class="mt-4 text-[var(--text-secondary)]">Fetching your location...</p>
+    </div>
+
+    <div id="app-container" class="container mx-auto p-4 sm:p-6 max-w-7xl hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-1 space-y-6">
+                <header class="flex items-center justify-between">
+                    <div>
+                        <h1 id="theme-greeting" class="text-2xl font-bold tracking-tight">Weather <span id="theme-emoji"></span></h1>
+                        <p id="location-text" class="text-[var(--text-secondary)] text-sm">Loading location...</p>
+                    </div>
+                    <button id="settings-btn" class="p-2 rounded-full hover:bg-[var(--bg-secondary)] transition-colors">
+                        <i data-feather="settings" class="w-5 h-5 text-[var(--text-secondary)]"></i>
+                    </button>
+                </header>
+                <div class="bg-[var(--bg-secondary)] p-6 rounded-2xl shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p id="now-label" class="text-[var(--text-secondary)]">Now</p>
+                            <p id="current-temp" class="text-5xl font-bold">--&deg;C</p>
+                            <p id="current-condition" class="font-medium text-[var(--accent-color)]">--</p>
+                        </div>
+                        <div id="current-icon" class="text-right text-[var(--icon-color)]">
+                             <i data-feather="sun" class="w-20 h-20"></i>
+                        </div>
+                    </div>
+                    <div class="mt-6 border-t border-[var(--border-color)] pt-4 text-sm text-[var(--text-secondary)] space-y-2">
+                        <div class="flex justify-between"><span id="wind-label"><i data-feather="wind" class="w-4 h-4 inline-block mr-2"></i>Wind</span> <span id="current-wind" class="font-medium text-[var(--text-primary)]">-- km/h</span></div>
+                        <div class="flex justify-between"><span id="humidity-label"><i data-feather="droplet" class="w-4 h-4 inline-block mr-2"></i>Humidity</span> <span id="current-humidity" class="font-medium text-[var(--text-primary)]">--%</span></div>
+                        <div class="flex justify-between"><span id="visibility-label"><i data-feather="eye" class="w-4 h-4 inline-block mr-2"></i>Visibility</span> <span id="current-visibility" class="font-medium text-[var(--text-primary)]">-- km</span></div>
+                    </div>
+                </div>
+                <div class="bg-[var(--bg-secondary)] p-6 rounded-2xl shadow-lg">
+                    <h2 id="precipitation-title" class="font-semibold text-lg mb-4">Precipitation Next 3 Hours</h2>
+                    <div class="relative">
+                        <p id="precipitation-summary" class="font-medium text-center mb-4 text-[var(--accent-color-light)]">--</p>
+                        <div id="timeline-container" class="timeline-container overflow-x-auto pb-4">
+                            <svg id="timeline-svg" width="720" height="120"></svg>
+                        </div>
+                    </div>
+                </div>
+                <div id="forecast-container" class="bg-[var(--bg-secondary)] p-6 rounded-2xl shadow-lg">
+                    <h2 id="forecast-title" class="font-semibold text-lg mb-4">5-Day Forecast</h2>
+                    <div class="space-y-3"></div>
+                </div>
+            </div>
+            <div class="lg:col-span-2 bg-[var(--bg-secondary)] rounded-2xl shadow-lg flex flex-col overflow-hidden min-h-[500px] lg:min-h-0">
+                <div class="p-4 flex-shrink-0">
+                    <div class="flex flex-wrap items-center justify-center sm:justify-between gap-2">
+                        <div class="flex items-center space-x-2 bg-[var(--bg-primary)] p-1 rounded-full">
+                            <button id="btn-rain" class="map-btn active-map-btn px-4 py-2 text-sm font-medium rounded-full transition-colors">Rain</button>
+                            <button id="btn-clouds" class="map-btn text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-4 py-2 text-sm font-medium rounded-full transition-colors">Clouds</button>
+                            <button id="btn-wind" class="map-btn text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-4 py-2 text-sm font-medium rounded-full transition-colors">Wind</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="map-container" class="flex-grow bg-[var(--bg-tertiary)] relative">
+                    <img id="map-image" src="https://api.buienradar.nl/image/1.0/radarmapbe" alt="Weather map" class="absolute h-full w-full object-cover transition-opacity duration-300 ease-in-out">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const THEMES = [
+                { id: 'default', name: 'Default' }, { id: 'retro-arcade', name: 'Retro Arcade' },
+                { id: 'steampunk', name: 'Steampunk' }, { id: 'cyberpunk', name: 'Cyberpunk' },
+                { id: 'whimsical-forest', name: 'Whimsical Forest' }, { id: 'nautical', name: 'Nautical' },
+                { id: 'space-age', name: 'Space Age' }, { id: 'western', name: 'Western' },
+                { id: 'medieval-fantasy', name: 'Medieval' }, { id: 'comic-book', name: 'Comic Book' },
+                { id: 'noir-detective', name: 'Noir' }, { id: 'art-deco', name: 'Art Deco' },
+                { id: 'japanese-edo', name: 'Japanese Edo' }, { id: 'viking-nordic', name: 'Viking' },
+                { id: 'pirate-adventure', name: 'Pirate' }, { id: 'mad-scientist', name: 'Mad Scientist' },
+                { id: 'circus-carnival', name: 'Circus' }, { id: 'dystopian-grunge', name: 'Grunge' },
+                { id: 'gothic-victorian', name: 'Gothic' }, { id: 'swinging-sixties', name: '60s Psychedelic' },
+                { id: 'post-apocalyptic', name: 'Post-Apocalyptic' }
+            ];
+
+            const THEME_DATA = {
+                'default': { greeting: "Weather", emoji: "🌦️", now: "Now", wind: "Wind", humidity: "Humidity", visibility: "Visibility", forecastTitle: "5-Day Forecast", precipitationTitle: "Precipitation Next 3 Hours" },
+                'retro-arcade': { greeting: "HIGH SCORE", emoji: "🕹️", now: "NOW", wind: "SPEED", humidity: "POWER", visibility: "RANGE", forecastTitle: "NEXT LEVELS", precipitationTitle: "INCOMING WAVES" },
+                'steampunk': { greeting: "The Almanac", emoji: "⚙️", now: "Presently", wind: "Aether Flow", humidity: "Vapours", visibility: "Observation", forecastTitle: "Prognostication", precipitationTitle: "Atmospheric Moisture" },
+                'cyberpunk': { greeting: "System Data", emoji: "🤖", now: "Live Feed", wind: "Vectors", humidity: "Atmos", visibility: "Clarity", forecastTitle: "Data Stream", precipitationTitle: "Precipitation Matrix" },
+                'whimsical-forest': { greeting: "Whispers", emoji: "🍄", now: "In this moment", wind: "Breeze", humidity: "Dewpoint", visibility: "Glimmer", forecastTitle: "The Coming Days", precipitationTitle: "The Coming Dew" },
+                'nautical': { greeting: "Ship's Log", emoji: "⚓", now: "On Deck", wind: "Gale Force", humidity: "Sea Spray", visibility: "Horizon", forecastTitle: "The Voyage Ahead", precipitationTitle: "Approaching Squalls" },
+                'space-age': { greeting: "Blast Off!", emoji: "🚀", now: "T-Minus 0", wind: "Solar Wind", humidity: "Nebula Gas", visibility: "Light Years", forecastTitle: "Future Missions", precipitationTitle: "Meteor Showers" },
+                'western': { greeting: "Howdy!", emoji: "🤠", now: "High Noon", wind: "Tumbleweeds", humidity: "Dry Gulch", visibility: "The Plains", forecastTitle: "The Trail Ahead", precipitationTitle: "Rain Dance" },
+                'medieval-fantasy': { greeting: "The Skies", emoji: "🏰", now: "By the Sun", wind: "Dragon's Breath", humidity: "Mire", visibility: "Scrying", forecastTitle: "The Prophecy", precipitationTitle: "The Heavens Weep" },
+                'comic-book': { greeting: "Meanwhile...", emoji: "💥", now: "Right Now!", wind: "Whoosh!", humidity: "Splash!", visibility: "Focus!", forecastTitle: "Next Issue!", precipitationTitle: "Incoming!" },
+                'noir-detective': { greeting: "The Case", emoji: "🕵️", now: "The Beat", wind: "The Chill", humidity: "The Damp", visibility: "The Fog", forecastTitle: "The Long Haul", precipitationTitle: "The Drizzle" },
+                'art-deco': { greeting: "The Metropolis", emoji: "🏛️", now: "The Moment", wind: "The Draft", humidity: "The Damp", visibility: "The Haze", forecastTitle: "The Outlook", precipitationTitle: "The Downpour" },
+                'japanese-edo': { greeting: "Haiku", emoji: "🌸", now: "Moment's calm", wind: "Gentle breeze blows", humidity: "Morning dew forms", visibility: "Misty mountains", forecastTitle: "Seasons turn", precipitationTitle: "Sky's tears fall" },
+                'viking-nordic': { greeting: "Skål!", emoji: "🪓", now: "This Sun", wind: "Odin's Breath", humidity: "Sea's Spray", visibility: "The Fjord", forecastTitle: "The Fates Decree", precipitationTitle: "Thor's Fury" },
+                'pirate-adventure': { greeting: "Ahoy!", emoji: "🏴‍☠️", now: "On the high seas", wind: "The Squall", humidity: "The Grog", visibility: "To the Horizon", forecastTitle: "The Next Voyage", precipitationTitle: "The Monsoon" },
+                'mad-scientist': { greeting: "The Lab", emoji: "🧪", now: "Experiment Time!", wind: "Vortex Speed", humidity: "Fluid Levels", visibility: "Clarity Index", forecastTitle: "Future Experiments", precipitationTitle: "Chemical Reaction" },
+                'circus-carnival': { greeting: "Step Right Up!", emoji: "🎪", now: "Center Ring", wind: "The High Wire", humidity: "The Big Splash", visibility: "The Grandstand", forecastTitle: "Coming Attractions", precipitationTitle: "The Main Event" },
+                'dystopian-grunge': { greeting: "The Static", emoji: "☣️", now: "The Now", wind: "The Howl", humidity: "The Damp", visibility: "The Haze", forecastTitle: "The Struggle", precipitationTitle: "The Fallout" },
+                'gothic-victorian': { greeting: "The Veil", emoji: "🦇", now: "At this Hour", wind: "A Chill", humidity: "The Mist", visibility: "The Gloom", forecastTitle: "The Unfolding", precipitationTitle: "The Mourning" },
+                'swinging-sixties': { greeting: "Groovy!", emoji: "☮️", now: "The Happening", wind: "The Vibe", humidity: "The Funk", visibility: "The Scene", forecastTitle: "Far Out!", precipitationTitle: "Flower Power" },
+                'post-apocalyptic': { greeting: "The Wastes", emoji: "☢️", now: "Survival Time", wind: "The Gale", humidity: "The Damp", visibility: "The Dust", forecastTitle: "The Days Ahead", precipitationTitle: "Acid Rain" }
+            };
+
+            const settingsBtn = document.getElementById('settings-btn');
+            const themeModal = document.getElementById('theme-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const themeGrid = document.querySelector('#theme-modal-content .grid');
+            
+            function setTheme(themeId) {
+                document.documentElement.setAttribute('data-theme', themeId);
+                localStorage.setItem('weatherTheme', themeId);
+            }
+
+            function updateThemeText(themeId) {
+                const data = THEME_DATA[themeId] || THEME_DATA.default;
+                document.getElementById('theme-greeting').textContent = data.greeting;
+                document.getElementById('theme-emoji').textContent = data.emoji;
+                document.getElementById('now-label').textContent = data.now;
+                document.getElementById('wind-label').innerHTML = `<i data-feather="wind" class="w-4 h-4 inline-block mr-2"></i>${data.wind}`;
+                document.getElementById('humidity-label').innerHTML = `<i data-feather="droplet" class="w-4 h-4 inline-block mr-2"></i>${data.humidity}`;
+                document.getElementById('visibility-label').innerHTML = `<i data-feather="eye" class="w-4 h-4 inline-block mr-2"></i>${data.visibility}`;
+                document.getElementById('forecast-title').textContent = data.forecastTitle;
+                document.getElementById('precipitation-title').textContent = data.precipitationTitle;
+                feather.replace();
+            }
+
+            function initTheme() {
+                const savedTheme = localStorage.getItem('weatherTheme') || 'default';
+                setTheme(savedTheme);
+                
+                THEMES.forEach(theme => {
+                    const btn = document.createElement('button');
+                    btn.className = 'text-left p-3 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors';
+                    btn.dataset.theme = theme.id;
+                    btn.innerHTML = `<span class="block font-bold text-sm">${theme.name}</span><span class="text-xs text-[var(--text-secondary)]">${theme.id}</span>`;
+                    btn.onclick = () => {
+                        setTheme(theme.id);
+                        updateThemeText(theme.id);
+                        themeModal.classList.add('hidden');
+                    };
+                    themeGrid.appendChild(btn);
+                });
+            }
+
+            settingsBtn.addEventListener('click', () => themeModal.classList.remove('hidden'));
+            closeModalBtn.addEventListener('click', () => themeModal.classList.add('hidden'));
+            themeModal.addEventListener('click', (e) => {
+                if (e.target === themeModal) themeModal.classList.add('hidden');
+            });
+
+            const loaderOverlay = document.getElementById('loader-overlay');
+            const loaderText = document.getElementById('loader-text');
+            const appContainer = document.getElementById('app-container');
+
+            const WMO_CODES = {
+                0: { description: "Clear sky", icon: "sun" }, 1: { description: "Mainly clear", icon: "sun" },
+                2: { description: "Partly cloudy", icon: "cloud" }, 3: { description: "Overcast", icon: "cloud" },
+                45: { description: "Fog", icon: "cloud-drizzle" }, 48: { description: "Depositing rime fog", icon: "cloud-drizzle" },
+                51: { description: "Light drizzle", icon: "cloud-drizzle" }, 53: { description: "Moderate drizzle", icon: "cloud-drizzle" },
+                55: { description: "Dense drizzle", icon: "cloud-drizzle" }, 56: { description: "Light freezing drizzle", icon: "cloud-rain" },
+                57: { description: "Dense freezing drizzle", icon: "cloud-rain" }, 61: { description: "Slight rain", icon: "cloud-rain" },
+                63: { description: "Moderate rain", icon: "cloud-rain" }, 65: { description: "Heavy rain", icon: "cloud-rain" },
+                66: { description: "Light freezing rain", icon: "cloud-snow" }, 67: { description: "Heavy freezing rain", icon: "cloud-snow" },
+                71: { description: "Slight snow fall", icon: "cloud-snow" }, 73: { description: "Moderate snow fall", icon: "cloud-snow" },
+                75: { description: "Heavy snow fall", icon: "cloud-snow" }, 77: { description: "Snow grains", icon: "cloud-snow" },
+                80: { description: "Slight rain showers", icon: "cloud-lightning" }, 81: { description: "Moderate rain showers", icon: "cloud-lightning" },
+                82: { description: "Violent rain showers", icon: "cloud-lightning" }, 85: { description: "Slight snow showers", icon: "cloud-snow" },
+                86: { description: "Heavy snow showers", icon: "cloud-snow" }, 95: { description: "Thunderstorm", icon: "cloud-lightning" },
+                96: { description: "Thunderstorm with slight hail", icon: "cloud-lightning" }, 99: { description: "Thunderstorm with heavy hail", icon: "cloud-lightning" },
+            };
+
+            const getWeather = async (lat, lon) => {
+                loaderText.textContent = 'Fetching weather data...';
+                try {
+                    const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&hourly=precipitation_probability,precipitation,weather_code,visibility&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) throw new Error('Weather data not available.');
+                    const data = await response.json();
+                    updateUI(data);
+                    loaderOverlay.classList.add('hidden');
+                    appContainer.classList.remove('hidden');
+                } catch (error) {
+                    loaderText.textContent = `Error: ${error.message}. Using default location.`;
+                    console.error("Weather fetch error:", error);
+                    getWeather(50.85, 4.35);
+                }
+            };
+            
+            const getLocationName = async (lat, lon) => {
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                    if (!response.ok) throw new Error('Could not fetch location name.');
+                    const data = await response.json();
+                    const city = data.address.city || data.address.town || data.address.village || 'Unknown';
+                    const country = data.address.country || '';
+                    document.getElementById('location-text').textContent = `${city}, ${country}`;
+                } catch (error) {
+                    console.error("Reverse geocoding error:", error);
+                    document.getElementById('location-text').textContent = 'Unknown location';
+                }
+            };
+
+            const updateUI = (data) => {
+                const currentTheme = localStorage.getItem('weatherTheme') || 'default';
+                updateThemeText(currentTheme);
+
+                document.getElementById('current-temp').textContent = `${Math.round(data.current.temperature_2m)}°C`;
+                const currentCode = WMO_CODES[data.current.weather_code] || { description: "Unknown", icon: "help-circle" };
+                document.getElementById('current-condition').textContent = currentCode.description;
+                document.getElementById('current-wind').textContent = `${Math.round(data.current.wind_speed_10m)} km/h`;
+                document.getElementById('current-humidity').textContent = `${data.current.relative_humidity_2m}%`;
+                
+                const now = new Date();
+                const currentHourIndex = data.hourly.time.findIndex(t => new Date(t) > now) - 1;
+                document.getElementById('current-visibility').textContent = (currentHourIndex >= 0) ? `${Math.round(data.hourly.visibility[currentHourIndex] / 1000)} km` : '-- km';
+
+                document.getElementById('current-icon').innerHTML = `<i data-feather="${currentCode.icon}" class="w-20 h-20"></i>`;
+
+                drawPrecipitationChart(data.hourly);
+
+                const forecastContainer = document.querySelector('#forecast-container .space-y-3');
+                forecastContainer.innerHTML = '';
+                for (let i = 0; i < 5; i++) {
+                    const dayData = {
+                        date: new Date(data.daily.time[i]),
+                        maxTemp: Math.round(data.daily.temperature_2m_max[i]),
+                        minTemp: Math.round(data.daily.temperature_2m_min[i]),
+                        code: WMO_CODES[data.daily.weather_code[i]] || { icon: "help-circle" }
+                    };
+                    const dayName = i === 0 ? 'Today' : dayData.date.toLocaleDateString('en-US', { weekday: 'long' });
+                    forecastContainer.innerHTML += `
+                        <div class="flex items-center justify-between ${i === 0 ? 'bg-[var(--bg-tertiary)]' : ''} p-3 rounded-lg">
+                            <span class="font-medium w-1/3">${dayName}</span>
+                            <i data-feather="${dayData.code.icon}" class="w-6 h-6 text-[var(--icon-color)]"></i>
+                            <div class="w-1/3 text-right">
+                                <span class="font-medium">${dayData.maxTemp}°</span>
+                                <span class="text-[var(--text-secondary)]">/ ${dayData.minTemp}°</span>
+                            </div>
+                        </div>`;
+                }
+                feather.replace();
+            };
+
+            const drawPrecipitationChart = (hourlyData) => {
+                const svg = document.getElementById('timeline-svg');
+                if (!svg) return;
+                svg.innerHTML = '';
+                
+                const now = new Date();
+                const startIndex = hourlyData.time.findIndex(t => new Date(t) > now) -1;
+                if (startIndex < 0) return;
+
+                const next3HoursData = hourlyData.precipitation.slice(startIndex, startIndex + 12);
+                
+                const svgHeight = 120;
+                const barWidth = 16;
+                const barMargin = 4;
+                const maxVal = 5;
+
+                let totalPrecipitation = 0;
+                let firstRainIndex = -1;
+
+                next3HoursData.forEach((d, i) => {
+                    totalPrecipitation += d;
+                    if(d > 0.1 && firstRainIndex === -1) firstRainIndex = i;
+
+                    const barHeight = Math.min((d / maxVal) * (svgHeight - 40), svgHeight - 40);
+                    const x = i * (barWidth + barMargin);
+                    
+                    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    rect.setAttribute('x', x);
+                    rect.setAttribute('y', svgHeight - barHeight - 20);
+                    rect.setAttribute('width', barWidth);
+                    rect.setAttribute('height', barHeight);
+                    rect.setAttribute('rx', 8);
+                    
+                    let barColor;
+                    if (d > 2.5) barColor = 'var(--icon-color)';
+                    else if (d > 1) barColor = 'var(--accent-color)';
+                    else if (d > 0.1) barColor = 'var(--accent-color-light)';
+                    else barColor = 'var(--bg-tertiary)';
+                    
+                    rect.setAttribute('style', `fill: ${barColor};`);
+                    svg.appendChild(rect);
+                });
+
+                const summaryEl = document.getElementById('precipitation-summary');
+                if (summaryEl) {
+                    if (totalPrecipitation < 0.1) {
+                        summaryEl.textContent = "No precipitation expected in the next 3 hours.";
+                    } else if (firstRainIndex !== -1) {
+                        const minutesToRain = (firstRainIndex + 1) * 15;
+                        summaryEl.textContent = `Light rain starting in about ${minutesToRain} minutes.`;
+                    }
+                }
+
+                const timeLabels = ['Now', '+30m', '+1h', '+1.5h', '+2h', '+2.5h'];
+                timeLabels.forEach((label, i) => {
+                    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    text.setAttribute('x', i * 2 * (barWidth + barMargin));
+                    text.setAttribute('y', svgHeight);
+                    text.setAttribute('class', 'text-xs');
+                    text.setAttribute('style', 'fill: var(--text-secondary);');
+                    text.textContent = label;
+                    svg.appendChild(text);
+                });
+            };
+
+            const initApp = () => {
+                initTheme();
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const { latitude, longitude } = position.coords;
+                            getLocationName(latitude, longitude);
+                            getWeather(latitude, longitude);
+                        },
+                        (error) => {
+                            console.warn("Geolocation error:", error.message);
+                            loaderText.textContent = 'Location access denied. Using default location.';
+                            getLocationName(50.85, 4.35);
+                            getWeather(50.85, 4.35);
+                        }
+                    );
+                } else {
+                    loaderText.textContent = 'Geolocation not supported. Using default location.';
+                    getLocationName(50.85, 4.35);
+                    getWeather(50.85, 4.35);
+                }
+            };
+
+            initApp();
+
+            const mapBtns = document.querySelectorAll('.map-btn');
+            const mapImage = document.getElementById('map-image');
+            const mapData = {
+                'rain': { src: 'https://api.buienradar.nl/image/1.0/radarmapbe', alt: 'Live rain radar map' },
+                'clouds': { src: 'https://www.dwd.de/DWD/wetter/wv_spez/hobbymet/wetterkarten/europa_ir108_jet.png', alt: 'Live satellite cloud cover' },
+                'wind': { src: 'https://placehold.co/1200x800/374151/a78bfa?text=Wind+Map+(N/A)', alt: 'Wind map placeholder' }
+            };
+            
+            mapBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    mapBtns.forEach(b => b.classList.remove('active-map-btn'));
+                    btn.classList.add('active-map-btn');
+                    const mapType = btn.id.split('-')[1];
+                    mapImage.style.opacity = 0;
+                    setTimeout(() => {
+                        mapImage.src = mapData[mapType].src + '?t=' + new Date().getTime();
+                        mapImage.alt = mapData[mapType].alt;
+                        mapImage.style.opacity = 1;
+                    }, 300);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
