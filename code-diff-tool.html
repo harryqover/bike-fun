@@ -63,9 +63,31 @@
             z-index: 100;
             height: auto !important;
         }
+
+        /* Resizer styles */
+        .resizer {
+            background-color: #e5e7eb; /* gray-200 */
+            cursor: col-resize;
+            width: 8px;
+            z-index: 10;
+        }
+        .dark .resizer { background-color: #4b5563; /* gray-600 */ }
+        .resizer:hover { background-color: #3b82f6; /* blue-500 */ }
+
+        /* Code folding styles */
+        .fold-marker {
+            background-color: #f3f4f6; /* gray-100 */
+            color: #6b7280; /* gray-500 */
+            cursor: pointer;
+            text-align: center;
+            padding: 0.25rem 1rem;
+        }
+        .dark .fold-marker { background-color: #374151; color: #9ca3af; }
+        .fold-marker:hover { background-color: #e5e7eb; }
+        .dark .fold-marker:hover { background-color: #4b5563; }
     </style>
 </head>
-<body class="h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans overflow-hidden">
+<body class="h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans overflow-hidden select-none">
 
     <div class="w-full h-full max-w-full mx-auto bg-white dark:bg-gray-800 flex flex-col p-4">
         <!-- Header -->
@@ -83,9 +105,9 @@
         </header>
 
         <!-- Main Content Area -->
-        <main id="main-grid" class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4 py-4 min-h-0 transition-all duration-300">
+        <main id="main-container" class="flex-grow flex py-4 min-h-0 transition-all duration-300">
             <!-- Left Column: Inputs -->
-            <div id="input-column" class="flex flex-col gap-4 min-h-0 transition-all duration-300">
+            <div id="input-column" class="flex flex-col gap-4 min-h-0 transition-all duration-300 h-full" style="width: 50%;">
                 <div class="flex-grow grid grid-cols-1 grid-rows-2 gap-4 min-h-0">
                     <div class="bg-white dark:bg-gray-800 flex flex-col min-h-0">
                         <label for="old-code" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Old Code</label>
@@ -98,8 +120,10 @@
                 </div>
             </div>
 
+            <div id="main-resizer" class="resizer"></div>
+
             <!-- Right Column: Outputs -->
-            <div id="output-column" class="flex flex-col gap-4 min-h-0 transition-all duration-300">
+            <div id="output-column" class="flex flex-col gap-4 min-h-0 transition-all duration-300 flex-grow">
                 <!-- Diff Output -->
                 <div id="diff-container" class="relative flex-grow flex flex-col p-4 border border-gray-200 dark:border-gray-700 rounded-lg min-h-0 bg-white dark:bg-gray-800">
                     <div class="flex justify-between items-center mb-2 flex-shrink-0">
@@ -109,6 +133,10 @@
                                 <button data-view="unified" class="px-3 py-1 text-sm rounded-md">Unified</button>
                                 <button data-view="split" class="px-3 py-1 text-sm rounded-md">Split</button>
                             </div>
+                            <button id="fold-btn" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-sm flex items-center gap-1" title="Fold Unchanged Code">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 12L3 8m4 8l4-8m4 8V4m0 12l4-8m-4 8l-4-8" /></svg>
+                                Fold
+                            </button>
                         </div>
                         <div class="flex items-center gap-2">
                              <button id="toggle-focus-btn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" title="Focus Mode">
@@ -168,19 +196,21 @@
             const closeModalBtn = document.getElementById('close-modal-btn');
             const saveSettingsBtn = document.getElementById('save-settings-btn');
             const apiKeyInput = document.getElementById('api-key-input');
-            const mainGrid = document.getElementById('main-grid');
+            const mainContainer = document.getElementById('main-container');
             const inputColumn = document.getElementById('input-column');
             const outputColumn = document.getElementById('output-column');
             const toggleInputsBtn = document.getElementById('toggle-inputs-btn');
             const diffContainer = document.getElementById('diff-container');
             const toggleFocusBtn = document.getElementById('toggle-focus-btn');
-
+            const mainResizer = document.getElementById('main-resizer');
+            const foldBtn = document.getElementById('fold-btn');
 
             // --- STATE ---
             let currentView = 'unified';
             let geminiApiKey = localStorage.getItem('geminiApiKey') || '';
             let isInputsCollapsed = false;
             let isFocusMode = false;
+            let isFoldingEnabled = false;
 
             // --- INITIALIZATION ---
             function initialize() {
@@ -191,6 +221,10 @@
                 explainBtn.addEventListener('click', handleExplain);
                 toggleInputsBtn.addEventListener('click', toggleInputs);
                 toggleFocusBtn.addEventListener('click', toggleFocusMode);
+                foldBtn.addEventListener('click', toggleFolding);
+                
+                // Resizer Logic
+                makeResizable(mainContainer, inputColumn, mainResizer, outputColumn);
 
                 // Settings Modal Logic
                 settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
@@ -204,16 +238,15 @@
                 isInputsCollapsed = !isInputsCollapsed;
                 if (isInputsCollapsed) {
                     inputColumn.classList.add('hidden');
-                    mainGrid.classList.remove('md:grid-cols-2');
-                    mainGrid.classList.add('md:grid-cols-1');
-                    outputColumn.classList.add('md:col-span-1');
+                    mainResizer.classList.add('hidden');
+                    outputColumn.style.width = '100%';
                     toggleInputsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" /></svg>`;
                     toggleInputsBtn.title = "Expand Inputs";
                 } else {
                     inputColumn.classList.remove('hidden');
-                    mainGrid.classList.add('md:grid-cols-2');
-                    mainGrid.classList.remove('md:grid-cols-1');
-                    outputColumn.classList.remove('md:col-span-1');
+                    mainResizer.classList.remove('hidden');
+                    inputColumn.style.width = '50%';
+                    outputColumn.style.width = '50%';
                     toggleInputsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" /></svg>`;
                     toggleInputsBtn.title = "Collapse Inputs";
                 }
@@ -231,6 +264,40 @@
                 }
             }
 
+            function toggleFolding() {
+                isFoldingEnabled = !isFoldingEnabled;
+                foldBtn.classList.toggle('bg-blue-500', isFoldingEnabled);
+                foldBtn.classList.toggle('text-white', isFoldingEnabled);
+                runDiff();
+            }
+
+            function makeResizable(container, leftEl, resizer, rightEl) {
+                let isResizing = false;
+
+                resizer.addEventListener('mousedown', (e) => {
+                    isResizing = true;
+                    document.body.style.cursor = 'col-resize';
+                    document.body.style.userSelect = 'none';
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isResizing) return;
+                    const containerRect = container.getBoundingClientRect();
+                    const leftWidth = e.clientX - containerRect.left;
+                    const rightWidth = containerRect.width - leftWidth;
+
+                    if (leftWidth > 100 && rightWidth > 100) { // Minimum width
+                        leftEl.style.width = `${leftWidth}px`;
+                        rightEl.style.width = `${rightWidth}px`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isResizing = false;
+                    document.body.style.cursor = 'default';
+                    document.body.style.userSelect = 'auto';
+                });
+            }
 
             // --- SETTINGS ---
             function saveSettings() {
@@ -289,25 +356,70 @@
             function renderUnifiedDiff(diff) {
                 outputEl.className = 'flex-grow w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg font-mono text-sm overflow-auto unified';
                 const fragment = document.createDocumentFragment();
+                
+                let commonBlock = [];
+                const FOLD_THRESHOLD = 6;
+                const CONTEXT_LINES = 2;
+
+                function flushCommonBlock() {
+                    if (isFoldingEnabled && commonBlock.length > FOLD_THRESHOLD) {
+                        // Show first few
+                        commonBlock.slice(0, CONTEXT_LINES).forEach(line => fragment.appendChild(line));
+                        
+                        // Show fold marker
+                        const marker = document.createElement('div');
+                        marker.className = 'fold-marker';
+                        marker.textContent = `... ${commonBlock.length - (CONTEXT_LINES * 2)} unchanged lines ...`;
+                        const hiddenLines = commonBlock.slice(CONTEXT_LINES, -CONTEXT_LINES);
+                        marker.onclick = () => {
+                            marker.replaceWith(...hiddenLines);
+                        };
+                        fragment.appendChild(marker);
+
+                        // Show last few
+                        commonBlock.slice(-CONTEXT_LINES).forEach(line => fragment.appendChild(line));
+                    } else {
+                        commonBlock.forEach(line => fragment.appendChild(line));
+                    }
+                    commonBlock = [];
+                }
+
                 diff.forEach(part => {
-                    const className = part.added ? 'diff-added' : part.removed ? 'diff-removed' : 'diff-common';
                     const lines = part.value.endsWith('\n') ? part.value.slice(0, -1).split('\n') : part.value.split('\n');
-                    lines.forEach(line => {
-                        const span = document.createElement('span');
-                        span.className = `diff-line ${className}`;
-                        span.textContent = line;
-                        fragment.appendChild(span);
-                    });
+                    if (part.added || part.removed) {
+                        flushCommonBlock();
+                        const className = part.added ? 'diff-added' : 'diff-removed';
+                        lines.forEach(line => {
+                            const span = document.createElement('span');
+                            span.className = `diff-line ${className}`;
+                            span.textContent = line;
+                            fragment.appendChild(span);
+                        });
+                    } else {
+                        lines.forEach(line => {
+                            const span = document.createElement('span');
+                            span.className = 'diff-line diff-common';
+                            span.textContent = line;
+                            commonBlock.push(span);
+                        });
+                    }
                 });
+                flushCommonBlock();
                 outputEl.appendChild(fragment);
             }
 
             function renderSplitDiff(diff) {
-                outputEl.className = 'flex-grow w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg font-mono text-sm overflow-auto grid grid-cols-2 gap-px bg-gray-200 dark:bg-gray-700';
+                outputEl.className = 'flex-grow w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg font-mono text-sm overflow-hidden flex';
                 const leftPanel = document.createElement('div');
                 const rightPanel = document.createElement('div');
-                leftPanel.className = "bg-gray-50 dark:bg-gray-900";
-                rightPanel.className = "bg-gray-50 dark:bg-gray-900";
+                const splitResizer = document.createElement('div');
+
+                leftPanel.className = "bg-gray-50 dark:bg-gray-900 h-full overflow-auto";
+                rightPanel.className = "bg-gray-50 dark:bg-gray-900 h-full overflow-auto flex-grow";
+                splitResizer.className = "resizer";
+                leftPanel.style.width = "50%";
+                
+                makeResizable(outputEl, leftPanel, splitResizer, rightPanel);
 
                 diff.forEach(part => {
                     const lines = part.value.endsWith('\n') ? part.value.slice(0, -1).split('\n') : part.value.split('\n');
@@ -332,6 +444,7 @@
                     });
                 });
                 outputEl.appendChild(leftPanel);
+                outputEl.appendChild(splitResizer);
                 outputEl.appendChild(rightPanel);
             }
 
