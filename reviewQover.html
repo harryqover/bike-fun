@@ -187,8 +187,8 @@
     let urlToRedirect = "";
     if (rating > minPublicRating) {
       const redirectOptions = [
-        { url: "https://g.page/r/CeJV3VPdzwkCEAI/review", weight: 2 },
-        { url: "https://www.trustpilot.com/evaluate/qover.com", weight: 8 }
+        { url: "https://g.page/r/CeJV3VPdzwkCEAI/review", weight: 3 },
+        { url: "https://www.trustpilot.com/evaluate/qover.com", weight: 7 }
       ];
       const weightedRedirectUrls = redirectOptions.flatMap(opt => Array(opt.weight).fill(opt.url));
       urlToRedirect = weightedRedirectUrls[Math.floor(Math.random() * weightedRedirectUrls.length)];
