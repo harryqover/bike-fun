@@ -27,21 +27,28 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* Custom styles for the diff view */
-        .diff-line {
-            display: block;
-            white-space: pre;
-            padding: 0.25rem 1rem;
-            min-height: 1.5rem; /* Ensure empty lines are visible */
+        .diff-line-container { display: flex; }
+        .line-numbers {
+            text-align: right;
+            padding: 0 1rem;
+            color: #9ca3af; /* gray-400 */
+            user-select: none;
+            flex-shrink: 0;
+            width: 5rem; /* Fixed width for alignment */
         }
+        .line-content { white-space: pre; flex-grow: 1; }
+        .diff-line { padding: 0.25rem 1rem; min-height: 1.5rem; }
         .diff-added { background-color: rgba(16, 185, 129, 0.1); }
-        .diff-removed { background-color: rgba(239, 68, 68, 0.1); text-decoration: line-through; }
+        .diff-removed { background-color: rgba(239, 68, 68, 0.1); }
         
         /* Unified view markers */
-        .unified .diff-line::before { display: inline-block; width: 1.5rem; text-align: center; color: #9ca3af; }
-        .unified .diff-added::before { content: '+'; color: #10b981; }
-        .unified .diff-removed::before { content: '-'; color: #ef4444; }
-        .unified .diff-common::before { content: ' '; }
-
+        .unified .diff-added .line-numbers::before { content: '+'; color: #10b981; margin-right: 0.5rem; }
+        .unified .diff-removed .line-numbers::before { content: '-'; color: #ef4444; margin-right: 0.5rem; }
+        .unified .line-numbers-both {
+            display: inline-block;
+            width: 2.5rem;
+        }
+        
         /* Styles for AI explanation output */
         #ai-explanation-output h3 { font-size: 1.125rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; }
         #ai-explanation-output p { margin-bottom: 0.75rem; }
@@ -223,10 +230,8 @@
                 toggleFocusBtn.addEventListener('click', toggleFocusMode);
                 foldBtn.addEventListener('click', toggleFolding);
                 
-                // Resizer Logic
                 makeResizable(mainContainer, inputColumn, mainResizer, outputColumn);
 
-                // Settings Modal Logic
                 settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
                 closeModalBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
                 saveSettingsBtn.addEventListener('click', saveSettings);
@@ -273,42 +278,25 @@
 
             function makeResizable(container, leftEl, resizer, rightEl) {
                 let isResizing = false;
-
-                resizer.addEventListener('mousedown', (e) => {
-                    isResizing = true;
-                    document.body.style.cursor = 'col-resize';
-                    document.body.style.userSelect = 'none';
-                });
-
-                document.addEventListener('mousemove', (e) => {
+                resizer.addEventListener('mousedown', () => isResizing = true);
+                container.addEventListener('mousemove', (e) => {
                     if (!isResizing) return;
                     const containerRect = container.getBoundingClientRect();
                     const leftWidth = e.clientX - containerRect.left;
-                    const rightWidth = containerRect.width - leftWidth;
-
-                    if (leftWidth > 100 && rightWidth > 100) { // Minimum width
+                    if (leftWidth > 100 && (containerRect.width - leftWidth) > 100) {
                         leftEl.style.width = `${leftWidth}px`;
-                        rightEl.style.width = `${rightWidth}px`;
+                        rightEl.style.flexGrow = '1';
                     }
                 });
-
-                document.addEventListener('mouseup', () => {
-                    isResizing = false;
-                    document.body.style.cursor = 'default';
-                    document.body.style.userSelect = 'auto';
-                });
+                container.addEventListener('mouseup', () => isResizing = false);
+                container.addEventListener('mouseleave', () => isResizing = false);
             }
 
             // --- SETTINGS ---
             function saveSettings() {
                 geminiApiKey = apiKeyInput.value;
-                if (geminiApiKey) {
-                    localStorage.setItem('geminiApiKey', geminiApiKey);
-                    alert('API Key saved successfully!');
-                } else {
-                    localStorage.removeItem('geminiApiKey');
-                    alert('API Key removed.');
-                }
+                localStorage.setItem('geminiApiKey', geminiApiKey);
+                alert('API Key saved!');
                 settingsModal.classList.add('hidden');
             }
 
@@ -323,13 +311,8 @@
 
             function updateViewSwitcherUI() {
                 viewSwitcher.querySelectorAll('button').forEach(btn => {
-                    if (btn.dataset.view === currentView) {
-                        btn.classList.add('bg-blue-500', 'text-white');
-                        btn.classList.remove('bg-transparent', 'text-gray-700', 'dark:text-gray-300');
-                    } else {
-                        btn.classList.remove('bg-blue-500', 'text-white');
-                        btn.classList.add('bg-transparent', 'text-gray-700', 'dark:text-gray-300');
-                    }
+                    btn.classList.toggle('bg-blue-500', btn.dataset.view === currentView);
+                    btn.classList.toggle('text-white', btn.dataset.view === currentView);
                 });
             }
 
@@ -343,8 +326,8 @@
                     return;
                 }
 
-                const diff = Diff.diffLines(oldStr, newStr);
-                outputEl.innerHTML = ''; // Clear previous output
+                const diff = Diff.diffLines(oldStr, newStr, { newlineIsToken: true });
+                outputEl.innerHTML = '';
 
                 if (currentView === 'unified') {
                     renderUnifiedDiff(diff);
@@ -352,55 +335,85 @@
                     renderSplitDiff(diff);
                 }
             }
+            
+            function createLineElement(lineNumOld, lineNumNew, content, type) {
+                const lineContainer = document.createElement('div');
+                lineContainer.className = `diff-line-container ${type}`;
+
+                const lineNumElOld = document.createElement('div');
+                lineNumElOld.className = 'line-numbers line-numbers-both';
+                lineNumElOld.textContent = lineNumOld;
+
+                const lineNumElNew = document.createElement('div');
+                lineNumElNew.className = 'line-numbers line-numbers-both';
+                lineNumElNew.textContent = lineNumNew;
+                
+                const lineContentEl = document.createElement('div');
+                lineContentEl.className = 'line-content diff-line';
+                lineContentEl.textContent = content.replace(/\n$/, '');
+
+                if (currentView === 'unified') {
+                    const unifiedLineNumEl = document.createElement('div');
+                    unifiedLineNumEl.className = 'line-numbers';
+                    unifiedLineNumEl.appendChild(lineNumElOld);
+                    unifiedLineNumEl.appendChild(lineNumElNew);
+                    lineContainer.appendChild(unifiedLineNumEl);
+                } else {
+                     lineContainer.appendChild(lineNumElOld);
+                }
+                
+                lineContainer.appendChild(lineContentEl);
+                return lineContainer;
+            }
 
             function renderUnifiedDiff(diff) {
-                outputEl.className = 'flex-grow w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg font-mono text-sm overflow-auto unified';
+                outputEl.className = 'w-full bg-gray-50 dark:bg-gray-900 font-mono text-sm overflow-auto unified';
                 const fragment = document.createDocumentFragment();
+                let oldLineNum = 1;
+                let newLineNum = 1;
                 
                 let commonBlock = [];
-                const FOLD_THRESHOLD = 6;
-                const CONTEXT_LINES = 2;
+                const FOLD_THRESHOLD = 8;
+                const CONTEXT_LINES = 3;
 
                 function flushCommonBlock() {
                     if (isFoldingEnabled && commonBlock.length > FOLD_THRESHOLD) {
-                        // Show first few
-                        commonBlock.slice(0, CONTEXT_LINES).forEach(line => fragment.appendChild(line));
+                        commonBlock.slice(0, CONTEXT_LINES).forEach(item => fragment.appendChild(item.element));
                         
-                        // Show fold marker
                         const marker = document.createElement('div');
                         marker.className = 'fold-marker';
-                        marker.textContent = `... ${commonBlock.length - (CONTEXT_LINES * 2)} unchanged lines ...`;
-                        const hiddenLines = commonBlock.slice(CONTEXT_LINES, -CONTEXT_LINES);
-                        marker.onclick = () => {
-                            marker.replaceWith(...hiddenLines);
-                        };
+                        const hiddenCount = commonBlock.length - (CONTEXT_LINES * 2);
+                        marker.textContent = `... ${hiddenCount} unchanged lines ...`;
+                        
+                        const hiddenLines = commonBlock.slice(CONTEXT_LINES, -CONTEXT_LINES).map(item => item.element);
+                        marker.onclick = () => marker.replaceWith(...hiddenLines);
                         fragment.appendChild(marker);
 
-                        // Show last few
-                        commonBlock.slice(-CONTEXT_LINES).forEach(line => fragment.appendChild(line));
+                        commonBlock.slice(-CONTEXT_LINES).forEach(item => fragment.appendChild(item.element));
                     } else {
-                        commonBlock.forEach(line => fragment.appendChild(line));
+                        commonBlock.forEach(item => fragment.appendChild(item.element));
                     }
                     commonBlock = [];
                 }
 
                 diff.forEach(part => {
-                    const lines = part.value.endsWith('\n') ? part.value.slice(0, -1).split('\n') : part.value.split('\n');
-                    if (part.added || part.removed) {
+                    const lines = part.value.split('\n');
+                    if (lines[lines.length - 1] === '') lines.pop();
+
+                    if (part.added) {
                         flushCommonBlock();
-                        const className = part.added ? 'diff-added' : 'diff-removed';
                         lines.forEach(line => {
-                            const span = document.createElement('span');
-                            span.className = `diff-line ${className}`;
-                            span.textContent = line;
-                            fragment.appendChild(span);
+                            fragment.appendChild(createLineElement('', newLineNum++, line, 'diff-added'));
+                        });
+                    } else if (part.removed) {
+                        flushCommonBlock();
+                        lines.forEach(line => {
+                            fragment.appendChild(createLineElement(oldLineNum++, '', line, 'diff-removed'));
                         });
                     } else {
                         lines.forEach(line => {
-                            const span = document.createElement('span');
-                            span.className = 'diff-line diff-common';
-                            span.textContent = line;
-                            commonBlock.push(span);
+                            const el = createLineElement(oldLineNum++, newLineNum++, line, 'diff-common');
+                            commonBlock.push({ element: el });
                         });
                     }
                 });
@@ -409,7 +422,7 @@
             }
 
             function renderSplitDiff(diff) {
-                outputEl.className = 'flex-grow w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg font-mono text-sm overflow-hidden flex';
+                outputEl.className = 'flex-grow w-full font-mono text-sm overflow-hidden flex';
                 const leftPanel = document.createElement('div');
                 const rightPanel = document.createElement('div');
                 const splitResizer = document.createElement('div');
@@ -421,32 +434,44 @@
                 
                 makeResizable(outputEl, leftPanel, splitResizer, rightPanel);
 
-                diff.forEach(part => {
-                    const lines = part.value.endsWith('\n') ? part.value.slice(0, -1).split('\n') : part.value.split('\n');
-                    lines.forEach(line => {
-                        const leftLine = document.createElement('span');
-                        const rightLine = document.createElement('span');
-                        leftLine.className = 'diff-line';
-                        rightLine.className = 'diff-line';
+                let oldLineNum = 1;
+                let newLineNum = 1;
 
+                diff.forEach(part => {
+                    const lines = part.value.split('\n');
+                    if (lines[lines.length - 1] === '') lines.pop();
+                    
+                    lines.forEach(line => {
                         if (part.added) {
-                            rightLine.className += ' diff-added';
-                            rightLine.textContent = line;
+                            leftPanel.appendChild(createLineElement('', '', '', 'diff-placeholder'));
+                            rightPanel.appendChild(createLineElement(newLineNum++, '', line, 'diff-added'));
                         } else if (part.removed) {
-                            leftLine.className += ' diff-removed';
-                            leftLine.textContent = line;
+                            leftPanel.appendChild(createLineElement(oldLineNum++, '', line, 'diff-removed'));
+                            rightPanel.appendChild(createLineElement('', '', '', 'diff-placeholder'));
                         } else {
-                            leftLine.textContent = line;
-                            rightLine.textContent = line;
+                            leftPanel.appendChild(createLineElement(oldLineNum++, '', line, 'diff-common'));
+                            rightPanel.appendChild(createLineElement(newLineNum++, '', line, 'diff-common'));
                         }
-                        leftPanel.appendChild(leftLine);
-                        rightPanel.appendChild(rightLine);
                     });
                 });
+                
                 outputEl.appendChild(leftPanel);
                 outputEl.appendChild(splitResizer);
                 outputEl.appendChild(rightPanel);
+
+                let isSyncing = false;
+                const syncScroll = (e) => {
+                    if (isSyncing) return;
+                    isSyncing = true;
+                    const target = e.target === leftPanel ? rightPanel : leftPanel;
+                    target.scrollTop = e.target.scrollTop;
+                    target.scrollLeft = e.target.scrollLeft;
+                    requestAnimationFrame(() => isSyncing = false);
+                };
+                leftPanel.addEventListener('scroll', syncScroll);
+                rightPanel.addEventListener('scroll', syncScroll);
             }
+
 
             // --- AI EXPLANATION ---
             async function handleExplain() {
@@ -467,9 +492,16 @@
                 aiExplanationOutput.innerHTML = '<div class="flex items-center justify-center p-4"><div class="spinner"></div></div>';
 
                 const prompt = `
-                    You are an expert code reviewer. Provide a clear, concise explanation of the changes between the following two code snippets. 
-                    Focus on the "why" behind the changes, not just the "what".
-                    Structure your response using Markdown.
+                    You are an expert code reviewer. Your task is to provide a clear, concise explanation of the changes between two code snippets and assess the safety of applying these changes.
+
+                    **Instructions:**
+                    1.  **Analyze the Changes:** Describe the main purpose of the changes (e.g., bug fix, new feature, refactoring).
+                    2.  **Assess Safety:** Determine if the changes are safe to apply. A change is **NOT SAFE** if it removes or significantly alters critical functionality, deletes important variables or functions without replacement, or introduces obvious logical errors.
+                    3.  **Provide a Verdict:** Start your response with a clear verdict: "### Verdict: Safe ✅" or "### Verdict: Not Safe ⚠️".
+                    4.  **Highlight Risks (if any):** If the verdict is "Not Safe", clearly list the specific code blocks or features that have been removed or dangerously altered.
+                    5.  **Format:** Use Markdown for your response.
+
+                    ---
 
                     ### Old Code:
                     \`\`\`
