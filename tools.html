@@ -65,7 +65,7 @@
 <body class="gradient-bg text-white">
 
     <!-- Main Container -->
-    <div class="container mx-auto px-4 py-16 md:py-24 min-h-screen flex flex-col justify-center">
+    <div class="container mx-auto px-4 py-16 md:py-24">
 
         <!-- Header Section -->
         <header class="text-center mb-12 md:mb-16">
@@ -74,7 +74,7 @@
         </header>
 
         <!-- Grid for Tool Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
 
             <!-- Tool Card 1: Jotform Updater -->
             <div class="card-animation glass-card p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-pink-500/30 hover:-translate-y-2 transition-all duration-300 flex flex-col text-center" style="--delay: 0.1s;">
@@ -145,6 +145,20 @@
                     Launch <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </a>
             </div>
+            
+            <!-- Tool Card 6: Code Diff Tool -->
+            <div class="card-animation glass-card p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-indigo-500/30 hover:-translate-y-2 transition-all duration-300 flex flex-col text-center" style="--delay: 0.6s;">
+                <div class="flex-grow">
+                    <div class="flex justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-10 w-10 text-white"><path d="M12 19l-7-7 7-7"/><path d="M19 12H5"/><path d="M12 5l7 7-7 7"/></svg>
+                    </div>
+                    <h2 class="text-xl font-bold mb-2">Code Diff Tool</h2>
+                    <p class="text-slate-200 text-sm mb-4">Compare and highlight differences between two blocks of code.</p>
+                </div>
+                <a href="https://harryqover.github.io/bike-fun/code-diff-tool.html" target="_blank" class="mt-auto group inline-flex items-center justify-center bg-white/20 text-white font-semibold py-2 px-4 rounded-lg hover:bg-white/30 transition-colors duration-300">
+                    Launch <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </a>
+            </div>
         </div>
 
         <!-- Fun Stuff Section -->
@@ -153,9 +167,9 @@
             <p class="mt-2 text-lg text-slate-200">...and other experiments.</p>
         </header>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-2xl mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <!-- Fun Card 1: Aura -->
-            <div class="card-animation glass-card p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-purple-500/30 hover:-translate-y-2 transition-all duration-300 flex flex-col text-center" style="--delay: 0.6s;">
+            <div class="card-animation glass-card p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-purple-500/30 hover:-translate-y-2 transition-all duration-300 flex flex-col text-center" style="--delay: 0.7s;">
                 <div class="flex-grow">
                     <div class="flex justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-10 w-10 text-white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.77 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
@@ -168,7 +182,7 @@
                 </a>
             </div>
             <!-- Fun Card 2: Pantry AI -->
-            <div class="card-animation glass-card p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-sky-500/30 hover:-translate-y-2 transition-all duration-300 flex flex-col text-center" style="--delay: 0.7s;">
+            <div class="card-animation glass-card p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-sky-500/30 hover:-translate-y-2 transition-all duration-300 flex flex-col text-center" style="--delay: 0.8s;">
                 <div class="flex-grow">
                     <div class="flex justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-10 w-10 text-white"><path d="M5 4h14v10a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4V4Z"></path><path d="M.9 4h22.2"></path><path d="M6 8h.01"></path><path d="M10 8h.01"></path></svg>
@@ -179,6 +193,70 @@
                 <a href="https://harryqover.github.io/bike-fun/pantry-ai.html" target="_blank" class="mt-auto group inline-flex items-center justify-center bg-white/20 text-white font-semibold py-2 px-4 rounded-lg hover:bg-white/30 transition-colors duration-300">
                     Launch <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </a>
+            </div>
+            <!-- Fun Card 3: Buienradar -->
+            <div class="card-animation glass-card p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-blue-500/30 hover:-translate-y-2 transition-all duration-300 flex flex-col text-center" style="--delay: 0.9s;">
+                <div class="flex-grow">
+                    <div class="flex justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-10 w-10 text-white"><path d="M22 17a5 5 0 0 0-8.18-4.22"></path><path d="M16 13a5 5 0 0 0-8.18-4.22"></path><path d="M2 13a5 5 0 0 0 8.18 4.22"></path></svg>
+                    </div>
+                    <h2 class="text-xl font-bold mb-2">Buienradar</h2>
+                    <p class="text-slate-200 text-sm mb-4">A live weather radar to track rain and storms in your area.</p>
+                </div>
+                <a href="https://harryqover.github.io/bike-fun/buienradar.html" target="_blank" class="mt-auto group inline-flex items-center justify-center bg-white/20 text-white font-semibold py-2 px-4 rounded-lg hover:bg-white/30 transition-colors duration-300">
+                    Launch <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Good to Know Section -->
+        <header class="text-center mt-16 mb-8">
+            <h2 class="text-4xl font-bold tracking-tight">Good to Know</h2>
+            <p class="mt-2 text-lg text-slate-200">...a few helpful guides and tips.</p>
+        </header>
+
+        <div class="card-animation glass-card p-8 md:p-10 rounded-2xl shadow-lg max-w-4xl mx-auto text-left" style="--delay: 1s;">
+            <div class="space-y-8">
+                <!-- Guide 1: Gemini API Key -->
+                <div>
+                    <h3 class="text-2xl font-bold mb-3">Create Your Gemini API Key</h3>
+                    <p class="text-slate-200 mb-4">
+                        You can generate a free Gemini API key for your personal projects using your Google account. It's the perfect way to start experimenting with powerful AI models in your own applications.
+                    </p>
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" class="group inline-flex items-center justify-center bg-white/20 text-white font-semibold py-2 px-4 rounded-lg hover:bg-white/30 transition-colors duration-300">
+                        Get Your Key <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+
+                <hr class="border-white/20">
+
+                <!-- Guide 2: Web App Collaboration -->
+                <div>
+                    <h3 class="text-2xl font-bold mb-3">Collaborating on Web Apps: A Simple Guide</h3>
+                    <p class="text-slate-200 mb-4">
+                        A simple and effective process for building and improving web applications connected to Google Sheets.
+                    </p>
+                    <ul class="space-y-3 list-inside">
+                        <li class="flex items-start">
+                            <span class="bg-green-500/80 text-white rounded-full h-6 w-6 text-sm font-bold flex items-center justify-center mr-3 mt-1 flex-shrink-0">1</span>
+                            <div>
+                                <strong class="font-semibold">Share Your Code:</strong> Provide the complete <code class="bg-black/20 text-xs px-1.5 py-1 rounded">index.html</code> and <code class="bg-black/20 text-xs px-1.5 py-1 rounded">Code.gs</code> files. This gives a full picture of the project.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-blue-500/80 text-white rounded-full h-6 w-6 text-sm font-bold flex items-center justify-center mr-3 mt-1 flex-shrink-0">2</span>
+                            <div>
+                                <strong class="font-semibold">State Your Goal:</strong> Clearly explain the bug, the desired improvement, or the new feature. The more specific, the better!
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-purple-500/80 text-white rounded-full h-6 w-6 text-sm font-bold flex items-center justify-center mr-3 mt-1 flex-shrink-0">3</span>
+                             <div>
+                                <strong class="font-semibold">Get Complete Code Back:</strong> You'll receive fully updated, commented code with a version number logged to the console for easy verification. No snippets, just the complete, working files.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
         
