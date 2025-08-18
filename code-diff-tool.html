@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Diff Tool</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+        h1 {
+            text-align: center;
+            color: #343a40;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            box-sizing: border-box;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
+        }
+        #diff-output {
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        #diff-output .added {
+            background-color: #e6ffed;
+            color: #246838;
+        }
+        #diff-output .removed {
+            background-color: #ffeef0;
+            color: #9c2a39;
+            text-decoration: line-through;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/diff@5.1.0/dist/diff.min.js"></script>
+</head>
+<body>
+
+    <h1>Google Script Diff Checker 🕵️</h1>
+    <div class="container">
+        <div class="box">
+            <label for="old-code"><strong>Old Code (Original)</strong></label>
+            <textarea id="old-code" placeholder="Paste your old code here..."></textarea>
+        </div>
+        <div class="box">
+            <label for="new-code"><strong>New Code (From Gemini)</strong></label>
+            <textarea id="new-code" placeholder="Paste your new code here..."></textarea>
+        </div>
+    </div>
+    <h2>Differences</h2>
+    <div id="diff-output"></div>
+
+    <script>
+        const oldCodeEl = document.getElementById('old-code');
+        const newCodeEl = document.getElementById('new-code');
+        const outputEl = document.getElementById('diff-output');
+
+        function runDiff() {
+            const oldStr = oldCodeEl.value;
+            const newStr = newCodeEl.value;
+            const diff = Diff.diffLines(oldStr, newStr);
+            let fragment = document.createDocumentFragment();
+
+            diff.forEach(part => {
+                const span = document.createElement('span');
+                if (part.added) {
+                    span.className = 'added';
+                    span.textContent = part.value;
+                } else if (part.removed) {
+                    span.className = 'removed';
+                    span.textContent = part.value;
+                } else {
+                    span.textContent = part.value;
+                }
+                fragment.appendChild(span);
+            });
+            
+            outputEl.innerHTML = '';
+            outputEl.appendChild(fragment);
+        }
+
+        oldCodeEl.addEventListener('input', runDiff);
+        newCodeEl.addEventListener('input', runDiff);
+    </script>
+
+</body>
+</html>
