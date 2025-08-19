@@ -100,6 +100,7 @@
     <script>
         // --- DATA ---
         const phones = [
+            { name: "OnePlus Nord 2T 5G", imageUrl: "https://placehold.co/300x300/6B7280/FFFFFF?text=Nord+2T", price: "Older Model", priceValue: 175, size: "15.9 x 7.3 x 0.82 cm", display: "6.43\" AMOLED, 90Hz", processor: "MediaTek Dimensity 1300", ram: "8GB", ramValue: 8, storage: "128GB", storageValue: 128, rearCamera: "50MP + 8MP + 2MP", frontCamera: "32MP", battery: "4500mAh", batteryValue: 4500, charging: "80W", chargingValue: 80, os: "OxygenOS 12.1" },
             { name: "OnePlus Nord CE 5", imageUrl: "https://placehold.co/300x300/F3F4F6/9CA3AF?text=Nord+CE+5", price: "€299.00", priceValue: 299, size: "16.4 x 7.6 x 0.83 cm", display: "6.77\" AMOLED, 120Hz", processor: "MediaTek Dimensity 8350", ram: "8GB", ramValue: 8, storage: "128GB (expandable)", storageValue: 128, rearCamera: "50MP + 8MP", frontCamera: "16MP", battery: "5200mAh", batteryValue: 5200, charging: "80W", chargingValue: 80, os: "OxygenOS 15.0" },
             { name: "OnePlus Nord 4", imageUrl: "https://placehold.co/300x300/E5E7EB/4B5563?text=Nord+4", price: "€349.00", priceValue: 349, size: "16.3 x 7.5 x 0.8 cm", display: "6.74\" AMOLED, 120Hz", processor: "Snapdragon 7+ Gen 3", ram: "12GB", ramValue: 12, storage: "256GB", storageValue: 256, rearCamera: "50MP", frontCamera: "16MP", battery: "5500mAh", batteryValue: 5500, charging: "100W", chargingValue: 100, os: "OxygenOS 14.1" },
             { name: "OnePlus Nord 5", imageUrl: "https://placehold.co/300x300/D1D5DB/374151?text=Nord+5", price: "€449.00", priceValue: 449, size: "16.3 x 7.7 x 0.81 cm", display: "6.83\" Swift AMOLED, 144Hz", processor: "Snapdragon 8s Gen 3", ram: "8GB / 12GB", ramValue: 12, storage: "256GB / 512GB", storageValue: 512, rearCamera: "50MP + 8MP", frontCamera: "50MP", battery: "5200mAh", batteryValue: 5200, charging: "80W", chargingValue: 80, os: "OxygenOS 15.0" },
@@ -128,7 +129,7 @@
         // --- GENERATE VIEWS ---
 
         function generateCards() {
-            let content = '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">';
+            let content = '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8">';
             phones.forEach((phone, index) => {
                 content += `
                     <div class="phone-card bg-white rounded-xl shadow-md overflow-hidden flex flex-col fade-in" style="animation-delay: ${index * 100}ms" data-phone-index="${index}">
