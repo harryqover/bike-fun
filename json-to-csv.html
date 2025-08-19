@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON to CSV Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white">JSON to CSV Converter</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-2">Paste your JSON data below to convert it into a downloadable CSV file.</p>
+        </div>
+
+        <!-- JSON Input Area -->
+        <div class="mb-6">
+            <label for="jsonInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">JSON Input</label>
+            <textarea id="jsonInput" rows="12" class="w-full p-4 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out text-sm" placeholder='[{"id": 1, "name": "John Doe"}, {"id": 2, "name": "Jane Smith"}]'></textarea>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <button id="convertBtn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 duration-300 ease-in-out">
+                Convert & Download CSV
+            </button>
+            <button id="clearBtn" class="w-full sm:w-auto bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out">
+                Clear
+            </button>
+        </div>
+        
+        <!-- Status Message Area -->
+        <div id="status" class="mt-6 text-center text-sm"></div>
+    </div>
+
+    <script>
+        const jsonInput = document.getElementById('jsonInput');
+        const convertBtn = document.getElementById('convertBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const statusDiv = document.getElementById('status');
+
+        // --- Event Listeners ---
+        convertBtn.addEventListener('click', handleConversion);
+        clearBtn.addEventListener('click', () => {
+            jsonInput.value = '';
+            statusDiv.innerHTML = '';
+        });
+        
+        /**
+         * Main function to handle the conversion process.
+         * It gets the input, validates it, converts it, and triggers the download.
+         */
+        function handleConversion() {
+            const jsonString = jsonInput.value.trim();
+            statusDiv.innerHTML = ''; // Clear previous messages
+
+            if (!jsonString) {
+                displayMessage('Please paste some JSON data first.', 'error');
+                return;
+            }
+
+            try {
+                const jsonData = JSON.parse(jsonString);
+                
+                // Check if the parsed data is an array of objects
+                if (!Array.isArray(jsonData) || jsonData.length === 0) {
+                    displayMessage('Invalid JSON format. Please provide an array of objects.', 'error');
+                    return;
+                }
+
+                // Check if all elements in the array are objects
+                if (!jsonData.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
+                     displayMessage('All items in the array must be objects.', 'error');
+                     return;
+                }
+
+                const csv = convertToCSV(jsonData);
+                downloadCSV(csv);
+                displayMessage('CSV file generated successfully!', 'success');
+
+            } catch (error) {
+                displayMessage(`Invalid JSON: ${error.message}`, 'error');
+            }
+        }
+
+        /**
+         * Converts an array of objects into a CSV formatted string.
+         * @param {Array<Object>} data - The array of objects to convert.
+         * @returns {string} The CSV formatted string.
+         */
+        function convertToCSV(data) {
+            if (!data || data.length === 0) {
+                return '';
+            }
+
+            // Get all unique headers from all objects
+            const headers = Array.from(data.reduce((acc, obj) => {
+                Object.keys(obj).forEach(key => acc.add(key));
+                return acc;
+            }, new Set()));
+            
+            const csvRows = [];
+            // Add header row
+            csvRows.push(headers.map(header => `"${escapeCSVValue(header)}"`).join(','));
+
+            // Add data rows
+            for (const row of data) {
+                const values = headers.map(header => {
+                    const value = row[header];
+                    return `"${escapeCSVValue(value)}"`;
+                });
+                csvRows.push(values.join(','));
+            }
+
+            return csvRows.join('\n');
+        }
+        
+        /**
+         * Escapes values for CSV format. It handles null/undefined, 
+         * and escapes double quotes by doubling them.
+         * @param {*} value - The value to escape.
+         * @returns {string} The escaped string value.
+         */
+        function escapeCSVValue(value) {
+            if (value === null || value === undefined) {
+                return '';
+            }
+            const stringValue = String(value);
+            // If the value contains a double quote, comma, or newline, wrap it in double quotes
+            // and escape any existing double quotes by doubling them.
+            if (/[",\n]/.test(stringValue)) {
+                 return stringValue.replace(/"/g, '""');
+            }
+            return stringValue;
+        }
+
+        /**
+         * Triggers the download of the generated CSV string.
+         * @param {string} csvString - The CSV data to download.
+         */
+        function downloadCSV(csvString) {
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'export.csv');
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        /**
+         * Displays a status message to the user.
+         * @param {string} message - The message to display.
+         * @param {'success'|'error'} type - The type of message.
+         */
+        function displayMessage(message, type) {
+            const colorClass = type === 'success' ? 'text-green-500' : 'text-red-500';
+            statusDiv.innerHTML = `<p class="${colorClass}">${message}</p>`;
+        }
+    </script>
+</body>
+</html>
