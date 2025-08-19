@@ -10,251 +10,284 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        .highlight-best {
+        /* --- Highlighting --- */
+        .highlight-best-card {
             background-color: #dcfce7; /* A light green for highlighting */
+            color: #166534;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .highlight-best-table {
+            background-color: #dcfce7 !important;
             color: #166534;
             font-weight: 600;
         }
-        .spec-label {
+        /* --- Card View --- */
+        .phone-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .phone-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        /* --- Table View --- */
+        .spec-label-sticky {
             position: sticky;
             left: 0;
-            background-color: #f9fafb; /* bg-gray-50 */
+            background-color: #f9fafb;
             z-index: 10;
         }
-        .phone-header {
+        .phone-header-sticky {
             position: sticky;
             top: 0;
             z-index: 20;
         }
+        /* --- Graph View --- */
+        .bar-chart-bar {
+            transition: width 0.5s ease-out;
+        }
+        /* --- General Animations & UI --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .view-btn.active {
+            background-color: #1D4ED8; /* blue-700 */
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gray-50 text-gray-800">
 
     <div class="container mx-auto p-4 md:p-8">
-        <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">OnePlus Phone Comparison</h1>
-            <p class="text-gray-600 mt-2">A side-by-side look at the latest OnePlus models available in Belgium.</p>
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900">OnePlus Phone Comparison</h1>
+            <p class="text-gray-600 mt-3 max-w-2xl mx-auto">An interactive, side-by-side look at the latest OnePlus models available in Belgium.</p>
         </header>
 
-        <div class="mb-6 flex justify-center items-center space-x-4">
-            <label for="highlightToggle" class="text-sm font-medium text-gray-700">Highlight Best Specs:</label>
-            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                <input type="checkbox" name="highlightToggle" id="highlightToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
-                <label for="highlightToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+        <!-- Controls: View Switcher and Highlight Toggle -->
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-6 mb-8">
+            <!-- View Switcher -->
+            <div id="view-switcher" class="flex items-center bg-gray-200 rounded-full p-1 space-x-1">
+                <button class="view-btn active px-4 py-2 text-sm font-semibold rounded-full transition-colors" data-view="cards">Cards</button>
+                <button class="view-btn px-4 py-2 text-sm font-semibold rounded-full transition-colors" data-view="table">Table</button>
+                <button class="view-btn px-4 py-2 text-sm font-semibold rounded-full transition-colors" data-view="graphs">Graphs</button>
+            </div>
+            <!-- Highlight Toggle -->
+            <div class="flex items-center space-x-3">
+                <label for="highlightToggle" class="text-sm font-medium text-gray-700">Highlight Best Specs:</label>
+                <div class="relative inline-block w-10 align-middle select-none">
+                    <input type="checkbox" name="highlightToggle" id="highlightToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                    <label for="highlightToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                </div>
             </div>
         </div>
 
-        <!-- Main comparison table container -->
-        <div class="overflow-x-auto bg-white rounded-lg shadow-lg">
-            <table class="w-full min-w-[800px] text-sm text-left text-gray-500">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-200 phone-header">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 spec-label rounded-tl-lg">Feature</th>
-                        <!-- Phone headers will be injected here by JS -->
-                    </tr>
-                </thead>
-                <tbody id="comparison-table-body">
-                    <!-- Table content will be injected here by JS -->
-                </tbody>
-            </table>
-        </div>
+        <!-- Main Content Containers -->
+        <div id="cards-view" class="view-container"></div>
+        <div id="table-view" class="view-container hidden"></div>
+        <div id="graphs-view" class="view-container hidden"></div>
 
-        <footer class="text-center mt-8 text-gray-500 text-sm">
+        <footer class="text-center mt-12 text-gray-500 text-sm">
             <p>Prices and specifications are based on data from the official OnePlus Belgium website.</p>
-            <p>Created for easy comparison. Hosted on GitHub Pages.</p>
         </footer>
     </div>
 
     <script>
-        // Data for the phones
+        // --- DATA ---
         const phones = [
-            {
-                name: "OnePlus Nord CE 5",
-                price: "€299.00",
-                priceValue: 299,
-                display: "6.77\" AMOLED, 120Hz",
-                processor: "MediaTek Dimensity 8350 Apex",
-                ram: "8GB",
-                ramValue: 8,
-                storage: "128GB (expandable)",
-                storageValue: 128,
-                rearCamera: "50MP + 8MP",
-                frontCamera: "16MP",
-                battery: "5200mAh",
-                batteryValue: 5200,
-                charging: "80W SUPERVOOC",
-                chargingValue: 80,
-                os: "OxygenOS 15.0",
-            },
-            {
-                name: "OnePlus Nord 4",
-                price: "€349.00",
-                priceValue: 349,
-                display: "6.74\" AMOLED, 120Hz",
-                processor: "Snapdragon 7+ Gen 3",
-                ram: "12GB",
-                ramValue: 12,
-                storage: "256GB",
-                storageValue: 256,
-                rearCamera: "50MP",
-                frontCamera: "16MP",
-                battery: "5500mAh",
-                batteryValue: 5500,
-                charging: "100W SUPERVOOC",
-                chargingValue: 100,
-                os: "OxygenOS 14.1",
-            },
-            {
-                name: "OnePlus Nord 5",
-                price: "€449.00",
-                priceValue: 449,
-                display: "6.83\" Swift AMOLED, 144Hz",
-                processor: "Snapdragon 8s Gen 3",
-                ram: "8GB / 12GB",
-                ramValue: 12, // Taking the higher value for comparison
-                storage: "256GB / 512GB",
-                storageValue: 512, // Taking the higher value
-                rearCamera: "50MP + 8MP",
-                frontCamera: "50MP",
-                battery: "5200mAh",
-                batteryValue: 5200,
-                charging: "80W SUPERVOOC",
-                chargingValue: 80,
-                os: "OxygenOS 15.0",
-            },
-            {
-                name: "OnePlus 13R",
-                price: "€529.00",
-                priceValue: 529,
-                display: "6.78\" ProXDR AMOLED, 120Hz",
-                processor: "Snapdragon 8 Gen 3",
-                ram: "12GB",
-                ramValue: 12,
-                storage: "256GB",
-                storageValue: 256,
-                rearCamera: "50MP + 8MP + 50MP Telephoto",
-                frontCamera: "16MP",
-                battery: "6000mAh",
-                batteryValue: 6000,
-                charging: "80W SUPERVOOC",
-                chargingValue: 80,
-                os: "OxygenOS 15.0",
-            }
+            { name: "OnePlus Nord CE 5", imageUrl: "https://placehold.co/300x300/F3F4F6/9CA3AF?text=Nord+CE+5", price: "€299.00", priceValue: 299, display: "6.77\" AMOLED, 120Hz", processor: "MediaTek Dimensity 8350", ram: "8GB", ramValue: 8, storage: "128GB (expandable)", storageValue: 128, rearCamera: "50MP + 8MP", frontCamera: "16MP", battery: "5200mAh", batteryValue: 5200, charging: "80W", chargingValue: 80, os: "OxygenOS 15.0" },
+            { name: "OnePlus Nord 4", imageUrl: "https://placehold.co/300x300/E5E7EB/4B5563?text=Nord+4", price: "€349.00", priceValue: 349, display: "6.74\" AMOLED, 120Hz", processor: "Snapdragon 7+ Gen 3", ram: "12GB", ramValue: 12, storage: "256GB", storageValue: 256, rearCamera: "50MP", frontCamera: "16MP", battery: "5500mAh", batteryValue: 5500, charging: "100W", chargingValue: 100, os: "OxygenOS 14.1" },
+            { name: "OnePlus Nord 5", imageUrl: "https://placehold.co/300x300/D1D5DB/374151?text=Nord+5", price: "€449.00", priceValue: 449, display: "6.83\" Swift AMOLED, 144Hz", processor: "Snapdragon 8s Gen 3", ram: "8GB / 12GB", ramValue: 12, storage: "256GB / 512GB", storageValue: 512, rearCamera: "50MP + 8MP", frontCamera: "50MP", battery: "5200mAh", batteryValue: 5200, charging: "80W", chargingValue: 80, os: "OxygenOS 15.0" },
+            { name: "OnePlus 13R", imageUrl: "https://placehold.co/300x300/9CA3AF/1F2937?text=13R", price: "€529.00", priceValue: 529, display: "6.78\" ProXDR AMOLED", processor: "Snapdragon 8 Gen 3", ram: "12GB", ramValue: 12, storage: "256GB", storageValue: 256, rearCamera: "50MP + 8MP + 50MP Tele", frontCamera: "16MP", battery: "6000mAh", batteryValue: 6000, charging: "80W", chargingValue: 80, os: "OxygenOS 15.0" }
         ];
 
-        // Define the order and labels for specs
         const specOrder = [
-            { key: 'price', label: 'Price (Belgium)', higherIsBetter: false },
-            { key: 'display', label: 'Display' },
-            { key: 'processor', label: 'Processor' },
-            { key: 'ram', label: 'RAM', valueKey: 'ramValue', higherIsBetter: true },
-            { key: 'storage', label: 'Storage', valueKey: 'storageValue', higherIsBetter: true },
-            { key: 'rearCamera', label: 'Rear Camera' },
-            { key: 'frontCamera', label: 'Front Camera' },
-            { key: 'battery', label: 'Battery', valueKey: 'batteryValue', higherIsBetter: true },
-            { key: 'charging', label: 'Charging Speed', valueKey: 'chargingValue', higherIsBetter: true },
-            { key: 'os', label: 'Operating System' },
+            { key: 'price', label: 'Price', unit: '€', higherIsBetter: false, icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>` },
+            { key: 'display', label: 'Display', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>` },
+            { key: 'processor', label: 'Processor', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M12 6V4m0 16v-2M8 12a4 4 0 118 0 4 4 0 01-8 0z" /></svg>` },
+            { key: 'ram', label: 'RAM', unit: 'GB', valueKey: 'ramValue', higherIsBetter: true, icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" /></svg>` },
+            { key: 'storage', label: 'Storage', unit: 'GB', valueKey: 'storageValue', higherIsBetter: true, icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>` },
+            { key: 'battery', label: 'Battery', unit: 'mAh', valueKey: 'batteryValue', higherIsBetter: true, icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V7.618a1 1 0 01.553-.894L9 4l6 3.106A1 1 0 0116 8v8.382a1 1 0 01-.553.894L9 20z" /></svg>` },
+            { key: 'charging', label: 'Charging', unit: 'W', valueKey: 'chargingValue', higherIsBetter: true, icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>` },
+            { key: 'os', label: 'OS', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>` },
         ];
 
-        const tableBody = document.getElementById('comparison-table-body');
-        const tableHeadRow = document.querySelector('thead tr');
+        // --- DOM ELEMENTS ---
+        const cardsView = document.getElementById('cards-view');
+        const tableView = document.getElementById('table-view');
+        const graphsView = document.getElementById('graphs-view');
         const highlightToggle = document.getElementById('highlightToggle');
+        const viewSwitcher = document.getElementById('view-switcher');
 
-        // Function to generate the table
-        function generateTable() {
-            // Clear existing content
-            tableHeadRow.innerHTML = '<th scope="col" class="px-6 py-3 spec-label rounded-tl-lg">Feature</th>';
-            tableBody.innerHTML = '';
+        // --- GENERATE VIEWS ---
 
-            // Generate table headers for phones
+        function generateCards() {
+            let content = '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">';
             phones.forEach((phone, index) => {
-                const th = document.createElement('th');
-                th.scope = 'col';
-                th.className = 'px-6 py-3 text-center';
-                if (index === phones.length - 1) th.classList.add('rounded-tr-lg');
-                th.innerHTML = `<span class="font-semibold">${phone.name}</span>`;
-                tableHeadRow.appendChild(th);
-            });
-
-            // Generate table rows for specs
-            specOrder.forEach(spec => {
-                const tr = document.createElement('tr');
-                tr.className = 'bg-white border-b hover:bg-gray-50';
-                tr.dataset.specKey = spec.key;
-
-                // Add spec label cell
-                const labelTd = document.createElement('td');
-                labelTd.className = 'px-6 py-4 font-medium text-gray-900 whitespace-nowrap spec-label';
-                labelTd.textContent = spec.label;
-                tr.appendChild(labelTd);
-
-                // Add phone spec value cells
-                phones.forEach(phone => {
-                    const valueTd = document.createElement('td');
-                    valueTd.className = 'px-6 py-4 text-center';
-                    valueTd.textContent = phone[spec.key] || 'N/A';
-                    tr.appendChild(valueTd);
+                content += `
+                    <div class="phone-card bg-white rounded-xl shadow-md overflow-hidden flex flex-col fade-in" style="animation-delay: ${index * 100}ms" data-phone-index="${index}">
+                        <div class="p-5 bg-gray-100 text-center">
+                            <img src="${phone.imageUrl}" alt="${phone.name}" class="w-32 h-32 object-cover rounded-full mx-auto mb-4 shadow-sm" onerror="this.onerror=null;this.src='https://placehold.co/300x300/e0e0e0/000000?text=Image+Error';">
+                            <h3 class="text-xl font-bold text-gray-900">${phone.name}</h3>
+                        </div>
+                        <ul class="divide-y divide-gray-200 p-5 flex-grow">`;
+                specOrder.forEach(spec => {
+                    content += `
+                        <li class="spec-item py-3 flex items-center justify-between text-sm" data-spec-key="${spec.key}">
+                            <div class="flex items-center text-gray-500">${spec.icon}<span>${spec.label}</span></div>
+                            <span class="font-semibold text-gray-800 text-right">${phone[spec.key] || 'N/A'}</span>
+                        </li>`;
                 });
-                tableBody.appendChild(tr);
+                content += '</ul></div>';
             });
-
-            // Initial highlight
-            if (highlightToggle.checked) {
-                highlightBestSpecs();
-            }
+            content += '</div>';
+            cardsView.innerHTML = content;
         }
 
-        // Function to highlight the best specs
-        function highlightBestSpecs() {
-            specOrder.forEach(spec => {
-                if (!spec.valueKey) return; // Skip specs without a numerical value
+        function generateTable() {
+            let head = '';
+            phones.forEach((phone, index) => {
+                head += `<th scope="col" class="px-6 py-3 text-center ${index === phones.length - 1 ? 'rounded-tr-lg' : ''}"><span class="font-semibold">${phone.name}</span></th>`;
+            });
 
-                // Find the best value
+            let body = '';
+            specOrder.forEach(spec => {
+                body += `<tr class="bg-white border-b hover:bg-gray-50" data-spec-key="${spec.key}">
+                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap spec-label-sticky">${spec.label}</td>`;
+                phones.forEach(phone => {
+                    body += `<td class="px-6 py-4 text-center">${phone[spec.key] || 'N/A'}</td>`;
+                });
+                body += '</tr>';
+            });
+
+            tableView.innerHTML = `
+                <div class="overflow-x-auto bg-white rounded-lg shadow-lg fade-in">
+                    <table class="w-full min-w-[800px] text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-200 phone-header-sticky">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 spec-label-sticky rounded-tl-lg">Feature</th>
+                                ${head}
+                            </tr>
+                        </thead>
+                        <tbody>${body}</tbody>
+                    </table>
+                </div>`;
+        }
+
+        function generateGraphs() {
+            let content = '<div class="grid grid-cols-1 md:grid-cols-2 gap-8 fade-in">';
+            const graphableSpecs = specOrder.filter(s => s.valueKey);
+
+            graphableSpecs.forEach(spec => {
+                const values = phones.map(p => p[spec.valueKey]);
+                const maxVal = Math.max(...values);
+                const minVal = Math.min(...values);
+
+                content += `<div class="bg-white p-6 rounded-xl shadow-md">
+                                <h3 class="text-lg font-bold mb-4 text-gray-800">${spec.label} Comparison</h3>
+                                <div class="space-y-4">`;
+                
+                phones.forEach((phone, index) => {
+                    const value = phone[spec.valueKey];
+                    const percentage = (value / maxVal) * 100;
+                    const isBest = spec.higherIsBetter ? value === maxVal : value === minVal;
+                    
+                    content += `
+                        <div class="bar-container">
+                            <div class="flex justify-between items-center mb-1 text-sm">
+                                <span class="font-medium">${phone.name}</span>
+                                <span class="font-semibold text-gray-700">${value} ${spec.unit}</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-4">
+                                <div class="bar-chart-bar h-4 rounded-full ${isBest ? 'bg-green-500' : 'bg-blue-500'}" style="width: 0%;" data-width="${percentage}"></div>
+                            </div>
+                        </div>`;
+                });
+                content += `</div></div>`;
+            });
+            content += '</div>';
+            graphsView.innerHTML = content;
+            
+            // Animate bars into view
+            setTimeout(() => {
+                document.querySelectorAll('.bar-chart-bar').forEach(bar => {
+                    bar.style.width = bar.dataset.width + '%';
+                });
+            }, 100);
+        }
+
+        // --- HIGHLIGHTING LOGIC ---
+
+        function highlightBestSpecs() {
+            clearHighlights();
+            if (!highlightToggle.checked) return;
+
+            specOrder.forEach(spec => {
+                if (!spec.valueKey) return;
+
                 const values = phones.map(p => p[spec.valueKey] || (spec.higherIsBetter ? -Infinity : Infinity));
                 const bestValue = spec.higherIsBetter ? Math.max(...values) : Math.min(...values);
 
-                // Find the corresponding table row
-                const row = tableBody.querySelector(`tr[data-spec-key="${spec.key}"]`);
-                if (!row) return;
-                
-                // Highlight the cells with the best value
-                const cells = row.querySelectorAll('td');
                 phones.forEach((phone, index) => {
                     if ((phone[spec.valueKey] || (spec.higherIsBetter ? -Infinity : Infinity)) === bestValue) {
-                        cells[index + 1].classList.add('highlight-best'); // +1 to account for the label cell
+                        // Highlight in Card View
+                        const cardSpec = cardsView.querySelector(`.phone-card[data-phone-index='${index}'] .spec-item[data-spec-key='${spec.key}']`);
+                        if (cardSpec) cardSpec.classList.add('highlight-best-card', 'rounded-md', 'p-2', '-m-2');
+                        
+                        // Highlight in Table View
+                        const tableRow = tableView.querySelector(`tr[data-spec-key="${spec.key}"]`);
+                        if (tableRow) tableRow.children[index + 1].classList.add('highlight-best-table');
                     }
                 });
             });
         }
-        
-        // Function to clear highlights
+
         function clearHighlights() {
-            document.querySelectorAll('.highlight-best').forEach(el => {
-                el.classList.remove('highlight-best');
-            });
+            document.querySelectorAll('.highlight-best-card').forEach(el => el.classList.remove('highlight-best-card', 'rounded-md', 'p-2', '-m-2'));
+            document.querySelectorAll('.highlight-best-table').forEach(el => el.classList.remove('highlight-best-table'));
         }
 
-        // Event Listener for the toggle
-        highlightToggle.addEventListener('change', () => {
-            clearHighlights();
-            if (highlightToggle.checked) {
-                highlightBestSpecs();
+        // --- VIEW SWITCHING LOGIC ---
+        
+        function switchView(viewName) {
+            document.querySelectorAll('.view-container').forEach(c => c.classList.add('hidden'));
+            document.getElementById(`${viewName}-view`).classList.remove('hidden');
+
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            viewSwitcher.querySelector(`[data-view="${viewName}"]`).classList.add('active');
+            
+            // Generate content if it doesn't exist
+            if (viewName === 'table' && !tableView.innerHTML) generateTable();
+            if (viewName === 'graphs' && !graphsView.innerHTML) generateGraphs();
+            
+            highlightBestSpecs();
+        }
+
+        // --- EVENT LISTENERS ---
+        
+        highlightToggle.addEventListener('change', highlightBestSpecs);
+        
+        viewSwitcher.addEventListener('click', (e) => {
+            if (e.target.matches('.view-btn')) {
+                switchView(e.target.dataset.view);
             }
         });
 
-        // Initial table generation on page load
-        document.addEventListener('DOMContentLoaded', generateTable);
+        document.addEventListener('DOMContentLoaded', () => {
+            generateCards();
+            highlightBestSpecs();
+        });
 
     </script>
     <style>
         /* Simple toggle switch styles */
-        .toggle-checkbox:checked {
-            right: 0;
-            border-color: #2563eb; /* blue-600 */
-        }
-        .toggle-checkbox:checked + .toggle-label {
-            background-color: #2563eb; /* blue-600 */
-        }
+        .toggle-checkbox:checked { right: 0; border-color: #2563eb; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #2563eb; }
     </style>
 
 </body>
