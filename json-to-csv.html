@@ -3,170 +3,441 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON to CSV Converter</title>
+    <title>JSON <=> CSV Bi-Directional Converter with AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .status-message, .dashboard, .modal {
+            animation: fadeIn 0.4s ease-out;
+        }
+        .file-input-button {
+            cursor: pointer;
+        }
+        .collapsible-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+        }
+        .collapsible-content.hidden {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .chevron-icon {
+            transition: transform 0.3s ease-in-out;
+        }
     </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex items-center justify-center min-h-screen p-4">
-    <div class="w-full max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen p-4">
+    <div class="w-full max-w-7xl mx-auto">
         <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white">JSON to CSV Converter</h1>
-            <p class="text-gray-500 dark:text-gray-400 mt-2">Paste your JSON data below to convert it into a downloadable CSV file.</p>
-        </div>
-
-        <!-- JSON Input Area -->
-        <div class="mb-6">
-            <label for="jsonInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">JSON Input</label>
-            <textarea id="jsonInput" rows="12" class="w-full p-4 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out text-sm" placeholder='[{"id": 1, "name": "John Doe"}, {"id": 2, "name": "Jane Smith"}]'></textarea>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <button id="convertBtn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 duration-300 ease-in-out">
-                Convert & Download CSV
-            </button>
-            <button id="clearBtn" class="w-full sm:w-auto bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out">
-                Clear
+        <div class="text-center mb-8 relative">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white">JSON <=> CSV Bi-Directional Converter</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-2">With AI-Powered Data Cleaning ✨</p>
+            <button id="settingsBtn" class="absolute top-0 right-0 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white" title="Settings">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                    <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311a1.464 1.464 0 0 1 0 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105 0l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 0-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105 0l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                </svg>
             </button>
         </div>
-        
-        <!-- Status Message Area -->
-        <div id="status" class="mt-6 text-center text-sm"></div>
+
+        <div class="space-y-8">
+            <!-- JSON to CSV Converter Section -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+                <div id="json-section-header" class="flex justify-between items-center p-6 cursor-pointer">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white">JSON to CSV</h2>
+                    <svg class="chevron-icon w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div id="json-section-content" class="collapsible-content px-6 md:px-8 pb-8">
+                    <div class="mb-4">
+                        <label for="jsonInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">JSON Input</label>
+                        <textarea id="jsonInput" rows="12" class="w-full p-4 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out text-sm" placeholder='[{"id": 1, "name": "John Doe", "email": " johndoe@email.com "}]'></textarea>
+                    </div>
+                    <div class="flex flex-col sm:flex-row flex-wrap items-center justify-between gap-4">
+                        <button id="jsonToCsvBtn" class="w-full sm:w-auto flex-grow bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 duration-300 ease-in-out">Analyze & Download CSV</button>
+                        <button id="openInSheetsBtn" class="w-full sm:w-auto flex-grow bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 duration-300 ease-in-out">Copy for Google Sheets</button>
+                        <button id="cleanJsonBtn" class="w-full sm:w-auto flex-grow bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 duration-300 ease-in-out flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-magic" viewBox="0 0 16 16"><path d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0v1.829Zm4.5.035A.5.5 0 0 0 13.293 2L12 3.293a.5.5 0 1 0 .707.707L14 2.707a.5.5 0 0 0 0-.707ZM7.293 4L8 3.293a.5.5 0 1 0-.707-.707L6.586 3.5H3.5a.5.5 0 0 0 0 1h3.086L6 5.293a.5.5 0 1 0 .707.707L7.293 4Zm-6.225 7.452A.5.5 0 0 0 .793 12L2 13.207a.5.5 0 1 0 .707-.707L1.207 11H4.5a.5.5 0 0 0 0-1H1.207l1.5-1.5a.5.5 0 1 0-.707-.707L.793 9.207a.5.5 0 0 0 0 .707v.001Z M1.5 4.5a.5.5 0 1 0 0-1H.843a.5.5 0 0 0 0 1H1.5Zm1.829 1.829a.5.5 0 1 0-.707-.707L2 6.293a.5.5 0 0 0 .707.707l.622-.622ZM16 8.5a.5.5 0 1 0-1 0h.5a.5.5 0 0 0 1 0h-.5ZM13 11.293l.707.707a.5.5 0 1 0 .707-.707L13.707 11a.5.5 0 0 0-.707.707ZM10 8.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg>
+                            Clean with AI
+                        </button>
+                        <label class="w-full sm:w-auto flex-grow bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 duration-300 ease-in-out file-input-button text-center">Upload JSON<input type="file" id="jsonFileInput" class="hidden" accept=".json,application/json"></label>
+                    </div>
+                    <div id="jsonDashboard" class="mt-6 hidden"></div>
+                    <div id="jsonStatus" class="mt-4 text-center text-sm"></div>
+                </div>
+            </div>
+
+            <!-- CSV to JSON Converter Section -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+                 <div id="csv-section-header" class="flex justify-between items-center p-6 cursor-pointer">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white">CSV to JSON</h2>
+                    <svg class="chevron-icon w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div id="csv-section-content" class="collapsible-content px-6 md:px-8 pb-8">
+                    <div class="mb-4">
+                        <label for="csvInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">CSV Input</label>
+                        <textarea id="csvInput" rows="12" class="w-full p-4 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-150 ease-in-out text-sm" placeholder='"id","name","note"&#10;1,"john doe","  messy data "&#10;2,"Jane Smith","needs cleaning"'></textarea>
+                    </div>
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <button id="csvToJsonBtn" class="w-full sm:w-auto flex-grow bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 duration-300 ease-in-out">Analyze & Copy JSON</button>
+                         <button id="cleanCsvBtn" class="w-full sm:w-auto flex-grow bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 duration-300 ease-in-out flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-magic" viewBox="0 0 16 16"><path d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0v1.829Zm4.5.035A.5.5 0 0 0 13.293 2L12 3.293a.5.5 0 1 0 .707.707L14 2.707a.5.5 0 0 0 0-.707ZM7.293 4L8 3.293a.5.5 0 1 0-.707-.707L6.586 3.5H3.5a.5.5 0 0 0 0 1h3.086L6 5.293a.5.5 0 1 0 .707.707L7.293 4Zm-6.225 7.452A.5.5 0 0 0 .793 12L2 13.207a.5.5 0 1 0 .707-.707L1.207 11H4.5a.5.5 0 0 0 0-1H1.207l1.5-1.5a.5.5 0 1 0-.707-.707L.793 9.207a.5.5 0 0 0 0 .707v.001Z M1.5 4.5a.5.5 0 1 0 0-1H.843a.5.5 0 0 0 0 1H1.5Zm1.829 1.829a.5.5 0 1 0-.707-.707L2 6.293a.5.5 0 0 0 .707.707l.622-.622ZM16 8.5a.5.5 0 1 0-1 0h.5a.5.5 0 0 0 1 0h-.5ZM13 11.293l.707.707a.5.5 0 1 0 .707-.707L13.707 11a.5.5 0 0 0-.707.707ZM10 8.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg>
+                            Clean with AI
+                        </button>
+                         <label class="w-full sm:w-auto flex-grow bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 duration-300 ease-in-out file-input-button text-center">Upload CSV<input type="file" id="csvFileInput" class="hidden" accept=".csv,text/csv"></label>
+                    </div>
+                    <div id="csvDashboard" class="mt-6 hidden"></div>
+                    <div id="csvStatus" class="mt-4 text-center text-sm"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white">Settings</h3>
+                <button id="closeSettingsBtn" class="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">&times;</button>
+            </div>
+            <div>
+                <label for="apiKeyInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Gemini API Key</label>
+                <input type="password" id="apiKeyInput" class="w-full p-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg" placeholder="Enter your API key">
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Your key is saved securely in your browser's local storage and is never sent anywhere else.</p>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button id="saveSettingsBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Save</button>
+            </div>
+        </div>
     </div>
 
+
     <script>
+        // --- Element References ---
         const jsonInput = document.getElementById('jsonInput');
-        const convertBtn = document.getElementById('convertBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const statusDiv = document.getElementById('status');
+        const jsonToCsvBtn = document.getElementById('jsonToCsvBtn');
+        const openInSheetsBtn = document.getElementById('openInSheetsBtn');
+        const cleanJsonBtn = document.getElementById('cleanJsonBtn');
+        const jsonFileInput = document.getElementById('jsonFileInput');
+        const jsonStatus = document.getElementById('jsonStatus');
+        const jsonDashboard = document.getElementById('jsonDashboard');
+
+        const csvInput = document.getElementById('csvInput');
+        const csvToJsonBtn = document.getElementById('csvToJsonBtn');
+        const cleanCsvBtn = document.getElementById('cleanCsvBtn');
+        const csvFileInput = document.getElementById('csvFileInput');
+        const csvStatus = document.getElementById('csvStatus');
+        const csvDashboard = document.getElementById('csvDashboard');
+
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadApiKey();
+        });
+
+        // --- Settings Modal Logic ---
+        settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
+        closeSettingsBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+        saveSettingsBtn.addEventListener('click', () => {
+            localStorage.setItem('geminiApiKey', apiKeyInput.value);
+            settingsModal.classList.add('hidden');
+            // Provide feedback
+            alert('API Key saved!');
+        });
+        function loadApiKey() {
+            const savedKey = localStorage.getItem('geminiApiKey');
+            if (savedKey) {
+                apiKeyInput.value = savedKey;
+            }
+        }
+
+        // --- Collapsible Section Logic ---
+        document.getElementById('json-section-header').addEventListener('click', () => toggleSection('json-section-content', document.querySelector('#json-section-header .chevron-icon')));
+        document.getElementById('csv-section-header').addEventListener('click', () => toggleSection('csv-section-content', document.querySelector('#csv-section-header .chevron-icon')));
+
+        function toggleSection(contentId, icon) {
+            const content = document.getElementById(contentId);
+            content.classList.toggle('hidden');
+            icon.style.transform = content.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+        toggleSection('csv-section-content', document.querySelector('#csv-section-header .chevron-icon'));
 
         // --- Event Listeners ---
-        convertBtn.addEventListener('click', handleConversion);
-        clearBtn.addEventListener('click', () => {
-            jsonInput.value = '';
-            statusDiv.innerHTML = '';
-        });
+        jsonToCsvBtn.addEventListener('click', handleJsonToCsv);
+        openInSheetsBtn.addEventListener('click', handleOpenInSheets);
+        cleanJsonBtn.addEventListener('click', () => handleAiClean(jsonInput, jsonStatus, cleanJsonBtn));
+        csvToJsonBtn.addEventListener('click', handleCsvToJson);
+        cleanCsvBtn.addEventListener('click', () => handleAiClean(csvInput, csvStatus, cleanCsvBtn));
         
-        /**
-         * Main function to handle the conversion process.
-         * It gets the input, validates it, converts it, and triggers the download.
-         */
-        function handleConversion() {
-            const jsonString = jsonInput.value.trim();
-            statusDiv.innerHTML = ''; // Clear previous messages
+        jsonFileInput.addEventListener('change', (e) => {
+            handleFileUpload(e, jsonInput, jsonStatus);
+            jsonDashboard.classList.add('hidden');
+            jsonDashboard.innerHTML = '';
+        });
+        csvFileInput.addEventListener('change', (e) => {
+            handleFileUpload(e, csvInput, csvStatus);
+            csvDashboard.classList.add('hidden');
+            csvDashboard.innerHTML = '';
+        });
 
-            if (!jsonString) {
-                displayMessage('Please paste some JSON data first.', 'error');
+        // --- AI Data Cleaning Logic ---
+        async function handleAiClean(inputElement, statusDiv, buttonElement) {
+            const apiKey = localStorage.getItem('geminiApiKey');
+            if (!apiKey) {
+                displayMessage(statusDiv, 'Please add your Gemini API Key in the settings (⚙️) first.', 'error');
+                return;
+            }
+            const originalButtonText = buttonElement.innerHTML;
+            const data = inputElement.value.trim();
+            if (!data) {
+                displayMessage(statusDiv, 'Please provide some data to clean first.', 'error');
                 return;
             }
 
+            buttonElement.innerHTML = 'Cleaning...';
+            buttonElement.disabled = true;
+            displayMessage(statusDiv, 'AI is cleaning your data...', 'success');
+
+            const prompt = `Please clean and format the following data. Correct typos, standardize formats (e.g., dates to YYYY-MM-DD, proper casing for names), trim extra whitespace from values, and ensure overall consistency. Return only the cleaned data in its original format, without any explanations or introductory text.
+
+DATA:
+\`\`\`
+${data}
+\`\`\``;
+
             try {
-                const jsonData = JSON.parse(jsonString);
-                
-                // Check if the parsed data is an array of objects
-                if (!Array.isArray(jsonData) || jsonData.length === 0) {
-                    displayMessage('Invalid JSON format. Please provide an array of objects.', 'error');
-                    return;
-                }
-
-                // Check if all elements in the array are objects
-                if (!jsonData.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
-                     displayMessage('All items in the array must be objects.', 'error');
-                     return;
-                }
-
-                const csv = convertToCSV(jsonData);
-                downloadCSV(csv);
-                displayMessage('CSV file generated successfully!', 'success');
-
+                const cleanedData = await callGemini(prompt, apiKey);
+                inputElement.value = cleanedData;
+                displayMessage(statusDiv, 'AI cleaning complete!', 'success');
             } catch (error) {
-                displayMessage(`Invalid JSON: ${error.message}`, 'error');
+                displayMessage(statusDiv, `AI Error: ${error.message}`, 'error');
+            } finally {
+                buttonElement.innerHTML = originalButtonText;
+                buttonElement.disabled = false;
             }
         }
 
-        /**
-         * Converts an array of objects into a CSV formatted string.
-         * @param {Array<Object>} data - The array of objects to convert.
-         * @returns {string} The CSV formatted string.
-         */
-        function convertToCSV(data) {
-            if (!data || data.length === 0) {
-                return '';
-            }
+        async function callGemini(prompt, apiKey) {
+             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+             const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+             let retries = 3;
+             let delay = 1000;
 
-            // Get all unique headers from all objects
-            const headers = Array.from(data.reduce((acc, obj) => {
+             for (let i = 0; i < retries; i++) {
+                 try {
+                     const response = await fetch(apiUrl, {
+                         method: 'POST',
+                         headers: { 'Content-Type': 'application/json' },
+                         body: JSON.stringify(payload)
+                     });
+
+                     if (response.ok) {
+                         const result = await response.json();
+                         if (result.candidates && result.candidates[0].content.parts[0].text) {
+                            return result.candidates[0].content.parts[0].text.replace(/```[\s\S]*?\n/,'').replace(/```/,'').trim();
+                         }
+                     } else if (response.status === 429) {
+                        // Handle rate limiting
+                        await new Promise(res => setTimeout(res, delay));
+                        delay *= 2;
+                        continue;
+                     }
+                 } catch (error) {
+                     if (i === retries - 1) throw error;
+                 }
+                 await new Promise(res => setTimeout(res, delay));
+                 delay *= 2;
+             }
+             throw new Error("AI model failed to respond after several retries.");
+        }
+
+        // --- File Handling ---
+        function handleFileUpload(event, textArea, statusDiv) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                textArea.value = e.target.result;
+                displayMessage(statusDiv, `File '${file.name}' loaded successfully.`, 'success');
+            };
+            reader.onerror = () => displayMessage(statusDiv, `Error reading file '${file.name}'.`, 'error');
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // --- JSON to CSV Logic ---
+        function getJsonData() {
+            const jsonString = jsonInput.value.trim();
+            if (!jsonString) throw new Error('Please provide JSON data first.');
+            const jsonData = JSON.parse(jsonString);
+            if (!Array.isArray(jsonData) || !jsonData.every(item => typeof item === 'object' && item !== null)) {
+                throw new Error('JSON must be an array of objects.');
+            }
+            return jsonData;
+        }
+        
+        function handleJsonToCsv() {
+            jsonDashboard.classList.add('hidden');
+            jsonDashboard.innerHTML = '';
+            displayMessage(jsonStatus, '', 'success');
+            try {
+                const jsonData = getJsonData();
+                updateJsonDashboard(jsonData);
+                const csv = convertToCSV(jsonData);
+                downloadFile(csv, 'export.csv', 'text/csv;charset=utf-8;');
+                displayMessage(jsonStatus, 'Analysis complete! CSV file downloaded.', 'success');
+            } catch (error) {
+                displayMessage(jsonStatus, error.message, 'error');
+            }
+        }
+
+        function handleOpenInSheets() {
+            jsonDashboard.classList.add('hidden');
+            jsonDashboard.innerHTML = '';
+            displayMessage(jsonStatus, '', 'success');
+            try {
+                const jsonData = getJsonData();
+                updateJsonDashboard(jsonData);
+                const csv = convertToCSV(jsonData);
+                copyToClipboard(csv);
+                window.open('https://sheet.new/', '_blank');
+                displayMessage(jsonStatus, 'CSV data copied! Paste it into the new Google Sheet tab that just opened.', 'success');
+            } catch (error) {
+                displayMessage(jsonStatus, error.message, 'error');
+            }
+        }
+
+        function updateJsonDashboard(jsonData) {
+            const recordCount = jsonData.length;
+            const headers = getJsonHeaders(jsonData);
+            const columnCount = headers.length;
+            if (recordCount === 0) return;
+            const headerBadges = headers.map(h => `<span class="bg-blue-200 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">${h}</span>`).join('');
+            jsonDashboard.innerHTML = `<div class="dashboard p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"><h3 class="font-bold text-lg mb-3 text-gray-800 dark:text-white">JSON Analysis</h3><div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm"><p class="text-gray-600 dark:text-gray-300"><strong class="font-semibold text-gray-800 dark:text-white">Records:</strong> ${recordCount}</p><p class="text-gray-600 dark:text-gray-300"><strong class="font-semibold text-gray-800 dark:text-white">Unique Fields:</strong> ${columnCount}</p></div><div class="mt-3"><p class="font-semibold text-gray-800 dark:text-white mb-2">Fields Found:</p><div class="flex flex-wrap gap-2">${headerBadges}</div></div></div>`;
+            jsonDashboard.classList.remove('hidden');
+        }
+
+        function getJsonHeaders(data) {
+             return Array.from(data.reduce((acc, obj) => {
                 Object.keys(obj).forEach(key => acc.add(key));
                 return acc;
             }, new Set()));
-            
-            const csvRows = [];
-            // Add header row
-            csvRows.push(headers.map(header => `"${escapeCSVValue(header)}"`).join(','));
+        }
 
-            // Add data rows
-            for (const row of data) {
-                const values = headers.map(header => {
-                    const value = row[header];
-                    return `"${escapeCSVValue(value)}"`;
-                });
-                csvRows.push(values.join(','));
-            }
+        function convertToCSV(data) {
+            if (!data || data.length === 0) return '';
+            const headers = getJsonHeaders(data);
+            const headerRow = headers.map(h => `"${escapeCSVValue(h)}"`).join(',');
+            const dataRows = data.map(row => headers.map(header => `"${escapeCSVValue(row[header])}"`).join(','));
+            return [headerRow, ...dataRows].join('\n');
+        }
 
-            return csvRows.join('\n');
+        function escapeCSVValue(value) {
+            if (value === null || value === undefined) return '';
+            return String(value).replace(/"/g, '""');
         }
         
-        /**
-         * Escapes values for CSV format. It handles null/undefined, 
-         * and escapes double quotes by doubling them.
-         * @param {*} value - The value to escape.
-         * @returns {string} The escaped string value.
-         */
-        function escapeCSVValue(value) {
-            if (value === null || value === undefined) {
-                return '';
+        // --- CSV to JSON Logic ---
+        function handleCsvToJson() {
+            csvDashboard.classList.add('hidden');
+            csvDashboard.innerHTML = '';
+            displayMessage(csvStatus, '', 'success');
+            const csvString = csvInput.value.trim();
+            if (!csvString) {
+                displayMessage(csvStatus, 'Please provide CSV data first.', 'error');
+                return;
             }
-            const stringValue = String(value);
-            // If the value contains a double quote, comma, or newline, wrap it in double quotes
-            // and escape any existing double quotes by doubling them.
-            if (/[",\n]/.test(stringValue)) {
-                 return stringValue.replace(/"/g, '""');
+            try {
+                const jsonData = convertCsvToJson(csvString);
+                updateCsvDashboard(jsonData);
+                const jsonString = JSON.stringify(jsonData, null, 2);
+                copyToClipboard(jsonString);
+                displayMessage(csvStatus, 'Analysis complete! JSON copied to clipboard.', 'success');
+            } catch (error) {
+                displayMessage(csvStatus, `Invalid CSV format: ${error.message}`, 'error');
             }
-            return stringValue;
+        }
+        
+        function updateCsvDashboard(jsonData) {
+            const rowCount = jsonData.length;
+            const headers = rowCount > 0 ? Object.keys(jsonData[0]) : [];
+            const columnCount = headers.length;
+            if (rowCount === 0 && headers.length === 0) return;
+            const headerBadges = headers.map(h => `<span class="bg-purple-200 text-purple-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">${h}</span>`).join('');
+            csvDashboard.innerHTML = `<div class="dashboard p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"><h3 class="font-bold text-lg mb-3 text-gray-800 dark:text-white">CSV Analysis</h3><div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm"><p class="text-gray-600 dark:text-gray-300"><strong class="font-semibold text-gray-800 dark:text-white">Data Rows:</strong> ${rowCount}</p><p class="text-gray-600 dark:text-gray-300"><strong class="font-semibold text-gray-800 dark:text-white">Columns:</strong> ${columnCount}</p></div><div class="mt-3"><p class="font-semibold text-gray-800 dark:text-white mb-2">Headers Found:</p><div class="flex flex-wrap gap-2">${headerBadges}</div></div></div>`;
+            csvDashboard.classList.remove('hidden');
         }
 
-        /**
-         * Triggers the download of the generated CSV string.
-         * @param {string} csvString - The CSV data to download.
-         */
-        function downloadCSV(csvString) {
-            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        function convertCsvToJson(csvString) {
+            const lines = csvString.split('\n').filter(line => line.trim() !== '');
+            if (lines.length === 0) return [];
+            const headers = parseCsvRow(lines[0]);
+            const result = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCsvRow(lines[i]);
+                if (values.length !== headers.length) continue;
+                const obj = {};
+                headers.forEach((header, j) => { obj[header] = values[j]; });
+                result.push(obj);
+            }
+            return result;
+        }
+
+        function parseCsvRow(rowString) {
+            const values = [];
+            let currentVal = '';
+            let inQuotes = false;
+            for (let i = 0; i < rowString.length; i++) {
+                const char = rowString[i];
+                if (char === '"' && i + 1 < rowString.length && rowString[i+1] === '"') {
+                    currentVal += '"'; i++;
+                } else if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    values.push(currentVal.trim()); currentVal = '';
+                } else {
+                    currentVal += char;
+                }
+            }
+            values.push(currentVal.trim());
+            return values;
+        }
+
+        // --- Utility Functions ---
+        function downloadFile(content, fileName, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
             const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            
-            link.setAttribute('href', url);
-            link.setAttribute('download', 'export.csv');
-            link.style.visibility = 'hidden';
-            
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
 
-        /**
-         * Displays a status message to the user.
-         * @param {string} message - The message to display.
-         * @param {'success'|'error'} type - The type of message.
-         */
-        function displayMessage(message, type) {
+        function copyToClipboard(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+        }
+
+        function displayMessage(statusDiv, message, type) {
             const colorClass = type === 'success' ? 'text-green-500' : 'text-red-500';
-            statusDiv.innerHTML = `<p class="${colorClass}">${message}</p>`;
+            statusDiv.innerHTML = `<p class="${colorClass} status-message">${message}</p>`;
         }
     </script>
 </body>
