@@ -36,10 +36,6 @@
         border-radius: 20px; overflow: hidden;
         transition: opacity 0.5s ease-in-out;
       }
-      .container.loading {
-        opacity: 0.5;
-        pointer-events: none;
-      }
       .header {
         position: relative; display: flex; justify-content: space-between; align-items: center;
         padding: 12px 20px; border-bottom: 1px solid var(--c-border); flex-shrink: 0;
@@ -69,7 +65,6 @@
       .loader { margin: 0 auto 16px; border: 4px solid var(--c-primary-light); border-top-color: var(--c-primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
       .status-message { color: var(--c-text-secondary); font-weight: 600; }
       .empty-state { text-align: center; padding: 40px 0; color: var(--c-text-secondary); }
-      .empty-state h2 { margin: 0 0 8px; }
       
       .upload-area { text-align: center; margin-bottom: 24px; }
       .upload-label { display: inline-block; padding: 16px 24px; background-color: var(--c-primary); color: white; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 16px; transition: var(--transition); }
@@ -100,7 +95,7 @@
     </style>
 </head>
 <body>
-    <div id="app-container" class="container loading">
+    <div id="app-container" class="container">
       <div class="header">
         <span class="app-title">Mon Aide-Crèche</span>
         <div class="header-actions">
@@ -153,6 +148,7 @@
     <div id="settings-modal" style="display: none;">
       <div class="settings-content">
         <h2>Configuration</h2>
+        <label for="gas-url">URL de l'API Google Apps Script</label><input type="text" id="gas-url" placeholder="https://script.google.com/macros/s/.../exec">
         <label for="gemini-api-key">Clé API Gemini</label><input type="password" id="gemini-api-key">
         <label for="sheet-url">URL de la Google Sheet</label><input type="text" id="sheet-url">
         <label for="baby-name">Prénom de l'enfant</label><input type="text" id="baby-name">
@@ -163,19 +159,19 @@
     <div id="toast" class="toast"></div>
 
     <script>
-      console.log('Version: 4.3 - Initialization Timeout Fix');
+      console.log('Version: 5.0 - Decoupled Frontend/Backend Architecture');
       
       let imageData = null;
       let appSettings = {};
       let sleepChartInstance = null;
       
-      const appContainer = document.getElementById('app-container');
       const settingsBtn = document.getElementById('settings-btn');
       const settingsModal = document.getElementById('settings-modal');
       const imageInput = document.getElementById('image-file');
       const analyzeButton = document.getElementById('analyze-button');
       const phraseButton = document.getElementById('phrase-button');
       const toast = document.getElementById('toast');
+      const gasUrlInput = document.getElementById('gas-url');
       const apiKeyInput = document.getElementById('gemini-api-key');
       const sheetUrlInput = document.getElementById('sheet-url');
       const babyNameInput = document.getElementById('baby-name');
@@ -188,32 +184,38 @@
           resume: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>`
       };
 
-      // ---- App Initialization ----
-      function initializeApp() {
-        let initTimeout = null;
-
-        const readyCheck = setInterval(() => {
-          if (window.google && window.google.script) {
-            clearInterval(readyCheck);
-            if (initTimeout) clearTimeout(initTimeout);
-            appReady();
+      // ---- API Communication ----
+      async function callAppsScript(action, payload) {
+        if (!appSettings.gasUrl) {
+          throw new Error("L'URL de l'API Google Apps Script n'est pas configurée.");
+        }
+        try {
+          const response = await fetch(appSettings.gasUrl, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action, payload })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Erreur réseau: ${response.statusText}`);
           }
-        }, 100);
 
-        initTimeout = setTimeout(() => {
-            clearInterval(readyCheck);
-            appContainer.classList.remove('loading');
-            const contentArea = document.querySelector('.content-area');
-            contentArea.innerHTML = `<div class="empty-state">
-                <h2 style="color: var(--c-error);">Erreur de Connexion</h2>
-                <p>Impossible de se connecter au serveur. Veuillez vérifier votre connexion internet et rafraîchir la page.</p>
-            </div>`;
-            console.error("Initialization failed: google.script.run not found within 8 seconds.");
-        }, 8000);
+          const result = await response.json();
+
+          if (result.status === 'error') {
+            throw new Error(result.message);
+          }
+          return result.data;
+
+        } catch (error) {
+          console.error('Erreur lors de l\'appel API:', error);
+          throw new Error(`Impossible de contacter le serveur. Vérifiez l'URL de l'API et votre connexion.`);
+        }
       }
 
-      function appReady() {
-        appContainer.classList.remove('loading');
+      // ---- App Initialization ----
+      function initializeApp() {
         loadTheme();
         loadSettings();
         
@@ -225,11 +227,10 @@
         document.getElementById('close-settings-btn').addEventListener('click', () => settingsModal.style.display = 'none');
         document.getElementById('save-settings-btn').addEventListener('click', saveSettings);
         document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-        
         imageInput.addEventListener('change', handleImageSelection);
         analyzeButton.addEventListener('click', handleAnalysis);
         phraseButton.addEventListener('click', getNewPhrase);
-        
+
         openTab('analysis');
       }
 
@@ -251,16 +252,19 @@
       
       function loadSettings() {
         appSettings = {
+          gasUrl: localStorage.getItem('gasUrl') || '',
           apiKey: localStorage.getItem('geminiApiKey') || '',
           sheetUrl: localStorage.getItem('sheetUrl') || '',
           babyName: localStorage.getItem('babyName') || ''
         };
+        gasUrlInput.value = appSettings.gasUrl;
         apiKeyInput.value = appSettings.apiKey;
         sheetUrlInput.value = appSettings.sheetUrl;
         babyNameInput.value = appSettings.babyName;
       }
 
       function saveSettings() {
+        localStorage.setItem('gasUrl', gasUrlInput.value);
         localStorage.setItem('geminiApiKey', apiKeyInput.value);
         localStorage.setItem('sheetUrl', sheetUrlInput.value);
         localStorage.setItem('babyName', babyNameInput.value);
@@ -293,23 +297,35 @@
         }
       }
 
-      function handleAnalysis() {
-        if (!imageData || !appSettings.apiKey || !appSettings.sheetUrl) return alert("Veuillez choisir une image et configurer vos paramètres (⚙️).");
+      async function handleAnalysis() {
+        if (!imageData || !appSettings.apiKey || !appSettings.sheetUrl) {
+          return alert("Veuillez choisir une image et configurer vos paramètres (⚙️).");
+        }
         setLoadingState('analysis', true, '1/2 - Analyse de l\'image...');
-        google.script.run.withSuccessHandler(handleAnalysisSuccess).withFailureHandler(displayError).processImageWithGemini(imageData, appSettings.apiKey, appSettings.babyName);
-      }
-      
-      function handleAnalysisSuccess(jsonString) {
-        displayResults(jsonString);
-        setLoadingState('analysis', true, '2/2 - Sauvegarde...');
-        google.script.run.withSuccessHandler(handleSaveSuccess).withFailureHandler(displayError).saveDataToSheet(appSettings.sheetUrl, appSettings.babyName, jsonString);
-      }
-      
-      function handleSaveSuccess(message) {
-        setLoadingState('analysis', false);
-        showToast(message);
-      }
+        try {
+          const analysisResult = await callAppsScript('processImage', {
+            base64Image: imageData,
+            apiKey: appSettings.apiKey,
+            babyName: appSettings.babyName
+          });
+          
+          displayResults(analysisResult);
+          
+          setLoadingState('analysis', true, '2/2 - Sauvegarde...');
+          const saveResult = await callAppsScript('saveData', {
+            sheetUrl: appSettings.sheetUrl,
+            babyName: appSettings.babyName,
+            analysisDataString: analysisResult
+          });
+          
+          setLoadingState('analysis', false);
+          showToast(saveResult);
 
+        } catch (error) {
+          displayError(error);
+        }
+      }
+      
       function displayResults(jsonString) {
         const resultsSection = document.getElementById('results-section');
         resultsSection.innerHTML = '';
@@ -329,13 +345,18 @@
       }
 
       // ---- History & Charting ----
-      function loadHistory() {
+      async function loadHistory() {
         if (!appSettings.sheetUrl) {
           document.getElementById('history-list').innerHTML = `<div class="empty-state">Veuillez configurer l'URL de votre Google Sheet dans les paramètres ⚙️.</div>`;
           return;
         }
         setLoadingState('history', true);
-        google.script.run.withSuccessHandler(displayHistory).withFailureHandler(displayError).getHistoryData(appSettings.sheetUrl);
+        try {
+          const historyData = await callAppsScript('getHistory', { sheetUrl: appSettings.sheetUrl });
+          displayHistory(historyData);
+        } catch (error) {
+          displayError(error);
+        }
       }
 
       function displayHistory(data) {
@@ -391,12 +412,16 @@
       }
 
       // ---- Misc ----
-      function getNewPhrase() {
+      async function getNewPhrase() {
         phraseButton.disabled = true;
-        google.script.run.withSuccessHandler((phraseObj) => {
-          document.getElementById('phrase-container').innerHTML = `<span class="lang">Néerlandais :</span><p class="phrase">${phraseObj.nl}</p><span class="lang">Français :</span><p class="phrase">${phraseObj.fr}</p>`;
-          phraseButton.disabled = false;
-        }).withFailureHandler(displayError).getDailyPhrase();
+        try {
+            const phraseObj = await callAppsScript('getPhrase', {});
+            document.getElementById('phrase-container').innerHTML = `<span class="lang">Néerlandais :</span><p class="phrase">${phraseObj.nl}</p><span class="lang">Français :</span><p class="phrase">${phraseObj.fr}</p>`;
+        } catch(error) {
+            displayError(error);
+        } finally {
+            phraseButton.disabled = false;
+        }
       }
       
       function setLoadingState(loaderId, isLoading, message = '') {

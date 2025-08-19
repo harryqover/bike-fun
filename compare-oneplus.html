@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnePlus Phone Comparison</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .highlight-best {
+            background-color: #dcfce7; /* A light green for highlighting */
+            color: #166534;
+            font-weight: 600;
+        }
+        .spec-label {
+            position: sticky;
+            left: 0;
+            background-color: #f9fafb; /* bg-gray-50 */
+            z-index: 10;
+        }
+        .phone-header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">OnePlus Phone Comparison</h1>
+            <p class="text-gray-600 mt-2">A side-by-side look at the latest OnePlus models available in Belgium.</p>
+        </header>
+
+        <div class="mb-6 flex justify-center items-center space-x-4">
+            <label for="highlightToggle" class="text-sm font-medium text-gray-700">Highlight Best Specs:</label>
+            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                <input type="checkbox" name="highlightToggle" id="highlightToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                <label for="highlightToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+            </div>
+        </div>
+
+        <!-- Main comparison table container -->
+        <div class="overflow-x-auto bg-white rounded-lg shadow-lg">
+            <table class="w-full min-w-[800px] text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-200 phone-header">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 spec-label rounded-tl-lg">Feature</th>
+                        <!-- Phone headers will be injected here by JS -->
+                    </tr>
+                </thead>
+                <tbody id="comparison-table-body">
+                    <!-- Table content will be injected here by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <footer class="text-center mt-8 text-gray-500 text-sm">
+            <p>Prices and specifications are based on data from the official OnePlus Belgium website.</p>
+            <p>Created for easy comparison. Hosted on GitHub Pages.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Data for the phones
+        const phones = [
+            {
+                name: "OnePlus Nord CE 5",
+                price: "€299.00",
+                priceValue: 299,
+                display: "6.77\" AMOLED, 120Hz",
+                processor: "MediaTek Dimensity 8350 Apex",
+                ram: "8GB",
+                ramValue: 8,
+                storage: "128GB (expandable)",
+                storageValue: 128,
+                rearCamera: "50MP + 8MP",
+                frontCamera: "16MP",
+                battery: "5200mAh",
+                batteryValue: 5200,
+                charging: "80W SUPERVOOC",
+                chargingValue: 80,
+                os: "OxygenOS 15.0",
+            },
+            {
+                name: "OnePlus Nord 4",
+                price: "€349.00",
+                priceValue: 349,
+                display: "6.74\" AMOLED, 120Hz",
+                processor: "Snapdragon 7+ Gen 3",
+                ram: "12GB",
+                ramValue: 12,
+                storage: "256GB",
+                storageValue: 256,
+                rearCamera: "50MP",
+                frontCamera: "16MP",
+                battery: "5500mAh",
+                batteryValue: 5500,
+                charging: "100W SUPERVOOC",
+                chargingValue: 100,
+                os: "OxygenOS 14.1",
+            },
+            {
+                name: "OnePlus Nord 5",
+                price: "€449.00",
+                priceValue: 449,
+                display: "6.83\" Swift AMOLED, 144Hz",
+                processor: "Snapdragon 8s Gen 3",
+                ram: "8GB / 12GB",
+                ramValue: 12, // Taking the higher value for comparison
+                storage: "256GB / 512GB",
+                storageValue: 512, // Taking the higher value
+                rearCamera: "50MP + 8MP",
+                frontCamera: "50MP",
+                battery: "5200mAh",
+                batteryValue: 5200,
+                charging: "80W SUPERVOOC",
+                chargingValue: 80,
+                os: "OxygenOS 15.0",
+            },
+            {
+                name: "OnePlus 13R",
+                price: "€529.00",
+                priceValue: 529,
+                display: "6.78\" ProXDR AMOLED, 120Hz",
+                processor: "Snapdragon 8 Gen 3",
+                ram: "12GB",
+                ramValue: 12,
+                storage: "256GB",
+                storageValue: 256,
+                rearCamera: "50MP + 8MP + 50MP Telephoto",
+                frontCamera: "16MP",
+                battery: "6000mAh",
+                batteryValue: 6000,
+                charging: "80W SUPERVOOC",
+                chargingValue: 80,
+                os: "OxygenOS 15.0",
+            }
+        ];
+
+        // Define the order and labels for specs
+        const specOrder = [
+            { key: 'price', label: 'Price (Belgium)', higherIsBetter: false },
+            { key: 'display', label: 'Display' },
+            { key: 'processor', label: 'Processor' },
+            { key: 'ram', label: 'RAM', valueKey: 'ramValue', higherIsBetter: true },
+            { key: 'storage', label: 'Storage', valueKey: 'storageValue', higherIsBetter: true },
+            { key: 'rearCamera', label: 'Rear Camera' },
+            { key: 'frontCamera', label: 'Front Camera' },
+            { key: 'battery', label: 'Battery', valueKey: 'batteryValue', higherIsBetter: true },
+            { key: 'charging', label: 'Charging Speed', valueKey: 'chargingValue', higherIsBetter: true },
+            { key: 'os', label: 'Operating System' },
+        ];
+
+        const tableBody = document.getElementById('comparison-table-body');
+        const tableHeadRow = document.querySelector('thead tr');
+        const highlightToggle = document.getElementById('highlightToggle');
+
+        // Function to generate the table
+        function generateTable() {
+            // Clear existing content
+            tableHeadRow.innerHTML = '<th scope="col" class="px-6 py-3 spec-label rounded-tl-lg">Feature</th>';
+            tableBody.innerHTML = '';
+
+            // Generate table headers for phones
+            phones.forEach((phone, index) => {
+                const th = document.createElement('th');
+                th.scope = 'col';
+                th.className = 'px-6 py-3 text-center';
+                if (index === phones.length - 1) th.classList.add('rounded-tr-lg');
+                th.innerHTML = `<span class="font-semibold">${phone.name}</span>`;
+                tableHeadRow.appendChild(th);
+            });
+
+            // Generate table rows for specs
+            specOrder.forEach(spec => {
+                const tr = document.createElement('tr');
+                tr.className = 'bg-white border-b hover:bg-gray-50';
+                tr.dataset.specKey = spec.key;
+
+                // Add spec label cell
+                const labelTd = document.createElement('td');
+                labelTd.className = 'px-6 py-4 font-medium text-gray-900 whitespace-nowrap spec-label';
+                labelTd.textContent = spec.label;
+                tr.appendChild(labelTd);
+
+                // Add phone spec value cells
+                phones.forEach(phone => {
+                    const valueTd = document.createElement('td');
+                    valueTd.className = 'px-6 py-4 text-center';
+                    valueTd.textContent = phone[spec.key] || 'N/A';
+                    tr.appendChild(valueTd);
+                });
+                tableBody.appendChild(tr);
+            });
+
+            // Initial highlight
+            if (highlightToggle.checked) {
+                highlightBestSpecs();
+            }
+        }
+
+        // Function to highlight the best specs
+        function highlightBestSpecs() {
+            specOrder.forEach(spec => {
+                if (!spec.valueKey) return; // Skip specs without a numerical value
+
+                // Find the best value
+                const values = phones.map(p => p[spec.valueKey] || (spec.higherIsBetter ? -Infinity : Infinity));
+                const bestValue = spec.higherIsBetter ? Math.max(...values) : Math.min(...values);
+
+                // Find the corresponding table row
+                const row = tableBody.querySelector(`tr[data-spec-key="${spec.key}"]`);
+                if (!row) return;
+                
+                // Highlight the cells with the best value
+                const cells = row.querySelectorAll('td');
+                phones.forEach((phone, index) => {
+                    if ((phone[spec.valueKey] || (spec.higherIsBetter ? -Infinity : Infinity)) === bestValue) {
+                        cells[index + 1].classList.add('highlight-best'); // +1 to account for the label cell
+                    }
+                });
+            });
+        }
+        
+        // Function to clear highlights
+        function clearHighlights() {
+            document.querySelectorAll('.highlight-best').forEach(el => {
+                el.classList.remove('highlight-best');
+            });
+        }
+
+        // Event Listener for the toggle
+        highlightToggle.addEventListener('change', () => {
+            clearHighlights();
+            if (highlightToggle.checked) {
+                highlightBestSpecs();
+            }
+        });
+
+        // Initial table generation on page load
+        document.addEventListener('DOMContentLoaded', generateTable);
+
+    </script>
+    <style>
+        /* Simple toggle switch styles */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #2563eb; /* blue-600 */
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #2563eb; /* blue-600 */
+        }
+    </style>
+
+</body>
+</html>
