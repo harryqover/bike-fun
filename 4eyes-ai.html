@@ -153,7 +153,7 @@
                         <label for="change-intent" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Describe your intended change:</label>
                         <input type="text" id="change-intent" class="w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-700" placeholder="e.g., 'Updated the hero title and changed the button color'">
                         <button id="analyze-button" class="mt-3 w-full bg-brand-blue hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded-md flex items-center justify-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M12 21v-1m0-16a9 9 0 11-9 9h16a9 9 0 01-9-9z"></path></svg>
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707.707M12 21v-1m0-16a9 9 0 11-9 9h16a9 9 0 01-9-9z"></path></svg>
                             <span id="analyze-button-text">Run AI Analysis</span>
                             <div id="analyze-loader" class="loader ease-linear rounded-full border-4 h-6 w-6 hidden ml-2"></div>
                         </button>
@@ -175,6 +175,9 @@
     </div>
 
     <script>
+        // ✅ Version: 1.1 - Fixed Slack payload size limit
+        console.log('Version: 1.1 - Fixed Slack payload size limit');
+        
         document.addEventListener('DOMContentLoaded', () => {
             // --- Element References ---
             const beforeText = document.getElementById('before-text');
@@ -396,7 +399,6 @@
                 slackLoader.classList.remove('hidden');
                 
                 const { status, icon } = parseAIResponseForSlack(analysisText);
-                // UPDATED: Include all new fields in the payload
                 const payload = { 
                     intent: changeIntent.value, 
                     analysis: analysisText, 
