@@ -88,7 +88,20 @@ const errorsDB = {
     $(".retry").show(250);
     $(".save4later").hide(250);
     var postUrl = "https://dojo-production-mailcampaign-api.production.cluster.qover.io/steps?apikey="+__QOVER_API_KEY__;
-    var postBody = {"language":lang+"-"+country,"draftId":draftId,"step":"widget","email": email,"references":{"country":country,"productReference":"BIKE"}};
+    var postBody = {
+        "language":lang+"-"+country,
+        "draftId":draftId,
+        "step":"widget",
+        "email": email,
+        "firstName": "tbc",
+        "lastName": "tbc",
+        "birthdate": "tbc",
+        "entityType": "ENTITY_TYPE_PERSON",
+        "references": {
+                "country":country,
+                "productReference":"BIKE"
+        }
+    };
     var xhr = new XMLHttpRequest();
     xhr.open("POST", postUrl, true);
     xhr.setRequestHeader("Content-Type", "application/json");
