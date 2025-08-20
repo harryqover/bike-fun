@@ -1128,16 +1128,43 @@ document.addEventListener('DOMContentLoaded', function () {
 // FORM SUBMISSION
 document.getElementById('insuranceForm').addEventListener('submit', async function (event) {
     event.preventDefault(); // Prevent the default form submission
+
+    // --- Helper function for email validation ---
+    function isValidEmail(email) {
+        // Regular expression for basic email validation
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    // --- Clear previous messages ---
+    $("#message").empty();
+    const $button = $("#insuranceForm > div.form-actions > button");
+    const originalText = $button.text();
+
+    // --- Extract form data ---
+    const employeeEmail = document.getElementById('employeeEmail').value;
+    const customerEmail = document.getElementById('customerEmail').value;
+
+    // --- Email Validation Check ---
+    if (!isValidEmail(employeeEmail)) {
+        $("#message").html('<p class="error" style="color: red; border: 1px solid red; padding: 10px; background-color: #ffe6e6;">Please enter a valid Employee Email address.</p>');
+        return; // Stop the function
+    }
+
+    if (!isValidEmail(customerEmail)) {
+        $("#message").html('<p class="error" style="color: red; border: 1px solid red; padding: 10px; background-color: #ffe6e6;">Please enter a valid Customer Email address.</p>');
+        return; // Stop the function
+    }
+    // --- End of Validation ---
+
+
     $("#loadingOverlay").show(500);
 
-    // Extract form data
-    const employeeEmail = document.getElementById('employeeEmail').value;
     const vehicleMake = document.getElementById('vehicleMake').value;
     const vehicleModel = document.getElementById('vehicleModel').value;
     const extendedVehicleModel = document.getElementById('extendedVehicleModel').value;
     const deliveryDate = document.getElementById('deliveryDate').value;
     const customerName = document.getElementById('customerName').value;
-    const customerEmail = document.getElementById('customerEmail').value;
     const dealership = document.getElementById('dealership').value;
 
     const domainMap = {
@@ -1236,8 +1263,7 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
         domain: domain
       })
     };
-    const $button = $("#insuranceForm > div.form-actions > button");
-    const originalText = $button.text();
+
     const $spinner = $('<span class="xhr-spinner" style="display:inline-block; vertical-align:middle; margin-right:8px; width:16px; height:16px; border:2px solid #f3f3f3; border-top:2px solid #3498db; border-radius:50%; animation: spin 0.6s linear infinite;"></span>');
     // Inject spinner animation keyframes into <head> if not already there
     if (!document.getElementById("xhr-spinner-style")) {
@@ -1254,24 +1280,24 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
 
     // Disable button and inject spinner + text
     $button.prop("disabled", true).empty().append($spinner).append("Sending...");
-    
+
     $.ajax(settings).done(function(response) {
       console.log("draft created");
       console.log(response);
       console.log(response.payload.id);
-      
-      if(response.payload.id){
+
+      if (response.payload.id) {
         $("#message").html('<p class="success">Quote created successfully!</p>');
-        if(domain == "webflow.io"){
+        if (domain == "webflow.io") {
           $("#message").html('<p class="success">Quote created successfully!</p><pre>' + JSON.stringify(response.payload.id, null, 2) + "</pre>");
         }
       } else {
-        if(domain != "webflow.io"){
+        if (domain != "webflow.io") {
           $("#message").html('<p class="success">An error occurred while creating the quote!</p>');
         } else {
-          $("#message").html('<p class="success">An error occurred while creating the quote!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");  
+          $("#message").html('<p class="success">An error occurred while creating the quote!</p><pre>' + JSON.stringify(response, null, 2) + "</pre>");
         }
-        
+
       }
       $("#loadingOverlay").hide(500);
 
@@ -1280,61 +1306,61 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
       $messageContainer.empty(); // Clear previous messages
 
       if (response.payload && response.payload.id) {
-          // Success Case
-          const $successP = $('<p>').text('Quote created successfully!').css({
-              'color': 'green',
-              'border': '1px solid green',
-              'padding': '10px',
-              'background-color': '#e6ffe6',
-              'margin': '0' // Reset default margin for p
-          });
-          $messageContainer.append($successP);
+        // Success Case
+        const $successP = $('<p>').text('Quote created successfully!').css({
+          'color': 'green',
+          'border': '1px solid green',
+          'padding': '10px',
+          'background-color': '#e6ffe6',
+          'margin': '0' // Reset default margin for p
+        });
+        $messageContainer.append($successP);
 
-          if (domain == "webflow.io") {
-              const $pre = $('<pre>').text(JSON.stringify(response.payload.id, null, 2));
-              stylePreTag($pre); // Apply dynamic styling
-              $messageContainer.append($pre);
-          }
+        if (domain == "webflow.io") {
+          const $pre = $('<pre>').text(JSON.stringify(response.payload.id, null, 2));
+          stylePreTag($pre); // Apply dynamic styling
+          $messageContainer.append($pre);
+        }
 
-          // Hide error banner if it was somehow visible
-          const $errorBanner = getOrCreateErrorBanner(); // Ensure it's created if needed, then hide
-          $errorBanner.fadeOut();
+        // Hide error banner if it was somehow visible
+        const $errorBanner = getOrCreateErrorBanner(); // Ensure it's created if needed, then hide
+        $errorBanner.fadeOut();
 
       } else {
-          // Error Case
-          const $errorP = $('<p>').text('An error occurred while creating the quote!').css({
-              'color': 'red',
-              'border': '1px solid red',
-              'padding': '10px',
-              'background-color': '#ffe6e6',
-              'margin': '0' // Reset default margin for p
-          });
-          $messageContainer.append($errorP);
+        // Error Case
+        const $errorP = $('<p>').text('An error occurred while creating the quote!').css({
+          'color': 'red',
+          'border': '1px solid red',
+          'padding': '10px',
+          'background-color': '#ffe6e6',
+          'margin': '0' // Reset default margin for p
+        });
+        $messageContainer.append($errorP);
 
-          if (domain == "webflow.io") {
-              const $pre = $('<pre>').text(JSON.stringify(response, null, 2));
-              stylePreTag($pre); // Apply dynamic styling
-              $messageContainer.append($pre);
-          }
+        if (domain == "webflow.io") {
+          const $pre = $('<pre>').text(JSON.stringify(response, null, 2));
+          stylePreTag($pre); // Apply dynamic styling
+          $messageContainer.append($pre);
+        }
 
-          // --- Banner Logic ---
-          const $errorBanner = getOrCreateErrorBanner(); // Get or create the banner
-          let bannerErrorMessage = "An unexpected error occurred."; // Default message
+        // --- Banner Logic ---
+        const $errorBanner = getOrCreateErrorBanner(); // Get or create the banner
+        let bannerErrorMessage = "An unexpected error occurred."; // Default message
 
-          if (response.payload && response.payload.message) {
-              bannerErrorMessage = response.payload.message;
-          } else if (response.message) { // Fallback if message is at the root of response
-              bannerErrorMessage = response.message;
-          }
+        if (response.payload && response.payload.message) {
+          bannerErrorMessage = response.payload.message;
+        } else if (response.message) { // Fallback if message is at the root of response
+          bannerErrorMessage = response.message;
+        }
 
-          $errorBanner
-              .text(bannerErrorMessage)
-              .fadeIn()
-              .delay(5000) // Show for 5 seconds
-              .fadeOut();
+        $errorBanner
+          .text(bannerErrorMessage)
+          .fadeIn()
+          .delay(5000) // Show for 5 seconds
+          .fadeOut();
       }
       //END TEST ERROR BANNER
-      
+
 
     }).fail(function(jqXHR, textStatus, errorThrown) {
       console.error("Error:", textStatus, errorThrown);
@@ -1348,6 +1374,7 @@ document.getElementById('insuranceForm').addEventListener('submit', async functi
       $("#loadingOverlay").hide(500);
     });
 });
+
 
 
 //EASE TESTING TO DEACTIVATE WHEN PROD
