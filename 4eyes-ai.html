@@ -342,7 +342,31 @@
                 aiResultContainer.classList.add('hidden');
 
                 // ✅ FIX: The user's data (`before`, `after`, `intent`) was missing from the prompt. It has been re-added.
-                const prompt = `As an expert configuration analyst, your task is to perform a "four-eyes" check. I will provide you with a "BEFORE" version of a file, an "AFTER" version, and a description of the "INTENDED CHANGE". Your job is to: 1. Carefully compare the "BEFORE" and "AFTER" files. 2. Evaluate if the changes made in the "AFTER" file accurately and completely implement the "INTENDED CHANGE". 3. Identify any unintended side effects, potential risks, or deviations from the stated intent. 4. Provide a clear, concise summary of your findings using Markdown for formatting. Start with a "Verdict" (e.g., "**Verdict:** SUCCESS: The changes align perfectly with the intent."). Then, provide a bulleted list for your "Observations". --- INTENDED CHANGE: "${intent}" --- BEFORE FILE: \`\`\`${before}\`\`\` --- AFTER FILE: \`\`\`${after}\`\`\``;
+                //const prompt = `As an expert configuration analyst, your task is to perform a "four-eyes" check. I will provide you with a "BEFORE" version of a file, an "AFTER" version, and a description of the "INTENDED CHANGE". Your job is to: 1. Carefully compare the "BEFORE" and "AFTER" files. 2. Evaluate if the changes made in the "AFTER" file accurately and completely implement the "INTENDED CHANGE". 3. Identify any unintended side effects, potential risks, or deviations from the stated intent. 4. Provide a clear, concise summary of your findings using Markdown for formatting. Start with a "Verdict" (e.g., "**Verdict:** SUCCESS: The changes align perfectly with the intent."). Then, provide a bulleted list for your "Observations". --- INTENDED CHANGE: "${intent}" --- BEFORE FILE: \`\`\`${before}\`\`\` --- AFTER FILE: \`\`\`${after}\`\`\``;
+                const prompt = `As an expert configuration analyst and senior code reviewer, your task is to perform a "four-eyes" check. I will provide you with a "BEFORE" version of a file, an "AFTER" version, and a description of the "INTENDED CHANGE".
+
+                    Your job is to provide a comprehensive analysis with these steps:
+                    1.  **Confirm the Change**: First, evaluate if the modifications in the "AFTER" file accurately and completely implement the "INTENDED CHANGE".
+                    2.  **Conduct a Technical Review**: This is a critical step. Analyze the 'AFTER' file for any technical issues, adapting your checks to the detected language (e.g., JavaScript, JSONata, HTML). Your review must include:
+                        * **Syntax and Runtime Errors**: Check for issues like missing commas, brackets, or the use of undefined variables.
+                        * **Best Practices & Risks**: Identify any deviations from common best practices, potential performance issues, or security vulnerabilities introduced by the changes.
+                        * **Unintended Side Effects**: Look for anything that may have been changed accidentally or could have unforeseen consequences.
+                    3.  **Summarize Your Findings**: Provide a clear, concise summary using Markdown.
+                        * Start with a one-word verdict: **Verdict:** SUCCESS, **Verdict:** WARNING (if there are non-critical issues), or **Verdict:** FAILURE.
+                        * Follow with a bulleted list of your detailed "Observations".
+
+                    ---
+                    INTENDED CHANGE: "${intent}"
+                    ---
+                    BEFORE FILE:
+                    \`\`\`
+                    ${before}
+                    \`\`\`
+                    ---
+                    AFTER FILE:
+                    \`\`\`
+                    ${after}
+                    \`\`\``;
 
                 try {
                     const aiResponse = await callGeminiAPI(prompt, apiKey);
@@ -437,6 +461,7 @@
             detectHtmlAndToggleTab();
             apiKeyManager.loadValue();
         });
+        console.log('improve prompt')
     </script>
 </body>
 </html>
