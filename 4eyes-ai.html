@@ -10,6 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/diff2html/bundles/css/diff2html.min.css" />
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/diff2html/bundles/js/diff2html-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -36,27 +37,21 @@
         .diff-view-toggle-btn.active { background-color: #4f9e9a; color: white; }
 
         /* WCAG Compliant Diff Colors */
-        .d2h-ins {
-            background-color: #e6ffed !important; /* Light green background */
-        }
-        .d2h-del {
-            background-color: #ffeef0 !important; /* Light red background */
-        }
-        .d2h-code-line-ctn {
-            color: #111827 !important; /* Dark text for high contrast */
-        }
-        .dark .d2h-ins {
-            background-color: #043615 !important;
-        }
-        .dark .d2h-del {
-            background-color: #4a0e0b !important;
-        }
-        .dark .d2h-code-line-ctn {
-            color: #f9fafb !important;
-        }
-        .dark .d2h-file-header {
-             border-bottom: 1px solid #4b5563;
-        }
+        .d2h-ins { background-color: #e6ffed !important; }
+        .d2h-del { background-color: #ffeef0 !important; }
+        .d2h-code-line-ctn { color: #111827 !important; }
+        .dark .d2h-ins { background-color: #043615 !important; }
+        .dark .d2h-del { background-color: #4a0e0b !important; }
+        .dark .d2h-code-line-ctn { color: #f9fafb !important; }
+        .dark .d2h-file-header { border-bottom: 1px solid #4b5563; }
+
+        /* Styles for rendered Markdown in AI result */
+        #ai-result h2, #ai-result h3 { font-size: 1.1rem; font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.25rem; }
+        #ai-result ul { list-style-type: disc; padding-left: 1.5rem; margin-top: 0.5rem; }
+        #ai-result li { margin-bottom: 0.25rem; }
+        #ai-result strong, #ai-result b { font-weight: 700; }
+        #ai-result p { margin-bottom: 0.5rem; }
+
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -145,7 +140,6 @@
                         </div>
                      </div>
                     <div>
-                        <!-- NEW: Jira Ticket / Reference Link Input -->
                         <div class="mb-3">
                             <label for="reference-link" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Jira Ticket / Reference Link (Optional)</label>
                             <input type="text" id="reference-link" class="w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-700" placeholder="e.g., https://your-jira.com/browse/PROJ-123">
@@ -175,8 +169,8 @@
     </div>
 
     <script>
-        // ✅ Version: 1.1 - Fixed Slack payload size limit
-        console.log('Version: 1.1 - Fixed Slack payload size limit');
+        // ✅ Version: 1.3 - Fixed bug where AI prompt was missing data
+        console.log('Version: 1.3 - Fixed bug where AI prompt was missing data');
         
         document.addEventListener('DOMContentLoaded', () => {
             // --- Element References ---
@@ -186,7 +180,7 @@
             const renderBefore = document.getElementById('render-before');
             const renderAfter = document.getElementById('render-after');
             const changeIntent = document.getElementById('change-intent');
-            const referenceLink = document.getElementById('reference-link'); // New element
+            const referenceLink = document.getElementById('reference-link');
             const analyzeButton = document.getElementById('analyze-button');
             const analyzeButtonText = document.getElementById('analyze-button-text');
             const analyzeLoader = document.getElementById('analyze-loader');
@@ -216,6 +210,7 @@
             ];
             
             let currentDiffFormat = 'line-by-line';
+            let rawAIResponse = ''; 
             const GAS_URL = 'https://script.google.com/macros/s/AKfycbx-zSfknoC8-LnAqeOr3fIXrKwO4kbgkD5HYveVWPsiWkwIB67akas6b0wXus2500c0yw/exec';
 
             // --- Utility & Setup Functions ---
@@ -346,11 +341,13 @@
                 analyzeLoader.classList.remove('hidden');
                 aiResultContainer.classList.add('hidden');
 
-                const prompt = `As an expert configuration analyst, your task is to perform a "four-eyes" check. I will provide you with a "BEFORE" version of a file, an "AFTER" version, and a description of the "INTENDED CHANGE". Your job is to: 1. Carefully compare the "BEFORE" and "AFTER" files. 2. Evaluate if the changes made in the "AFTER" file accurately and completely implement the "INTENDED CHANGE". 3. Identify any unintended side effects, potential risks, or deviations from the stated intent. 4. Provide a clear, concise summary of your findings. Start with a "Verdict" (e.g., "SUCCESS: The changes align perfectly with the intent.", "WARNING: The changes partially align, but with potential issues.", "FAILURE: The changes do not seem to match the intent."). Then, provide a bulleted list of your observations. --- INTENDED CHANGE: "${intent}" --- BEFORE FILE: \`\`\`${before}\`\`\` --- AFTER FILE: \`\`\`${after}\`\`\``;
+                // ✅ FIX: The user's data (`before`, `after`, `intent`) was missing from the prompt. It has been re-added.
+                const prompt = `As an expert configuration analyst, your task is to perform a "four-eyes" check. I will provide you with a "BEFORE" version of a file, an "AFTER" version, and a description of the "INTENDED CHANGE". Your job is to: 1. Carefully compare the "BEFORE" and "AFTER" files. 2. Evaluate if the changes made in the "AFTER" file accurately and completely implement the "INTENDED CHANGE". 3. Identify any unintended side effects, potential risks, or deviations from the stated intent. 4. Provide a clear, concise summary of your findings using Markdown for formatting. Start with a "Verdict" (e.g., "**Verdict:** SUCCESS: The changes align perfectly with the intent."). Then, provide a bulleted list for your "Observations". --- INTENDED CHANGE: "${intent}" --- BEFORE FILE: \`\`\`${before}\`\`\` --- AFTER FILE: \`\`\`${after}\`\`\``;
 
                 try {
                     const aiResponse = await callGeminiAPI(prompt, apiKey);
-                    aiResult.textContent = aiResponse;
+                    rawAIResponse = aiResponse; 
+                    aiResult.innerHTML = marked.parse(rawAIResponse);
                     aiResultContainer.classList.remove('hidden');
                 } catch (error) {
                     showAlert(`AI Analysis Error: ${error.message}`, true);
@@ -388,7 +385,7 @@
             };
 
             slackButton.addEventListener('click', async () => {
-                const analysisText = aiResult.textContent;
+                const analysisText = rawAIResponse;
                 if (!analysisText) {
                     showAlert("Please run the AI analysis first.", true);
                     return;
@@ -422,7 +419,8 @@
                     slackSuccess.textContent = "Posted & logged successfully!";
                     slackSuccess.classList.remove('opacity-0');
                     setTimeout(() => slackSuccess.classList.add('opacity-0'), 5000);
-                } catch (error) {
+                } catch (error)
+                 {
                     console.error('Google Script fetch failed:', error);
                     showAlert(`Error: ${error.message}`, true);
                 } finally {
