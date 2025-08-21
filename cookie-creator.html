@@ -30,6 +30,8 @@
             width: 90%;
             max-width: 600px;
             transition: filter 0.3s ease-in-out;
+            overflow: hidden; /* Prevents scrollbars during animation */
+            position: relative;
         }
 
         h1 {
@@ -40,6 +42,25 @@
         #message {
             min-height: 50px;
             margin-bottom: 1rem;
+        }
+
+        #cookie-counter {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            border: 1px solid #00ff41;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 20px;
+        }
+
+        #ingredients-container {
+            position: relative; /* Needed for animation positioning */
+            min-height: 280px; /* Give it a fixed height to contain animations */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
         }
 
         /* Styling for the interactive ASCII elements */
@@ -99,7 +120,7 @@
             max-width: 800px;
         }
 
-        .consent-buttons button {
+        .consent-buttons button, .modal-button {
             background-color: transparent;
             border: 2px solid #00ff41;
             color: #00ff41;
@@ -112,7 +133,7 @@
             transition: background-color 0.2s, color 0.2s;
         }
 
-        .consent-buttons button:hover {
+        .consent-buttons button:hover, .modal-button:hover {
             background-color: #00ff41;
             color: #0d0d0d;
         }
@@ -123,12 +144,65 @@
             border-radius: 8px;
             box-shadow: 0 0 15px #00ff41;
         }
+        
+        /* Hungry Modal */
+        #hungry-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(13, 13, 13, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background-color: #0d0d0d;
+            border: 2px solid #00ff41;
+            padding: 2rem 3rem;
+            border-radius: 8px;
+            box-shadow: 0 0 25px #00ff41;
+        }
+        .modal-content p {
+            margin-top: 0;
+        }
+
+        /* Animation "Wow" Effect */
+        .ingredient.animating {
+            position: absolute;
+            animation-duration: 1.5s;
+            animation-fill-mode: forwards; /* Keep the final state of the animation */
+            animation-timing-function: ease-in-out;
+            z-index: 10;
+        }
+
+        #butter.animating { animation-name: move-top-left; }
+        #flour.animating { animation-name: move-top-right; }
+        #milk.animating { animation-name: move-bottom-left; }
+        #chocolate.animating { animation-name: move-bottom-right; }
+
+        @keyframes move-top-left {
+            100% { transform: translate(70%, 80%); opacity: 0; }
+        }
+        @keyframes move-top-right {
+            100% { transform: translate(-70%, 80%); opacity: 0; }
+        }
+        @keyframes move-bottom-left {
+            100% { transform: translate(70%, -80%); opacity: 0; }
+        }
+        @keyframes move-bottom-right {
+            100% { transform: translate(-70%, -80%); opacity: 0; }
+        }
 
     </style>
 </head>
 <body>
 
     <div id="game-container">
+        <div id="cookie-counter">Cookies: 0</div>
         <h1>ASCII Cookie Creator</h1>
         <div id="message">Loading state...</div>
         
@@ -191,6 +265,14 @@
         </div>
     </div>
 
+    <div id="hungry-modal" class="hidden">
+        <div class="modal-content">
+            <p>Wow, that's a lot of cookies!</p>
+            <p>Are you sure you're still hungry?</p>
+            <button id="still-hungry-btn" class="modal-button">Yes, I need more!</button>
+        </div>
+    </div>
+
 
     <script>
         // DOM Elements
@@ -199,10 +281,13 @@
         const ingredientsContainerEl = document.getElementById('ingredients-container');
         const cookieContainerEl = document.getElementById('cookie-container');
         const cookieDisplayEl = document.getElementById('cookie-display');
+        const cookieCounterEl = document.getElementById('cookie-counter');
         const consentBannerEl = document.getElementById('cookie-consent-banner');
         const noCookieMessageEl = document.getElementById('no-cookie-message');
+        const hungryModalEl = document.getElementById('hungry-modal');
         const consentYesBtn = document.getElementById('consent-yes');
         const consentNoBtn = document.getElementById('consent-no');
+        const stillHungryBtn = document.getElementById('still-hungry-btn');
 
         const ingredients = {
             butter: document.getElementById('butter'),
@@ -212,16 +297,13 @@
         };
 
         // Game State
-        let state = {
-            ingredientsCollected: {
-                butter: false,
-                flour: false,
-                milk: false,
-                chocolate: false,
-            },
+        const defaultState = {
+            ingredientsCollected: { butter: false, flour: false, milk: false, chocolate: false },
             cookieExists: false,
             cookieBitesLeft: 20,
+            cookiesEaten: 0,
         };
+        let state = { ...defaultState };
 
         // ASCII Art for the cookie
         const cookieArt = {
@@ -256,7 +338,6 @@
 
         // --- Game Logic Functions ---
         function saveState() {
-            // Only save if consent has been given
             if (getCookie('cookieConsent') === 'true') {
                 setCookie('asciiCookieGameState', JSON.stringify(state), 7);
             }
@@ -265,21 +346,23 @@
         function loadState() {
             const savedState = getCookie('asciiCookieGameState');
             if (savedState) {
-                state = JSON.parse(savedState);
+                // Merge saved state with default state to handle new properties
+                state = { ...defaultState, ...JSON.parse(savedState) };
             }
         }
         
         function resetGame() {
-            state = {
-                ingredientsCollected: { butter: false, flour: false, milk: false, chocolate: false },
-                cookieExists: false,
-                cookieBitesLeft: 20,
-            };
+            state.ingredientsCollected = { ...defaultState.ingredientsCollected };
+            state.cookieExists = false;
+            state.cookieBitesLeft = 20;
+            
+            Object.values(ingredients).forEach(el => el.classList.remove('animating'));
             saveState();
             render();
         }
 
         function render() {
+            cookieCounterEl.textContent = `Cookies: ${state.cookiesEaten}`;
             if (state.cookieExists) {
                 ingredientsContainerEl.classList.add('hidden');
                 cookieContainerEl.classList.remove('hidden');
@@ -289,6 +372,16 @@
                 cookieContainerEl.classList.add('hidden');
                 renderIngredients();
             }
+        }
+        
+        function bakeCookie() {
+            messageEl.textContent = "Baking your cookie...";
+            Object.values(ingredients).forEach(el => el.classList.add('animating'));
+            setTimeout(() => {
+                state.cookieExists = true;
+                saveState();
+                render();
+            }, 1500); // This duration should match the CSS animation duration
         }
 
         function renderIngredients() {
@@ -303,12 +396,11 @@
             }
             
             if (collectedCount === 4) {
-                 messageEl.textContent = "All ingredients gathered! A cookie has been created!";
-                 setTimeout(() => {
-                    state.cookieExists = true;
-                    saveState();
-                    render();
-                 }, 1500);
+                if (state.cookiesEaten >= 2) {
+                    hungryModalEl.classList.remove('hidden');
+                } else {
+                    bakeCookie();
+                }
             } else {
                 messageEl.textContent = `Click on the ingredients to create a cookie. (${collectedCount}/4)`;
             }
@@ -327,6 +419,8 @@
                 messageEl.textContent = `Click the cookie to eat it. Bites left: ${state.cookieBitesLeft}`;
             } else {
                 messageEl.textContent = "All gone! Let's make another one.";
+                state.cookiesEaten++;
+                saveState();
                 setTimeout(resetGame, 2000);
             }
         }
@@ -378,7 +472,7 @@
 
         consentYesBtn.addEventListener('click', () => {
             setCookie('cookieConsent', 'true', 365);
-            consentBannerEl.classList.add('hidden'); // Explicitly hide banner immediately
+            consentBannerEl.classList.add('hidden');
             initializeGame();
         });
 
@@ -387,6 +481,11 @@
             consentBannerEl.classList.add('hidden');
             gameContainerEl.classList.add('hidden');
             noCookieMessageEl.classList.remove('hidden');
+        });
+
+        stillHungryBtn.addEventListener('click', () => {
+            hungryModalEl.classList.add('hidden');
+            bakeCookie();
         });
 
         // Load the game state and render the UI when the page loads
