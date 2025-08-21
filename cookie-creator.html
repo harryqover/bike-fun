@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Cookie Creator</title>
+    <style>
+        /* Basic styling for the retro, ASCII look */
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+        body {
+            background-color: #0d0d0d;
+            color: #00ff41;
+            font-family: 'VT323', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-size: 24px;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        #game-container {
+            border: 2px solid #00ff41;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 15px #00ff41;
+            width: 90%;
+            max-width: 600px;
+            transition: filter 0.3s ease-in-out;
+        }
+
+        h1 {
+            text-shadow: 0 0 5px #00ff41;
+            margin-top: 0;
+        }
+
+        #message {
+            min-height: 50px;
+            margin-bottom: 1rem;
+        }
+
+        /* Styling for the interactive ASCII elements */
+        pre {
+            display: inline-block;
+            margin: 10px 15px;
+            padding: 10px;
+            border: 1px dashed #00ff41;
+            border-radius: 4px;
+            user-select: none; /* Prevents text selection on click */
+        }
+
+        .ingredient, #cookie-display {
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .ingredient:hover, #cookie-display:hover {
+            background-color: #00ff41;
+            color: #0d0d0d;
+        }
+
+        /* Classes to manage the state of elements */
+        .hidden {
+            display: none;
+        }
+
+        .collected {
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-style: solid;
+        }
+        .collected:hover {
+            background-color: transparent;
+            color: #00ff41;
+        }
+
+        /* Cookie Consent Banner Styling */
+        #cookie-consent-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #1a1a1a;
+            border-top: 2px solid #00ff41;
+            padding: 1.5rem;
+            box-sizing: border-box;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #cookie-consent-banner p {
+            margin: 0 0 1rem 0;
+            max-width: 800px;
+        }
+
+        .consent-buttons button {
+            background-color: transparent;
+            border: 2px solid #00ff41;
+            color: #00ff41;
+            padding: 10px 20px;
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            cursor: pointer;
+            margin: 0 10px;
+            border-radius: 4px;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .consent-buttons button:hover {
+            background-color: #00ff41;
+            color: #0d0d0d;
+        }
+        
+        #no-cookie-message {
+            border: 2px solid #00ff41;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 15px #00ff41;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h1>ASCII Cookie Creator</h1>
+        <div id="message">Loading state...</div>
+        
+        <div id="ingredients-container">
+            <pre id="butter" class="ingredient">
++--------+
+|        |
+| BUTTER |
+|        |
++--------+
+            </pre>
+            <pre id="flour" class="ingredient">
+ // \\
+|-----|
+|     |
+|FLOUR|
+|     |
+'-----'
+            </pre>
+            <pre id="milk" class="ingredient">
+   /|
++--+--+
+|     |
+|MILK |
+|     |
++-----+
+            </pre>
+            <pre id="chocolate" class="ingredient">
++--+--+--+
+| C| H| O|
++--+--+--+
+| C| O|  |
++--+--+--+
+            </pre>
+        </div>
+
+        <div id="cookie-container" class="hidden">
+            <pre id="cookie-display"></pre>
+        </div>
+    </div>
+
+    <div id="no-cookie-message" class="hidden">
+        <h2>No Cookies, No Cookie!</h2>
+        <p>You've chosen the path of privacy.</p>
+        <p>Unfortunately, our ASCII baker needs browser cookies to remember your ingredients.</p>
+        <pre>
+  __   _
+ (  )_( )_
+(_   _    _)
+  (_) (__)
+        </pre>
+        <p>Enjoy this ASCII pretzel instead!</p>
+    </div>
+
+    <div id="cookie-consent-banner" class="hidden">
+        <p>Can we use cookies to save your cookie's progress? This game is unplayable without them.</p>
+        <div class="consent-buttons">
+            <button id="consent-yes">Yes, use cookies</button>
+            <button id="consent-no">No, thank you</button>
+        </div>
+    </div>
+
+
+    <script>
+        // DOM Elements
+        const gameContainerEl = document.getElementById('game-container');
+        const messageEl = document.getElementById('message');
+        const ingredientsContainerEl = document.getElementById('ingredients-container');
+        const cookieContainerEl = document.getElementById('cookie-container');
+        const cookieDisplayEl = document.getElementById('cookie-display');
+        const consentBannerEl = document.getElementById('cookie-consent-banner');
+        const noCookieMessageEl = document.getElementById('no-cookie-message');
+        const consentYesBtn = document.getElementById('consent-yes');
+        const consentNoBtn = document.getElementById('consent-no');
+
+        const ingredients = {
+            butter: document.getElementById('butter'),
+            flour: document.getElementById('flour'),
+            milk: document.getElementById('milk'),
+            chocolate: document.getElementById('chocolate'),
+        };
+
+        // Game State
+        let state = {
+            ingredientsCollected: {
+                butter: false,
+                flour: false,
+                milk: false,
+                chocolate: false,
+            },
+            cookieExists: false,
+            cookieBitesLeft: 20,
+        };
+
+        // ASCII Art for the cookie
+        const cookieArt = {
+            full: ["   .--------.   ", "  / o   o  o \\  ", " /  o      o  \\ ", "| o   o   o   o|", " \\   o      o / ", "  \\ o   o  o /  ", "   '--------'   "],
+            bitten1: ["   .--------.   ", "  / o   o  o \\  ", " /  o      o  \\ ", "| o   o   o   o|", " \\   o      o / ", "  \\ o   o    /  ", "   '------'     "],
+            bitten2: ["   .--------.   ", "  / o   o  o \\  ", " /  o         \\ ", "| o   o   o    |", " \\   o         / ", "  \\ o      /  ", "   '----'       "],
+            bitten3: ["                ", "  / o   o       ", " /  o         \\ ", "| o            |", " \\   o         / ", "  \\        /    ", "   '--'         "],
+            crumbs: ["                ", "                ", "      o         ", "  o      .      ", "                ", "    .      o    ", "                "],
+        };
+
+        // --- Cookie Helper Functions ---
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        // --- Game Logic Functions ---
+        function saveState() {
+            // Only save if consent has been given
+            if (getCookie('cookieConsent') === 'true') {
+                setCookie('asciiCookieGameState', JSON.stringify(state), 7);
+            }
+        }
+
+        function loadState() {
+            const savedState = getCookie('asciiCookieGameState');
+            if (savedState) {
+                state = JSON.parse(savedState);
+            }
+        }
+        
+        function resetGame() {
+            state = {
+                ingredientsCollected: { butter: false, flour: false, milk: false, chocolate: false },
+                cookieExists: false,
+                cookieBitesLeft: 20,
+            };
+            saveState();
+            render();
+        }
+
+        function render() {
+            if (state.cookieExists) {
+                ingredientsContainerEl.classList.add('hidden');
+                cookieContainerEl.classList.remove('hidden');
+                renderCookie();
+            } else {
+                ingredientsContainerEl.classList.remove('hidden');
+                cookieContainerEl.classList.add('hidden');
+                renderIngredients();
+            }
+        }
+
+        function renderIngredients() {
+            let collectedCount = 0;
+            for (const ingredient in state.ingredientsCollected) {
+                if (state.ingredientsCollected[ingredient]) {
+                    ingredients[ingredient].classList.add('collected');
+                    collectedCount++;
+                } else {
+                    ingredients[ingredient].classList.remove('collected');
+                }
+            }
+            
+            if (collectedCount === 4) {
+                 messageEl.textContent = "All ingredients gathered! A cookie has been created!";
+                 setTimeout(() => {
+                    state.cookieExists = true;
+                    saveState();
+                    render();
+                 }, 1500);
+            } else {
+                messageEl.textContent = `Click on the ingredients to create a cookie. (${collectedCount}/4)`;
+            }
+        }
+        
+        function renderCookie() {
+            let art;
+            if (state.cookieBitesLeft > 15) art = cookieArt.full;
+            else if (state.cookieBitesLeft > 10) art = cookieArt.bitten1;
+            else if (state.cookieBitesLeft > 5) art = cookieArt.bitten2;
+            else if (state.cookieBitesLeft > 0) art = cookieArt.bitten3;
+            else art = cookieArt.crumbs;
+            cookieDisplayEl.textContent = art.join('\n');
+            
+            if (state.cookieBitesLeft > 0) {
+                messageEl.textContent = `Click the cookie to eat it. Bites left: ${state.cookieBitesLeft}`;
+            } else {
+                messageEl.textContent = "All gone! Let's make another one.";
+                setTimeout(resetGame, 2000);
+            }
+        }
+
+        // --- Event Handlers ---
+        function handleIngredientClick(e) {
+            const ingredientName = e.currentTarget.id;
+            if (!state.ingredientsCollected[ingredientName]) {
+                state.ingredientsCollected[ingredientName] = true;
+                saveState();
+                render();
+            }
+        }
+
+        function handleCookieClick() {
+            if (state.cookieBitesLeft > 0) {
+                state.cookieBitesLeft--;
+                saveState();
+                render();
+            }
+        }
+
+        // --- Game Initialization ---
+        function initializeGame() {
+            gameContainerEl.classList.remove('hidden');
+            noCookieMessageEl.classList.add('hidden');
+            
+            for (const key in ingredients) {
+                ingredients[key].addEventListener('click', handleIngredientClick);
+            }
+            cookieDisplayEl.addEventListener('click', handleCookieClick);
+            
+            loadState();
+            render();
+        }
+        
+        function handleConsent() {
+            const consent = getCookie('cookieConsent');
+            if (consent === 'true') {
+                initializeGame();
+            } else if (consent === 'false') {
+                gameContainerEl.classList.add('hidden');
+                noCookieMessageEl.classList.remove('hidden');
+            } else {
+                gameContainerEl.classList.add('hidden');
+                consentBannerEl.classList.remove('hidden');
+            }
+        }
+
+        consentYesBtn.addEventListener('click', () => {
+            setCookie('cookieConsent', 'true', 365);
+            consentBannerEl.classList.add('hidden'); // Explicitly hide banner immediately
+            initializeGame();
+        });
+
+        consentNoBtn.addEventListener('click', () => {
+            setCookie('cookieConsent', 'false', 365);
+            consentBannerEl.classList.add('hidden');
+            gameContainerEl.classList.add('hidden');
+            noCookieMessageEl.classList.remove('hidden');
+        });
+
+        // Load the game state and render the UI when the page loads
+        document.addEventListener('DOMContentLoaded', handleConsent);
+
+    </script>
+</body>
+</html>
