@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Risk & Reward - An Insurtech Game</title>
+    <!-- Import Chart.js for graphing -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Basic styling for the page */
         body {
-            background-color: #f0f4f8; /* A lighter, more corporate feel */
+            background-color: #f0f4f8;
             color: #333;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
@@ -17,6 +19,14 @@
             margin: 0;
             height: 100vh;
             overflow: hidden;
+        }
+
+        /* Main container for game and chart */
+        #main-content {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 30px;
         }
 
         /* The main game screen container */
@@ -34,8 +44,18 @@
             line-height: 1.2;
             white-space: pre;
             text-align: center;
-            color: #0077c8; /* Qover's blue color */
+            color: #0077c8;
             letter-spacing: 2px;
+        }
+
+        /* Container for the chart */
+        #chart-container {
+            border: 4px solid #bdd5ea;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 500px; /* Fixed width for the chart */
         }
 
         /* Styling for the game info panel */
@@ -44,106 +64,57 @@
             font-size: 20px;
             text-align: center;
             display: flex;
-            gap: 40px;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
         }
 
         /* --- Modal Styles --- */
         #rules-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
+            display: flex; justify-content: center; align-items: center; z-index: 20;
         }
-
         #modal-content {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: left;
-            max-width: 500px;
-            width: 90%;
+            background: #fff; padding: 30px; border-radius: 10px;
+            text-align: left; max-width: 550px; width: 90%;
         }
-        
-        #modal-content h2 {
-            color: #0077c8;
-            text-align: center;
-        }
-
-        #modal-content ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        #modal-content li {
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-
-        #toc-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-
+        #modal-content h2 { color: #0077c8; text-align: center; }
+        #modal-content ul { list-style: none; padding: 0; }
+        #modal-content li { margin-bottom: 15px; font-size: 16px; }
+        #toc-container { margin-top: 20px; text-align: center; }
         #start-game-btn {
-            background-color: #0077c8;
-            color: #fff;
-            border: none;
-            padding: 12px 25px;
-            font-size: 18px;
-            font-family: 'Courier New', Courier, monospace;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 15px;
-            transition: background-color 0.3s;
-            width: 100%;
+            background-color: #0077c8; color: #fff; border: none; padding: 12px 25px;
+            font-size: 18px; font-family: 'Courier New', Courier, monospace; cursor: pointer;
+            border-radius: 5px; margin-top: 15px; transition: background-color 0.3s; width: 100%;
         }
-
-        #start-game-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
+        #start-game-btn:disabled { background-color: #ccc; cursor: not-allowed; }
 
         /* Styling for the game over message */
         #game-over {
-            display: none; /* Hidden by default */
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 30px;
-            border-radius: 10px;
-            border: 2px solid #ff4136;
-            text-align: center;
-            z-index: 10;
+            display: none; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px; border-radius: 10px; border: 2px solid #ff4136;
+            text-align: center; z-index: 10;
         }
-
-        #game-over h1 {
-            color: #ff4136;
-            margin: 0 0 10px 0;
-        }
-
+        #game-over h1 { color: #ff4136; margin: 0 0 10px 0; }
         #game-over button {
-            background-color: #0077c8;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-family: 'Courier New', Courier, monospace;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 15px;
-            transition: background-color 0.3s;
+            background-color: #0077c8; color: #fff; border: none; padding: 10px 20px;
+            font-size: 16px; font-family: 'Courier New', Courier, monospace; cursor: pointer;
+            border-radius: 5px; margin-top: 15px; transition: background-color 0.3s;
         }
-        #game-over button:hover {
-            background-color: #005a9a;
+        #game-over button:hover { background-color: #005a9a; }
+
+        /* Responsive layout for smaller screens */
+        @media (max-width: 1024px) {
+            #main-content {
+                flex-direction: column;
+                align-items: center;
+            }
+            #chart-container {
+                width: 90%;
+                margin-top: 20px;
+            }
         }
     </style>
 </head>
@@ -157,6 +128,8 @@
                 <li><strong>🛡️ YOU ARE THE SHIELD:</strong> Your goal is to grow your capital.</li>
                 <li><strong>💰 COLLECT PREMIUMS:</strong> Catch these to add €150 to your capital.</li>
                 <li><strong>🔥 AVOID RISKS:</strong> Hitting these costs you €500 in claims.</li>
+                <li><strong>📈 POLICY RENEWALS:</strong> Every 15s, you earn €50 per policy you hold!</li>
+                <li><strong>⚠️ MORE POLICIES, MORE RISK:</strong> The more policies you have, the higher the chance of claims.</li>
                 <li><strong>BANKRUPTCY:</strong> If your capital hits €0, the game is over!</li>
             </ul>
             <div id="toc-container">
@@ -168,15 +141,20 @@
     </div>
 
     <h1 style="color: #0077c8;">Risk & Reward</h1>
-    <div id="game-container">
-        <pre id="game-screen"></pre>
+    <div id="main-content">
+        <div>
+            <div id="game-container">
+                <pre id="game-screen"></pre>
+            </div>
+            <div id="info-panel">
+                 <p>Capital: €<span id="capital">1000</span> | Policies: <span id="policies">0</span> | Next Renewal: <span id="renewal-timer">15</span>s</p>
+                 <p>Use Arrow Keys (← →) to Move</p>
+            </div>
+        </div>
+        <div id="chart-container">
+            <canvas id="portfolioChart"></canvas>
+        </div>
     </div>
-
-    <div id="info-panel">
-        <p>Capital: €<span id="capital">1000</span></p>
-        <p>Policies: <span id="policies">0</span></p>
-    </div>
-     <p>Use Arrow Keys (← →) to Move</p>
 
     <div id="game-over">
         <h1>BANKRUPT</h1>
@@ -189,104 +167,89 @@
         const gameScreen = document.getElementById('game-screen');
         const capitalElement = document.getElementById('capital');
         const policiesElement = document.getElementById('policies');
+        const renewalTimerElement = document.getElementById('renewal-timer');
         const gameOverElement = document.getElementById('game-over');
         const finalPoliciesElement = document.getElementById('final-policies');
         const rulesModal = document.getElementById('rules-modal');
         const tocCheck = document.getElementById('toc-check');
         const startGameBtn = document.getElementById('start-game-btn');
 
-
         // --- Game Configuration ---
-        const width = 25;
-        const height = 20;
+        const width = 25; const height = 20;
 
         // --- Game State ---
-        let player = {
-            x: Math.floor(width / 2),
-            y: height - 2,
-            char: '🛡️' // The insurance shield
+        let player = { x: Math.floor(width / 2), y: height - 2, char: '🛡️' };
+        let gameItems = []; let capital = 1000; let policies = 0;
+        let gameSpeed = 300; let gameInterval; let renewalInterval;
+        let renewalTimer = 15; let gameOver = false;
+
+        // --- Chart State ---
+        let portfolioChart;
+        let chartData = {
+            labels: [],
+            datasets: [
+                { label: 'Income from Renewals', data: [], backgroundColor: 'rgba(54, 162, 235, 0.5)', borderColor: 'rgba(54, 162, 235, 1)', fill: true, tension: 0.1 },
+                { label: 'Income from New Policies', data: [], backgroundColor: 'rgba(75, 192, 192, 0.5)', borderColor: 'rgba(75, 192, 192, 1)', fill: true, tension: 0.1 },
+                { label: 'Total Capital', data: [], backgroundColor: 'rgba(255, 206, 86, 0.2)', borderColor: 'rgba(255, 206, 86, 1)', type: 'line', fill: false, tension: 0.1 }
+            ]
         };
-        let gameItems = []; // Will hold premiums and risks
-        let capital = 1000;
-        let policies = 0;
-        let gameSpeed = 300;
-        let gameInterval;
-        let gameOver = false;
+        let totalPremiumIncome = 0;
+        let totalRenewalIncome = 0;
+        let timeStep = 0;
 
         // --- Game Logic ---
-
-        /**
-         * Generates a new line of game items (premiums or risks).
-         */
         function generateGameItems() {
-            // Add a premium payment (good)
             if (Math.random() < 0.1) {
                 const itemPos = Math.floor(Math.random() * (width - 2)) + 1;
                 gameItems.push({ x: itemPos, y: 0, char: '💰', type: 'premium' });
             }
-
-            // Add a risk event (bad)
-            if (Math.random() < 0.07) {
+            const baseRiskChance = 0.07;
+            const riskIncreasePerPolicy = 0.002;
+            let currentRiskChance = Math.min(0.4, baseRiskChance + (policies * riskIncreasePerPolicy));
+            if (Math.random() < currentRiskChance) {
                 const itemPos = Math.floor(Math.random() * (width - 2)) + 1;
-                // Ensure it doesn't spawn on a premium
                 if (!gameItems.some(item => item.x === itemPos && item.y === 0)) {
                     gameItems.push({ x: itemPos, y: 0, char: '🔥', type: 'risk' });
                 }
             }
         }
 
-        /**
-         * Initializes the game state.
-         */
         function init() {
-            // Draw the initial empty board before starting the loop
             draw();
+            initChart();
             gameInterval = setInterval(gameLoop, gameSpeed);
+            renewalInterval = setInterval(updateRenewalTimer, 1000);
         }
 
-        /**
-         * Draws the entire game screen.
-         */
+        function updateRenewalTimer() {
+            renewalTimer--;
+            if (renewalTimer <= 0) {
+                const renewalBonus = policies * 50;
+                capital += renewalBonus;
+                totalRenewalIncome += renewalBonus;
+                capitalElement.textContent = capital;
+                renewalTimer = 15;
+                updateChartData(); // Update chart on renewal
+            }
+            renewalTimerElement.textContent = renewalTimer;
+        }
+
         function draw() {
-            // Create an empty grid
             let screenBuffer = Array.from({ length: height }, () => Array(width).fill(' '));
-
-            // Draw player
             screenBuffer[player.y][player.x] = player.char;
-
-            // Draw game items
-            gameItems.forEach(item => {
-                if (item.y >= 0 && item.y < height) {
-                    screenBuffer[item.y][item.x] = item.char;
-                }
-            });
-
-            // Convert buffer to string and display
+            gameItems.forEach(item => { if (item.y >= 0 && item.y < height) screenBuffer[item.y][item.x] = item.char; });
             gameScreen.textContent = screenBuffer.map(row => row.join('')).join('\n');
         }
 
-        /**
-         * Updates the game state for the next frame.
-         */
         function update() {
             if (gameOver) return;
-            
-            // Generate new items at the top
             generateGameItems();
-
-            // Move all items down
-            gameItems.forEach(item => {
-                item.y++;
-            });
-
-            // Check for collisions with the player
+            gameItems.forEach(item => { item.y++; });
             let newItems = [];
             for (const item of gameItems) {
                 if (item.x === player.x && item.y === player.y) {
-                    // Collision detected
                     if (item.type === 'premium') {
-                        capital += 150;
-                        policies++;
+                        capital += 150; policies++; totalPremiumIncome += 150;
                     } else if (item.type === 'risk') {
                         capital -= 500;
                     }
@@ -294,95 +257,81 @@
                     newItems.push(item);
                 }
             }
-            gameItems = newItems;
-
-
-            // Remove items that are off-screen
-            gameItems = gameItems.filter(item => item.y < height);
-
-            // Update UI
+            gameItems = newItems.filter(item => item.y < height);
             capitalElement.textContent = capital;
             policiesElement.textContent = policies;
-
-            // Check for game over condition
-            if (capital <= 0) {
-                endGame();
-            }
-        }
-        
-        /**
-         * The main game loop that calls update and draw.
-         */
-        function gameLoop() {
-            update();
-            draw();
+            if (capital <= 0) endGame();
         }
 
-        /**
-         * Handles player input from the keyboard.
-         */
+        function gameLoop() { update(); draw(); }
+
         function handleKeyPress(e) {
             if (gameOver) return;
-
             switch (e.key) {
-                case 'ArrowLeft':
-                    if (player.x > 0) player.x--;
-                    break;
-                case 'ArrowRight':
-                    if (player.x < width - 1) player.x++;
-                    break;
+                case 'ArrowLeft': if (player.x > 0) player.x--; break;
+                case 'ArrowRight': if (player.x < width - 1) player.x++; break;
             }
-            draw(); // Redraw immediately for responsiveness
+            draw();
         }
 
-        /**
-         * Ends the game.
-         */
         function endGame() {
             gameOver = true;
-            clearInterval(gameInterval);
-            player.char = '💔';
-            draw();
-            
+            clearInterval(gameInterval); clearInterval(renewalInterval);
+            player.char = '💔'; draw();
             finalPoliciesElement.textContent = policies;
             gameOverElement.style.display = 'block';
         }
 
-        /**
-         * Restarts the game.
-         */
         function restartGame() {
             player = { x: Math.floor(width / 2), y: height - 2, char: '🛡️' };
-            gameItems = [];
-            capital = 1000;
-            policies = 0;
-            gameOver = false;
+            gameItems = []; capital = 1000; policies = 0; renewalTimer = 15;
+            gameOver = false; totalPremiumIncome = 0; totalRenewalIncome = 0; timeStep = 0;
             
             gameOverElement.style.display = 'none';
             capitalElement.textContent = capital;
             policiesElement.textContent = policies;
+            renewalTimerElement.textContent = renewalTimer;
+
+            // Reset chart
+            chartData.labels = [];
+            chartData.datasets.forEach(dataset => dataset.data = []);
+            portfolioChart.destroy();
 
             init();
         }
-
-        // --- Event Listeners ---
-        document.addEventListener('keydown', handleKeyPress);
-
-        // --- Modal and Game Start Logic ---
-        startGameBtn.disabled = true; // Button is disabled initially
-
-        tocCheck.addEventListener('change', () => {
-            // Enable the button only if the checkbox is checked
-            startGameBtn.disabled = !tocCheck.checked;
-        });
-
-        startGameBtn.addEventListener('click', () => {
-            if (tocCheck.checked) {
-                rulesModal.style.display = 'none';
-                init(); // Start the game
-            }
-        });
         
+        // --- Chart Functions ---
+        function initChart() {
+            const ctx = document.getElementById('portfolioChart').getContext('2d');
+            portfolioChart = new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    plugins: { title: { display: true, text: 'Portfolio Performance (€)' } },
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true, beginAtZero: true }
+                    }
+                }
+            });
+            updateChartData(); // Initial data point
+        }
+
+        function updateChartData() {
+            timeStep++;
+            chartData.labels.push(`Cycle ${timeStep}`);
+            chartData.datasets[0].data.push(totalRenewalIncome);
+            chartData.datasets[1].data.push(totalPremiumIncome);
+            chartData.datasets[2].data.push(capital);
+            portfolioChart.update();
+        }
+
+        // --- Event Listeners & Initializer ---
+        document.addEventListener('keydown', handleKeyPress);
+        startGameBtn.disabled = true;
+        tocCheck.addEventListener('change', () => { startGameBtn.disabled = !tocCheck.checked; });
+        startGameBtn.addEventListener('click', () => { if (tocCheck.checked) { rulesModal.style.display = 'none'; init(); } });
     </script>
 </body>
 </html>
