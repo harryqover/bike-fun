@@ -133,7 +133,7 @@
         const BOARD_HEIGHT = 30;
         const INITIAL_BEES = 5;
         const INITIAL_FLOWERS = 8;
-        const INITIAL_HORNETS = 1;
+        const INITIAL_HORNETS = 0; // Changed from 1 to 0
         const BEEHIVE_X = Math.floor(BOARD_WIDTH / 2);
         const BEEHIVE_Y = Math.floor(BOARD_HEIGHT / 2);
         const SCENT_DECAY = 0.98;
@@ -365,7 +365,7 @@
             flowers.forEach(flower => displayGrid[flower.y][flower.x] = FLOWER_CHAR);
             eggs.forEach(egg => displayGrid[egg.y][egg.x] = EGG_CHAR);
             
-            // Draw the beehive (#) instead of the queen (Q)
+            // Draw the beehive (#)
             displayGrid[BEEHIVE_Y][BEEHIVE_X] = BEEHIVE_CHAR;
 
             // Draw mobile entities

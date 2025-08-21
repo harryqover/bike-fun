@@ -443,7 +443,6 @@
 
         // --- Game Initialization ---
         function initializeGame() {
-            // This function now ONLY sets up the game, it doesn't show it yet.
             for (const key in ingredients) {
                 ingredients[key].addEventListener('click', handleIngredientClick);
             }
@@ -453,14 +452,22 @@
         function handleConsent() {
             const consent = getCookie('cookieConsent');
             if (consent === 'true') {
-                // If consent was already given, load state and show the game
                 loadState();
+
+                // BUG FIX: Correct the "stuck modal" state on page load.
+                // This happens if the page was closed after collecting all ingredients
+                // but before the next cookie was baked, creating an invalid startup state.
+                const allIngredientsCollected = Object.values(state.ingredientsCollected).every(v => v === true);
+                if (allIngredientsCollected && !state.cookieExists) {
+                    state.ingredientsCollected = { ...defaultState.ingredientsCollected };
+                    saveState(); 
+                }
+
                 gameContainerEl.classList.remove('hidden');
                 render();
             } else if (consent === 'false') {
                 noCookieMessageEl.classList.remove('hidden');
             } else {
-                // If no consent decision has been made, show the banner
                 consentBannerEl.classList.remove('hidden');
             }
         }
@@ -468,7 +475,6 @@
         consentYesBtn.addEventListener('click', () => {
             setCookie('cookieConsent', 'true', 365);
             consentBannerEl.classList.add('hidden');
-            // NOW we load the state and show the game, AFTER consent is given.
             loadState();
             gameContainerEl.classList.remove('hidden');
             render();
