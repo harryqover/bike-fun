@@ -3,59 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASCII Bee Farm</title>
+    <title>Modern Bee Farm</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'VT323', monospace;
-            background-color: #2E1A00; /* Dark brown background */
-            color: #FFD700; /* Golden yellow text */
-            overscroll-behavior: none;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f9ff; /* Light sky blue */
+            color: #1e293b; /* Slate gray */
         }
         #game-board {
-            white-space: pre;
-            line-height: 1;
-            letter-spacing: 0;
-            user-select: none;
-            cursor: default;
-            image-rendering: pixelated;
+            display: grid;
+            grid-template-columns: repeat(40, 1fr);
+            grid-template-rows: repeat(20, 1fr);
+            width: 100%;
+            height: 60vh;
+            background-color: #bef264; /* Light green */
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            position: relative;
         }
-        .ascii-button {
-            border: 2px solid #FFD700;
-            padding: 8px 16px;
-            background-color: transparent;
-            color: #FFD700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        .game-cell {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease-in-out;
+        }
+        .bee { animation: buzz 0.2s infinite alternate; }
+        @keyframes buzz {
+            from { transform: rotate(-5deg) scale(1.1); }
+            to { transform: rotate(5deg) scale(1.1); }
+        }
+        .modern-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
             transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-        .ascii-button:hover {
-            background-color: #FFD700;
-            color: #2E1A00;
-        }
-        .ascii-button:active {
-            transform: translateY(2px);
+        .modern-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
         .honey-button {
-            border-color: #FFA500; /* Orange border for special button */
-            color: #FFA500;
-        }
-        .honey-button:hover {
-            background-color: #FFA500;
-            color: #2E1A00;
-        }
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: #5a3a00; }
-        ::-webkit-scrollbar-thumb { background: #FFD700; border: 2px solid #2E1A00; }
-        ::-webkit-scrollbar-thumb:hover { background: #ffc400; }
-        #info-section ul li {
-            margin-left: 1rem;
-            list-style-type: none;
-        }
-        #info-section ul li::before {
-            content: '>';
-            margin-right: 0.5rem;
+            background-color: #f59e0b; /* Amber */
+            color: white;
         }
     </style>
 </head>
@@ -63,104 +57,61 @@
 
     <!-- Header Section -->
     <div class="text-center mb-4">
-        <h1 class="text-4xl md:text-5xl">A S C I I . B E E . F A R M</h1>
-        <p class="text-lg">A sweet simulation</p>
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-800">Modern Bee Farm</h1>
+        <p class="text-lg text-slate-600">A sweet simulation</p>
     </div>
 
     <!-- Game Board Container -->
-    <div id="game-container" class="border-4 border-dashed border-yellow-500 p-2 mb-4 w-full max-w-4xl overflow-auto">
-        <pre id="game-board" class="text-lg"></pre>
-    </div>
+    <div id="game-board" class="mb-4 w-full max-w-4xl"></div>
 
     <!-- Controls Section -->
     <div class="flex flex-wrap items-center justify-center gap-4 mb-4">
-        <button id="add-flower-btn" class="ascii-button">[+] Add Flower</button>
-        <button id="add-hornet-btn" class="ascii-button">[+] Add Hornet</button>
-        <button id="collect-honey-btn" class="ascii-button honey-button">[+] Collect Honey</button>
-        <button id="reset-btn" class="ascii-button">[x] Reset</button>
+        <button id="add-bee-btn" class="modern-button bg-yellow-400 text-slate-800">[+] Add Bee</button>
+        <button id="add-flower-btn" class="modern-button bg-pink-400 text-white">[+] Add Flower</button>
+        <button id="add-hornet-btn" class="modern-button bg-red-500 text-white">[+] Add Hornet</button>
+        <button id="collect-honey-btn" class="modern-button honey-button">[+] Collect Honey</button>
+        <button id="reset-btn" class="modern-button bg-slate-400 text-white">[x] Reset</button>
     </div>
     
     <!-- Stats Section -->
-    <div class="flex flex-wrap items-center justify-center gap-4 mb-8 text-sm md:text-base">
-         <span>Bees: <span id="bee-count">0</span></span>
-         <span>|</span>
-         <span>Flowers: <span id="flower-count">0</span></span>
-         <span>|</span>
-         <span>Hornets: <span id="hornet-count">0</span></span>
-         <span>|</span>
-         <span class="text-orange-400">Honey in Hive: <span id="hive-honey-count">0</span></span>
-         <span>|</span>
-         <span class="text-orange-400">Total Honey: <span id="total-honey-count">0</span></span>
+    <div class="flex flex-wrap items-center justify-center gap-4 mb-8 text-sm md:text-base bg-white p-4 rounded-lg shadow-md">
+         <span>🐝 Bees: <span id="bee-count" class="font-bold">0</span></span>
+         <span class="text-slate-300">|</span>
+         <span>🌸 Flowers: <span id="flower-count" class="font-bold">0</span></span>
+         <span class="text-slate-300">|</span>
+         <span>👹 Hornets: <span id="hornet-count" class="font-bold">0</span></span>
+         <span class="text-slate-300">|</span>
+         <span class="text-amber-600">🍯 Honey in Hive: <span id="hive-honey-count" class="font-bold">0</span></span>
+         <span class="text-slate-300">|</span>
+         <span class="text-amber-600">🏆 Total Honey: <span id="total-honey-count" class="font-bold">0</span></span>
     </div>
-
-
-    <!-- Information Section -->
-    <div id="info-section" class="w-full max-w-4xl border-2 border-yellow-500 p-4 md:p-6">
-        <h2 class="text-3xl mb-2 text-center">Welcome to the ASCII Bee Farm!</h2>
-        <p class="mb-4 text-center">Watch your bees work together to find flowers, produce honey, and protect their Queen from hornets.</p>
-        
-        <div class="grid md:grid-cols-2 gap-6">
-            <div>
-                <h3 class="text-2xl mb-2">The Cast of Characters</h3>
-                <ul>
-                    <li><span class="font-bold text-xl mr-2">B</span> Bee: A worker bee searching for nectar.</li>
-                    <li><span class="font-bold text-xl mr-2">8</span> Bee with Nectar: Carrying nectar to the hive.</li>
-                    <li><span class="font-bold text-xl mr-2">Q</span> The Queen Bee: Stays in the hive and lays eggs.</li>
-                    <li><span class="font-bold text-xl mr-2">o</span> Egg: Will hatch into a new bee.</li>
-                    <li><span class="font-bold text-xl mr-2">#</span> The Beehive: Center of the colony and honey storage.</li>
-                    <li><span class="font-bold text-xl mr-2">*</span> Flower: Source of nectar for your bees.</li>
-                    <li><span class="font-bold text-xl mr-2">H</span> Hornet: A dangerous predator!</li>
-                    <li><span class="font-bold text-xl mr-2">·:∴</span> Scent Trails: Faint trails bees use to find paths.</li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-2xl mb-2">How It Works</h3>
-                <ol class="list-decimal list-inside">
-                    <li class="mb-2"><strong>Foraging:</strong> Bees wander to find flowers (`*`) and collect nectar.</li>
-                    <li class="mb-2"><strong>Honey Production:</strong> When a bee (`8`) returns to the hive (`#`), it adds 1 unit of honey.</li>
-                    <li class="mb-2"><strong>Honey Collection:</strong> Click the "Collect Honey" button to add the hive's honey to your total score!</li>
-                    <li class="mb-2"><strong>Colony Growth:</strong> The Queen (`Q`) lays eggs that hatch into new workers.</li>
-                    <li class="mb-2"><strong>Survival:</strong> Hornets (`H`) will hunt your bees. Be careful!</li>
-                </ol>
-            </div>
-        </div>
-    </div>
-
 
     <script>
         // --- Game Configuration ---
-        const BOARD_WIDTH = 80;
-        const BOARD_HEIGHT = 30;
+        const BOARD_WIDTH = 40;
+        const BOARD_HEIGHT = 20;
         const INITIAL_BEES = 5;
         const INITIAL_FLOWERS = 8;
-        const INITIAL_HORNETS = 0; // Changed from 1 to 0
+        const INITIAL_HORNETS = 0;
         const BEEHIVE_X = Math.floor(BOARD_WIDTH / 2);
         const BEEHIVE_Y = Math.floor(BOARD_HEIGHT / 2);
-        const SCENT_DECAY = 0.98;
-        const MAX_SCENT = 100;
-        const EGG_HATCH_TIME = 200; // in game ticks (20 seconds)
-        const QUEEN_LAY_RATE = 0.02; // 2% chance per tick to lay an egg
+        const EGG_HATCH_TIME = 200;
+        const QUEEN_LAY_RATE = 0.02;
 
-        // --- ASCII Characters ---
-        const BEE_CHAR = 'B';
-        const BEE_WITH_NECTAR_CHAR = '8';
-        const BEEHIVE_CHAR = '#';
-        const QUEEN_CHAR = 'Q';
-        const EGG_CHAR = 'o';
-        const FLOWER_CHAR = '*';
-        const HORNET_CHAR = 'H';
-        const EMPTY_CHAR = ' ';
-        const SCENT_CHARS = [' ', '·', ':', '∴'];
+        // --- Emoji Characters ---
+        const BEE_EMOJI = '🐝';
+        const BEE_WITH_NECTAR_EMOJI = '🐝'; // Same emoji, but we'll track state
+        const BEEHIVE_EMOJI = '🛖';
+        const EGG_EMOJI = '🥚';
+        const FLOWER_EMOJI = '🌸';
+        const HORNET_EMOJI = '👹';
 
         // --- Game State ---
-        let gameBoard = [];
         let bees = [];
         let flowers = [];
         let queen = {};
         let eggs = [];
         let hornets = [];
-        let toHomeScent = [];
-        let toFlowerScent = [];
         let hiveHoney = 0;
         let totalHoney = 0;
         let gameLoopInterval;
@@ -172,12 +123,11 @@
         const hornetCountEl = document.getElementById('hornet-count');
         const hiveHoneyEl = document.getElementById('hive-honey-count');
         const totalHoneyEl = document.getElementById('total-honey-count');
+        const addBeeBtn = document.getElementById('add-bee-btn');
         const addFlowerBtn = document.getElementById('add-flower-btn');
         const addHornetBtn = document.getElementById('add-hornet-btn');
         const collectHoneyBtn = document.getElementById('collect-honey-btn');
         const resetBtn = document.getElementById('reset-btn');
-
-        // --- Game Logic ---
 
         function init() {
             bees = [];
@@ -187,21 +137,15 @@
             hiveHoney = 0;
             totalHoney = 0;
 
-            gameBoard = createEmptyGrid(BOARD_WIDTH, BOARD_HEIGHT, EMPTY_CHAR);
-            toHomeScent = createEmptyGrid(BOARD_WIDTH, BOARD_HEIGHT, 0);
-            toFlowerScent = createEmptyGrid(BOARD_WIDTH, BOARD_HEIGHT, 0);
-            
-            gameBoard[BEEHIVE_Y][BEEHIVE_X] = BEEHIVE_CHAR;
             queen = { x: BEEHIVE_X, y: BEEHIVE_Y };
 
             for (let i = 0; i < INITIAL_BEES; i++) addBee();
             for (let i = 0; i < INITIAL_FLOWERS; i++) addFlower();
-            for (let i = 0; i < INITIAL_HORNETS; i++) addHornet();
-
+            
             updateCounters();
             
             if (gameLoopInterval) clearInterval(gameLoopInterval);
-            gameLoopInterval = setInterval(gameLoop, 100);
+            gameLoopInterval = setInterval(gameLoop, 150);
         }
 
         function gameLoop() {
@@ -209,11 +153,8 @@
             updateEggs();
             updateBees();
             updateHornets();
-            decayScent();
             render();
         }
-
-        // --- Update Functions ---
 
         function updateQueen() {
             if (Math.random() < QUEEN_LAY_RATE) {
@@ -223,7 +164,7 @@
                         if (dx === 0 && dy === 0) continue;
                         const newX = queen.x + dx;
                         const newY = queen.y + dy;
-                        if (isPositionFree(newX, newY, true)) {
+                        if (isPositionFree(newX, newY)) {
                             eggs.push({ x: newX, y: newY, hatchTimer: EGG_HATCH_TIME });
                             placed = true;
                         }
@@ -242,24 +183,23 @@
         function updateBees() {
             bees.forEach(bee => {
                 if (bee.hasNectar) {
-                    layScent(toFlowerScent, bee.x, bee.y);
-                    moveTowardsTarget(bee, BEEHIVE_X, BEEHIVE_Y, toHomeScent);
+                    moveTowards(bee, BEEHIVE_X, BEEHIVE_Y);
                     if (bee.x === BEEHIVE_X && bee.y === BEEHIVE_Y) {
                         bee.hasNectar = false;
                         hiveHoney++;
                         updateCounters();
-                        bee.dx *= -1;
-                        bee.dy *= -1;
                     }
                 } else {
-                    layScent(toHomeScent, bee.x, bee.y);
-                    moveTowardsTarget(bee, null, null, toFlowerScent);
-                    
-                    if (gameBoard[bee.y][bee.x] === FLOWER_CHAR) {
-                        bee.hasNectar = true;
-                        gameBoard[bee.y][bee.x] = EMPTY_CHAR;
-                        flowers = flowers.filter(f => f.x !== bee.x || f.y !== bee.y);
-                        updateCounters();
+                    const closestFlower = findClosest(bee, flowers);
+                    if (closestFlower) {
+                        moveTowards(bee, closestFlower.x, closestFlower.y);
+                        if (bee.x === closestFlower.x && bee.y === closestFlower.y) {
+                            bee.hasNectar = true;
+                            flowers = flowers.filter(f => f !== closestFlower);
+                            updateCounters();
+                        }
+                    } else {
+                        wander(bee);
                     }
                 }
             });
@@ -267,118 +207,68 @@
 
         function updateHornets() {
             hornets.forEach(hornet => {
-                wander(hornet);
-                const beeIndex = bees.findIndex(bee => bee.x === hornet.x && bee.y === hornet.y);
-                if (beeIndex !== -1) {
-                    bees.splice(beeIndex, 1);
-                    updateCounters();
+                const closestBee = findClosest(hornet, bees);
+                if (closestBee) {
+                    moveTowards(hornet, closestBee.x, closestBee.y);
+                    if (hornet.x === closestBee.x && hornet.y === closestBee.y) {
+                        bees = bees.filter(b => b !== closestBee);
+                        updateCounters();
+                    }
+                } else {
+                    wander(hornet);
                 }
             });
         }
         
-        function collectHoney() {
-            totalHoney += hiveHoney;
-            hiveHoney = 0;
-            updateCounters();
+        function render() {
+            gameBoardEl.innerHTML = ''; // Clear board
+            const allEntities = [
+                ...flowers.map(f => ({ ...f, emoji: FLOWER_EMOJI })),
+                ...eggs.map(e => ({ ...e, emoji: EGG_EMOJI })),
+                { ...queen, emoji: BEEHIVE_EMOJI },
+                ...bees.map(b => ({ ...b, emoji: b.hasNectar ? BEE_WITH_NECTAR_EMOJI : BEE_EMOJI, class: 'bee' })),
+                ...hornets.map(h => ({ ...h, emoji: HORNET_EMOJI, class: 'bee' })),
+            ];
+
+            allEntities.forEach(entity => {
+                const cell = document.createElement('div');
+                cell.className = 'game-cell';
+                if (entity.class) cell.classList.add(entity.class);
+                cell.style.gridColumnStart = entity.x + 1;
+                cell.style.gridRowStart = entity.y + 1;
+                cell.textContent = entity.emoji;
+                if(entity.hasNectar) cell.style.backgroundColor = 'rgba(255, 223, 186, 0.5)'; // Nectar glow
+                gameBoardEl.appendChild(cell);
+            });
         }
 
-        // --- Movement and AI ---
-
-        function moveTowardsTarget(bee, targetX, targetY, scentGrid) {
-            let bestX = bee.x;
-            let bestY = bee.y;
-            let maxScent = -1;
-
-            for (let dy = -1; dy <= 1; dy++) {
-                for (let dx = -1; dx <= 1; dx++) {
-                    if (dx === 0 && dy === 0) continue;
-                    const newX = bee.x + dx;
-                    const newY = bee.y + dy;
-                    if (isValidPosition(newX, newY)) {
-                        if (scentGrid[newY][newX] > maxScent) {
-                            maxScent = scentGrid[newY][newX];
-                            bestX = newX;
-                            bestY = newY;
-                        }
-                    }
-                }
-            }
-
-            if (maxScent > 0) {
-                bee.x = bestX;
-                bee.y = bestY;
-            } else {
-                wander(bee);
-            }
+        // --- Movement & AI ---
+        function moveTowards(entity, targetX, targetY) {
+            if (entity.x < targetX) entity.x++;
+            else if (entity.x > targetX) entity.x--;
+            if (entity.y < targetY) entity.y++;
+            else if (entity.y > targetY) entity.y--;
         }
 
         function wander(entity) {
-            if (Math.random() > 0.7) {
-                entity.dx = Math.floor(Math.random() * 3) - 1;
-                entity.dy = Math.floor(Math.random() * 3) - 1;
-            }
-            let newX = entity.x + entity.dx;
-            let newY = entity.y + entity.dy;
-            if (isValidPosition(newX, newY)) {
-                entity.x = newX;
-                entity.y = newY;
-            } else {
-                entity.dx *= -1;
-                entity.dy *= -1;
-            }
+            entity.x += Math.floor(Math.random() * 3) - 1;
+            entity.y += Math.floor(Math.random() * 3) - 1;
+            entity.x = Math.max(0, Math.min(BOARD_WIDTH - 1, entity.x));
+            entity.y = Math.max(0, Math.min(BOARD_HEIGHT - 1, entity.y));
+        }
+        
+        function findClosest(entity, targets) {
+            if (targets.length === 0) return null;
+            return targets.reduce((closest, target) => {
+                const dist = Math.abs(entity.x - target.x) + Math.abs(entity.y - target.y);
+                if (dist < closest.dist) return { dist, target };
+                return closest;
+            }, { dist: Infinity, target: null }).target;
         }
 
-        // --- Scent Trails ---
-
-        function layScent(scentGrid, x, y) {
-            if (isValidPosition(x, y, true)) {
-                scentGrid[y][x] = MAX_SCENT;
-            }
-        }
-
-        function decayScent() {
-            for (let y = 0; y < BOARD_HEIGHT; y++) {
-                for (let x = 0; x < BOARD_WIDTH; x++) {
-                    toHomeScent[y][x] *= SCENT_DECAY;
-                    toFlowerScent[y][x] *= SCENT_DECAY;
-                }
-            }
-        }
-
-        // --- Rendering ---
-
-        function render() {
-            let displayGrid = createEmptyGrid(BOARD_WIDTH, BOARD_HEIGHT, EMPTY_CHAR);
-
-            // Draw scent trails first
-            for (let y = 0; y < BOARD_HEIGHT; y++) {
-                for (let x = 0; x < BOARD_WIDTH; x++) {
-                    const maxScent = Math.max(toHomeScent[y][x], toFlowerScent[y][x]);
-                    if (maxScent > 1) {
-                        const level = Math.min(SCENT_CHARS.length - 1, Math.floor(maxScent / (MAX_SCENT / SCENT_CHARS.length)));
-                        displayGrid[y][x] = SCENT_CHARS[level];
-                    }
-                }
-            }
-            
-            // Draw static objects
-            flowers.forEach(flower => displayGrid[flower.y][flower.x] = FLOWER_CHAR);
-            eggs.forEach(egg => displayGrid[egg.y][egg.x] = EGG_CHAR);
-            
-            // Draw the beehive (#)
-            displayGrid[BEEHIVE_Y][BEEHIVE_X] = BEEHIVE_CHAR;
-
-            // Draw mobile entities
-            bees.forEach(bee => displayGrid[bee.y][bee.x] = bee.hasNectar ? BEE_WITH_NECTAR_CHAR : BEE_CHAR);
-            hornets.forEach(hornet => displayGrid[hornet.y][hornet.x] = HORNET_CHAR);
-
-            gameBoardEl.textContent = displayGrid.map(row => row.join('')).join('\n');
-        }
-
-        // --- Helper & Utility Functions ---
-
+        // --- Helper Functions ---
         function addBee(x = BEEHIVE_X, y = BEEHIVE_Y) {
-            bees.push({ x, y, dx: Math.floor(Math.random() * 3) - 1, dy: Math.floor(Math.random() * 3) - 1, hasNectar: false });
+            bees.push({ id: Date.now() + Math.random(), x, y, hasNectar: false });
             updateCounters();
         }
 
@@ -388,7 +278,6 @@
                 x = Math.floor(Math.random() * BOARD_WIDTH);
                 y = Math.floor(Math.random() * BOARD_HEIGHT);
             } while (!isPositionFree(x, y));
-            gameBoard[y][x] = FLOWER_CHAR;
             flowers.push({ x, y });
             updateCounters();
         }
@@ -399,24 +288,18 @@
                 x = Math.floor(Math.random() * BOARD_WIDTH);
                 y = Math.floor(Math.random() * BOARD_HEIGHT);
             } while (!isPositionFree(x, y));
-            hornets.push({ x, y, dx: 1, dy: 0 });
+            hornets.push({ id: Date.now() + Math.random(), x, y });
+            updateCounters();
+        }
+        
+        function collectHoney() {
+            totalHoney += hiveHoney;
+            hiveHoney = 0;
             updateCounters();
         }
 
-        function createEmptyGrid(width, height, fillValue) {
-            return Array.from({ length: height }, () => Array(width).fill(fillValue));
-        }
-
-        function isValidPosition(x, y, canBeBeehive = false) {
-            if (x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_HEIGHT) return false;
-            if (!canBeBeehive && gameBoard[y][x] === BEEHIVE_CHAR) return false;
-            return true;
-        }
-
-        function isPositionFree(x, y, ignoreBeehive = false) {
-            if (!isValidPosition(x, y, ignoreBeehive)) return false;
-            if (gameBoard[y][x] !== EMPTY_CHAR) return false;
-            if (!ignoreBeehive && x === BEEHIVE_X && y === BEEHIVE_Y) return false;
+        function isPositionFree(x, y) {
+            if (x === queen.x && y === queen.y) return false;
             return true;
         }
 
@@ -429,6 +312,7 @@
         }
 
         // --- Event Listeners ---
+        addBeeBtn.addEventListener('click', () => addBee());
         addFlowerBtn.addEventListener('click', addFlower);
         addHornetBtn.addEventListener('click', addHornet);
         collectHoneyBtn.addEventListener('click', collectHoney);
