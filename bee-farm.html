@@ -350,6 +350,7 @@
         function render() {
             let displayGrid = createEmptyGrid(BOARD_WIDTH, BOARD_HEIGHT, EMPTY_CHAR);
 
+            // Draw scent trails first
             for (let y = 0; y < BOARD_HEIGHT; y++) {
                 for (let x = 0; x < BOARD_WIDTH; x++) {
                     const maxScent = Math.max(toHomeScent[y][x], toFlowerScent[y][x]);
@@ -359,9 +360,15 @@
                     }
                 }
             }
+            
+            // Draw static objects
             flowers.forEach(flower => displayGrid[flower.y][flower.x] = FLOWER_CHAR);
             eggs.forEach(egg => displayGrid[egg.y][egg.x] = EGG_CHAR);
-            displayGrid[queen.y][queen.x] = QUEEN_CHAR;
+            
+            // Draw the beehive (#) instead of the queen (Q)
+            displayGrid[BEEHIVE_Y][BEEHIVE_X] = BEEHIVE_CHAR;
+
+            // Draw mobile entities
             bees.forEach(bee => displayGrid[bee.y][bee.x] = bee.hasNectar ? BEE_WITH_NECTAR_CHAR : BEE_CHAR);
             hornets.forEach(hornet => displayGrid[hornet.y][hornet.x] = HORNET_CHAR);
 

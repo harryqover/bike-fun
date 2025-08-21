@@ -201,7 +201,7 @@
 </head>
 <body>
 
-    <div id="game-container">
+    <div id="game-container" class="hidden">
         <div id="cookie-counter">Cookies: 0</div>
         <h1>ASCII Cookie Creator</h1>
         <div id="message">Loading state...</div>
@@ -346,7 +346,6 @@
         function loadState() {
             const savedState = getCookie('asciiCookieGameState');
             if (savedState) {
-                // Merge saved state with default state to handle new properties
                 state = { ...defaultState, ...JSON.parse(savedState) };
             }
         }
@@ -381,7 +380,7 @@
                 state.cookieExists = true;
                 saveState();
                 render();
-            }, 1500); // This duration should match the CSS animation duration
+            }, 1500);
         }
 
         function renderIngredients() {
@@ -420,7 +419,6 @@
             } else {
                 messageEl.textContent = "All gone! Let's make another one.";
                 state.cookiesEaten++;
-                saveState();
                 setTimeout(resetGame, 2000);
             }
         }
@@ -445,27 +443,24 @@
 
         // --- Game Initialization ---
         function initializeGame() {
-            gameContainerEl.classList.remove('hidden');
-            noCookieMessageEl.classList.add('hidden');
-            
+            // This function now ONLY sets up the game, it doesn't show it yet.
             for (const key in ingredients) {
                 ingredients[key].addEventListener('click', handleIngredientClick);
             }
             cookieDisplayEl.addEventListener('click', handleCookieClick);
-            
-            loadState();
-            render();
         }
         
         function handleConsent() {
             const consent = getCookie('cookieConsent');
             if (consent === 'true') {
-                initializeGame();
+                // If consent was already given, load state and show the game
+                loadState();
+                gameContainerEl.classList.remove('hidden');
+                render();
             } else if (consent === 'false') {
-                gameContainerEl.classList.add('hidden');
                 noCookieMessageEl.classList.remove('hidden');
             } else {
-                gameContainerEl.classList.add('hidden');
+                // If no consent decision has been made, show the banner
                 consentBannerEl.classList.remove('hidden');
             }
         }
@@ -473,13 +468,15 @@
         consentYesBtn.addEventListener('click', () => {
             setCookie('cookieConsent', 'true', 365);
             consentBannerEl.classList.add('hidden');
-            initializeGame();
+            // NOW we load the state and show the game, AFTER consent is given.
+            loadState();
+            gameContainerEl.classList.remove('hidden');
+            render();
         });
 
         consentNoBtn.addEventListener('click', () => {
             setCookie('cookieConsent', 'false', 365);
             consentBannerEl.classList.add('hidden');
-            gameContainerEl.classList.add('hidden');
             noCookieMessageEl.classList.remove('hidden');
         });
 
@@ -488,8 +485,11 @@
             bakeCookie();
         });
 
-        // Load the game state and render the UI when the page loads
-        document.addEventListener('DOMContentLoaded', handleConsent);
+        // --- Initial Setup on Page Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeGame(); // Set up event listeners first
+            handleConsent(); // Then check for consent to decide what to show
+        });
 
     </script>
 </body>
