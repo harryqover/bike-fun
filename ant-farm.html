@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Ant Farm - Evolved</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'VT323', monospace;
+            background-color: #0D0D0D;
+            color: #00FF41;
+            overscroll-behavior: none;
+        }
+        #game-board {
+            white-space: pre;
+            line-height: 1;
+            letter-spacing: 0;
+            user-select: none;
+            cursor: default;
+            image-rendering: pixelated;
+        }
+        .ascii-button {
+            border: 2px solid #00FF41;
+            padding: 8px 16px;
+            background-color: transparent;
+            color: #00FF41;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.2s;
+        }
+        .ascii-button:hover {
+            background-color: #00FF41;
+            color: #0D0D0D;
+        }
+        .ascii-button:active {
+            transform: translateY(2px);
+        }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #00FF41; border: 2px solid #0D0D0D; }
+        ::-webkit-scrollbar-thumb:hover { background: #00b32d; }
+        /* Style for the information list items */
+        #info-section ul li {
+            margin-left: 1rem;
+            list-style-type: none;
+        }
+        #info-section ul li::before {
+            content: '>';
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <!-- Header Section -->
+    <div class="text-center mb-4">
+        <h1 class="text-4xl md:text-5xl">A S C I I . A N T . F A R M</h1>
+        <p class="text-lg">The Colony Evolves</p>
+    </div>
+
+    <!-- Game Board Container -->
+    <div id="game-container" class="border-4 border-dashed border-green-500 p-2 mb-4 w-full max-w-4xl overflow-auto">
+        <pre id="game-board" class="text-lg"></pre>
+    </div>
+
+    <!-- Controls Section -->
+    <div class="flex flex-wrap items-center justify-center gap-4 mb-8">
+        <button id="add-food-btn" class="ascii-button">[+] Add Food</button>
+        <button id="add-spider-btn" class="ascii-button">[+] Add Spider</button>
+        <button id="add-obstacle-btn" class="ascii-button">[+] Add Obstacle</button>
+        <button id="reset-btn" class="ascii-button">[x] Reset</button>
+        <div class="flex items-center gap-2 text-sm md:text-base">
+             <span>Ants: <span id="ant-count">0</span></span>
+             <span>|</span>
+             <span>Food: <span id="food-count">0</span></span>
+             <span>|</span>
+             <span>Spiders: <span id="spider-count">0</span></span>
+        </div>
+    </div>
+
+    <!-- Information Section -->
+    <div id="info-section" class="w-full max-w-4xl border-2 border-green-500 p-4 md:p-6">
+        <h2 class="text-3xl mb-2 text-center">Welcome to the ASCII Ant Farm!</h2>
+        <p class="mb-4 text-center">This is a small, interactive simulation of an ant colony's life. You can watch as the ants work together to find food, grow their colony, and avoid dangers.</p>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="text-2xl mb-2">The Cast of Characters</h3>
+                <ul>
+                    <li><span class="font-bold text-xl mr-2">&</span> Ant: A worker ant searching for food.</li>
+                    <li><span class="font-bold text-xl mr-2">@</span> Ant with Food: Carrying food back to the nest.</li>
+                    <li><span class="font-bold text-xl mr-2">Q</span> The Queen: Stays in the nest and lays eggs.</li>
+                    <li><span class="font-bold text-xl mr-2">o</span> Egg: Will hatch into a new ant.</li>
+                    <li><span class="font-bold text-xl mr-2">█</span> The Anthill: The center of the colony.</li>
+                    <li><span class="font-bold text-xl mr-2">*</span> Food: The resource your ants need to collect.</li>
+                    <li><span class="font-bold text-xl mr-2">S</span> Spider: A dangerous predator!</li>
+                    <li><span class="font-bold text-xl mr-2">#</span> Obstacle: A solid wall or rock.</li>
+                    <li><span class="font-bold text-xl mr-2">·:∴</span> Pheromones: Scent trails ants use to find paths.</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-2xl mb-2">How It Works</h3>
+                <ol class="list-decimal list-inside">
+                    <li class="mb-2"><strong>Foraging:</strong> Ants wander randomly until they find food.</li>
+                    <li class="mb-2"><strong>Pheromone Trails:</strong> Ants leave scent trails to guide other ants to food, creating efficient supply lines.</li>
+                    <li class="mb-2"><strong>Colony Growth:</strong> The Queen lays eggs that hatch into new workers, growing the colony automatically.</li>
+                    <li class="mb-2"><strong>Survival:</strong> Spiders wander the map and will eat any ants they come across.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- Game Configuration ---
+        const BOARD_WIDTH = 80;
+        const BOARD_HEIGHT = 30;
+        const INITIAL_ANTS = 5;
+        const INITIAL_FOOD = 8;
+        const INITIAL_SPIDERS = 1;
+        const INITIAL_OBSTACLES = 15;
+        const ANTHILL_X = Math.floor(BOARD_WIDTH / 2);
+        const ANTHILL_Y = Math.floor(BOARD_HEIGHT / 2);
+        const PHEROMONE_DECAY = 0.98;
+        const MAX_PHEROMONE = 100;
+        const EGG_HATCH_TIME = 200; // in game ticks (20 seconds)
+        const QUEEN_LAY_RATE = 0.02; // 2% chance per tick to lay an egg
+
+        // --- ASCII Characters ---
+        const ANT_CHAR = '&';
+        const ANT_WITH_FOOD_CHAR = '@';
+        const ANTHILL_CHAR = '█';
+        const QUEEN_CHAR = 'Q';
+        const EGG_CHAR = 'o';
+        const FOOD_CHAR = '*';
+        const SPIDER_CHAR = 'S';
+        const OBSTACLE_CHAR = '#';
+        const EMPTY_CHAR = ' ';
+        const PHEROMONE_CHARS = [' ', '·', ':', '∴'];
+
+        // --- Game State ---
+        let gameBoard = [];
+        let ants = [];
+        let foodSources = [];
+        let queen = {};
+        let eggs = [];
+        let spiders = [];
+        let obstacles = [];
+        let toHomePheromones = [];
+        let toFoodPheromones = [];
+        let gameLoopInterval;
+
+        // --- DOM Elements ---
+        const gameBoardEl = document.getElementById('game-board');
+        const antCountEl = document.getElementById('ant-count');
+        const foodCountEl = document.getElementById('food-count');
+        const spiderCountEl = document.getElementById('spider-count');
+        const addFoodBtn = document.getElementById('add-food-btn');
+        const addSpiderBtn = document.getElementById('add-spider-btn');
+        const addObstacleBtn = document.getElementById('add-obstacle-btn');
+        const resetBtn = document.getElementById('reset-btn');
+
+        // --- Game Logic ---
+
+        function init() {
+            // Clear all state arrays
+            ants = [];
+            foodSources = [];
+            eggs = [];
+            spiders = [];
+            obstacles = [];
+
+            // Create empty boards
+            gameBoard = createEmptyGrid(BOARD_WIDTH, BOARD_HEIGHT, EMPTY_CHAR);
+            toHomePheromones = createEmptyGrid(BOARD_WIDTH, BOARD_HEIGHT, 0);
+            toFoodPheromones = createEmptyGrid(BOARD_WIDTH, BOARD_HEIGHT, 0);
+            
+            // Place initial obstacles
+            for (let i = 0; i < INITIAL_OBSTACLES; i++) addObstacle();
+
+            // Place the anthill and the queen
+            gameBoard[ANTHILL_Y][ANTHILL_X] = ANTHILL_CHAR;
+            queen = { x: ANTHILL_X, y: ANTHILL_Y };
+
+            // Spawn initial ants
+            for (let i = 0; i < INITIAL_ANTS; i++) addAnt();
+            
+            // Spawn initial food
+            for (let i = 0; i < INITIAL_FOOD; i++) addFood();
+
+            // Spawn initial spiders
+            for (let i = 0; i < INITIAL_SPIDERS; i++) addSpider();
+
+            updateCounters();
+            
+            if (gameLoopInterval) clearInterval(gameLoopInterval);
+            gameLoopInterval = setInterval(gameLoop, 100);
+        }
+
+        function gameLoop() {
+            updateQueen();
+            updateEggs();
+            updateAnts();
+            updateSpiders();
+            decayPheromones();
+            render();
+        }
+
+        // --- Update Functions ---
+
+        function updateQueen() {
+            if (Math.random() < QUEEN_LAY_RATE) {
+                // Find a free spot around the queen to lay an egg
+                let placed = false;
+                for (let dy = -1; dy <= 1 && !placed; dy++) {
+                    for (let dx = -1; dx <= 1 && !placed; dx++) {
+                        if (dx === 0 && dy === 0) continue;
+                        const newX = queen.x + dx;
+                        const newY = queen.y + dy;
+                        if (isValidPosition(newX, newY, true) && gameBoard[newY][newX] === EMPTY_CHAR) {
+                            eggs.push({ x: newX, y: newY, hatchTimer: EGG_HATCH_TIME });
+                            placed = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        function updateEggs() {
+            eggs.forEach(egg => egg.hatchTimer--);
+            const hatchedEggs = eggs.filter(egg => egg.hatchTimer <= 0);
+            
+            hatchedEggs.forEach(egg => {
+                addAnt(egg.x, egg.y); // Spawn new ant at egg's location
+            });
+
+            eggs = eggs.filter(egg => egg.hatchTimer > 0);
+        }
+
+        function updateAnts() {
+            ants.forEach(ant => {
+                if (ant.hasFood) {
+                    layPheromone(toFoodPheromones, ant.x, ant.y);
+                    moveTowardsTarget(ant, ANTHILL_X, ANTHILL_Y, toHomePheromones);
+                    if (ant.x === ANTHILL_X && ant.y === ANTHILL_Y) {
+                        ant.hasFood = false;
+                        ant.dx *= -1;
+                        ant.dy *= -1;
+                    }
+                } else {
+                    layPheromone(toHomePheromones, ant.x, ant.y);
+                    moveTowardsTarget(ant, null, null, toFoodPheromones);
+                    
+                    if (gameBoard[ant.y][ant.x] === FOOD_CHAR) {
+                        ant.hasFood = true;
+                        gameBoard[ant.y][ant.x] = EMPTY_CHAR;
+                        foodSources = foodSources.filter(f => f.x !== ant.x || f.y !== ant.y);
+                        updateCounters();
+                    }
+                }
+            });
+        }
+
+        function updateSpiders() {
+            spiders.forEach(spider => {
+                wander(spider);
+                // Check for ants to eat
+                const antIndex = ants.findIndex(ant => ant.x === spider.x && ant.y === spider.y);
+                if (antIndex !== -1) {
+                    ants.splice(antIndex, 1); // Eat ant
+                    updateCounters();
+                }
+            });
+        }
+
+        // --- Movement and AI ---
+
+        function moveTowardsTarget(ant, targetX, targetY, pheromoneGrid) {
+            let bestX = ant.x;
+            let bestY = ant.y;
+            let maxPheromone = -1;
+
+            // Look at neighboring cells for the strongest pheromone
+            for (let dy = -1; dy <= 1; dy++) {
+                for (let dx = -1; dx <= 1; dx++) {
+                    if (dx === 0 && dy === 0) continue;
+                    const newX = ant.x + dx;
+                    const newY = ant.y + dy;
+
+                    if (isValidPosition(newX, newY)) {
+                        if (pheromoneGrid[newY][newX] > maxPheromone) {
+                            maxPheromone = pheromoneGrid[newY][newX];
+                            bestX = newX;
+                            bestY = newY;
+                        }
+                    }
+                }
+            }
+
+            if (maxPheromone > 0) {
+                ant.x = bestX;
+                ant.y = bestY;
+            } else {
+                wander(ant);
+            }
+        }
+
+        function wander(entity) {
+            if (Math.random() > 0.7) { // More random direction changes
+                entity.dx = Math.floor(Math.random() * 3) - 1;
+                entity.dy = Math.floor(Math.random() * 3) - 1;
+            }
+
+            let newX = entity.x + entity.dx;
+            let newY = entity.y + entity.dy;
+
+            if (isValidPosition(newX, newY)) {
+                entity.x = newX;
+                entity.y = newY;
+            } else {
+                entity.dx *= -1;
+                entity.dy *= -1;
+            }
+        }
+
+        // --- Pheromones ---
+
+        function layPheromone(pheromoneGrid, x, y) {
+            if (isValidPosition(x, y, true)) {
+                pheromoneGrid[y][x] = MAX_PHEROMONE;
+            }
+        }
+
+        function decayPheromones() {
+            for (let y = 0; y < BOARD_HEIGHT; y++) {
+                for (let x = 0; x < BOARD_WIDTH; x++) {
+                    toHomePheromones[y][x] *= PHEROMONE_DECAY;
+                    toFoodPheromones[y][x] *= PHEROMONE_DECAY;
+                }
+            }
+        }
+
+        // --- Rendering ---
+
+        function render() {
+            let displayGrid = createEmptyGrid(BOARD_WIDTH, BOARD_HEIGHT, EMPTY_CHAR);
+
+            // 1. Pheromones
+            for (let y = 0; y < BOARD_HEIGHT; y++) {
+                for (let x = 0; x < BOARD_WIDTH; x++) {
+                    const maxPheromone = Math.max(toHomePheromones[y][x], toFoodPheromones[y][x]);
+                    if (maxPheromone > 1) {
+                        const level = Math.min(PHEROMONE_CHARS.length - 1, Math.floor(maxPheromone / (MAX_PHEROMONE / PHEROMONE_CHARS.length)));
+                        displayGrid[y][x] = PHEROMONE_CHARS[level];
+                    }
+                }
+            }
+            
+            // 2. Obstacles
+            obstacles.forEach(o => displayGrid[o.y][o.x] = OBSTACLE_CHAR);
+
+            // 3. Food
+            foodSources.forEach(food => displayGrid[food.y][food.x] = FOOD_CHAR);
+
+            // 4. Eggs
+            eggs.forEach(egg => displayGrid[egg.y][egg.x] = EGG_CHAR);
+
+            // 5. Anthill & Queen
+            displayGrid[queen.y][queen.x] = QUEEN_CHAR;
+
+            // 6. Ants
+            ants.forEach(ant => displayGrid[ant.y][ant.x] = ant.hasFood ? ANT_WITH_FOOD_CHAR : ANT_CHAR);
+
+            // 7. Spiders (top layer)
+            spiders.forEach(spider => displayGrid[spider.y][spider.x] = SPIDER_CHAR);
+
+            gameBoardEl.textContent = displayGrid.map(row => row.join('')).join('\n');
+        }
+
+        // --- Helper & Utility Functions ---
+
+        function addAnt(x = ANTHILL_X, y = ANTHILL_Y) {
+            ants.push({
+                x, y,
+                dx: Math.floor(Math.random() * 3) - 1,
+                dy: Math.floor(Math.random() * 3) - 1,
+                hasFood: false
+            });
+            updateCounters();
+        }
+
+        function addFood() {
+            let x, y;
+            do {
+                x = Math.floor(Math.random() * BOARD_WIDTH);
+                y = Math.floor(Math.random() * BOARD_HEIGHT);
+            } while (!isPositionFree(x, y));
+            gameBoard[y][x] = FOOD_CHAR;
+            foodSources.push({ x, y });
+            updateCounters();
+        }
+
+        function addSpider() {
+            let x, y;
+            do {
+                x = Math.floor(Math.random() * BOARD_WIDTH);
+                y = Math.floor(Math.random() * BOARD_HEIGHT);
+            } while (!isPositionFree(x, y));
+            spiders.push({ x, y, dx: 1, dy: 0 });
+            updateCounters();
+        }
+        
+        function addObstacle() {
+            let x, y;
+            do {
+                x = Math.floor(Math.random() * BOARD_WIDTH);
+                y = Math.floor(Math.random() * BOARD_HEIGHT);
+            } while (!isPositionFree(x, y, true)); // Allow placing near anthill
+            gameBoard[y][x] = OBSTACLE_CHAR;
+            obstacles.push({ x, y });
+        }
+
+        function createEmptyGrid(width, height, fillValue) {
+            return Array.from({ length: height }, () => Array(width).fill(fillValue));
+        }
+
+        function isValidPosition(x, y, canBeAnthill = false) {
+            if (x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_HEIGHT) return false;
+            if (gameBoard[y][x] === OBSTACLE_CHAR) return false;
+            if (!canBeAnthill && gameBoard[y][x] === ANTHILL_CHAR) return false;
+            return true;
+        }
+
+        function isPositionFree(x, y, ignoreAnthill = false) {
+            if (!isValidPosition(x, y, ignoreAnthill)) return false;
+            if (gameBoard[y][x] !== EMPTY_CHAR) return false;
+            if (!ignoreAnthill && x === ANTHILL_X && y === ANTHILL_Y) return false;
+            return true;
+        }
+
+        function updateCounters() {
+            antCountEl.textContent = ants.length;
+            foodCountEl.textContent = foodSources.length;
+            spiderCountEl.textContent = spiders.length;
+        }
+
+        // --- Event Listeners ---
+        addFoodBtn.addEventListener('click', addFood);
+        addSpiderBtn.addEventListener('click', addSpider);
+        addObstacleBtn.addEventListener('click', addObstacle);
+        resetBtn.addEventListener('click', init);
+
+        // --- Initial Load ---
+        window.onload = init;
+    </script>
+</body>
+</html>
