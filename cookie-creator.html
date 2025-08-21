@@ -120,7 +120,7 @@
             max-width: 800px;
         }
 
-        .consent-buttons button, .modal-button {
+        .consent-buttons button {
             background-color: transparent;
             border: 2px solid #00ff41;
             color: #00ff41;
@@ -133,7 +133,7 @@
             transition: background-color 0.2s, color 0.2s;
         }
 
-        .consent-buttons button:hover, .modal-button:hover {
+        .consent-buttons button:hover {
             background-color: #00ff41;
             color: #0d0d0d;
         }
@@ -143,31 +143,6 @@
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 0 15px #00ff41;
-        }
-        
-        /* Hungry Modal */
-        #hungry-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(13, 13, 13, 0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .modal-content {
-            background-color: #0d0d0d;
-            border: 2px solid #00ff41;
-            padding: 2rem 3rem;
-            border-radius: 8px;
-            box-shadow: 0 0 25px #00ff41;
-        }
-        .modal-content p {
-            margin-top: 0;
         }
 
         /* Animation "Wow" Effect */
@@ -265,15 +240,6 @@
         </div>
     </div>
 
-    <div id="hungry-modal" class="hidden">
-        <div class="modal-content">
-            <p>Wow, that's a lot of cookies!</p>
-            <p>Are you sure you're still hungry?</p>
-            <button id="still-hungry-btn" class="modal-button">Yes, I need more!</button>
-        </div>
-    </div>
-
-
     <script>
         // DOM Elements
         const gameContainerEl = document.getElementById('game-container');
@@ -284,10 +250,8 @@
         const cookieCounterEl = document.getElementById('cookie-counter');
         const consentBannerEl = document.getElementById('cookie-consent-banner');
         const noCookieMessageEl = document.getElementById('no-cookie-message');
-        const hungryModalEl = document.getElementById('hungry-modal');
         const consentYesBtn = document.getElementById('consent-yes');
         const consentNoBtn = document.getElementById('consent-no');
-        const stillHungryBtn = document.getElementById('still-hungry-btn');
 
         const ingredients = {
             butter: document.getElementById('butter'),
@@ -351,11 +315,15 @@
         }
         
         function resetGame() {
+            // Atomically update the state for the new round
+            state.cookiesEaten++;
             state.ingredientsCollected = { ...defaultState.ingredientsCollected };
             state.cookieExists = false;
             state.cookieBitesLeft = 20;
             
             Object.values(ingredients).forEach(el => el.classList.remove('animating'));
+            
+            // Save the fully updated state all at once
             saveState();
             render();
         }
@@ -395,11 +363,7 @@
             }
             
             if (collectedCount === 4) {
-                if (state.cookiesEaten >= 2) {
-                    hungryModalEl.classList.remove('hidden');
-                } else {
-                    bakeCookie();
-                }
+                bakeCookie();
             } else {
                 messageEl.textContent = `Click on the ingredients to create a cookie. (${collectedCount}/4)`;
             }
@@ -418,7 +382,6 @@
                 messageEl.textContent = `Click the cookie to eat it. Bites left: ${state.cookieBitesLeft}`;
             } else {
                 messageEl.textContent = "All gone! Let's make another one.";
-                state.cookiesEaten++;
                 setTimeout(resetGame, 2000);
             }
         }
@@ -453,16 +416,6 @@
             const consent = getCookie('cookieConsent');
             if (consent === 'true') {
                 loadState();
-
-                // BUG FIX: Correct the "stuck modal" state on page load.
-                // This happens if the page was closed after collecting all ingredients
-                // but before the next cookie was baked, creating an invalid startup state.
-                const allIngredientsCollected = Object.values(state.ingredientsCollected).every(v => v === true);
-                if (allIngredientsCollected && !state.cookieExists) {
-                    state.ingredientsCollected = { ...defaultState.ingredientsCollected };
-                    saveState(); 
-                }
-
                 gameContainerEl.classList.remove('hidden');
                 render();
             } else if (consent === 'false') {
@@ -484,11 +437,6 @@
             setCookie('cookieConsent', 'false', 365);
             consentBannerEl.classList.add('hidden');
             noCookieMessageEl.classList.remove('hidden');
-        });
-
-        stillHungryBtn.addEventListener('click', () => {
-            hungryModalEl.classList.add('hidden');
-            bakeCookie();
         });
 
         // --- Initial Setup on Page Load ---
