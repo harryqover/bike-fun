@@ -324,6 +324,15 @@
             chartData.datasets[0].data.push(totalRenewalIncome);
             chartData.datasets[1].data.push(totalPremiumIncome);
             chartData.datasets[2].data.push(capital);
+
+            // Keep only the last 10 data points for readability
+            if (chartData.labels.length > 12) {
+                chartData.labels.shift(); // Remove the oldest label
+                chartData.datasets.forEach(dataset => {
+                    dataset.data.shift(); // Remove the oldest data point from each dataset
+                });
+            }
+
             portfolioChart.update();
         }
 
