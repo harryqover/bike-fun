@@ -30,6 +30,11 @@
         .modal-backdrop {
             background-color: rgba(0, 0, 0, 0.5);
         }
+        /* Style for active filter buttons */
+        .filter-btn-active {
+            background-color: #2563eb; /* bg-blue-600 */
+            color: white;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -62,7 +67,7 @@
                         <h2 class="text-2xl font-semibold">2. Filter Events</h2>
                         <button id="reset-filters-btn" class="text-sm text-blue-600 hover:text-blue-800 font-semibold">Reset All</button>
                     </div>
-                    <div id="filter-controls" class="space-y-4">
+                    <div id="filter-controls">
                         <!-- Dynamic filters will be inserted here -->
                     </div>
                 </div>
@@ -137,36 +142,25 @@
             // App state
             let originalData = [];
             let filteredData = [];
-            let filterValues = {};
+            let filterValues = {
+                ranTriggers: new Set()
+            };
 
             // --- UTILITY FUNCTIONS ---
 
-            /**
-             * Shows a toast notification.
-             * @param {string} message - The message to display.
-             * @param {string} type - 'success' or 'error'.
-             */
             function showToast(message, type = 'success') {
                 toastMessage.textContent = message;
                 toast.className = `fixed top-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transform translate-y-2 transition-all duration-300 ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
                 toast.classList.remove('opacity-0', 'translate-y-2');
                 toast.classList.add('opacity-100', 'translate-y-0');
-
                 setTimeout(() => {
                     toast.classList.remove('opacity-100', 'translate-y-0');
                     toast.classList.add('opacity-0', 'translate-y-2');
                 }, 3000);
             }
 
-            /**
-             * Recursively gets all unique keys from a JSON object.
-             * @param {object} obj - The object to inspect.
-             * @param {Set} keys - A Set to store the keys.
-             * @param {string} prefix - The prefix for nested keys.
-             */
             function getUniqueKeys(obj, keys = new Set(), prefix = '') {
                 if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return;
-
                 for (const key in obj) {
                     if (Object.prototype.hasOwnProperty.call(obj, key)) {
                         const newKey = prefix ? `${prefix}.${key}` : key;
@@ -178,27 +172,16 @@
                 }
             }
             
-            /**
-             * Safely gets a nested property from an object using a dot-notation string.
-             * @param {object} obj - The object to search.
-             * @param {string} path - The path to the property (e.g., 'data.entity.id').
-             * @returns {*} The value of the property or undefined if not found.
-             */
             function getNestedValue(obj, path) {
                 return path.split('.').reduce((acc, part) => acc && acc[part], obj);
             }
 
             // --- DATA LOADING & FILTER GENERATION ---
 
-            /**
-             * Loads and parses the JSON data from the textarea.
-             */
             function loadData() {
                 try {
                     const data = JSON.parse(jsonInput.value);
-                    if (!Array.isArray(data)) {
-                        throw new Error('Input is not a JSON array.');
-                    }
+                    if (!Array.isArray(data)) throw new Error('Input is not a JSON array.');
                     originalData = data;
                     filteredData = [...originalData];
                     generateFilterControls();
@@ -207,35 +190,55 @@
                     showToast('Data loaded successfully!', 'success');
                 } catch (error) {
                     showToast(`Error loading JSON: ${error.message}`, 'error');
-                    console.error('JSON Parse Error:', error);
                 }
             }
 
-            /**
-             * Generates filter input controls based on the data keys.
-             */
             function generateFilterControls() {
                 filterControls.innerHTML = '';
                 const favoriteKeys = ['data.eventName', 'createdAt', 'policyNumber', 'vin', 'vrn'];
 
                 // --- Global Search ---
-                const globalSearchLabel = document.createElement('label');
-                globalSearchLabel.htmlFor = 'global-search';
-                globalSearchLabel.className = 'block text-sm font-medium text-gray-700';
-                globalSearchLabel.textContent = 'Global Search';
-                
-                const globalSearchInput = document.createElement('input');
-                globalSearchInput.type = 'text';
-                globalSearchInput.id = 'global-search';
-                globalSearchInput.dataset.key = 'global-search';
-                globalSearchInput.className = 'mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
-                globalSearchInput.placeholder = 'Search all fields...';
-                globalSearchInput.addEventListener('input', handleFilterChange);
-                
-                filterControls.appendChild(globalSearchLabel);
-                filterControls.appendChild(globalSearchInput);
+                const globalSearchWrapper = document.createElement('div');
+                globalSearchWrapper.className = 'mb-4';
+                globalSearchWrapper.innerHTML = `
+                    <label for="global-search" class="block text-sm font-medium text-gray-700">Global Search</label>
+                    <input type="text" id="global-search" data-key="global-search" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Search all fields...">
+                `;
+                filterControls.appendChild(globalSearchWrapper);
+                globalSearchWrapper.querySelector('#global-search').addEventListener('input', handleFilterChange);
 
-                // --- Containers for specific filters ---
+                // --- Ran Triggers Section ---
+                const ranTriggerNames = new Set();
+                originalData.forEach(item => {
+                    (item.results || []).forEach(result => {
+                        if (result.status === 'TRIGGER_RESULT_STATUS_RAN' && result.triggerName) {
+                            ranTriggerNames.add(result.triggerName);
+                        }
+                    });
+                });
+
+                if (ranTriggerNames.size > 0) {
+                    const triggerTitle = document.createElement('h3');
+                    triggerTitle.className = 'text-lg font-semibold text-gray-800 mt-6 mb-2 border-t pt-4';
+                    triggerTitle.textContent = 'Ran Triggers';
+                    filterControls.appendChild(triggerTitle);
+
+                    const triggerContainer = document.createElement('div');
+                    triggerContainer.className = 'flex flex-wrap gap-2';
+                    triggerContainer.id = 'ran-triggers-container';
+                    
+                    [...ranTriggerNames].sort().forEach(name => {
+                        const button = document.createElement('button');
+                        button.textContent = name;
+                        button.dataset.triggerName = name;
+                        button.className = 'px-3 py-1 text-sm font-medium border border-gray-300 rounded-full hover:bg-gray-100 transition-colors';
+                        button.addEventListener('click', handleRanTriggerClick);
+                        triggerContainer.appendChild(button);
+                    });
+                    filterControls.appendChild(triggerContainer);
+                }
+
+                // --- Specific Field Filters ---
                 const favoriteContainer = document.createElement('div');
                 const allFiltersContainer = document.createElement('div');
                 allFiltersContainer.className = 'pt-4 border-t mt-4 hidden';
@@ -255,42 +258,24 @@
 
                     const controlWrapper = document.createElement('div');
                     controlWrapper.className = 'mb-4';
-
                     const isDateKey = key.toLowerCase().includes('date') || key.toLowerCase().endsWith('at');
                     
-                    const label = document.createElement('label');
-                    label.className = 'block text-sm font-medium text-gray-700';
-                    label.textContent = key;
-                    controlWrapper.appendChild(label);
+                    controlWrapper.innerHTML = `<label class="block text-sm font-medium text-gray-700">${key}</label>`;
 
                     if (isDateKey) {
                         const rangeContainer = document.createElement('div');
                         rangeContainer.className = 'flex items-center gap-2 mt-1';
-                        const fromInput = document.createElement('input');
-                        fromInput.type = 'datetime-local';
-                        fromInput.dataset.key = `${key}-from`;
-                        fromInput.className = 'block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
-                        fromInput.addEventListener('input', handleFilterChange);
-                        const toInput = document.createElement('input');
-                        toInput.type = 'datetime-local';
-                        toInput.dataset.key = `${key}-to`;
-                        toInput.className = 'block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
-                        toInput.addEventListener('input', handleFilterChange);
-                        rangeContainer.appendChild(fromInput);
-                        rangeContainer.appendChild(toInput);
+                        rangeContainer.innerHTML = `
+                            <input type="datetime-local" data-key="${key}-from" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <input type="datetime-local" data-key="${key}-to" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        `;
                         controlWrapper.appendChild(rangeContainer);
                     } else {
-                        const input = document.createElement('input');
-                        input.type = 'text';
-                        input.dataset.key = key;
-                        input.className = 'mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
-                        input.placeholder = `Filter by ${key}...`;
-                        input.addEventListener('input', handleFilterChange);
-                        controlWrapper.appendChild(input);
+                        controlWrapper.innerHTML += `<input type="text" data-key="${key}" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Filter by ${key}...">`;
                     }
                     targetContainer.appendChild(controlWrapper);
                 });
-                
+
                 if (favoritesFound > 0) {
                     const favTitle = document.createElement('h3');
                     favTitle.className = 'text-lg font-semibold text-gray-800 mt-6 mb-2 border-t pt-4';
@@ -301,7 +286,7 @@
 
                 if (allFiltersFound > 0) {
                     const toggleButton = document.createElement('button');
-                    toggleButton.textContent = 'Show All Filters';
+                    toggleButton.textContent = `Show All ${allFiltersFound} Filters`;
                     toggleButton.className = 'text-blue-600 hover:text-blue-800 text-sm font-semibold mt-4';
                     toggleButton.onclick = () => {
                         const isHidden = allFiltersContainer.classList.toggle('hidden');
@@ -310,107 +295,93 @@
                     filterControls.appendChild(toggleButton);
                     filterControls.appendChild(allFiltersContainer);
                 }
+                
+                filterControls.querySelectorAll('input').forEach(input => input.addEventListener('input', handleFilterChange));
             }
 
             // --- FILTERING LOGIC ---
 
-            /**
-             * Recursively searches an object for a given search term.
-             * @param {object} obj - The object to search within.
-             * @param {string} term - The search term (already lowercased).
-             * @returns {boolean} True if the term is found, false otherwise.
-             */
             function deepSearch(obj, term) {
                 if (obj === null || obj === undefined) return false;
-                for (const key in obj) {
-                    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-                        const value = obj[key];
-                        if (typeof value === 'string' && value.toLowerCase().includes(term)) return true;
-                        if (typeof value === 'number' && String(value).includes(term)) return true;
-                        if (typeof value === 'object' && deepSearch(value, term)) return true;
-                    }
-                }
-                return false;
+                return Object.values(obj).some(value => {
+                    if (typeof value === 'string') return value.toLowerCase().includes(term);
+                    if (typeof value === 'number') return String(value).includes(term);
+                    if (typeof value === 'object') return deepSearch(value, term);
+                    return false;
+                });
             }
 
-            /**
-             * Applies all active filters to the original dataset.
-             */
             function applyFilters() {
                 let dataToFilter = [...originalData];
                 
-                // 1. Apply global search
                 const globalSearchTerm = (filterValues['global-search'] || '').toLowerCase();
                 if (globalSearchTerm) {
                     dataToFilter = dataToFilter.filter(item => deepSearch(item, globalSearchTerm));
                 }
-
-                // 2. Apply specific filters
-                const activeSpecificFilters = Object.entries(filterValues).filter(([key, value]) => value && key !== 'global-search');
+                
+                const activeSpecificFilters = Object.entries(filterValues).filter(([key, value]) => value && !['global-search', 'ranTriggers'].includes(key));
                 if (activeSpecificFilters.length > 0) {
-                    dataToFilter = dataToFilter.filter(item => {
-                        return activeSpecificFilters.every(([key, value]) => {
+                    dataToFilter = dataToFilter.filter(item => 
+                        activeSpecificFilters.every(([key, value]) => {
                             if (key.endsWith('-from')) {
                                 const baseKey = key.slice(0, -5);
                                 const itemValue = getNestedValue(item, baseKey);
-                                if (!itemValue) return false;
-                                try {
-                                    const itemDate = new Date(itemValue);
-                                    const fromDate = new Date(value);
-                                    return !isNaN(itemDate.getTime()) && !isNaN(fromDate.getTime()) && itemDate >= fromDate;
-                                } catch (e) { return false; }
+                                return itemValue && new Date(itemValue) >= new Date(value);
                             }
                             if (key.endsWith('-to')) {
                                 const baseKey = key.slice(0, -3);
                                 const itemValue = getNestedValue(item, baseKey);
-                                if (!itemValue) return false;
-                                try {
-                                    const itemDate = new Date(itemValue);
-                                    const toDate = new Date(value);
-                                    return !isNaN(itemDate.getTime()) && !isNaN(toDate.getTime()) && itemDate <= toDate;
-                                } catch (e) { return false; }
+                                return itemValue && new Date(itemValue) <= new Date(value);
                             }
                             const itemValue = getNestedValue(item, key);
-                            if (itemValue === null || itemValue === undefined) return false;
-                            return String(itemValue).toLowerCase().includes(value.toLowerCase());
-                        });
-                    });
+                            return itemValue !== null && itemValue !== undefined && String(itemValue).toLowerCase().includes(value.toLowerCase());
+                        })
+                    );
+                }
+
+                if (filterValues.ranTriggers.size > 0) {
+                    dataToFilter = dataToFilter.filter(item => 
+                        (item.results || []).some(result => 
+                            result.status === 'TRIGGER_RESULT_STATUS_RAN' && filterValues.ranTriggers.has(result.triggerName)
+                        )
+                    );
                 }
                 
                 filteredData = dataToFilter;
                 renderResults();
             }
 
-             /**
-             * Handles changes in any filter input and triggers filtering.
-             * @param {Event} e - The input event.
-             */
             function handleFilterChange(e) {
                 filterValues[e.target.dataset.key] = e.target.value;
                 applyFilters();
             }
 
+            function handleRanTriggerClick(e) {
+                const triggerName = e.target.dataset.triggerName;
+                e.target.classList.toggle('filter-btn-active');
+                if (filterValues.ranTriggers.has(triggerName)) {
+                    filterValues.ranTriggers.delete(triggerName);
+                } else {
+                    filterValues.ranTriggers.add(triggerName);
+                }
+                applyFilters();
+            }
+
             // --- UI RENDERING ---
 
-            /**
-             * Renders the filtered data into the results table.
-             */
             function renderResults() {
                 resultsCount.textContent = `${filteredData.length} of ${originalData.length} events shown.`;
-
                 if (filteredData.length === 0) {
                     resultsContainer.innerHTML = '';
                     resultsContainer.appendChild(placeholder);
                     placeholder.style.display = 'block';
                     return;
                 }
-
                 placeholder.style.display = 'none';
 
                 const table = document.createElement('table');
                 table.className = 'min-w-full divide-y divide-gray-200';
-                
-                const thead = `
+                table.innerHTML = `
                     <thead class="bg-gray-50">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event ID</th>
@@ -420,8 +391,7 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
                             <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
                         </tr>
-                    </thead>
-                `;
+                    </thead>`;
                 
                 const tbody = document.createElement('tbody');
                 tbody.className = 'bg-white divide-y divide-gray-200';
@@ -430,32 +400,19 @@
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-50';
                     const createdAt = item.createdAt ? new Date(item.createdAt).toLocaleString() : 'N/A';
-                    
                     row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900 break-all">${item.id || 'N/A'}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.type === 'EVENT_TYPE_POI' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}">
-                                ${item.type || 'N/A'}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.status === 'EVENT_STATUS_PROCESSED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
-                                ${item.status || 'N/A'}
-                            </span>
-                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-gray-900 break-all">${item.id || 'N/A'}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.type === 'EVENT_TYPE_POI' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}">${item.type || 'N/A'}</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.status === 'EVENT_STATUS_PROCESSED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">${item.status || 'N/A'}</span></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${getNestedValue(item, 'data.eventName') || 'N/A'}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${createdAt}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                             <button class="copy-id-btn text-indigo-600 hover:text-indigo-900" data-id="${item.id}">Copy ID</button>
                             <button class="view-details-btn text-indigo-600 hover:text-indigo-900" data-index="${index}">Details</button>
-                        </td>
-                    `;
+                        </td>`;
                     tbody.appendChild(row);
                 });
 
-                table.innerHTML = thead;
                 table.appendChild(tbody);
                 resultsContainer.innerHTML = '';
                 resultsContainer.appendChild(table);
@@ -464,8 +421,7 @@
             // --- MODAL & ACTIONS ---
             
             function openModal(index) {
-                const item = filteredData[index];
-                modalContent.textContent = JSON.stringify(item, null, 2);
+                modalContent.textContent = JSON.stringify(filteredData[index], null, 2);
                 detailsModal.classList.remove('hidden');
                 detailsModal.classList.add('flex');
             }
@@ -480,40 +436,25 @@
             loadJsonBtn.addEventListener('click', loadData);
             
             resetFiltersBtn.addEventListener('click', () => {
-                filterValues = {};
-                const inputs = filterControls.querySelectorAll('input');
-                inputs.forEach(input => input.value = '');
+                filterValues = { ranTriggers: new Set() };
+                filterControls.querySelectorAll('input').forEach(input => input.value = '');
+                document.querySelectorAll('#ran-triggers-container button').forEach(btn => btn.classList.remove('filter-btn-active'));
                 applyFilters();
                 showToast('Filters have been reset.', 'success');
             });
             
             resultsContainer.addEventListener('click', (e) => {
-                if (e.target.classList.contains('view-details-btn')) {
-                    openModal(e.target.dataset.index);
-                }
+                if (e.target.classList.contains('view-details-btn')) openModal(e.target.dataset.index);
                 if (e.target.classList.contains('copy-id-btn')) {
-                    const id = e.target.dataset.id;
-                    navigator.clipboard.writeText(id).then(() => {
-                        showToast(`ID "${id}" copied to clipboard!`);
-                    }).catch(err => {
-                        showToast('Failed to copy ID.', 'error');
-                    });
+                    navigator.clipboard.writeText(e.target.dataset.id).then(() => showToast(`ID copied!`)).catch(() => showToast('Failed to copy.', 'error'));
                 }
             });
 
             closeModalBtn.addEventListener('click', closeModal);
-            detailsModal.addEventListener('click', (e) => {
-                if (e.target === detailsModal) closeModal();
-            });
-            
+            detailsModal.addEventListener('click', (e) => { if (e.target === detailsModal) closeModal(); });
             modalCopyBtn.addEventListener('click', () => {
-                navigator.clipboard.writeText(modalContent.textContent).then(() => {
-                    showToast('JSON copied to clipboard!');
-                }).catch(err => {
-                    showToast('Failed to copy JSON.', 'error');
-                });
+                navigator.clipboard.writeText(modalContent.textContent).then(() => showToast('JSON copied!')).catch(() => showToast('Failed to copy.', 'error'));
             });
-
         });
     </script>
 </body>
