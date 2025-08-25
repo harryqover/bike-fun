@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jotform Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%); }
+        #config-panel {
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px); background-color: rgba(255, 255, 255, 0.75);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .toast {
+            position: fixed; bottom: 20px; right: 20px; padding: 1rem 1.5rem; border-radius: 0.5rem;
+            color: white; opacity: 0; transform: translateY(100px); transition: all 0.4s ease-in-out;
+            z-index: 100; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: linear-gradient(to right, #1d976c, #93f9b9); }
+        .toast.error { background: linear-gradient(to right, #d31027, #ea384d); }
+        .toast.info { background: linear-gradient(to right, #2193b0, #6dd5ed); }
+        .loader {
+            border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid #4f46e5; border-radius: 50%;
+            width: 50px; height: 50px; animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .card {
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.3); transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+            opacity: 0; transform: translateY(20px); animation: fadeIn 0.5s ease-out forwards;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        .btn-primary { transition: all 0.2s ease-in-out; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4); }
+        .tab-button { transition: all 0.3s ease; border-bottom: 3px solid transparent; }
+        .tab-button.active { color: #4f46e5; border-bottom-color: #4f46e5; }
+        .ai-btn {
+            padding: 0.25rem 0.5rem; font-size: 0.75rem; line-height: 1rem;
+            border-radius: 0.375rem; transition: all 0.2s ease;
+        }
+        .ai-btn:hover { transform: scale(1.05); }
+        textarea.needs-update {
+            border-color: #f59e0b; /* amber-500 */
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.5);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Config Panel Toggle Button -->
+    <button id="toggle-config-btn" class="fixed top-5 right-5 z-30 bg-white/70 backdrop-blur-sm text-indigo-600 p-3 rounded-full shadow-lg hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 hover:scale-110">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+    </button>
+
+    <!-- Config Panel (Sidebar) -->
+    <div id="config-panel" class="fixed top-0 left-0 h-full w-96 p-8 z-20 transform -translate-x-full overflow-y-auto">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800">Configuration</h2>
+        <div class="space-y-4">
+            <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">Core Settings</h3>
+            <div>
+                <label for="google-script-url" class="block text-sm font-medium text-gray-700 mb-1">Google Script URL</label>
+                <input type="url" id="google-script-url" class="mt-1 block w-full px-4 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="https://script.google.com/...">
+            </div>
+            <div>
+                <label for="form-id" class="block text-sm font-medium text-gray-700 mb-1">Jotform Form ID</label>
+                <input type="text" id="form-id" class="mt-1 block w-full px-4 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <h3 class="text-lg font-semibold text-gray-700 border-b pb-2 pt-4">AI Settings</h3>
+             <div>
+                <label for="gemini-api-key" class="block text-sm font-medium text-gray-700 mb-1">Gemini API Key</label>
+                <input type="password" id="gemini-api-key" class="mt-1 block w-full px-4 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+        </div>
+        <div class="mt-8 space-y-4">
+            <button id="save-config" class="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 btn-primary">Save Config</button>
+            <button id="clear-config" class="w-full bg-red-600 text-white py-2.5 px-4 rounded-lg shadow-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 btn-primary">Clear Config</button>
+        </div>
+        <div class="mt-8 border-t pt-6">
+            <button id="get-data-btn" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg shadow-xl hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 font-semibold btn-primary text-lg">Fetch Form Data</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="container mx-auto p-4 md:p-8">
+        <div class="text-center my-12">
+            <h1 class="text-5xl font-bold text-gray-900 tracking-tight">Jotform Editor</h1>
+            <p class="text-xl text-gray-600 mt-4 max-w-2xl mx-auto">A sleek and efficient way to edit unique names & translations for your form fields.</p>
+        </div>
+
+        <!-- Tabs -->
+        <div id="tabs" class="mb-8 border-b border-gray-300 hidden">
+            <nav class="flex space-x-8" aria-label="Tabs">
+                <button id="tab-questions" class="tab-button py-4 px-1 text-lg font-medium text-gray-500 hover:text-gray-800">Question Names</button>
+                <button id="tab-translations" class="tab-button py-4 px-1 text-lg font-medium text-gray-500 hover:text-gray-800">Translations</button>
+            </nav>
+        </div>
+
+        <!-- Tab Content Panels -->
+        <div id="content-panels">
+            <!-- Questions Panel -->
+            <div id="questions-panel">
+                 <div id="search-container" class="mb-8 hidden">
+                    <input type="text" id="search-input" placeholder="🔍 Search by question text or unique name..." class="w-full p-4 border border-gray-300 rounded-xl shadow-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-lg">
+                </div>
+                <div id="questions-container" class="space-y-6">
+                    <div id="initial-message" class="text-center py-20 px-6 bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg border">
+                        <h3 class="text-2xl font-medium text-gray-700">Welcome!</h3>
+                        <p class="text-gray-500 mt-3 max-w-md mx-auto">Open the settings panel, enter your configuration, then click "Fetch Form Data" to start.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Translations Panel -->
+            <div id="translations-panel" class="hidden">
+                <div id="translations-controls" class="mb-8 p-4 bg-white/80 rounded-xl shadow-md border space-y-4">
+                    <div class="md:flex md:items-center md:justify-between">
+                        <div class="flex items-center space-x-4">
+                            <label for="base-language-select" class="font-medium text-gray-700">Base Language:</label>
+                            <select id="base-language-select" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></select>
+                        </div>
+                        <div class="flex items-center mt-4 md:mt-0">
+                            <input type="checkbox" id="filter-untranslated-checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                            <label for="filter-untranslated-checkbox" class="ml-2 block text-sm text-gray-900">Show only items with missing translations</label>
+                        </div>
+                    </div>
+                    <div class="border-t pt-4 mt-4">
+                        <label for="file-upload" class="cursor-pointer bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 border border-gray-300 rounded-lg shadow-sm">
+                            <span>📚 Upload Documents for Context</span>
+                            <input id="file-upload" type="file" multiple class="hidden" accept=".pdf,image/*">
+                        </label>
+                        <div id="file-list" class="text-sm text-gray-600 mt-2"></div>
+                    </div>
+                </div>
+                 <div id="translations-search-container" class="mb-8">
+                     <input type="text" id="translations-search-input" placeholder="🔍 Search translations..." class="w-full p-4 border border-gray-300 rounded-xl shadow-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-lg">
+                </div>
+                <div id="translations-container" class="space-y-6"></div>
+            </div>
+        </div>
+
+        <div id="loader-container" class="hidden justify-center items-center py-20">
+            <div class="loader"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Placeholder -->
+    <div id="toast-container"></div>
+
+    <script>
+        // ✅ Version: 6.0 - Document Upload & Contextual AI
+        console.log('Version: 6.0 - Document Upload & Contextual AI');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const configPanel = document.getElementById('config-panel');
+            const toggleConfigBtn = document.getElementById('toggle-config-btn');
+            const saveConfigBtn = document.getElementById('save-config');
+            const clearConfigBtn = document.getElementById('clear-config');
+            const getDataBtn = document.getElementById('get-data-btn');
+            const loaderContainer = document.getElementById('loader-container');
+            const tabsContainer = document.getElementById('tabs');
+            const tabQuestions = document.getElementById('tab-questions');
+            const tabTranslations = document.getElementById('tab-translations');
+            const questionsPanel = document.getElementById('questions-panel');
+            const translationsPanel = document.getElementById('translations-panel');
+            const questionsContainer = document.getElementById('questions-container');
+            const translationsContainer = document.getElementById('translations-container');
+            const initialMessage = document.getElementById('initial-message');
+            const searchContainer = document.getElementById('search-container');
+            const searchInput = document.getElementById('search-input');
+            const translationsSearchInput = document.getElementById('translations-search-input');
+            const baseLanguageSelect = document.getElementById('base-language-select');
+            const filterUntranslatedCheckbox = document.getElementById('filter-untranslated-checkbox');
+            const fileUploadInput = document.getElementById('file-upload');
+            const fileListContainer = document.getElementById('file-list');
+            
+            const configInputs = {
+                googleScriptUrl: document.getElementById('google-script-url'),
+                formId: document.getElementById('form-id'),
+                geminiApiKey: document.getElementById('gemini-api-key')
+            };
+
+            // --- State ---
+            let translationsFetched = false;
+            let allTranslations = {};
+            let allAvailableLanguages = [];
+            let uploadedFilesData = [];
+
+            // --- Configuration & Local Storage ---
+            const getConfigValues = () => Object.fromEntries(Object.entries(configInputs).map(([k, v]) => [k, v.value]));
+            
+            const loadConfig = () => {
+                console.log('Loading config from localStorage.');
+                Object.keys(configInputs).forEach(key => {
+                    const savedValue = localStorage.getItem(`jotform_config_${key}`);
+                    if (savedValue) configInputs[key].value = savedValue;
+                });
+                if (localStorage.getItem('jotform_config_googleScriptUrl')) showToast('Config loaded.', 'info');
+            };
+
+            const saveConfig = () => {
+                console.log('Saving config to localStorage.');
+                const config = getConfigValues();
+                if (config.googleScriptUrl && config.formId) {
+                    Object.keys(config).forEach(key => localStorage.setItem(`jotform_config_${key}`, config[key]));
+                    showToast('Configuration saved!', 'success');
+                } else {
+                    showToast('Google Script URL and Form ID are required.', 'error');
+                }
+            };
+
+            const clearConfig = () => {
+                console.log('Clearing config.');
+                Object.keys(configInputs).forEach(key => {
+                    localStorage.removeItem(`jotform_config_${key}`);
+                    configInputs[key].value = '';
+                });
+                showToast('Configuration cleared.', 'info');
+            };
+
+            // --- Tab Management ---
+            const switchTab = (tabName) => {
+                const isQuestions = tabName === 'questions';
+                tabQuestions.classList.toggle('active', isQuestions);
+                tabTranslations.classList.toggle('active', !isQuestions);
+                questionsPanel.classList.toggle('hidden', !isQuestions);
+                translationsPanel.classList.toggle('hidden', isQuestions);
+                
+                if (tabName === 'translations' && !translationsFetched) {
+                    getTranslations();
+                }
+            };
+
+            // --- API Calls ---
+            const fetchData = async () => {
+                const config = getConfigValues();
+                if (!config.googleScriptUrl || !config.formId) {
+                    showToast('Please provide Google Script URL and Form ID.', 'error');
+                    return;
+                }
+                
+                const endpoint = `${config.googleScriptUrl}?formId=${config.formId}`;
+                console.log('Fetching questions from:', endpoint);
+
+                initialMessage.classList.add('hidden');
+                questionsContainer.innerHTML = '';
+                loaderContainer.style.display = 'flex';
+                searchContainer.classList.add('hidden');
+                tabsContainer.classList.add('hidden');
+                translationsFetched = false; // Reset on new fetch
+
+                try {
+                    const response = await fetch(endpoint);
+                    const data = await response.json();
+                    if (data.error || data.responseCode !== 200) throw new Error(data.message || 'Failed to fetch questions.');
+                    
+                    renderQuestions(data.content);
+                    showToast('Questions loaded!', 'success');
+                    searchContainer.classList.remove('hidden');
+                    tabsContainer.classList.remove('hidden');
+                    switchTab('questions');
+                } catch (error) {
+                    console.error('Error fetching questions:', error);
+                    showToast(`Error: ${error.message}`, 'error');
+                    questionsContainer.innerHTML = `<div class="text-center p-8 bg-red-100 text-red-700 rounded-lg shadow">Failed to load questions.</div>`;
+                } finally {
+                    loaderContainer.style.display = 'none';
+                }
+            };
+            
+            const getTranslations = async () => {
+                const config = getConfigValues();
+                translationsContainer.innerHTML = '';
+                loaderContainer.style.display = 'flex';
+
+                try {
+                    const response = await fetch(config.googleScriptUrl, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'getTranslations', formId: config.formId })
+                    });
+                    const data = await response.json();
+                     if (data.error || data.responseCode !== 200) throw new Error(data.message || 'Failed to fetch translations.');
+
+                    processAndRenderTranslations(data.content);
+                    translationsFetched = true;
+                    showToast('Translations loaded!', 'success');
+                } catch (error) {
+                    console.error('Error fetching translations:', error);
+                    showToast(`Translation Error: ${error.message}`, 'error');
+                    translationsContainer.innerHTML = `<div class="text-center p-8 bg-red-100 text-red-700 rounded-lg shadow">Failed to load translations.</div>`;
+                } finally {
+                     loaderContainer.style.display = 'none';
+                }
+            };
+
+            const callGoogleScript = async (payload, button) => {
+                const config = getConfigValues();
+                if (button) setButtonLoading(button, true);
+                try {
+                    const response = await fetch(config.googleScriptUrl, { method: 'POST', body: JSON.stringify(payload) });
+                    const data = await response.json();
+                    if (data.error || data.success === false) throw new Error(data.message || data.error || 'API call failed.');
+                    return data;
+                } catch (error) {
+                    showToast(`Error: ${error.message}`, 'error');
+                    return { error: error.message };
+                } finally {
+                    if (button) setButtonLoading(button, false);
+                }
+            };
+
+            const updateQuestionName = async (qid, newName, text, order, button) => {
+                const payload = { action: 'updateQuestion', formId: configInputs.formId.value, questionId: qid, newName, originalText: text, originalOrder: order };
+                const data = await callGoogleScript(payload, button);
+                if (!data.error) {
+                    showToast(`Question ${qid} updated!`, 'success');
+                    document.querySelector(`#name-display-${qid}`).textContent = newName;
+                }
+            };
+
+            const getSuggestedName = async (text, input, button) => {
+                const payload = { action: 'suggestName', geminiApiKey: configInputs.geminiApiKey.value, questionText: text };
+                const data = await callGoogleScript(payload, button);
+                if (data && data.suggestedName) {
+                    input.value = data.suggestedName;
+                    showToast('Suggestion applied!', 'success');
+                }
+            };
+            
+            const updateTranslations = async (hash, button) => {
+                const card = document.querySelector(`.translation-card[data-hash="${hash}"]`);
+                const textareas = card.querySelectorAll('textarea');
+                const translationsPayload = {};
+                textareas.forEach(ta => {
+                    const lang = ta.dataset.lang;
+                    if (!translationsPayload[lang]) translationsPayload[lang] = {};
+                    translationsPayload[lang][hash] = ta.value;
+                });
+                
+                const payload = { action: 'updateTranslations', formId: configInputs.formId.value, translations: translationsPayload };
+                const data = await callGoogleScript(payload, button);
+                if (!data.error) {
+                    showToast(`Translation for hash ${hash.substring(0,8)}... updated!`, 'success');
+                    textareas.forEach(ta => ta.classList.remove('needs-update'));
+                }
+            };
+
+            const handleAiTranslation = async (mode, hash, targetLang, textarea, button) => {
+                const sourceLang = baseLanguageSelect.value;
+                const sourceText = allTranslations[hash][sourceLang];
+                const currentText = textarea.value;
+
+                if (!sourceText) {
+                    showToast(`Cannot translate without base text in ${sourceLang}.`, 'error');
+                    return;
+                }
+
+                const payload = { 
+                    action: 'aiTranslate', 
+                    mode, sourceLang, targetLang, sourceText, currentText, 
+                    geminiApiKey: configInputs.geminiApiKey.value,
+                    files: uploadedFilesData
+                };
+                const data = await callGoogleScript(payload, button);
+                if (data && data.translatedText) {
+                    const originalText = textarea.value.trim();
+                    const newText = data.translatedText.trim();
+                    textarea.value = newText;
+                    autoResizeTextarea(textarea);
+                    
+                    if (originalText !== newText) {
+                        textarea.classList.add('needs-update');
+                    } else {
+                        textarea.classList.remove('needs-update');
+                    }
+                    updateSourceIndicator(textarea, data.source);
+                    showToast(`${mode === 'suggest' ? 'Suggestion' : 'Verification'} complete!`, 'success');
+                }
+            };
+            
+            const verifyAllTranslations = async (hash, button) => {
+                const card = document.querySelector(`.translation-card[data-hash="${hash}"]`);
+                const aiButtons = card.querySelectorAll('.ai-btn');
+                setButtonLoading(button, true);
+
+                try {
+                    for (const btn of aiButtons) {
+                        const textarea = btn.closest('div').nextElementSibling;
+                        const targetLang = btn.dataset.lang;
+                        const mode = btn.classList.contains('suggest-btn') ? 'suggest' : 'verify';
+                        const sourceLang = baseLanguageSelect.value;
+                        const sourceText = allTranslations[hash][sourceLang];
+                        if (!sourceText) continue;
+                        
+                        const payload = { 
+                            action: 'aiTranslate', 
+                            mode, sourceLang, targetLang, 
+                            currentText: textarea.value, 
+                            geminiApiKey: configInputs.geminiApiKey.value,
+                            files: uploadedFilesData
+                        };
+                        
+                        const data = await callGoogleScript(payload);
+                        if (data && data.translatedText) {
+                            const originalText = textarea.value.trim();
+                            const newText = data.translatedText.trim();
+                            if(originalText !== newText) {
+                                textarea.value = newText;
+                                textarea.classList.add('needs-update');
+                                autoResizeTextarea(textarea);
+                            } else {
+                                textarea.classList.remove('needs-update');
+                            }
+                            updateSourceIndicator(textarea, data.source);
+                        }
+                    }
+                    showToast('Batch verification complete!', 'success');
+                } catch (error) {
+                    showToast(`Batch verify error: ${error.message}`, 'error');
+                } finally {
+                    setButtonLoading(button, false);
+                }
+            };
+
+
+            // --- DOM Rendering & Logic ---
+            const renderQuestions = (questionsObject) => {
+                questionsContainer.innerHTML = '';
+                const questions = Object.values(questionsObject);
+                if (questions.length === 0) {
+                    questionsContainer.innerHTML = `<div class="text-center p-8 bg-white/60 rounded-lg shadow">No questions found.</div>`;
+                    return;
+                }
+                questions.forEach((q, index) => {
+                    if (typeof q.name === 'undefined') return;
+                    const card = document.createElement('div');
+                    card.className = 'card p-6 rounded-2xl shadow-lg';
+                    card.style.animationDelay = `${index * 50}ms`;
+                    card.dataset.text = (q.text || '').toLowerCase();
+                    card.dataset.name = q.name.toLowerCase();
+                    card.innerHTML = `
+                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                            <div class="flex-grow mb-4 lg:mb-0 lg:pr-6">
+                                <p class="text-sm text-gray-500 font-medium">QID: ${q.qid}</p>
+                                <p class="font-semibold text-xl text-gray-800 mt-1">${q.text || '<i>No question text</i>'}</p>
+                                <p class="text-sm text-indigo-600 font-mono mt-2">Current Name: <span id="name-display-${q.qid}" class="font-bold bg-indigo-100/50 text-indigo-700 py-0.5 px-2 rounded">${q.name}</span></p>
+                            </div>
+                            <div class="flex items-center space-x-3 flex-shrink-0">
+                                <input type="text" value="${q.name}" class="name-input w-full lg:w-48 px-3 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm">
+                                <button class="suggest-btn bg-purple-600 text-white py-2 px-3 rounded-lg hover:bg-purple-700 btn-primary flex-shrink-0" title="Suggest name">✨ Suggest</button>
+                                <button class="update-btn bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 btn-primary flex-shrink-0">Update</button>
+                            </div>
+                        </div>`;
+                    const nameInput = card.querySelector('.name-input');
+                    card.querySelector('.update-btn').addEventListener('click', (e) => updateQuestionName(q.qid, nameInput.value, q.text, q.order, e.currentTarget));
+                    card.querySelector('.suggest-btn').addEventListener('click', (e) => getSuggestedName(q.text, nameInput, e.currentTarget));
+                    questionsContainer.appendChild(card);
+                });
+            };
+
+            const processAndRenderTranslations = (translationsByLang) => {
+                allTranslations = {};
+                allAvailableLanguages = Object.keys(translationsByLang);
+                
+                baseLanguageSelect.innerHTML = '';
+                const langPriority = ['en-UK', 'en', 'fr'];
+                const sortedLangs = [...allAvailableLanguages].sort((a,b) => {
+                    const idxA = langPriority.indexOf(a);
+                    const idxB = langPriority.indexOf(b);
+                    if (idxA > -1 && idxB > -1) return idxA - idxB;
+                    if (idxA > -1) return -1;
+                    if (idxB > -1) return 1;
+                    return a.localeCompare(b);
+                });
+
+                sortedLangs.forEach(lang => {
+                    const option = document.createElement('option');
+                    option.value = lang;
+                    option.textContent = lang;
+                    baseLanguageSelect.appendChild(option);
+                });
+
+                for (const lang in translationsByLang) {
+                    for (const hash in translationsByLang[lang]) {
+                        if (!allTranslations[hash]) allTranslations[hash] = {};
+                        allTranslations[hash][lang] = translationsByLang[lang][hash];
+                    }
+                }
+                
+                renderTranslationCards();
+            };
+
+            const renderTranslationCards = () => {
+                translationsContainer.innerHTML = '';
+                if (Object.keys(allTranslations).length === 0) {
+                     translationsContainer.innerHTML = `<div class="text-center p-8 bg-white/60 rounded-lg shadow">No translations found.</div>`;
+                     return;
+                }
+
+                const showOnlyUntranslated = filterUntranslatedCheckbox.checked;
+                const baseLang = baseLanguageSelect.value;
+                let visibleCount = 0;
+
+                Object.entries(allTranslations).forEach(([hash, translations], index) => {
+                    const isMissingTranslation = allAvailableLanguages.some(lang => !translations[lang]);
+                    
+                    if (showOnlyUntranslated && !isMissingTranslation) return;
+
+                    visibleCount++;
+                    const baseText = translations[baseLang] || `No base text in '${baseLang}'. Check other languages.`;
+                    const card = document.createElement('div');
+                    card.className = 'translation-card card p-6 rounded-2xl shadow-lg';
+                    card.style.animationDelay = `${index * 20}ms`;
+                    card.dataset.hash = hash;
+                    card.dataset.searchText = `${baseText} ${Object.values(translations).join(' ')}`.toLowerCase();
+
+                    const translationInputs = allAvailableLanguages.map(lang => {
+                        const text = translations[lang] || '';
+                        const isBase = lang === baseLang;
+                        const aiButton = isBase ? '' : text ?
+                            `<button class="ai-btn verify-btn bg-green-500 hover:bg-green-600 text-white" data-lang="${lang}" title="Verify with AI">✔️ Verify</button>` :
+                            `<button class="ai-btn suggest-btn bg-purple-500 hover:bg-purple-600 text-white" data-lang="${lang}" title="Suggest with AI">✨ Suggest</button>`;
+
+                        return `
+                            <div class="mt-3">
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="block text-sm font-bold ${isBase ? 'text-indigo-600' : 'text-gray-600'} uppercase">${lang} ${isBase ? '(Base)' : ''}</label>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="source-indicator text-gray-400" title=""></span>
+                                        ${aiButton}
+                                    </div>
+                                </div>
+                                <textarea data-lang="${lang}" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base font-mono transition" rows="2" ${isBase ? 'readonly' : ''}>${text}</textarea>
+                            </div>`;
+                    }).join('');
+
+                    card.innerHTML = `
+                        <div>
+                            <p class="text-sm text-gray-500 font-mono">HASH: ${hash}</p>
+                            <div class="mt-2 p-3 bg-gray-100 rounded-lg border"><p class="font-semibold text-gray-800">${baseText}</p></div>
+                            <div class="mt-4">${translationInputs}</div>
+                            <div class="mt-6 flex justify-end items-center space-x-3">
+                                <button class="verify-all-btn bg-green-600 text-white py-2 px-5 rounded-lg hover:bg-green-700 btn-primary">✔️ Verify All</button>
+                                <button class="update-translation-btn bg-blue-600 text-white py-2 px-5 rounded-lg hover:bg-blue-700 btn-primary">Update</button>
+                            </div>
+                        </div>`;
+                    
+                    card.querySelector('.update-translation-btn').addEventListener('click', (e) => updateTranslations(hash, e.currentTarget));
+                    card.querySelector('.verify-all-btn').addEventListener('click', (e) => verifyAllTranslations(hash, e.currentTarget));
+                    
+                    card.querySelectorAll('.suggest-btn').forEach(btn => btn.addEventListener('click', (e) => {
+                        const textarea = e.target.closest('div').parentElement.nextElementSibling;
+                        handleAiTranslation('suggest', hash, e.target.dataset.lang, textarea, e.target);
+                    }));
+                    card.querySelectorAll('.verify-btn').forEach(btn => btn.addEventListener('click', (e) => {
+                        const textarea = e.target.closest('div').parentElement.nextElementSibling;
+                        handleAiTranslation('verify', hash, e.target.dataset.lang, textarea, e.target);
+                    }));
+
+                    translationsContainer.appendChild(card);
+                });
+
+                if (visibleCount === 0 && showOnlyUntranslated) {
+                    translationsContainer.innerHTML = `<div class="text-center p-8 bg-green-100 text-green-800 rounded-lg shadow">🎉 All items are fully translated!</div>`;
+                }
+
+                document.querySelectorAll('.translation-card textarea').forEach(autoResizeTextarea);
+            };
+            
+            // --- Utilities ---
+            const showToast = (message, type = 'info') => {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                document.getElementById('toast-container').appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 100);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 500);
+                }, 3500);
+            };
+
+            const setButtonLoading = (button, isLoading) => {
+                if (!button.originalContent) button.originalContent = button.innerHTML;
+                button.innerHTML = isLoading ? `<svg class="animate-spin h-5 w-5 text-white mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>` : button.originalContent;
+                button.disabled = isLoading;
+            };
+
+            const autoResizeTextarea = (textarea) => {
+                textarea.style.height = 'auto';
+                textarea.style.height = `${textarea.scrollHeight}px`;
+                textarea.addEventListener('input', () => {
+                    textarea.style.height = 'auto';
+                    textarea.style.height = `${textarea.scrollHeight}px`;
+                });
+            };
+
+            const updateSourceIndicator = (textarea, source) => {
+                const indicator = textarea.previousElementSibling.querySelector('.source-indicator');
+                if (!indicator) return;
+                if (source === 'document') {
+                    indicator.textContent = '📄';
+                    indicator.title = 'Source: Document';
+                } else if (source === 'ai') {
+                    indicator.textContent = '✨';
+                    indicator.title = 'Source: AI';
+                } else {
+                    indicator.textContent = '';
+                    indicator.title = '';
+                }
+            };
+            
+            // --- Event Listeners ---
+            saveConfigBtn.addEventListener('click', saveConfig);
+            clearConfigBtn.addEventListener('click', clearConfig);
+            getDataBtn.addEventListener('click', fetchData);
+            toggleConfigBtn.addEventListener('click', () => configPanel.classList.toggle('-translate-x-full'));
+            tabQuestions.addEventListener('click', () => switchTab('questions'));
+            tabTranslations.addEventListener('click', () => switchTab('translations'));
+            baseLanguageSelect.addEventListener('change', renderTranslationCards);
+            filterUntranslatedCheckbox.addEventListener('change', renderTranslationCards);
+
+            fileUploadInput.addEventListener('change', async (e) => {
+                const files = e.target.files;
+                if (!files.length) {
+                    uploadedFilesData = [];
+                    fileListContainer.innerHTML = '';
+                    return;
+                }
+
+                fileListContainer.innerHTML = 'Reading files...';
+                const filePromises = Array.from(files).map(file => {
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const base64 = event.target.result.split(',')[1];
+                            resolve({ name: file.name, mimeType: file.type, data: base64 });
+                        };
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                });
+
+                try {
+                    uploadedFilesData = await Promise.all(filePromises);
+                    fileListContainer.innerHTML = uploadedFilesData.map(f => `<span class="bg-gray-200 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">${f.name}</span>`).join('');
+                    showToast(`${uploadedFilesData.length} file(s) ready for context.`, 'info');
+                } catch (error) {
+                    showToast('Error reading files.', 'error');
+                    fileListContainer.innerHTML = '<span class="text-red-500">Error reading files.</span>';
+                }
+            });
+
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                document.querySelectorAll('#questions-container .card').forEach(card => {
+                    const text = card.dataset.text;
+                    const name = card.dataset.name;
+                    card.style.display = (text.includes(term) || name.includes(term)) ? 'block' : 'none';
+                });
+            });
+
+            translationsSearchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                document.querySelectorAll('#translations-container .card').forEach(card => {
+                    card.style.display = card.dataset.searchText.includes(term) ? 'block' : 'none';
+                });
+            });
+
+            // --- Initial Load ---
+            loadConfig();
+        });
+    </script>
+</body>
+</html>
