@@ -43,8 +43,7 @@
             border-radius: 0.375rem; transition: all 0.2s ease;
         }
         .ai-btn:hover { transform: scale(1.05); }
-        /* NEW: Style for textareas with pending AI changes */
-        .needs-update {
+        textarea.needs-update {
             border-color: #f59e0b; /* amber-500 */
             box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.5);
         }
@@ -143,8 +142,8 @@
     <div id="toast-container"></div>
 
     <script>
-        // ✅ Version: 4.0 - Highlight AI Changes & Batch Verify
-        console.log('Version: 4.0 - Highlight AI Changes & Batch Verify');
+        // ✅ Version: 5.0 - Sequential "Verify All"
+        console.log('Version: 5.0 - Sequential "Verify All"');
 
         document.addEventListener('DOMContentLoaded', () => {
             // --- DOM Elements ---
@@ -334,7 +333,6 @@
                 const data = await callGoogleScript(payload, button);
                 if (!data.error) {
                     showToast(`Translation for hash ${hash.substring(0,8)}... updated!`, 'success');
-                    // Remove highlight after successful update
                     textareas.forEach(ta => ta.classList.remove('needs-update'));
                 }
             };
@@ -352,53 +350,52 @@
                 const payload = { action: 'aiTranslate', mode, sourceLang, targetLang, sourceText, currentText, geminiApiKey: configInputs.geminiApiKey.value };
                 const data = await callGoogleScript(payload, button);
                 if (data && data.translatedText) {
-                    const originalText = textarea.value;
-                    textarea.value = data.translatedText;
+                    const originalText = textarea.value.trim();
+                    const newText = data.translatedText.trim();
+                    textarea.value = newText;
                     autoResizeTextarea(textarea);
-                    // Add highlight if text was changed
-                    if (originalText !== data.translatedText) {
+                    
+                    if (originalText !== newText) {
                         textarea.classList.add('needs-update');
+                    } else {
+                        textarea.classList.remove('needs-update');
                     }
                     showToast(`${mode === 'suggest' ? 'Suggestion' : 'Verification'} complete!`, 'success');
                 }
             };
             
-            // NEW: Batch verify all translations on a card
             const verifyAllTranslations = async (hash, button) => {
                 const card = document.querySelector(`.translation-card[data-hash="${hash}"]`);
                 const aiButtons = card.querySelectorAll('.ai-btn');
-                const promises = [];
-
                 setButtonLoading(button, true);
-                aiButtons.forEach(btn => {
-                    const textarea = btn.closest('div').nextElementSibling;
-                    const targetLang = btn.dataset.lang;
-                    const mode = btn.classList.contains('suggest-btn') ? 'suggest' : 'verify';
-                    
-                    // Create a promise for each AI call, but without the button spinner
-                    const sourceLang = baseLanguageSelect.value;
-                    const sourceText = allTranslations[hash][sourceLang];
-                    if (!sourceText) return; // Skip if no base text
-                    
-                    const payload = { action: 'aiTranslate', mode, sourceLang, targetLang, sourceText, currentText: textarea.value, geminiApiKey: configInputs.geminiApiKey.value };
-                    
-                    promises.push(
-                        fetch(configInputs.googleScriptUrl.value, { method: 'POST', body: JSON.stringify(payload) })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data && data.translatedText) {
-                                if(textarea.value !== data.translatedText) {
-                                    textarea.value = data.translatedText;
-                                    textarea.classList.add('needs-update');
-                                    autoResizeTextarea(textarea);
-                                }
-                            }
-                        })
-                    );
-                });
 
                 try {
-                    await Promise.all(promises);
+                    // FIX: Use a for...of loop to process API calls sequentially
+                    for (const btn of aiButtons) {
+                        const textarea = btn.closest('div').nextElementSibling;
+                        const targetLang = btn.dataset.lang;
+                        const mode = btn.classList.contains('suggest-btn') ? 'suggest' : 'verify';
+                        
+                        const sourceLang = baseLanguageSelect.value;
+                        const sourceText = allTranslations[hash][sourceLang];
+                        if (!sourceText) continue; // Skip if no base text
+                        
+                        const payload = { action: 'aiTranslate', mode, sourceLang, targetLang, currentText: textarea.value, geminiApiKey: configInputs.geminiApiKey.value };
+                        
+                        // Await each call individually
+                        const data = await callGoogleScript(payload); // Don't pass button here
+                        if (data && data.translatedText) {
+                            const originalText = textarea.value.trim();
+                            const newText = data.translatedText.trim();
+                            if(originalText !== newText) {
+                                textarea.value = newText;
+                                textarea.classList.add('needs-update');
+                                autoResizeTextarea(textarea);
+                            } else {
+                                textarea.classList.remove('needs-update');
+                            }
+                        }
+                    }
                     showToast('Batch verification complete!', 'success');
                 } catch (error) {
                     showToast(`Batch verify error: ${error.message}`, 'error');
@@ -487,9 +484,7 @@
                 let visibleCount = 0;
 
                 Object.entries(allTranslations).forEach(([hash, translations], index) => {
-                    // FIX: A translation is missing if the number of keys for this hash
-                    // is less than the total number of available languages for the form.
-                    const isMissingTranslation = Object.keys(translations).length < allAvailableLanguages.length;
+                    const isMissingTranslation = allAvailableLanguages.some(lang => !translations[lang]);
                     
                     if (showOnlyUntranslated && !isMissingTranslation) return;
 
@@ -524,7 +519,6 @@
                             <div class="mt-2 p-3 bg-gray-100 rounded-lg border"><p class="font-semibold text-gray-800">${baseText}</p></div>
                             <div class="mt-4">${translationInputs}</div>
                             <div class="mt-6 flex justify-end items-center space-x-3">
-                                <button class="verify-all-btn bg-green-600 text-white py-2 px-5 rounded-lg hover:bg-green-700 btn-primary">✔️ Verify All</button>
                                 <button class="update-translation-btn bg-blue-600 text-white py-2 px-5 rounded-lg hover:bg-blue-700 btn-primary">Update</button>
                             </div>
                         </div>`;
