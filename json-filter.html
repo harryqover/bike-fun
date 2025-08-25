@@ -53,11 +53,13 @@
                 </div>
 
                 <div id="filter-section" class="mt-8 hidden">
-                    <h2 class="text-2xl font-semibold mb-4 border-b pb-2">2. Filter Events</h2>
+                    <div class="flex justify-between items-center border-b pb-2 mb-4">
+                        <h2 class="text-2xl font-semibold">2. Filter Events</h2>
+                        <button id="reset-filters-btn" class="text-sm text-blue-600 hover:text-blue-800 font-semibold">Reset All</button>
+                    </div>
                     <div id="filter-controls" class="space-y-4">
                         <!-- Dynamic filters will be inserted here -->
                     </div>
-                     <button id="reset-filters-btn" class="mt-6 w-full bg-gray-200 text-gray-800 font-bold py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">Reset Filters</button>
                 </div>
             </aside>
 
@@ -209,117 +211,178 @@
              */
             function generateFilterControls() {
                 filterControls.innerHTML = '';
+                const favoriteKeys = ['data.eventName', 'createdAt', 'policyNumber', 'vin', 'vrn'];
+
+                // --- Global Search ---
+                const globalSearchLabel = document.createElement('label');
+                globalSearchLabel.htmlFor = 'global-search';
+                globalSearchLabel.className = 'block text-sm font-medium text-gray-700';
+                globalSearchLabel.textContent = 'Global Search';
+                
+                const globalSearchInput = document.createElement('input');
+                globalSearchInput.type = 'text';
+                globalSearchInput.id = 'global-search';
+                globalSearchInput.dataset.key = 'global-search';
+                globalSearchInput.className = 'mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
+                globalSearchInput.placeholder = 'Search all fields...';
+                globalSearchInput.addEventListener('input', handleFilterChange);
+                
+                filterControls.appendChild(globalSearchLabel);
+                filterControls.appendChild(globalSearchInput);
+
+                // --- Containers for specific filters ---
+                const favoriteContainer = document.createElement('div');
+                const allFiltersContainer = document.createElement('div');
+                allFiltersContainer.className = 'pt-4 border-t mt-4 hidden';
+
                 const allKeys = new Set();
                 originalData.forEach(item => getUniqueKeys(item, allKeys));
-                
-                const priorityKeys = ['id', 'type', 'status', 'createdAt', 'data.eventName'];
-                const sortedKeys = [...allKeys].sort((a, b) => {
-                    const aPriority = priorityKeys.indexOf(a);
-                    const bPriority = priorityKeys.indexOf(b);
-                    if (aPriority > -1 && bPriority > -1) return aPriority - bPriority;
-                    if (aPriority > -1) return -1;
-                    if (bPriority > -1) return 1;
-                    return a.localeCompare(b);
-                });
+                const sortedKeys = [...allKeys].sort((a, b) => a.localeCompare(b));
+
+                let favoritesFound = 0;
+                let allFiltersFound = 0;
 
                 sortedKeys.forEach(key => {
+                    const isFavorite = favoriteKeys.some(favKey => key.endsWith(`.${favKey}`) || key === favKey);
+                    const targetContainer = isFavorite ? favoriteContainer : allFiltersContainer;
+                    
+                    if(isFavorite) favoritesFound++; else allFiltersFound++;
+
+                    const controlWrapper = document.createElement('div');
+                    controlWrapper.className = 'mb-4';
+
                     const isDateKey = key.toLowerCase().includes('date') || key.toLowerCase().endsWith('at');
                     
                     const label = document.createElement('label');
                     label.className = 'block text-sm font-medium text-gray-700';
                     label.textContent = key;
-                    filterControls.appendChild(label);
+                    controlWrapper.appendChild(label);
 
                     if (isDateKey) {
-                        // Create a container for date range inputs
                         const rangeContainer = document.createElement('div');
                         rangeContainer.className = 'flex items-center gap-2 mt-1';
-                        
-                        // 'From' input
                         const fromInput = document.createElement('input');
                         fromInput.type = 'datetime-local';
-                        fromInput.id = `filter-${key}-from`;
                         fromInput.dataset.key = `${key}-from`;
                         fromInput.className = 'block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
                         fromInput.addEventListener('input', handleFilterChange);
-                        
-                        // 'To' input
                         const toInput = document.createElement('input');
                         toInput.type = 'datetime-local';
-                        toInput.id = `filter-${key}-to`;
                         toInput.dataset.key = `${key}-to`;
                         toInput.className = 'block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
                         toInput.addEventListener('input', handleFilterChange);
-
                         rangeContainer.appendChild(fromInput);
                         rangeContainer.appendChild(toInput);
-                        filterControls.appendChild(rangeContainer);
-
+                        controlWrapper.appendChild(rangeContainer);
                     } else {
-                        // Regular text input
                         const input = document.createElement('input');
                         input.type = 'text';
-                        input.id = `filter-${key}`;
                         input.dataset.key = key;
                         input.className = 'mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
                         input.placeholder = `Filter by ${key}...`;
                         input.addEventListener('input', handleFilterChange);
-                        filterControls.appendChild(input);
+                        controlWrapper.appendChild(input);
                     }
+                    targetContainer.appendChild(controlWrapper);
                 });
+                
+                if (favoritesFound > 0) {
+                    const favTitle = document.createElement('h3');
+                    favTitle.className = 'text-lg font-semibold text-gray-800 mt-6 mb-2 border-t pt-4';
+                    favTitle.textContent = 'Favorite Filters';
+                    filterControls.appendChild(favTitle);
+                    filterControls.appendChild(favoriteContainer);
+                }
+
+                if (allFiltersFound > 0) {
+                    const toggleButton = document.createElement('button');
+                    toggleButton.textContent = 'Show All Filters';
+                    toggleButton.className = 'text-blue-600 hover:text-blue-800 text-sm font-semibold mt-4';
+                    toggleButton.onclick = () => {
+                        const isHidden = allFiltersContainer.classList.toggle('hidden');
+                        toggleButton.textContent = isHidden ? `Show All ${allFiltersFound} Filters` : 'Hide All Filters';
+                    };
+                    filterControls.appendChild(toggleButton);
+                    filterControls.appendChild(allFiltersContainer);
+                }
             }
 
             // --- FILTERING LOGIC ---
 
             /**
-             * Handles changes in any filter input and triggers filtering.
-             * @param {Event} e - The input event.
+             * Recursively searches an object for a given search term.
+             * @param {object} obj - The object to search within.
+             * @param {string} term - The search term (already lowercased).
+             * @returns {boolean} True if the term is found, false otherwise.
              */
-            function handleFilterChange(e) {
-                filterValues[e.target.dataset.key] = e.target.value;
-                applyFilters();
+            function deepSearch(obj, term) {
+                if (obj === null || obj === undefined) return false;
+                for (const key in obj) {
+                    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                        const value = obj[key];
+                        if (typeof value === 'string' && value.toLowerCase().includes(term)) return true;
+                        if (typeof value === 'number' && String(value).includes(term)) return true;
+                        if (typeof value === 'object' && deepSearch(value, term)) return true;
+                    }
+                }
+                return false;
             }
 
             /**
              * Applies all active filters to the original dataset.
              */
             function applyFilters() {
-                const activeFilters = Object.entries(filterValues).filter(([_, value]) => value);
+                let dataToFilter = [...originalData];
+                
+                // 1. Apply global search
+                const globalSearchTerm = (filterValues['global-search'] || '').toLowerCase();
+                if (globalSearchTerm) {
+                    dataToFilter = dataToFilter.filter(item => deepSearch(item, globalSearchTerm));
+                }
 
-                if (activeFilters.length === 0) {
-                    filteredData = [...originalData];
-                } else {
-                    filteredData = originalData.filter(item => {
-                        return activeFilters.every(([key, value]) => {
-                            // Handle date range 'from'
+                // 2. Apply specific filters
+                const activeSpecificFilters = Object.entries(filterValues).filter(([key, value]) => value && key !== 'global-search');
+                if (activeSpecificFilters.length > 0) {
+                    dataToFilter = dataToFilter.filter(item => {
+                        return activeSpecificFilters.every(([key, value]) => {
                             if (key.endsWith('-from')) {
                                 const baseKey = key.slice(0, -5);
                                 const itemValue = getNestedValue(item, baseKey);
                                 if (!itemValue) return false;
-                                const itemDate = new Date(itemValue);
-                                const fromDate = new Date(value);
-                                return !isNaN(itemDate.getTime()) && !isNaN(fromDate.getTime()) && itemDate >= fromDate;
+                                try {
+                                    const itemDate = new Date(itemValue);
+                                    const fromDate = new Date(value);
+                                    return !isNaN(itemDate.getTime()) && !isNaN(fromDate.getTime()) && itemDate >= fromDate;
+                                } catch (e) { return false; }
                             }
-                            // Handle date range 'to'
                             if (key.endsWith('-to')) {
                                 const baseKey = key.slice(0, -3);
                                 const itemValue = getNestedValue(item, baseKey);
                                 if (!itemValue) return false;
-                                const itemDate = new Date(itemValue);
-                                const toDate = new Date(value);
-                                return !isNaN(itemDate.getTime()) && !isNaN(toDate.getTime()) && itemDate <= toDate;
+                                try {
+                                    const itemDate = new Date(itemValue);
+                                    const toDate = new Date(value);
+                                    return !isNaN(itemDate.getTime()) && !isNaN(toDate.getTime()) && itemDate <= toDate;
+                                } catch (e) { return false; }
                             }
-
-                            // Handle regular text filters
                             const itemValue = getNestedValue(item, key);
-                            if (itemValue === null || itemValue === undefined) {
-                                return false;
-                            }
+                            if (itemValue === null || itemValue === undefined) return false;
                             return String(itemValue).toLowerCase().includes(value.toLowerCase());
                         });
                     });
                 }
+                
+                filteredData = dataToFilter;
                 renderResults();
+            }
+
+             /**
+             * Handles changes in any filter input and triggers filtering.
+             * @param {Event} e - The input event.
+             */
+            function handleFilterChange(e) {
+                filterValues[e.target.dataset.key] = e.target.value;
+                applyFilters();
             }
 
             // --- UI RENDERING ---
@@ -365,7 +428,7 @@
                     
                     row.innerHTML = `
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">${item.id || 'N/A'}</div>
+                            <div class="text-sm font-medium text-gray-900 break-all">${item.id || 'N/A'}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.type === 'EVENT_TYPE_POI' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}">
@@ -395,13 +458,9 @@
             
             // --- MODAL & ACTIONS ---
             
-            /**
-             * Opens the details modal with the content of a specific event.
-             * @param {number} index - The index of the event in the filteredData array.
-             */
             function openModal(index) {
                 const item = filteredData[index];
-                modalContent.textContent = JSON.stringify(item, null, 2); // Pretty print JSON
+                modalContent.textContent = JSON.stringify(item, null, 2);
                 detailsModal.classList.remove('hidden');
                 detailsModal.classList.add('flex');
             }
@@ -423,11 +482,9 @@
                 showToast('Filters have been reset.', 'success');
             });
             
-            // Event delegation for dynamically created buttons
             resultsContainer.addEventListener('click', (e) => {
                 if (e.target.classList.contains('view-details-btn')) {
-                    const index = e.target.dataset.index;
-                    openModal(index);
+                    openModal(e.target.dataset.index);
                 }
                 if (e.target.classList.contains('copy-id-btn')) {
                     const id = e.target.dataset.id;
@@ -435,17 +492,13 @@
                         showToast(`ID "${id}" copied to clipboard!`);
                     }).catch(err => {
                         showToast('Failed to copy ID.', 'error');
-                        console.error('Clipboard Error:', err);
                     });
                 }
             });
 
             closeModalBtn.addEventListener('click', closeModal);
             detailsModal.addEventListener('click', (e) => {
-                // Close modal if backdrop is clicked
-                if (e.target === detailsModal) {
-                    closeModal();
-                }
+                if (e.target === detailsModal) closeModal();
             });
             
             modalCopyBtn.addEventListener('click', () => {
