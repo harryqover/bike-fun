@@ -48,6 +48,11 @@
             <aside class="lg:w-1/3 bg-white p-6 rounded-2xl shadow-lg h-fit lg:sticky top-8">
                 <div id="data-input-section">
                     <h2 class="text-2xl font-semibold mb-4 border-b pb-2">1. Load Your Data</h2>
+                    <p class="text-sm text-gray-600 mb-3">
+                        You can copy the JSON response from API endpoints like 
+                        <code class="bg-gray-100 text-gray-800 px-1 py-0.5 rounded">/v1/events?type=EVENT_TYPE_POI&page-size=10</code> 
+                        and paste it here.
+                    </p>
                     <textarea id="json-input" class="w-full h-48 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Paste your JSON array here..."></textarea>
                     <button id="load-json-btn" class="mt-4 w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Load & Generate Filters</button>
                 </div>
