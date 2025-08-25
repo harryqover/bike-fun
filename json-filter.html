@@ -158,7 +158,7 @@
              * @param {string} prefix - The prefix for nested keys.
              */
             function getUniqueKeys(obj, keys = new Set(), prefix = '') {
-                if (!obj || typeof obj !== 'object') return;
+                if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return;
 
                 for (const key in obj) {
                     if (Object.prototype.hasOwnProperty.call(obj, key)) {
@@ -212,8 +212,7 @@
                 const allKeys = new Set();
                 originalData.forEach(item => getUniqueKeys(item, allKeys));
                 
-                // Prioritize top-level, simple keys
-                const priorityKeys = ['id', 'type', 'status', 'data.eventName', 'data.entity.requestType'];
+                const priorityKeys = ['id', 'type', 'status', 'createdAt', 'data.eventName'];
                 const sortedKeys = [...allKeys].sort((a, b) => {
                     const aPriority = priorityKeys.indexOf(a);
                     const bPriority = priorityKeys.indexOf(b);
@@ -224,22 +223,49 @@
                 });
 
                 sortedKeys.forEach(key => {
-                    const inputId = `filter-${key}`;
+                    const isDateKey = key.toLowerCase().includes('date') || key.toLowerCase().endsWith('at');
+                    
                     const label = document.createElement('label');
-                    label.htmlFor = inputId;
                     label.className = 'block text-sm font-medium text-gray-700';
                     label.textContent = key;
-
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.id = inputId;
-                    input.dataset.key = key;
-                    input.className = 'mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
-                    input.placeholder = `Filter by ${key}...`;
-                    input.addEventListener('input', handleFilterChange);
-
                     filterControls.appendChild(label);
-                    filterControls.appendChild(input);
+
+                    if (isDateKey) {
+                        // Create a container for date range inputs
+                        const rangeContainer = document.createElement('div');
+                        rangeContainer.className = 'flex items-center gap-2 mt-1';
+                        
+                        // 'From' input
+                        const fromInput = document.createElement('input');
+                        fromInput.type = 'datetime-local';
+                        fromInput.id = `filter-${key}-from`;
+                        fromInput.dataset.key = `${key}-from`;
+                        fromInput.className = 'block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
+                        fromInput.addEventListener('input', handleFilterChange);
+                        
+                        // 'To' input
+                        const toInput = document.createElement('input');
+                        toInput.type = 'datetime-local';
+                        toInput.id = `filter-${key}-to`;
+                        toInput.dataset.key = `${key}-to`;
+                        toInput.className = 'block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
+                        toInput.addEventListener('input', handleFilterChange);
+
+                        rangeContainer.appendChild(fromInput);
+                        rangeContainer.appendChild(toInput);
+                        filterControls.appendChild(rangeContainer);
+
+                    } else {
+                        // Regular text input
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.id = `filter-${key}`;
+                        input.dataset.key = key;
+                        input.className = 'mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
+                        input.placeholder = `Filter by ${key}...`;
+                        input.addEventListener('input', handleFilterChange);
+                        filterControls.appendChild(input);
+                    }
                 });
             }
 
@@ -250,7 +276,7 @@
              * @param {Event} e - The input event.
              */
             function handleFilterChange(e) {
-                filterValues[e.target.dataset.key] = e.target.value.toLowerCase();
+                filterValues[e.target.dataset.key] = e.target.value;
                 applyFilters();
             }
 
@@ -265,40 +291,36 @@
                 } else {
                     filteredData = originalData.filter(item => {
                         return activeFilters.every(([key, value]) => {
-                           return deepSearch(item, value);
+                            // Handle date range 'from'
+                            if (key.endsWith('-from')) {
+                                const baseKey = key.slice(0, -5);
+                                const itemValue = getNestedValue(item, baseKey);
+                                if (!itemValue) return false;
+                                const itemDate = new Date(itemValue);
+                                const fromDate = new Date(value);
+                                return !isNaN(itemDate.getTime()) && !isNaN(fromDate.getTime()) && itemDate >= fromDate;
+                            }
+                            // Handle date range 'to'
+                            if (key.endsWith('-to')) {
+                                const baseKey = key.slice(0, -3);
+                                const itemValue = getNestedValue(item, baseKey);
+                                if (!itemValue) return false;
+                                const itemDate = new Date(itemValue);
+                                const toDate = new Date(value);
+                                return !isNaN(itemDate.getTime()) && !isNaN(toDate.getTime()) && itemDate <= toDate;
+                            }
+
+                            // Handle regular text filters
+                            const itemValue = getNestedValue(item, key);
+                            if (itemValue === null || itemValue === undefined) {
+                                return false;
+                            }
+                            return String(itemValue).toLowerCase().includes(value.toLowerCase());
                         });
                     });
                 }
                 renderResults();
             }
-            
-            /**
-             * Recursively searches an object for a given search term.
-             * @param {object} obj - The object to search within.
-             * @param {string} term - The search term.
-             * @returns {boolean} True if the term is found, false otherwise.
-             */
-            function deepSearch(obj, term) {
-                if (obj === null || obj === undefined) {
-                    return false;
-                }
-
-                const values = Object.values(obj);
-
-                for (const value of values) {
-                    if (typeof value === 'string' && value.toLowerCase().includes(term)) {
-                        return true;
-                    }
-                    if (typeof value === 'number' && value.toString().toLowerCase().includes(term)) {
-                        return true;
-                    }
-                    if (typeof value === 'object' && deepSearch(value, term)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-
 
             // --- UI RENDERING ---
 
@@ -327,6 +349,7 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
                             <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
                         </tr>
                     </thead>
@@ -338,6 +361,8 @@
                 filteredData.forEach((item, index) => {
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-50';
+                    const createdAt = item.createdAt ? new Date(item.createdAt).toLocaleString() : 'N/A';
+                    
                     row.innerHTML = `
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-medium text-gray-900">${item.id || 'N/A'}</div>
@@ -353,6 +378,7 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${getNestedValue(item, 'data.eventName') || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${createdAt}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                             <button class="copy-id-btn text-indigo-600 hover:text-indigo-900" data-id="${item.id}">Copy ID</button>
                             <button class="view-details-btn text-indigo-600 hover:text-indigo-900" data-index="${index}">Details</button>
