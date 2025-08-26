@@ -300,6 +300,10 @@
                         <label for="upgrade-birthdate" class="block text-sm font-medium text-gray-700">Birthdate</label>
                         <input type="date" id="upgrade-birthdate" class="form-input" value="1988-01-01" required>
                     </div>
+                    <div>
+                        <label for="upgrade-age" class="block text-sm font-medium text-gray-700">Age</label>
+                        <input type="date" id="upgrade-age" class="form-input" value="46" required>
+                    </div>
                     <hr class="my-4">
                     <h4 class="text-md font-medium text-gray-800">Address</h4>
                     <div>
@@ -835,6 +839,7 @@
                     document.getElementById('upgrade-risk-id').value = upgradeButton.dataset.riskId;
                     document.getElementById('upgrade-pilot-id').value = upgradeButton.dataset.pilotId;
                     document.getElementById('upgrade-birthdate').value = upgradeButton.dataset.birthdate;
+                    document.getElementById('upgrade-age').value = upgradeButton.dataset.age;
                     document.getElementById('upgrade-gender').value = upgradeButton.dataset.gender;
                     openModal(upgradeModal);
                 }
@@ -893,12 +898,14 @@
                     lastName: document.getElementById('upgrade-lastName').value,
                     email: document.getElementById('upgrade-email').value,
                     birthdate: document.getElementById('upgrade-birthdate').value,
+                    age: document.getElementById('upgrade-age').value,
                     street: document.getElementById('upgrade-street').value,
                     number: document.getElementById('upgrade-number').value,
                     zip: document.getElementById('upgrade-zip').value,
                     city: document.getElementById('upgrade-city').value,
                     startDate: document.getElementById('upgrade-startDate').value,
-                    insuredAmount: parseInt(document.getElementById('upgrade-insuredAmount').value, 10)
+                    //insuredAmount: parseInt(document.getElementById('upgrade-insuredAmount').value, 10)
+                    insuredAmount: document.getElementById('upgrade-insuredAmount').value
                 };
                 
                 for(const key in payload) {
