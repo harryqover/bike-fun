@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jotform Submission Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%); }
+        #config-panel { transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); background-color: rgba(255, 255, 255, 0.75); border-right: 1px solid rgba(255, 255, 255, 0.2); }
+        .toast { position: fixed; bottom: 20px; right: 20px; padding: 1rem 1.5rem; border-radius: 0.5rem; color: white; opacity: 0; transform: translateY(100px); transition: all 0.4s ease-in-out; z-index: 100; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: linear-gradient(to right, #1d976c, #93f9b9); }
+        .toast.error { background: linear-gradient(to right, #d31027, #ea384d); }
+        .toast.info { background: linear-gradient(to right, #2193b0, #6dd5ed); }
+        .loader { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid #4f46e5; border-radius: 50%; width: 50px; height: 50px; animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .card { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); background-color: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255, 255, 255, 0.3); transition: transform 0.2s ease-out, box-shadow 0.2s ease-out; opacity: 0; transform: translateY(20px); animation: fadeIn 0.5s ease-out forwards; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        .btn-primary { transition: all 0.2s ease-in-out; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4); }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <button id="toggle-config-btn" class="fixed top-5 right-5 z-30 bg-white/70 backdrop-blur-sm text-indigo-600 p-3 rounded-full shadow-lg hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 hover:scale-110">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+    </button>
+
+    <div id="config-panel" class="fixed top-0 left-0 h-full w-96 p-8 z-20 transform -translate-x-full overflow-y-auto">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800">Configuration</h2>
+        <div class="space-y-4">
+            <div>
+                <label for="google-script-url" class="block text-sm font-medium text-gray-700 mb-1">Google Script URL</label>
+                <input type="url" id="google-script-url" class="mt-1 block w-full px-4 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="https://script.google.com/...">
+            </div>
+            <div>
+                <label for="submission-id" class="block text-sm font-medium text-gray-700 mb-1">Jotform Submission ID</label>
+                <input type="text" id="submission-id" class="mt-1 block w-full px-4 py-2 bg-white/80 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+        </div>
+        <div class="mt-8 space-y-4">
+            <button id="save-config" class="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg shadow-lg hover:bg-indigo-700 btn-primary">Save Config</button>
+            <button id="clear-config" class="w-full bg-red-600 text-white py-2.5 px-4 rounded-lg shadow-lg hover:bg-red-700 btn-primary">Clear Config</button>
+        </div>
+        <div class="mt-8 border-t pt-6">
+            <button id="get-data-btn" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg shadow-xl hover:bg-green-700 font-semibold btn-primary text-lg">Fetch Submission Data</button>
+        </div>
+    </div>
+
+    <div id="main-content" class="container mx-auto p-4 md:p-8">
+        <div class="text-center my-12">
+            <h1 class="text-5xl font-bold text-gray-900 tracking-tight">Jotform Submission Viewer</h1>
+            <p class="text-xl text-gray-600 mt-4 max-w-2xl mx-auto">View a specific Jotform submission with a clean and organized interface.</p>
+        </div>
+
+        <div id="submission-details-container" class="mb-8 hidden"></div>
+        <div id="search-container" class="mb-8 hidden">
+            <input type="text" id="search-input" placeholder="🔍 Search by question or answer..." class="w-full p-4 border border-gray-300 rounded-xl shadow-lg focus:ring-2 focus:ring-indigo-500 text-lg">
+        </div>
+        <div id="answers-container" class="space-y-6">
+            <div id="initial-message" class="text-center py-20 px-6 bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg border">
+                <h3 class="text-2xl font-medium text-gray-700">Welcome!</h3>
+                <p class="text-gray-500 mt-3 max-w-md mx-auto">Open the settings panel, enter your configuration, then click "Fetch Submission Data" to start.</p>
+            </div>
+        </div>
+        <div id="loader-container" class="hidden justify-center items-center py-20">
+            <div class="loader"></div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const configPanel = document.getElementById('config-panel');
+            const toggleConfigBtn = document.getElementById('toggle-config-btn');
+            const saveConfigBtn = document.getElementById('save-config');
+            const clearConfigBtn = document.getElementById('clear-config');
+            const getDataBtn = document.getElementById('get-data-btn');
+            const loaderContainer = document.getElementById('loader-container');
+            const answersContainer = document.getElementById('answers-container');
+            const initialMessage = document.getElementById('initial-message');
+            const searchContainer = document.getElementById('search-container');
+            const searchInput = document.getElementById('search-input');
+            const submissionDetailsContainer = document.getElementById('submission-details-container');
+            
+            const configInputs = {
+                googleScriptUrl: document.getElementById('google-script-url'),
+                submissionId: document.getElementById('submission-id')
+            };
+
+            // --- Configuration & Local Storage ---
+            const getConfigValues = () => Object.fromEntries(Object.entries(configInputs).map(([k, v]) => [k, v.value.trim()]));
+            
+            const loadConfig = () => {
+                Object.keys(configInputs).forEach(key => {
+                    const savedValue = localStorage.getItem(`jotform_viewer_${key}`);
+                    if (savedValue) configInputs[key].value = savedValue;
+                });
+                if (localStorage.getItem('jotform_viewer_googleScriptUrl')) showToast('Config loaded.', 'info');
+            };
+
+            const saveConfig = () => {
+                const config = getConfigValues();
+                if (config.googleScriptUrl) {
+                    Object.keys(config).forEach(key => localStorage.setItem(`jotform_viewer_${key}`, config[key]));
+                    showToast('Configuration saved!', 'success');
+                } else {
+                    showToast('Google Script URL is required.', 'error');
+                }
+            };
+
+            const clearConfig = () => {
+                Object.keys(configInputs).forEach(key => {
+                    localStorage.removeItem(`jotform_viewer_${key}`);
+                    configInputs[key].value = '';
+                });
+                showToast('Configuration cleared.', 'info');
+            };
+
+            // --- API Call ---
+            const fetchSubmissionData = async () => {
+                const config = getConfigValues();
+                if (!config.googleScriptUrl || !config.submissionId) {
+                    showToast('Please provide Google Script URL and Submission ID.', 'error');
+                    return;
+                }
+                
+                const endpoint = `${config.googleScriptUrl}?submissionId=${config.submissionId}`;
+                console.log('Fetching submission from:', endpoint);
+
+                initialMessage.classList.add('hidden');
+                answersContainer.innerHTML = '';
+                submissionDetailsContainer.innerHTML = '';
+                loaderContainer.style.display = 'flex';
+                searchContainer.classList.add('hidden');
+
+                try {
+                    const response = await fetch(endpoint);
+                    const data = await response.json();
+                    if (!data.success || data.error) throw new Error(data.error || 'Failed to fetch submission data.');
+                    
+                    renderSubmission(data);
+                    showToast('Submission loaded!', 'success');
+                    searchContainer.classList.remove('hidden');
+                } catch (error) {
+                    console.error('Error fetching submission:', error);
+                    showToast(`Error: ${error.message}`, 'error');
+                    answersContainer.innerHTML = `<div class="text-center p-8 bg-red-100 text-red-700 rounded-lg shadow">Failed to load submission. Check your settings and Submission ID.</div>`;
+                } finally {
+                    loaderContainer.style.display = 'none';
+                }
+            };
+            
+            // --- DOM Rendering ---
+            const renderSubmission = (data) => {
+                answersContainer.innerHTML = '';
+                submissionDetailsContainer.innerHTML = `
+                    <div class="card p-4 mb-6 text-center bg-white/90">
+                        <h2 class="text-2xl font-bold">Submission Details</h2>
+                        <div class="flex justify-center space-x-6 mt-2 text-sm text-gray-600">
+                            <p><strong>Submission ID:</strong> ${data.submissionId}</p>
+                            <p><strong>Form ID:</strong> ${data.formId}</p>
+                            <p><strong>Created At:</strong> ${new Date(data.createdAt).toLocaleString()}</p>
+                        </div>
+                    </div>`;
+                submissionDetailsContainer.classList.remove('hidden');
+                
+                if (!data.answers || data.answers.length === 0) {
+                    answersContainer.innerHTML = `<div class="text-center p-8 bg-white/60 rounded-lg shadow">No answers found in this submission.</div>`;
+                    return;
+                }
+
+                data.answers.forEach((q, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'card p-6 rounded-2xl shadow-lg';
+                    card.style.animationDelay = `${index * 50}ms`;
+
+                    const formattedAnswer = formatAnswer(q.answer, q.prettyFormat);
+                    card.dataset.searchText = `${q.text || ''} ${formattedAnswer}`.toLowerCase();
+                    
+                    card.innerHTML = `
+                        <div class="flex flex-col">
+                            <p class="text-sm text-gray-500 font-medium">Order: ${q.order} | Name: ${q.name}</p>
+                            <p class="font-semibold text-lg text-gray-800 mt-1">${q.text || '<i>No question text</i>'}</p>
+                            <div class="mt-3 p-3 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg">
+                                <p class="text-gray-900 font-mono text-base whitespace-pre-wrap">${formattedAnswer || '<i>No answer provided.</i>'}</p>
+                            </div>
+                        </div>`;
+                    answersContainer.appendChild(card);
+                });
+            };
+
+            // --- Utilities ---
+            const formatAnswer = (answer, prettyFormat) => {
+                if (prettyFormat) return prettyFormat;
+                if (typeof answer === 'string') return answer;
+                if (Array.isArray(answer)) return answer.join(', ');
+                if (typeof answer === 'object' && answer !== null) {
+                    // Handle special cases like 'other' from radio buttons
+                    if(answer.other) return answer.other;
+                    return JSON.stringify(answer, null, 2);
+                }
+                return 'N/A';
+            };
+
+            const showToast = (message, type = 'info') => {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                document.getElementById('toast-container').appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 100);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 500);
+                }, 3500);
+            };
+
+            // --- Event Listeners ---
+            saveConfigBtn.addEventListener('click', saveConfig);
+            clearConfigBtn.addEventListener('click', clearConfig);
+            getDataBtn.addEventListener('click', fetchSubmissionData);
+            toggleConfigBtn.addEventListener('click', () => configPanel.classList.toggle('-translate-x-full'));
+
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                document.querySelectorAll('#answers-container .card').forEach(card => {
+                    card.style.display = card.dataset.searchText.includes(term) ? 'block' : 'none';
+                });
+            });
+
+            // --- Initial Load ---
+            loadConfig();
+        });
+    </script>
+</body>
+</html>
