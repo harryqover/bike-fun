@@ -35,6 +35,11 @@
             background-color: #2563eb; /* bg-blue-600 */
             color: white;
         }
+        .error-filter-active {
+            background-color: #dc2626; /* bg-red-600 */
+            color: white;
+            border-color: #dc2626;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -143,8 +148,10 @@
             let originalData = [];
             let filteredData = [];
             let filterValues = {
-                ranTriggers: new Set()
+                ranTriggers: new Set(),
+                selectedError: null
             };
+            let eventsWithErrors = new Map();
 
             // --- UTILITY FUNCTIONS ---
 
@@ -207,6 +214,45 @@
                 filterControls.appendChild(globalSearchWrapper);
                 globalSearchWrapper.querySelector('#global-search').addEventListener('input', handleFilterChange);
 
+                // --- Error Section ---
+                eventsWithErrors.clear();
+                const errorsMap = new Map();
+                originalData.forEach(item => {
+                    const allResults = [...(item.results || []), ...(item.data?.results || [])];
+                    allResults.forEach(result => {
+                        if (result.success === false && result.error?.message) {
+                            const errorMessage = result.error.message;
+                            if (!errorsMap.has(errorMessage)) {
+                                errorsMap.set(errorMessage, 0);
+                            }
+                            errorsMap.set(errorMessage, errorsMap.get(errorMessage) + 1);
+                            eventsWithErrors.set(item.id, true);
+                        }
+                    });
+                });
+
+                if (errorsMap.size > 0) {
+                    const errorTitle = document.createElement('h3');
+                    errorTitle.className = 'text-lg font-semibold text-red-600 mt-6 mb-2 border-t pt-4';
+                    errorTitle.textContent = 'Events with Errors';
+                    filterControls.appendChild(errorTitle);
+
+                    const errorContainer = document.createElement('div');
+                    errorContainer.className = 'space-y-2';
+                    errorContainer.id = 'error-filters-container';
+                    
+                    errorsMap.forEach((count, message) => {
+                        const button = document.createElement('button');
+                        button.dataset.errorMessage = message;
+                        button.className = 'w-full text-left px-3 py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors flex justify-between items-center';
+                        button.innerHTML = `<span>${message}</span><span class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">${count}</span>`;
+                        button.addEventListener('click', handleErrorFilterClick);
+                        errorContainer.appendChild(button);
+                    });
+                    filterControls.appendChild(errorContainer);
+                }
+
+
                 // --- Ran Triggers Section ---
                 const ranTriggerNames = new Set();
                 originalData.forEach(item => {
@@ -247,8 +293,7 @@
                 originalData.forEach(item => getUniqueKeys(item, allKeys));
                 const sortedKeys = [...allKeys].sort((a, b) => a.localeCompare(b));
 
-                let favoritesFound = 0;
-                let allFiltersFound = 0;
+                let favoritesFound = 0, allFiltersFound = 0;
 
                 sortedKeys.forEach(key => {
                     const isFavorite = favoriteKeys.some(favKey => key.endsWith(`.${favKey}`) || key === favKey);
@@ -319,7 +364,7 @@
                     dataToFilter = dataToFilter.filter(item => deepSearch(item, globalSearchTerm));
                 }
                 
-                const activeSpecificFilters = Object.entries(filterValues).filter(([key, value]) => value && !['global-search', 'ranTriggers'].includes(key));
+                const activeSpecificFilters = Object.entries(filterValues).filter(([key, value]) => value && !['global-search', 'ranTriggers', 'selectedError'].includes(key));
                 if (activeSpecificFilters.length > 0) {
                     dataToFilter = dataToFilter.filter(item => 
                         activeSpecificFilters.every(([key, value]) => {
@@ -346,6 +391,14 @@
                         )
                     );
                 }
+
+                if (filterValues.selectedError) {
+                    dataToFilter = dataToFilter.filter(item =>
+                        [...(item.results || []), ...(item.data?.results || [])].some(result =>
+                            result.success === false && result.error?.message === filterValues.selectedError
+                        )
+                    );
+                }
                 
                 filteredData = dataToFilter;
                 renderResults();
@@ -363,6 +416,24 @@
                     filterValues.ranTriggers.delete(triggerName);
                 } else {
                     filterValues.ranTriggers.add(triggerName);
+                }
+                applyFilters();
+            }
+            
+            function handleErrorFilterClick(e) {
+                const button = e.currentTarget;
+                const errorMessage = button.dataset.errorMessage;
+
+                // Deselect if it's already active
+                if (button.classList.contains('error-filter-active')) {
+                    button.classList.remove('error-filter-active');
+                    filterValues.selectedError = null;
+                } else {
+                    // Deselect all other error buttons
+                    document.querySelectorAll('#error-filters-container button').forEach(btn => btn.classList.remove('error-filter-active'));
+                    // Select the clicked one
+                    button.classList.add('error-filter-active');
+                    filterValues.selectedError = errorMessage;
                 }
                 applyFilters();
             }
@@ -400,8 +471,15 @@
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-50';
                     const createdAt = item.createdAt ? new Date(item.createdAt).toLocaleString() : 'N/A';
+                    const hasError = eventsWithErrors.has(item.id);
+                    
                     row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-gray-900 break-all">${item.id || 'N/A'}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                ${hasError ? '<svg class="h-5 w-5 text-red-500 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>' : ''}
+                                <div class="text-sm font-medium text-gray-900 break-all">${item.id || 'N/A'}</div>
+                            </div>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.type === 'EVENT_TYPE_POI' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}">${item.type || 'N/A'}</span></td>
                         <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.status === 'EVENT_STATUS_PROCESSED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">${item.status || 'N/A'}</span></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${getNestedValue(item, 'data.eventName') || 'N/A'}</td>
@@ -436,17 +514,17 @@
             loadJsonBtn.addEventListener('click', loadData);
             
             resetFiltersBtn.addEventListener('click', () => {
-                filterValues = { ranTriggers: new Set() };
+                filterValues = { ranTriggers: new Set(), selectedError: null };
                 filterControls.querySelectorAll('input').forEach(input => input.value = '');
-                document.querySelectorAll('#ran-triggers-container button').forEach(btn => btn.classList.remove('filter-btn-active'));
+                document.querySelectorAll('#ran-triggers-container button, #error-filters-container button').forEach(btn => btn.classList.remove('filter-btn-active', 'error-filter-active'));
                 applyFilters();
                 showToast('Filters have been reset.', 'success');
             });
             
             resultsContainer.addEventListener('click', (e) => {
-                if (e.target.classList.contains('view-details-btn')) openModal(e.target.dataset.index);
-                if (e.target.classList.contains('copy-id-btn')) {
-                    navigator.clipboard.writeText(e.target.dataset.id).then(() => showToast(`ID copied!`)).catch(() => showToast('Failed to copy.', 'error'));
+                if (e.target.closest('.view-details-btn')) openModal(e.target.closest('.view-details-btn').dataset.index);
+                if (e.target.closest('.copy-id-btn')) {
+                    navigator.clipboard.writeText(e.target.closest('.copy-id-btn').dataset.id).then(() => showToast(`ID copied!`)).catch(() => showToast('Failed to copy.', 'error'));
                 }
             });
 
