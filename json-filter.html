@@ -40,11 +40,25 @@
             color: white;
             border-color: #dc2626;
         }
+        .fullscreen-aside-hidden {
+            display: none;
+        }
+        /* Interactive JSON viewer styles */
+        .json-viewer { font-family: monospace; font-size: 0.9em; }
+        .json-viewer details { padding-left: 1.5em; border-left: 1px solid #e5e7eb; }
+        .json-viewer summary { cursor: pointer; display: list-item; list-style: '▶ '; padding: 2px; }
+        .json-viewer details[open] > summary { list-style: '▼ '; }
+        .json-viewer .key { color: #8b5cf6; } /* purple-500 */
+        .json-viewer .string { color: #10b981; } /* green-500 */
+        .json-viewer .number { color: #3b82f6; } /* blue-500 */
+        .json-viewer .null { color: #ef4444; } /* red-500 */
+        .json-viewer .boolean { color: #f97316; } /* orange-500 */
+        .json-viewer mark { background-color: #fef08a; padding: 0 2px; border-radius: 2px; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
-    <div class="container mx-auto p-4 md:p-8">
+    <div class="max-w-full mx-auto p-4 md:p-8">
         <!-- Header Section -->
         <header class="text-center mb-8">
             <h1 class="text-4xl font-bold text-gray-900">Advanced JSON Event Filter</h1>
@@ -52,10 +66,10 @@
         </header>
 
         <!-- Main Content Area -->
-        <div class="flex flex-col lg:flex-row gap-8">
+        <div id="main-wrapper" class="flex flex-col lg:flex-row gap-8">
 
             <!-- Left Panel: Data Input and Filters -->
-            <aside class="lg:w-1/3 bg-white p-6 rounded-2xl shadow-lg h-fit lg:sticky top-8">
+            <aside id="aside-panel" class="lg:w-1/3 bg-white p-6 rounded-2xl shadow-lg h-fit lg:sticky top-8 lg:max-h-[calc(100vh-4rem)] overflow-y-auto transition-all duration-300">
                 <div id="data-input-section">
                     <h2 class="text-2xl font-semibold mb-4 border-b pb-2">1. Load Your Data</h2>
                     <p class="text-sm text-gray-600 mb-3">
@@ -79,12 +93,29 @@
             </aside>
 
             <!-- Right Panel: Results -->
-            <main class="lg:w-2/3">
+            <main id="main-panel" class="lg:w-2/3 transition-all duration-300">
                 <div id="results-section" class="bg-white p-6 rounded-2xl shadow-lg min-h-[400px]">
-                    <h2 class="text-2xl font-semibold mb-4">Results</h2>
-                    <div class="flex justify-between items-center mb-4 pb-2 border-b">
-                         <p id="results-count" class="text-gray-600">No data loaded.</p>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-semibold">Results</h2>
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                <button id="columns-btn" class="hidden items-center gap-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md px-4 py-2 hover:bg-gray-50">
+                                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path></svg>
+                                    Columns
+                                </button>
+                                <div id="columns-dropdown" class="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10 hidden p-2 border">
+                                    <!-- Column options will be injected here -->
+                                </div>
+                            </div>
+                            <button id="fullscreen-btn" class="hidden items-center gap-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md px-4 py-2 hover:bg-gray-50">
+                                <svg id="fullscreen-icon" class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5"></path></svg>
+                                <svg id="exit-fullscreen-icon" class="w-5 h-5 text-gray-500 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 3h6v6m-2-2L8 14M3 9V3h6l-2 2L14 8"></path></svg>
+                                <span id="fullscreen-text">Full Screen</span>
+                            </button>
+                        </div>
                     </div>
+                    <div class="border-b mb-4"></div>
+                    <p id="results-count" class="text-gray-600 mb-4">No data loaded.</p>
                     <div id="results-container" class="overflow-x-auto">
                         <!-- Results table will be inserted here -->
                          <div id="placeholder" class="text-center py-16">
@@ -105,14 +136,18 @@
         <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center p-6 border-b">
                 <h3 class="text-2xl font-semibold">Event Details</h3>
+                <div class="relative">
+                    <input type="search" id="modal-search" class="w-64 pl-8 pr-4 py-2 border rounded-lg" placeholder="Search in details...">
+                    <svg class="w-5 h-5 text-gray-400 absolute top-1/2 left-2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
                 <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            <div class="p-6 overflow-y-auto">
-                <pre id="modal-content" class="bg-gray-100 p-4 rounded-lg text-sm whitespace-pre-wrap break-all"></pre>
+            <div id="modal-content-container" class="p-6 overflow-y-auto bg-gray-50">
+                <!-- Interactive JSON tree will be rendered here -->
             </div>
-            <div class="p-4 bg-gray-50 border-t rounded-b-2xl text-right">
+            <div class="p-4 bg-gray-100 border-t rounded-b-2xl text-right">
                  <button id="modal-copy-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition">Copy JSON</button>
             </div>
         </div>
@@ -135,10 +170,20 @@
             const resultsCount = document.getElementById('results-count');
             const resultsContainer = document.getElementById('results-container');
             const placeholder = document.getElementById('placeholder');
+            const mainWrapper = document.getElementById('main-wrapper');
+            const asidePanel = document.getElementById('aside-panel');
+            const mainPanel = document.getElementById('main-panel');
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            const fullscreenText = document.getElementById('fullscreen-text');
+            const fullscreenIcon = document.getElementById('fullscreen-icon');
+            const exitFullscreenIcon = document.getElementById('exit-fullscreen-icon');
+            const columnsBtn = document.getElementById('columns-btn');
+            const columnsDropdown = document.getElementById('columns-dropdown');
             
             const detailsModal = document.getElementById('details-modal');
             const closeModalBtn = document.getElementById('close-modal-btn');
-            const modalContent = document.getElementById('modal-content');
+            const modalContentContainer = document.getElementById('modal-content-container');
+            const modalSearch = document.getElementById('modal-search');
             const modalCopyBtn = document.getElementById('modal-copy-btn');
 
             const toast = document.getElementById('toast');
@@ -147,11 +192,30 @@
             // App state
             let originalData = [];
             let filteredData = [];
+            let currentModalData = null;
             let filterValues = {
                 ranTriggers: new Set(),
                 selectedError: null
             };
             let eventsWithErrors = new Map();
+            let allPossibleColumns = new Set();
+            let visibleColumns = new Set();
+            const defaultColumns = ['id', 'type', 'status', 'data.eventName', 'createdAt'];
+
+            // --- LOCAL STORAGE ---
+            const STORAGE_KEY = 'json_filter_visible_columns';
+
+            function saveColumnPreferences() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(visibleColumns)));
+            }
+
+            function loadColumnPreferences() {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    return new Set(JSON.parse(saved));
+                }
+                return new Set(defaultColumns);
+            }
 
             // --- UTILITY FUNCTIONS ---
 
@@ -191,9 +255,18 @@
                     if (!Array.isArray(data)) throw new Error('Input is not a JSON array.');
                     originalData = data;
                     filteredData = [...originalData];
+                    
+                    allPossibleColumns = new Set();
+                    originalData.forEach(item => getUniqueKeys(item, allPossibleColumns));
+                    visibleColumns = loadColumnPreferences();
+
                     generateFilterControls();
+                    populateColumnsDropdown();
                     renderResults();
+                    
                     filterSection.classList.remove('hidden');
+                    fullscreenBtn.classList.remove('hidden');
+                    columnsBtn.classList.remove('hidden');
                     showToast('Data loaded successfully!', 'success');
                 } catch (error) {
                     showToast(`Error loading JSON: ${error.message}`, 'error');
@@ -218,17 +291,33 @@
                 eventsWithErrors.clear();
                 const errorsMap = new Map();
                 originalData.forEach(item => {
+                    let hasErrorInItem = false;
+                    const logError = (message) => {
+                        if (message) {
+                            errorsMap.set(message, (errorsMap.get(message) || 0) + 1);
+                            hasErrorInItem = true;
+                        }
+                    };
+
                     const allResults = [...(item.results || []), ...(item.data?.results || [])];
                     allResults.forEach(result => {
                         if (result.success === false && result.error?.message) {
-                            const errorMessage = result.error.message;
-                            if (!errorsMap.has(errorMessage)) {
-                                errorsMap.set(errorMessage, 0);
-                            }
-                            errorsMap.set(errorMessage, errorsMap.get(errorMessage) + 1);
-                            eventsWithErrors.set(item.id, true);
+                            logError(result.error.message);
                         }
+                        (result.actions || []).forEach(action => {
+                            if (action.success === false && action.error?.message) {
+                                logError(action.error.message);
+                            }
+                        });
                     });
+
+                    if (item.data?.contract?.error?.reason) {
+                        logError(item.data.contract.error.reason);
+                    }
+
+                    if (hasErrorInItem) {
+                        eventsWithErrors.set(item.id, true);
+                    }
                 });
 
                 if (errorsMap.size > 0) {
@@ -393,11 +482,14 @@
                 }
 
                 if (filterValues.selectedError) {
-                    dataToFilter = dataToFilter.filter(item =>
-                        [...(item.results || []), ...(item.data?.results || [])].some(result =>
-                            result.success === false && result.error?.message === filterValues.selectedError
-                        )
-                    );
+                    dataToFilter = dataToFilter.filter(item => {
+                        if (item.data?.contract?.error?.reason === filterValues.selectedError) return true;
+                        const allResults = [...(item.results || []), ...(item.data?.results || [])];
+                        return allResults.some(result => 
+                            (result.success === false && result.error?.message === filterValues.selectedError) ||
+                            (result.actions || []).some(action => action.success === false && action.error?.message === filterValues.selectedError)
+                        );
+                    });
                 }
                 
                 filteredData = dataToFilter;
@@ -424,14 +516,11 @@
                 const button = e.currentTarget;
                 const errorMessage = button.dataset.errorMessage;
 
-                // Deselect if it's already active
                 if (button.classList.contains('error-filter-active')) {
                     button.classList.remove('error-filter-active');
                     filterValues.selectedError = null;
                 } else {
-                    // Deselect all other error buttons
                     document.querySelectorAll('#error-filters-container button').forEach(btn => btn.classList.remove('error-filter-active'));
-                    // Select the clicked one
                     button.classList.add('error-filter-active');
                     filterValues.selectedError = errorMessage;
                 }
@@ -439,6 +528,21 @@
             }
 
             // --- UI RENDERING ---
+
+            function populateColumnsDropdown() {
+                columnsDropdown.innerHTML = '';
+                const sortedColumns = [...allPossibleColumns].sort();
+                sortedColumns.forEach(col => {
+                    const isVisible = visibleColumns.has(col);
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'flex items-center p-1';
+                    wrapper.innerHTML = `
+                        <input type="checkbox" id="col-${col}" data-col="${col}" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" ${isVisible ? 'checked' : ''}>
+                        <label for="col-${col}" class="ml-2 text-sm text-gray-700">${col}</label>
+                    `;
+                    columnsDropdown.appendChild(wrapper);
+                });
+            }
 
             function renderResults() {
                 resultsCount.textContent = `${filteredData.length} of ${originalData.length} events shown.`;
@@ -452,17 +556,26 @@
 
                 const table = document.createElement('table');
                 table.className = 'min-w-full divide-y divide-gray-200';
-                table.innerHTML = `
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event ID</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event Name</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
-                            <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
-                        </tr>
-                    </thead>`;
+                
+                const thead = document.createElement('thead');
+                thead.className = 'bg-gray-50';
+                const headerRow = document.createElement('tr');
+                
+                const currentVisibleColumns = Array.from(visibleColumns);
+
+                currentVisibleColumns.forEach(col => {
+                    const th = document.createElement('th');
+                    th.scope = 'col';
+                    th.className = 'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
+                    th.textContent = col;
+                    headerRow.appendChild(th);
+                });
+                const actionTh = document.createElement('th');
+                actionTh.scope = 'col';
+                actionTh.className = 'relative px-6 py-3';
+                actionTh.innerHTML = '<span class="sr-only">Actions</span>';
+                headerRow.appendChild(actionTh);
+                thead.appendChild(headerRow);
                 
                 const tbody = document.createElement('tbody');
                 tbody.className = 'bg-white divide-y divide-gray-200';
@@ -470,27 +583,35 @@
                 filteredData.forEach((item, index) => {
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-50';
-                    const createdAt = item.createdAt ? new Date(item.createdAt).toLocaleString() : 'N/A';
                     const hasError = eventsWithErrors.has(item.id);
                     
-                    row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                ${hasError ? '<svg class="h-5 w-5 text-red-500 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>' : ''}
-                                <div class="text-sm font-medium text-gray-900 break-all">${item.id || 'N/A'}</div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.type === 'EVENT_TYPE_POI' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}">${item.type || 'N/A'}</span></td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.status === 'EVENT_STATUS_PROCESSED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">${item.status || 'N/A'}</span></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${getNestedValue(item, 'data.eventName') || 'N/A'}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${createdAt}</td>
+                    let rowHtml = '';
+                    currentVisibleColumns.forEach(col => {
+                        let value = getNestedValue(item, col) ?? 'N/A';
+                        if (col.toLowerCase().includes('date') || col.toLowerCase().endsWith('at')) {
+                            value = value !== 'N/A' ? new Date(value).toLocaleString() : 'N/A';
+                        }
+                        
+                        let cellContent = `<div class="text-sm text-gray-900 break-all">${value}</div>`;
+                        if (col === 'id' && hasError) {
+                            cellContent = `<div class="flex items-center">
+                                <svg class="h-5 w-5 text-red-500 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                                ${cellContent}
+                            </div>`;
+                        }
+                        rowHtml += `<td class="px-6 py-4 whitespace-nowrap">${cellContent}</td>`;
+                    });
+                    
+                    rowHtml += `
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                             <button class="copy-id-btn text-indigo-600 hover:text-indigo-900" data-id="${item.id}">Copy ID</button>
                             <button class="view-details-btn text-indigo-600 hover:text-indigo-900" data-index="${index}">Details</button>
                         </td>`;
+                    row.innerHTML = rowHtml;
                     tbody.appendChild(row);
                 });
 
+                table.appendChild(thead);
                 table.appendChild(tbody);
                 resultsContainer.innerHTML = '';
                 resultsContainer.appendChild(table);
@@ -499,7 +620,9 @@
             // --- MODAL & ACTIONS ---
             
             function openModal(index) {
-                modalContent.textContent = JSON.stringify(filteredData[index], null, 2);
+                currentModalData = filteredData[index];
+                modalSearch.value = '';
+                renderJsonAsTree(currentModalData, modalContentContainer);
                 detailsModal.classList.remove('hidden');
                 detailsModal.classList.add('flex');
             }
@@ -507,8 +630,116 @@
             function closeModal() {
                 detailsModal.classList.add('hidden');
                 detailsModal.classList.remove('flex');
+                currentModalData = null;
             }
             
+            function renderJsonAsTree(data, container) {
+                container.innerHTML = '';
+                const tree = buildTree(data);
+                container.appendChild(tree);
+            }
+
+            function buildTree(data) {
+                const root = document.createElement('div');
+                root.className = 'json-viewer';
+
+                if (data === null) {
+                    const el = document.createElement('span');
+                    el.className = 'null';
+                    el.textContent = 'null';
+                    root.appendChild(el);
+                    return root;
+                }
+
+                const isArray = Array.isArray(data);
+                const keys = Object.keys(data);
+                
+                const details = document.createElement('details');
+                details.open = true;
+                
+                const summary = document.createElement('summary');
+                summary.textContent = isArray ? `Array(${keys.length})` : `Object {${keys.length}}`;
+                details.appendChild(summary);
+
+                for (const key of keys) {
+                    const value = data[key];
+                    const element = document.createElement('div');
+                    
+                    const keySpan = document.createElement('span');
+                    keySpan.className = 'key';
+                    keySpan.textContent = isArray ? '' : `"${key}": `;
+                    element.appendChild(keySpan);
+
+                    if (typeof value === 'object' && value !== null) {
+                        element.appendChild(buildTree(value));
+                    } else {
+                        const valueSpan = document.createElement('span');
+                        if (typeof value === 'string') {
+                            valueSpan.className = 'string';
+                            valueSpan.textContent = `"${value}"`;
+                        } else if (typeof value === 'number') {
+                            valueSpan.className = 'number';
+                            valueSpan.textContent = value;
+                        } else if (typeof value === 'boolean') {
+                            valueSpan.className = 'boolean';
+                            valueSpan.textContent = value;
+                        } else {
+                            valueSpan.className = 'null';
+                            valueSpan.textContent = 'null';
+                        }
+                        element.appendChild(valueSpan);
+                    }
+                    details.appendChild(element);
+                }
+                root.appendChild(details);
+                return root;
+            }
+            
+            function handleModalSearch() {
+                const searchTerm = modalSearch.value.toLowerCase();
+                
+                // First, re-render the tree to remove old highlights
+                renderJsonAsTree(currentModalData, modalContentContainer);
+
+                if (!searchTerm) return;
+
+                const allTextNodes = [];
+                const walk = (node) => {
+                    if (node.nodeType === 3) { // Text node
+                        allTextNodes.push(node);
+                    } else {
+                        node.childNodes.forEach(walk);
+                    }
+                };
+                walk(modalContentContainer);
+
+                allTextNodes.forEach(node => {
+                    const text = node.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        const parent = node.parentNode;
+                        const newHtml = node.textContent.replace(new RegExp(searchTerm, 'gi'), match => `<mark>${match}</mark>`);
+                        
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = newHtml;
+                        
+                        // Expand all parent <details> elements to make the match visible
+                        let el = parent;
+                        while (el && el !== modalContentContainer) {
+                            if (el.tagName === 'DETAILS') {
+                                el.open = true;
+                            }
+                            el = el.parentNode;
+                        }
+                        
+                        // Replace the text node with the new highlighted version
+                        while (tempDiv.firstChild) {
+                            parent.insertBefore(tempDiv.firstChild, node);
+                        }
+                        parent.removeChild(node);
+                    }
+                });
+            }
+
             // --- EVENT LISTENERS ---
 
             loadJsonBtn.addEventListener('click', loadData);
@@ -528,13 +759,48 @@
                 }
             });
 
+            fullscreenBtn.addEventListener('click', () => {
+                asidePanel.classList.toggle('lg:w-1/3');
+                asidePanel.classList.toggle('fullscreen-aside-hidden');
+                mainPanel.classList.toggle('lg:w-2/3');
+                mainPanel.classList.toggle('w-full');
+                const isFullScreen = asidePanel.classList.contains('fullscreen-aside-hidden');
+                fullscreenText.textContent = isFullScreen ? 'Exit Full Screen' : 'Full Screen';
+                fullscreenIcon.classList.toggle('hidden', isFullScreen);
+                exitFullscreenIcon.classList.toggle('hidden', !isFullScreen);
+            });
+
+            columnsBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                columnsDropdown.classList.toggle('hidden');
+            });
+
+            columnsDropdown.addEventListener('change', (e) => {
+                if (e.target.type === 'checkbox') {
+                    const col = e.target.dataset.col;
+                    if (e.target.checked) {
+                        visibleColumns.add(col);
+                    } else {
+                        visibleColumns.delete(col);
+                    }
+                    saveColumnPreferences();
+                    renderResults();
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!columnsBtn.contains(e.target) && !columnsDropdown.contains(e.target)) {
+                    columnsDropdown.classList.add('hidden');
+                }
+            });
+
             closeModalBtn.addEventListener('click', closeModal);
             detailsModal.addEventListener('click', (e) => { if (e.target === detailsModal) closeModal(); });
+            modalSearch.addEventListener('input', handleModalSearch);
             modalCopyBtn.addEventListener('click', () => {
-                navigator.clipboard.writeText(modalContent.textContent).then(() => showToast('JSON copied!')).catch(() => showToast('Failed to copy.', 'error'));
+                navigator.clipboard.writeText(JSON.stringify(currentModalData, null, 2)).then(() => showToast('JSON copied!')).catch(() => showToast('Failed to copy.', 'error'));
             });
         });
-console.log("you are on the right version")
     </script>
 </body>
 </html>
