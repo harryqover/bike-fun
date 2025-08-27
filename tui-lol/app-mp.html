@@ -217,7 +217,7 @@
                 <div id="view-bulk-add" class="hidden bg-white p-6 rounded-lg shadow">
                     <h2 class="text-2xl font-bold mb-4 text-gray-800">Bulk Add Pilots</h2>
                     <p class="text-gray-600 mb-4">Paste CSV data below. The format should be: <code class="bg-gray-200 p-1 rounded">pilotId,startDate,wage,birthdate,gender,age</code>. No header row.</p>
-                    <textarea id="csv-data" rows="10" class="form-input" placeholder="pilot001,2025-01-01,85000.50,1985-05-20,Male,39&#10;pilot002,2025-01-15,92000.75,1990-11-12,Female,34"></textarea>
+                    <textarea id="csv-data" rows="10" class="form-input" placeholder="pilot001,2025-01-01,85000.50,1985-05-20,GENDER_FEMALE,39&#10;pilot002,2025-01-15,92000.75,1990-11-12,GENDER_MALE,34"></textarea>
                     <div class="flex justify-end mt-4">
                         <button id="bulk-add-btn" class="btn tui-bg-red text-white font-bold py-2 px-4 rounded-lg">Add Pilots</button>
                     </div>
