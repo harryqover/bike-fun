@@ -898,7 +898,7 @@
                     lastName: document.getElementById('upgrade-lastName').value,
                     email: document.getElementById('upgrade-email').value,
                     birthdate: document.getElementById('upgrade-birthdate').value,
-                    age: document.getElementById('upgrade-age').value,
+                    age: parseInt(document.getElementById('upgrade-age').value, 10),
                     street: document.getElementById('upgrade-street').value,
                     number: document.getElementById('upgrade-number').value,
                     zip: document.getElementById('upgrade-zip').value,
@@ -988,7 +988,7 @@
             handleInitialLoad();
         });
         // ✅ Versioning: Helps confirm the latest code is running.
-        console.log("version v2003-add-age-field GENDER_MALE z");
+        console.log("version v2003-add-age-field age parseInt");
     </script>
 </body>
 </html>
