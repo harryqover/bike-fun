@@ -226,7 +226,7 @@
                 <div id="view-bulk-upsert" class="hidden bg-white p-6 rounded-lg shadow">
                     <h2 class="text-2xl font-bold mb-4 text-gray-800">Bulk Upsert Pilots</h2>
                      <p class="text-gray-600 mb-4">Paste CSV data of the active portfolio. The script will compare this with the existing data to add new pilots and update existing ones. Format: <code class="bg-gray-200 p-1 rounded">pilotId,startDate,wage,birthdate,gender,age</code>. No header row.</p>
-                    <textarea id="upsert-csv-data" rows="10" class="form-input" placeholder="pilot001,2025-01-01,85500.00,1985-05-20,Male,40&#10;pilot003,2025-02-01,95000.00,1992-03-10,Male,33"></textarea>
+                    <textarea id="upsert-csv-data" rows="10" class="form-input" placeholder="pilot001,2025-01-01,85500.00,1985-05-20,GENDER_FEMALE,40&#10;pilot003,2025-02-01,95000.00,1992-03-10,GENDER_MALE,33"></textarea>
                     
                     <div class="mt-4">
                         <label for="upsert-effective-date" class="block text-sm font-medium text-gray-700">Effective Date for Updates</label>
