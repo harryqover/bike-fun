@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML & EJS Live Previewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- EJS library for full JavaScript template support -->
+    <script src="https://cdn.jsdelivr.net/npm/ejs@3.1.9/ejs.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Simple scrollbar styling for a cleaner look */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .editor-title {
+            @apply text-sm font-medium text-gray-500 uppercase tracking-wider pb-2 border-b border-gray-200 mb-2 flex items-center;
+        }
+        /* Prevent text selection while dragging resizers */
+        .resizing {
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="flex flex-col h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm p-4 z-10 flex-shrink-0">
+            <h1 class="text-xl font-bold text-gray-900">Live HTML & EJS Previewer</h1>
+            <p class="text-sm text-gray-600">Paste your HTML with EJS variables (`<%= ... %>`, `<% ... %>`) and provide JSON data to see a live preview.</p>
+        </header>
+
+        <!-- Main Content: Editor and Preview Panes -->
+        <main class="flex-grow flex flex-row p-4 overflow-hidden">
+            
+            <!-- Left Pane: Inputs -->
+            <div id="leftPane" class="flex flex-col h-full" style="flex: 0 0 50%; min-width: 200px;">
+                <!-- HTML Input -->
+                <div id="htmlPane" class="flex flex-col bg-white rounded-lg shadow overflow-hidden" style="flex: 0 0 50%; min-height: 50px;">
+                    <h2 class="editor-title px-4 pt-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                        HTML Template
+                    </h2>
+                    <div class="flex-grow p-1">
+                        <textarea id="htmlInput" class="w-full h-full p-3 text-sm font-mono border-0 resize-none focus:ring-0"></textarea>
+                    </div>
+                </div>
+
+                <!-- Vertical Resizer -->
+                <div id="resizerY" class="h-2 my-1 cursor-row-resize bg-gray-200 hover:bg-blue-500 transition-colors rounded-md flex-shrink-0"></div>
+
+                <!-- JSON Input -->
+                <div id="jsonPane" class="flex flex-col bg-white rounded-lg shadow overflow-hidden flex-grow" style="min-height: 50px;">
+                     <h2 class="editor-title px-4 pt-3 justify-between">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 2a10 10 0 1 0 10 10 10 10 0 0 0-10-10z"></path><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                            JSON Data
+                        </div>
+                        <button id="generateJsonBtn" class="text-xs bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Generate from HTML
+                        </button>
+                    </h2>
+                    <div class="flex-grow p-1">
+                        <textarea id="jsonInput" class="w-full h-full p-3 text-sm font-mono border-0 resize-none focus:ring-0" placeholder='Click "Generate from HTML" or paste your JSON here.'></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Horizontal Resizer -->
+            <div id="resizerX" class="w-2 mx-1 cursor-col-resize bg-gray-200 hover:bg-blue-500 transition-colors rounded-md flex-shrink-0"></div>
+
+            <!-- Right Pane: Preview -->
+            <div id="rightPane" class="flex flex-col bg-white rounded-lg shadow h-full overflow-hidden flex-grow" style="min-width: 200px;">
+                 <h2 class="editor-title px-4 pt-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    Live Preview
+                </h2>
+                <div id="errorDisplay" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 m-4 rounded-md whitespace-pre-wrap"></div>
+                <iframe id="previewFrame" class="w-full h-full border-0"></iframe>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // DOM element references
+        const htmlInput = document.getElementById('htmlInput');
+        const jsonInput = document.getElementById('jsonInput');
+        const previewFrame = document.getElementById('previewFrame');
+        const errorDisplay = document.getElementById('errorDisplay');
+        const generateJsonBtn = document.getElementById('generateJsonBtn');
+
+        /**
+         * Mock helper functions to simulate server-side functions in the template.
+         * This allows templates with function calls to render without errors.
+         */
+        const mockHelpers = {
+            translator: (key = '', vars = {}) => `[TRANSLATED: ${key}]`,
+            dateFormat: {
+                dateLocaleFormat: (date = '', locale = '', format = '') => `[FORMATTED DATE: ${date || 'undefined'}]`
+            },
+            JSON: { // Provide a safe JSON.stringify for debugging in the template
+                stringify: (obj) => JSON.stringify(obj, null, 2)
+            }
+        };
+
+        /**
+         * Scans HTML for all `data.*` access patterns and generates a corresponding JSON object.
+         * @param {string} html - The HTML template string.
+         * @returns {object} A generated JSON object, wrapped in a 'data' property.
+         */
+        function generateJsonFromHtml(html) {
+            const data = {};
+            // This regex finds all property access paths that start with 'data.'
+            const regex = /data\.([a-zA-Z0-9_]+(?:\.[a-zA-Z0-9_]+)*)/g;
+            const matches = html.matchAll(regex);
+
+            for (const match of matches) {
+                const fullPath = match[1]; // e.g., "policy.policyholder.firstName"
+                const pathParts = fullPath.split('.');
+                let currentLevel = data;
+
+                pathParts.forEach((part, index) => {
+                    const cleanPart = part.split('[')[0]; // Ignore array accessors for generation
+
+                    if (index === pathParts.length - 1) {
+                        // If the key doesn't exist yet, add a placeholder
+                        if (currentLevel[cleanPart] === undefined) {
+                            currentLevel[cleanPart] = `[${cleanPart.replace(/_/g, ' ')}]`;
+                        }
+                    } else {
+                        // If the path is not an object, create one to allow nesting
+                        if (typeof currentLevel[cleanPart] !== 'object' || currentLevel[cleanPart] === null) {
+                            currentLevel[cleanPart] = {};
+                        }
+                        currentLevel = currentLevel[cleanPart];
+                    }
+                });
+            }
+            return { data }; // The final JSON should have a root 'data' object
+        }
+        
+        /**
+         * Handles the generation of JSON from the HTML input and populates the JSON textarea.
+         */
+        function handleGenerateJson() {
+            const html = htmlInput.value;
+            const generatedData = generateJsonFromHtml(html);
+            jsonInput.value = JSON.stringify(generatedData, null, 2);
+            updatePreview();
+        }
+
+        /**
+         * Renders the HTML template with the provided data using the EJS library.
+         */
+        function updatePreview() {
+            const html = htmlInput.value;
+            let jsonData = {};
+
+            errorDisplay.classList.add('hidden');
+            errorDisplay.textContent = '';
+
+            // Try to parse the user-provided JSON
+            try {
+                jsonData = JSON.parse(jsonInput.value.trim() || '{}');
+            } catch (error) {
+                errorDisplay.textContent = `JSON Error: ${error.message}`;
+                errorDisplay.classList.remove('hidden');
+                previewFrame.srcdoc = ''; // Clear preview on JSON error
+                return;
+            }
+            
+            // Combine the parsed JSON data with our mock helper functions
+            const renderData = { ...jsonData, ...mockHelpers };
+
+            // Use the EJS library to render the template
+            try {
+                const renderedHtml = ejs.render(html, renderData);
+                previewFrame.srcdoc = renderedHtml;
+            } catch (error) {
+                errorDisplay.textContent = `EJS Render Error: ${error.message}`;
+                errorDisplay.classList.remove('hidden');
+                previewFrame.srcdoc = ''; // Clear preview on render error
+            }
+        }
+
+        // --- RESIZER LOGIC ---
+        const resizerX = document.getElementById('resizerX');
+        const leftPane = document.getElementById('leftPane');
+        const resizerY = document.getElementById('resizerY');
+        const htmlPane = document.getElementById('htmlPane');
+        
+        // Horizontal resizing (left/right panes)
+        resizerX.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            document.body.style.cursor = 'col-resize';
+            document.body.classList.add('resizing');
+            const mouseMoveHandler = function(e) {
+                const containerRect = resizerX.parentElement.getBoundingClientRect();
+                const newLeftWidth = e.clientX - containerRect.left;
+                if (newLeftWidth > 200 && newLeftWidth < containerRect.width - 200) {
+                    leftPane.style.flexBasis = `${newLeftWidth}px`;
+                }
+            };
+            const mouseUpHandler = function() {
+                document.body.style.cursor = 'default';
+                document.body.classList.remove('resizing');
+                document.removeEventListener('mousemove', mouseMoveHandler);
+                document.removeEventListener('mouseup', mouseUpHandler);
+            };
+            document.addEventListener('mousemove', mouseMoveHandler);
+            document.addEventListener('mouseup', mouseUpHandler);
+        });
+
+        // Vertical resizing (html/json panes)
+        resizerY.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            document.body.style.cursor = 'row-resize';
+            document.body.classList.add('resizing');
+            const mouseMoveHandler = function(e) {
+                const containerRect = resizerY.parentElement.getBoundingClientRect();
+                const newTopHeight = e.clientY - containerRect.top;
+                if (newTopHeight > 50 && newTopHeight < containerRect.height - 50) {
+                    htmlPane.style.flexBasis = `${newTopHeight}px`;
+                }
+            };
+            const mouseUpHandler = function() {
+                document.body.style.cursor = 'default';
+                document.body.classList.remove('resizing');
+                document.removeEventListener('mousemove', mouseMoveHandler);
+                document.removeEventListener('mouseup', mouseUpHandler);
+            };
+            document.addEventListener('mousemove', mouseMoveHandler);
+            document.addEventListener('mouseup', mouseUpHandler);
+        });
+
+        // Event listeners for live updates
+        htmlInput.addEventListener('input', updatePreview);
+        jsonInput.addEventListener('input', updatePreview);
+        generateJsonBtn.addEventListener('click', handleGenerateJson);
+
+        // Initial setup on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            htmlInput.value = `<html>
+<head>
+    <%
+        const isQuote = data.policy? false : true;
+        if(isQuote){data.policy = data.quote}
+        const country = data.policy.country;
+        const locale = data.policy.language + "-" + data.policy.country;
+        const currency = data.policy.currency;
+        const termsArray = data.policy.metadata.terms?data.policy.metadata.terms.split(","):[];
+        const allDocVersions = [...new Set(Object.values(data.policy.package.coverages || {}).map(c => c.terms?.version).filter(Boolean))].join(' & ');
+        const allInsurers = [...new Set(Object.values(data?.policy?.package?.coverages || {}).map(c => c?.insurer?.name).filter(Boolean))].join('-').toLowerCase() || 'qover';
+        const coverageTableSetup = {
+            "AT": {
+                "main": ["tpl", "partial-casco", "full-casco"],
+                "optionalCoverages": ["new-value-compensation", "glass-plus", "roadside-assistance", "replacement-car", "battery-cover", "wallbox", "key", "tire"]
+            },
+            "DE": {
+                "main": ["tpl", "partial-casco", "full-casco"],
+                "optionalCoverages": ["new-value-compensation", "glass-plus", "roadside-assistance", "replacement-car", "battery-cover", "wallbox", "key", "tire"]
+            }
+        };
+    %>
+    <%
+        function addDaysToDate(date, days){ var res = new Date(date);    res.setDate(res.getDate() + days);    return res;}
+        function priceFormatter(amount) {
+            if (typeof amount !== "number") {
+                return "[Price Format Error]";
+            }
+            return new Intl.NumberFormat(locale, {
+                style: "currency",
+                currency: currency,
+            }).format(amount);
+        }
+    %>
+<style>
+    p { margin: 10px 0px; font-size:12pt }
+    table { border-collapse: collapse; border-style: outset; border: 1px solid lightgrey; width: 100%; table-layout: fixed; }
+    th, caption { text-align: start; }
+    caption { margin-block: 0.75rem; }
+    thead th:not(:first-child), td { text-align: end; }
+    thead { border-block-end: 2px solid; background: whitesmoke; }
+    tfoot { border-block: 2px solid; background: whitesmoke; }
+    th, td { border: 1px solid lightgrey; padding: 0.25rem 0.75rem; vertical-align: baseline; }
+    tbody th { background: white; }
+    thead th, tfoot th { background: whitesmoke; }
+    thead th { vertical-align: bottom; }
+</style>
+</head>
+<body style="font-family:&#x27;Helvetica Neue&#x27;, Helvetica, Arial, Verdana;color:#000;font-size:12pt;line-height:24pt"> 
+    <p>Policyholder: <%= data.policy.policyholder.firstName %> <%= data.policy.policyholder.lastName %></p>
+    <p>Country: <%= country %></p>
+    <p>All Insurers: <%= allInsurers %></p>
+    <p>A translated string: <%- translator('translation.pdf.generic.contractReference') %></p>
+    <p>A formatted date: <%- dateFormat.dateLocaleFormat(data.policy._stamps.createdAt, locale, 'DD MMM YYYY hh:mm') %></p>
+    <% if(data.policy.policyholder.lastName == "debug") { %>
+        <div style="background-color: lightyellow; border: 1px solid orange; padding: 10px;">Debug mode is ON.</div>
+    <% } %>
+    <hr>
+    <h3>Coverages Loop:</h3>
+    <table>
+        <thead><tr><th>Coverage</th><th>Insurer</th></tr></thead>
+        <tbody>
+        <% Object.entries(data.policy.package.coverages).forEach(function([coverageKey, coverageData]) { %>
+            <tr>
+                <td style="text-align: left;"><%- translator('trans.motor.coverage.name.' + coverageKey) %></td>
+                <td><%- coverageData.insurer.name %></td>
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+</body>
+</html>`;
+            handleGenerateJson();
+        });
+    </script>
+</body>
+</html>
