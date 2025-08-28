@@ -106,52 +106,83 @@
 
         /**
          * Mock helper functions to simulate server-side functions in the template.
-         * This allows templates with function calls to render without errors.
          */
         const mockHelpers = {
             translator: (key = '', vars = {}) => `[TRANSLATED: ${key}]`,
             dateFormat: {
                 dateLocaleFormat: (date = '', locale = '', format = '') => `[FORMATTED DATE: ${date || 'undefined'}]`
             },
-            JSON: { // Provide a safe JSON.stringify for debugging in the template
+            JSON: {
                 stringify: (obj) => JSON.stringify(obj, null, 2)
             }
         };
+        
+        /**
+         * Helper to set a nested property on an object using a path string.
+         * @param {object} obj - The object to modify.
+         * @param {string} path - The path string (e.g., "a.b.c").
+         * @param {*} value - The value to set.
+         */
+        function setNestedProperty(obj, path, value) {
+            const parts = path.split('.');
+            let current = obj;
+            for (let i = 0; i < parts.length; i++) {
+                const part = parts[i];
+                if (i === parts.length - 1) {
+                    // If it's the last part, set the value, but don't overwrite a complex object with a simple one
+                    if (typeof current[part] !== 'object') {
+                       current[part] = value;
+                    }
+                } else {
+                    // If a path segment is not an object, create one.
+                    if (typeof current[part] !== 'object' || current[part] === null) {
+                        current[part] = {};
+                    }
+                    current = current[part];
+                }
+            }
+        }
 
         /**
-         * Scans HTML for all `data.*` access patterns and generates a corresponding JSON object.
+         * Intelligently scans HTML for data access patterns, including within loops,
+         * to generate a more accurate and structured JSON object.
          * @param {string} html - The HTML template string.
-         * @returns {object} A generated JSON object, wrapped in a 'data' property.
+         * @returns {object} A generated JSON object.
          */
         function generateJsonFromHtml(html) {
-            const data = {};
-            // This regex finds all property access paths that start with 'data.'
-            const regex = /data\.([a-zA-Z0-9_]+(?:\.[a-zA-Z0-9_]+)*)/g;
-            const matches = html.matchAll(regex);
+            const root = { data: {} };
 
-            for (const match of matches) {
-                const fullPath = match[1]; // e.g., "policy.policyholder.firstName"
-                const pathParts = fullPath.split('.');
-                let currentLevel = data;
-
-                pathParts.forEach((part, index) => {
-                    const cleanPart = part.split('[')[0]; // Ignore array accessors for generation
-
-                    if (index === pathParts.length - 1) {
-                        // If the key doesn't exist yet, add a placeholder
-                        if (currentLevel[cleanPart] === undefined) {
-                            currentLevel[cleanPart] = `[${cleanPart.replace(/_/g, ' ')}]`;
-                        }
-                    } else {
-                        // If the path is not an object, create one to allow nesting
-                        if (typeof currentLevel[cleanPart] !== 'object' || currentLevel[cleanPart] === null) {
-                            currentLevel[cleanPart] = {};
-                        }
-                        currentLevel = currentLevel[cleanPart];
-                    }
-                });
+            // Pass 1: Find all simple `data.path.to.property` accesses
+            const simplePathRegex = /data\.([a-zA-Z0-9_.]+)/g;
+            for (const match of html.matchAll(simplePathRegex)) {
+                const path = match[1];
+                const lastPart = path.split('.').pop();
+                setNestedProperty(root.data, path, `[${lastPart}]`);
             }
-            return { data }; // The final JSON should have a root 'data' object
+
+            // Pass 2: Find loops to create structured array/object data
+            const loopRegex = /Object\.(?:entries|values)\s*\((data\.[^\)]+)\)\s*\.forEach\s*\(\s*function\s*\(([^)]+)\)\s*\{([\s\S]*?)\}\s*\);?/g;
+            for (const match of html.matchAll(loopRegex)) {
+                const dataPath = match[1].replace('data.', ''); // e.g., "policy.package.coverages"
+                const args = match[2].replace(/[\[\]]/g, '').split(',').map(s => s.trim()); // e.g., ['coverageKey', 'coverageData'] or ['coverage']
+                const loopVarName = args.length > 1 ? args[1] : args[0]; // The variable for the object/value
+                const loopBody = match[3];
+
+                // Find all properties accessed on the loop variable
+                const itemPropertiesRegex = new RegExp(`${loopVarName}\\.([a-zA-Z0-9_.]+)`, 'g');
+                const sampleItem = {};
+                for (const propMatch of loopBody.matchAll(itemPropertiesRegex)) {
+                    const propPath = propMatch[1];
+                    const lastPart = propPath.split('.').pop();
+                    setNestedProperty(sampleItem, propPath, `[${lastPart}]`);
+                }
+                
+                // Create a sample entry in the main data object
+                const sampleContainer = { "sample_item": sampleItem };
+                setNestedProperty(root.data, dataPath, sampleContainer);
+            }
+
+            return root;
         }
         
         /**
@@ -174,27 +205,24 @@
             errorDisplay.classList.add('hidden');
             errorDisplay.textContent = '';
 
-            // Try to parse the user-provided JSON
             try {
                 jsonData = JSON.parse(jsonInput.value.trim() || '{}');
             } catch (error) {
                 errorDisplay.textContent = `JSON Error: ${error.message}`;
                 errorDisplay.classList.remove('hidden');
-                previewFrame.srcdoc = ''; // Clear preview on JSON error
+                previewFrame.srcdoc = '';
                 return;
             }
             
-            // Combine the parsed JSON data with our mock helper functions
             const renderData = { ...jsonData, ...mockHelpers };
 
-            // Use the EJS library to render the template
             try {
                 const renderedHtml = ejs.render(html, renderData);
                 previewFrame.srcdoc = renderedHtml;
             } catch (error) {
                 errorDisplay.textContent = `EJS Render Error: ${error.message}`;
                 errorDisplay.classList.remove('hidden');
-                previewFrame.srcdoc = ''; // Clear preview on render error
+                previewFrame.srcdoc = '';
             }
         }
 
@@ -204,7 +232,6 @@
         const resizerY = document.getElementById('resizerY');
         const htmlPane = document.getElementById('htmlPane');
         
-        // Horizontal resizing (left/right panes)
         resizerX.addEventListener('mousedown', function(e) {
             e.preventDefault();
             document.body.style.cursor = 'col-resize';
@@ -226,7 +253,6 @@
             document.addEventListener('mouseup', mouseUpHandler);
         });
 
-        // Vertical resizing (html/json panes)
         resizerY.addEventListener('mousedown', function(e) {
             e.preventDefault();
             document.body.style.cursor = 'row-resize';
@@ -263,7 +289,7 @@
         const country = data.policy.country;
         const locale = data.policy.language + "-" + data.policy.country;
         const currency = data.policy.currency;
-        const termsArray = data.policy.metadata.terms?data.policy.metadata.terms.split(","):[];
+        const termsArray = (data.policy.metadata && typeof data.policy.metadata.terms === 'string') ? data.policy.metadata.terms.split(",") : [];
         const allDocVersions = [...new Set(Object.values(data.policy.package.coverages || {}).map(c => c.terms?.version).filter(Boolean))].join(' & ');
         const allInsurers = [...new Set(Object.values(data?.policy?.package?.coverages || {}).map(c => c?.insurer?.name).filter(Boolean))].join('-').toLowerCase() || 'qover';
         const coverageTableSetup = {
