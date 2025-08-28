@@ -281,78 +281,7 @@
 
         // Initial setup on page load
         window.addEventListener('DOMContentLoaded', () => {
-            htmlInput.value = `<html>
-<head>
-    <%
-        const isQuote = data.policy? false : true;
-        if(isQuote){data.policy = data.quote}
-        const country = data.policy.country;
-        const locale = data.policy.language + "-" + data.policy.country;
-        const currency = data.policy.currency;
-        const termsArray = (data.policy.metadata && typeof data.policy.metadata.terms === 'string') ? data.policy.metadata.terms.split(",") : [];
-        const allDocVersions = [...new Set(Object.values(data.policy.package.coverages || {}).map(c => c.terms?.version).filter(Boolean))].join(' & ');
-        const allInsurers = [...new Set(Object.values(data?.policy?.package?.coverages || {}).map(c => c?.insurer?.name).filter(Boolean))].join('-').toLowerCase() || 'qover';
-        const coverageTableSetup = {
-            "AT": {
-                "main": ["tpl", "partial-casco", "full-casco"],
-                "optionalCoverages": ["new-value-compensation", "glass-plus", "roadside-assistance", "replacement-car", "battery-cover", "wallbox", "key", "tire"]
-            },
-            "DE": {
-                "main": ["tpl", "partial-casco", "full-casco"],
-                "optionalCoverages": ["new-value-compensation", "glass-plus", "roadside-assistance", "replacement-car", "battery-cover", "wallbox", "key", "tire"]
-            }
-        };
-    %>
-    <%
-        function addDaysToDate(date, days){ var res = new Date(date);    res.setDate(res.getDate() + days);    return res;}
-        function priceFormatter(amount) {
-            if (typeof amount !== "number") {
-                return "[Price Format Error]";
-            }
-            return new Intl.NumberFormat(locale, {
-                style: "currency",
-                currency: currency,
-            }).format(amount);
-        }
-    %>
-<style>
-    p { margin: 10px 0px; font-size:12pt }
-    table { border-collapse: collapse; border-style: outset; border: 1px solid lightgrey; width: 100%; table-layout: fixed; }
-    th, caption { text-align: start; }
-    caption { margin-block: 0.75rem; }
-    thead th:not(:first-child), td { text-align: end; }
-    thead { border-block-end: 2px solid; background: whitesmoke; }
-    tfoot { border-block: 2px solid; background: whitesmoke; }
-    th, td { border: 1px solid lightgrey; padding: 0.25rem 0.75rem; vertical-align: baseline; }
-    tbody th { background: white; }
-    thead th, tfoot th { background: whitesmoke; }
-    thead th { vertical-align: bottom; }
-</style>
-</head>
-<body style="font-family:&#x27;Helvetica Neue&#x27;, Helvetica, Arial, Verdana;color:#000;font-size:12pt;line-height:24pt"> 
-    <p>Policyholder: <%= data.policy.policyholder.firstName %> <%= data.policy.policyholder.lastName %></p>
-    <p>Country: <%= country %></p>
-    <p>All Insurers: <%= allInsurers %></p>
-    <p>A translated string: <%- translator('translation.pdf.generic.contractReference') %></p>
-    <p>A formatted date: <%- dateFormat.dateLocaleFormat(data.policy._stamps.createdAt, locale, 'DD MMM YYYY hh:mm') %></p>
-    <% if(data.policy.policyholder.lastName == "debug") { %>
-        <div style="background-color: lightyellow; border: 1px solid orange; padding: 10px;">Debug mode is ON.</div>
-    <% } %>
-    <hr>
-    <h3>Coverages Loop:</h3>
-    <table>
-        <thead><tr><th>Coverage</th><th>Insurer</th></tr></thead>
-        <tbody>
-        <% Object.entries(data.policy.package.coverages).forEach(function([coverageKey, coverageData]) { %>
-            <tr>
-                <td style="text-align: left;"><%- translator('trans.motor.coverage.name.' + coverageKey) %></td>
-                <td><%- coverageData.insurer.name %></td>
-            </tr>
-        <% }); %>
-        </tbody>
-    </table>
-</body>
-</html>`;
+            htmlInput.value = ``;
             handleGenerateJson();
         });
     </script>
