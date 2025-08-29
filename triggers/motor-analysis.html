@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trigger Process Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .json-viewer {
+            background-color: #1f2937; /* gray-800 */
+            color: #d1d5db; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Trigger Process Documentation</h1>
+            <p class="text-gray-600 mt-2">
+                A visual tool to analyze triggers, highlight potential notification overlaps, and document reminder schedules.
+            </p>
+        </header>
+
+        <!-- Controls -->
+        <div class="mb-6 flex flex-col sm:flex-row gap-4">
+            <div class="relative flex-grow">
+                <input type="text" id="searchInput" placeholder="Search by name, ID, or action type..."
+                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+            <select id="groupBySelect" class="border border-gray-300 rounded-lg py-2 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                <option value="process">Group by Process</option>
+                <option value="eventType">Group by Event Type</option>
+            </select>
+        </div>
+
+        <!-- Main content area for triggers -->
+        <main id="triggers-container" class="space-y-12">
+            <!-- Triggers will be injected here by JavaScript -->
+        </main>
+    </div>
+
+    <script>
+        const triggersData = [
+    {
+      "conditionExpression": "(\n    $policyCreatedEvent := eventName = \"policyCreated\";\n    $isBmwmini := policy.productConfiguration.id = \"bmwmini\";\n    {\n        \"valid\": $policyCreatedEvent and $isBmwmini,\n        \"details\": {\n            \"policyCreatedEvent\": $policyCreatedEvent,\n            \"isBmwmini\": $isBmwmini\n        }\n    }\n)",
+      "id": "685aa577b811a7e160eccfca",
+      "eventType": "EVENT_TYPE_POLICY",
+      "name": "Motor - dealer portal quote - remarketing (STOP TRIGGER)",
+      "enabled": true,
+      "triggered": 4,
+      "actions": [
+        {
+          "type": "ACTION_TYPE_CANCEL_REMINDER",
+          "params": {
+            "reminderId": "quote-remarketing-email-<%= policy.quoteId %>"
+          }
+        }
+      ],
+      "createdAt": "2025-06-24T13:17:43.927Z",
+      "updatedAt": "2025-08-13T11:43:13.019Z"
+    },
+    {
+      "conditionExpression": "(\n  $approvalCreatedOnPolicy := eventName = \"policyOperationApprovalCreated\";\n  $isVolvo := policy.productConfiguration.id = \"volvo\";\n  $isBmwMini := policy.productConfiguration.id = \"bmwmini\";\n  $ndcProofApproval := approval.id = \"ncd-proof-need-care-validation\" or approval.id = \"ncd-proof\";\n\n  {\n    \"valid\": $approvalCreatedOnPolicy and ($isVolvo or $isBmwMini) and $ndcProofApproval,\n    \"details\": {\n      \"approvalCreatedOnPolicy\": $approvalCreatedOnPolicy,\n      \"isVolvo\": $isVolvo,\n      \"isBmwMini\": $isBmwMini,\n      \"ndcProofApproval\": $ndcProofApproval\n    }\n  }\n)",
+      "id": "6859377753189b0ac122cca6",
+      "eventType": "EVENT_TYPE_POLICY_OPERATION_APPROVAL",
+      "name": "Motor IE - Create slack message when NCD proof approval is created on policy",
+      "enabled": true,
+      "triggered": 4,
+      "actions": [
+        {
+          "type": "ACTION_TYPE_NOTIFY_SLACK",
+          "params": {
+            "channel": "volvo-unofficial",
+            "message": {
+              "text": "There is a POLICY approval to check: <%= policy.id %>",
+              "iconEmoji": ":car:"
+            }
+          }
+        }
+      ],
+      "createdAt": "2025-06-23T11:16:07.372Z",
+      "updatedAt": "2025-08-28T10:54:08.721Z"
+    },
+    {
+      "conditionExpression": "(\n  $approvalCreatedOnPolicy := eventName = \"policyOperationApprovalCreated\";\n  $isVolvo := policy.productConfiguration.id = \"volvo\";\n  $isBmwMini := policy.productConfiguration.id = \"bmwmini\";\n  $ndcProofApproval := approval.id = \"ncd-proof-need-care-validation\" or approval.id = \"ncd-proof\";\n\n  {\n    \"valid\": $approvalCreatedOnPolicy and ($isVolvo or $isBmwMini) and $ndcProofApproval,\n    \"details\": {\n      \"approvalCreatedOnPolicy\": $approvalCreatedOnPolicy,\n      \"isVolvo\": $isVolvo,\n      \"isBmwMini\": $isBmwMini,\n      \"ndcProofApproval\": $ndcProofApproval\n    }\n  }\n)",
+      "id": "68272fe4ad4fd841c6e26ee5",
+      "eventType": "EVENT_TYPE_POLICY_OPERATION_APPROVAL",
+      "name": "Motor IE - Create Zendesk ticket when NCD proof approval is created on policy",
+      "enabled": true,
+      "triggered": 5,
+      "actions": [
+        {
+          "type": "ACTION_TYPE_CREATE_TICKET",
+          "params": { "request": { "subject": "NCD document requires validation - <%= policy.subject.mainDriver.firstName %> <%= policy.subject.mainDriver.lastName %> - <%= policy.id %> - <%= policy.partner.name.toUpperCase() %> client" } }
+        }
+      ],
+      "createdAt": "2025-05-16T12:30:28.281Z",
+      "updatedAt": "2025-08-28T10:54:08.719Z"
+    },
+    {
+      "conditionExpression": "(\n  $approvalCreatedOnQuote := eventName = \"policyQuoteApprovalCreated\";\n  $isVolvo := quote.productConfiguration.id = \"volvo\";\n  $isBmwMini := quote.productConfiguration.id = \"bmwmini\";\n  $ndcProofApproval := approval.id = \"ncd-proof-need-care-validation\" or approval.id = \"ncd-proof\";\n\n  {\n    \"valid\": $approvalCreatedOnQuote and ($isVolvo or $isBmwMini) and $ndcProofApproval,\n    \"details\": {\n      \"approvalCreatedOnQuote\": $approvalCreatedOnQuote,\n      \"isVolvo\": $isVolvo,\n      \"isBmwMini\": $isBmwMini,\n      \"ndcProofApproval\": $ndcProofApproval\n    }\n  }\n)",
+      "id": "68272fdfb89ec45d9955889b",
+      "eventType": "EVENT_TYPE_POLICY_QUOTE_APPROVAL",
+      "name": "Motor IE - Create Zendesk ticket for NCD proof approval on quote",
+      "enabled": true,
+      "triggered": 2,
+      "actions": [
+        { "type": "ACTION_TYPE_CREATE_TICKET", "params": { "request": { "subject": "NCD document requires validation - <%= quote.subject.mainDriver.firstName %> <%= quote.subject.mainDriver.lastName %> - <%= quote.id %> - <%= quote.partner.name.toUpperCase() %> client" } } }
+      ],
+      "createdAt": "2025-05-16T12:30:23.529Z",
+      "updatedAt": "2025-08-25T13:08:24.691Z"
+    },
+    {
+      "conditionExpression": "(\n  $approvalCreated := eventName = \"policyQuoteApprovalCreated\";\n  $isVolvo := quote.productConfiguration.id = \"volvo\";\n  $isBmwMini := quote.productConfiguration.id = \"bmwmini\";\n\n  $mainDriverLicenseApproval := approval.id = \"main-driver-license-must-be-validated-by-care\" or approval.id = \"main-driver-license\";\n\n  $additionalDriverLicenseApproval := $boolean(\n    approval.id ~> /^additional-driver-[0-5]-license-must-be-validated-by-care$/\n    or approval.id = \"additional-driver-0-license\"\n    or approval.id = \"additional-driver-1-license\"\n  );\n\n  $temporaryDriverLicenseApproval := $boolean(\n    approval.id ~> /^temporary-driver-[0-5]-license-must-be-validated-by-care$/\n  );\n\n  {\n    \"valid\": $approvalCreated and ($isVolvo or $isBmwMini) and (\n      $mainDriverLicenseApproval or $additionalDriverLicenseApproval or $temporaryDriverLicenseApproval\n    ),\n    \"details\": {\n      \"approvalCreated\": $approvalCreated,\n      \"isVolvo\": $isVolvo,\n      \"isBmwMini\": $isBmwMini,\n      \"mainDriverLicenseApproval\": $mainDriverLicenseApproval,\n      \"additionalDriverLicenseApproval\": $additionalDriverLicenseApproval,\n      \"temporaryDriverLicenseApproval\": $temporaryDriverLicenseApproval\n    }\n  }\n)",
+      "id": "68272fd7b89ec45d9955889a",
+      "eventType": "EVENT_TYPE_POLICY_QUOTE_APPROVAL",
+      "name": "Motor IE - Create Zendesk ticket from driving licence approval",
+      "enabled": true,
+      "triggered": 1,
+      "actions": [
+        { "type": "ACTION_TYPE_CREATE_TICKET", "params": { "request": { "subject": "Driving Licence validation required for <%= quote.partner.name.toUpperCase() %> client" } } }
+      ],
+      "createdAt": "2025-05-16T12:30:15.266Z",
+      "updatedAt": "2025-08-07T09:08:02.874Z"
+    },
+    {
+      "conditionExpression": "(\n    $policyQuoteCreatedEvent := eventName = \"policyQuoteCreated\";\n    $isBmwmini := quote.productConfiguration.id = \"bmwmini\";\n    $isDealer := $exists(quote.metadata.pos);\n    {\n        \"valid\": $policyQuoteCreatedEvent and $isBmwmini and $isDealer,\n        \"details\": {\n            \"policyQuoteCreatedEvent\": $policyQuoteCreatedEvent,\n            \"isBmwmini\": $isBmwmini,\n            \"isDealer\": $isDealer \n        }\n    }\n)",
+      "id": "67ed33f48d9948e93c5640a3",
+      "eventType": "EVENT_TYPE_POLICY_QUOTE",
+      "name": "Motor - Send email - dealer portal quote - remarketing (START TRIGGER)",
+      "enabled": true,
+      "triggered": 70,
+      "actions": [
+        {
+          "type": "ACTION_TYPE_SEND_REMINDER",
+          "params": {
+            "id": "quote-remarketing-email-<%= quote.id %>",
+            "schedule": {
+              "referenceDate": "<%= quote['_stamps'].createdAt %>",
+              "timeZone": "Europe/Dublin",
+              "time": "08:00:00",
+              "dateSpec": "P1W",
+              "recurrence": { "offsets": { "durationBetweenMessages": [ "P1W", "P2W", "P2W" ] } }
+            },
+            "email": { "template": { "id": "bmwmini-mail-dealer-quote-ie" } }
+          }
+        }
+      ],
+      "createdAt": "2025-04-02T12:56:20.437Z",
+      "updatedAt": "2025-08-26T10:59:08.879Z"
+    },
+    {
+      "conditionExpression": "(\n    $policyQuoteCreatedEvent := eventName = \"policyQuoteCreated\";\n    $isBmwmini := quote.productConfiguration.id = \"bmwmini\";\n    $isDealer := $exists(quote.metadata.pos);\n    {\n        \"valid\": $policyQuoteCreatedEvent and $isBmwmini and $isDealer,\n        \"details\": {\n            \"policyQuoteCreatedEvent\": $policyQuoteCreatedEvent,\n            \"isBmwmini\": $isBmwmini,\n            \"isDealer\": $isDealer \n        }\n    }\n)",
+      "id": "67ec01868d9948e93c56409a",
+      "eventType": "EVENT_TYPE_POLICY_QUOTE",
+      "name": "Motor - Send email - dealer portal quote created",
+      "enabled": true,
+      "triggered": 70,
+      "actions": [
+        { "type": "ACTION_TYPE_SEND_EMAIL", "params": { "template": { "id": "bmwmini-mail-dealer-quote-ie" } } }
+      ],
+      "createdAt": "2025-04-01T15:08:54.591Z",
+      "updatedAt": "2025-08-26T10:59:08.878Z"
+    },
+    {
+      "conditionExpression": "(\n    $policyCreated := eventName = \"policyCreated\";\n    $isVolvo := policy.productConfiguration.id = \"volvo\";\n    $isBmwmini := policy.productConfiguration.id = \"bmwmini\";\n{ \n    \"valid\": $policyCreated and ($isVolvo or $isBmwmini),\n    \"details\": { \n        \"policyCreated\": $policyCreated,\n        \" isVolvo\": $isVolvo,\n         \"isBmwmini\": $isBmwmini\n    }    \n}\n)",
+      "id": "67ea9e1f8d9948e93c56408e",
+      "eventType": "EVENT_TYPE_POLICY",
+      "name": "Motor - Send email - Missing info initial",
+      "enabled": true,
+      "triggered": 9,
+      "actions": [
+        { "type": "ACTION_TYPE_SEND_EMAIL", "params": { "template": { "id": "<%= policy.productConfiguration.id %>-mail-missing-info-ie" } } }
+      ],
+      "createdAt": "2025-03-31T13:52:31.322Z",
+      "updatedAt": "2025-08-13T11:43:13.027Z"
+    },
+    {
+      "conditionExpression": "(\n    $policyEndorsed := eventName = \"policyEndorsed\";\n    $isVolvo := policy.productConfiguration.id = \"volvo\";\n    $isBmwmini := policy.productConfiguration.id = \"bmwmini\";\n{\n    \"valid\": $policyEndorsed and ($isVolvo or $isBmwmini),\n    \"details\": { \n        \"policyEndorsed\": $policyEndorsed,\n        \"isVolvo\": $isVolvo,\n        \"isBmwmini\": $isBmwmini\n    }    \n}\n)",
+      "id": "677fa80b84f58ca6911848ba",
+      "eventType": "EVENT_TYPE_POLICY",
+      "name": "Motor IE - Send email - Policy updated",
+      "enabled": true,
+      "triggered": 13,
+      "actions": [
+        { "type": "ACTION_TYPE_SEND_EMAIL", "params": { "template": { "id": "<%= policy.productConfiguration.id %>-mail-policy-endorse-ie" } } }
+      ],
+      "createdAt": "2025-01-09T10:42:19.652Z",
+      "updatedAt": "2025-08-28T00:06:44.729Z"
+    },
+    {
+      "conditionExpression": "(\n    $policyCreated := eventName = \"policyCreated\";\n    $isVolvo := policy.productConfiguration.id = \"volvo\";\n    $isBmwmini := policy.productConfiguration.id = \"bmwmini\";\n{ \n    \"valid\": $policyCreated and ($isVolvo or $isBmwmini),\n    \"details\": { \n        \"policyCreated\": $policyCreated,\n        \" isVolvo\": $isVolvo,\n         \"isBmwmini\": $isBmwmini\n    }    \n}\n)",
+      "id": "677fa78484f58ca6911848b9",
+      "eventType": "EVENT_TYPE_POLICY",
+      "name": "Motor IE - Send email - Policy created",
+      "enabled": true,
+      "triggered": 10,
+      "actions": [
+        { "type": "ACTION_TYPE_SEND_EMAIL", "params": { "template": { "id": "<%= policy.productConfiguration.id %>-mail-policy-creation-ie" } } }
+      ],
+      "createdAt": "2025-01-09T10:40:04.978Z",
+      "updatedAt": "2025-08-13T11:43:13.025Z"
+    },
+    {
+      "conditionExpression": "(\n $policyCanceled := eventName = \"policyCanceled\";\n $policyRescinded := eventName = \"policyRescinded\";\n $isVolvo := policy.productConfiguration.id = \"volvo\";\n $isBmwmini := policy.productConfiguration.id = \"bmwmini\";\n{ \n \"valid\": (($policyCanceled or  $policyRescinded) and ($isVolvo or $isBmwmini)),\n \"details\": { \n \"policyCanceled\": $policyCanceled,\n \"policyRescinded\": $policyRescinded,\n \" isVolvo\": $isVolvo,\n  \"isBmwmini\": $isBmwmini\n } \n}\n)",
+      "id": "677fa69984f58ca6911848b8",
+      "eventType": "EVENT_TYPE_POLICY",
+      "name": "Motor IE - Send email - Cancellation",
+      "enabled": true,
+      "triggered": 4,
+      "actions": [
+        { "type": "ACTION_TYPE_SEND_EMAIL", "params": { "template": { "id": "<%= policy.productConfiguration.id %>-mail-policy-cancellation-ie" } } }
+      ],
+      "createdAt": "2025-01-09T10:36:09.403Z",
+      "updatedAt": "2025-06-12T07:27:33.311Z"
+    },
+    {
+      "conditionExpression": "(\n  $policyEndorsed := eventName = \"policyEndorsed\";\n  $noMissingData := $exists(policy._missingData) and $count(policy._missingData) = 0;\n  $isVolvo := policy.productConfiguration.id = \"volvo\"; \n  $isBmwmini := policy.productConfiguration.id = \"bmwmini\";\n  { \n    \"valid\": $policyEndorsed and $noMissingData and ($isVolvo or $isBmwmini),\n    \"details\": { \n      \"policyEndorsed\": $policyEndorsed,\n      \"noMissingData\": $noMissingData,\n      \"isVolvo\": $isVolvo,\n      \"isBmwmini\": $isBmwmini\n    } \n  }\n)",
+      "id": "677fa63cdcb7ff15833289bc",
+      "eventType": "EVENT_TYPE_POLICY",
+      "name": "Motor IE - Cancel reminder - Missing infos",
+      "enabled": true,
+      "triggered": 5,
+      "actions": [
+        {
+          "type": "ACTION_TYPE_CANCEL_REMINDER",
+          "params": { "reminderId": "<%= policy.productConfiguration.id %>-missing-info-email-<%= policy.id %>" }
+        }
+      ],
+      "createdAt": "2025-01-09T10:34:36.389Z",
+      "updatedAt": "2025-08-28T00:06:44.740Z"
+    },
+    {
+      "conditionExpression": "(\n    $policyCreated := eventName = \"policyCreated\";\n    $missingData := $exists(policy._missingData) and $count(policy._missingData) > 0;\n    $isVolvo := policy.productConfiguration.id = \"volvo\";     \n    $isBmwmini := policy.productConfiguration.id = \"bmwmini\";\n{ \n    \"valid\": $policyCreated and $missingData and ($isVolvo or $isBmwmini),\n    \"details\": { \n        \"policyCreated\": $policyCreated,\n        \"isVolvo\": $isVolvo,\n        \"missingData\": $missingData,\n        \"isBmwmini\": $isBmwmini\n    }    \n}\n)",
+      "id": "677fa5d0e50ac64b0cdf4cbf",
+      "eventType": "EVENT_TYPE_POLICY",
+      "name": "Motor IE - Send reminder - Missing infos",
+      "enabled": true,
+      "triggered": 5,
+      "actions": [
+        {
+          "type": "ACTION_TYPE_SEND_REMINDER",
+          "params": {
+            "id": "<%= policy.productConfiguration.id %>-missing-info-email-<%= policy.id %>",
+            "schedule": {
+              "referenceDate": "<%= dateFormat.dateLocaleFormat(policy.purchasedAt, locale, timezone , 'YYYY-MM-DD') %>",
+              "timeZone": "Europe/Brussels",
+              "time": "10:00:00",
+              "dateSpec": "P1W",
+              "recurrence": { "offsets": { "durationBetweenMessages": [ "P1W", "P1W", "P1W", "P1W" ] } }
+            },
+            "email": { "template": { "id": "<%= policy.productConfiguration.id %>-mail-missing-info-ie" } }
+          }
+        }
+      ],
+      "createdAt": "2025-01-09T10:32:48.598Z",
+      "updatedAt": "2025-08-13T11:43:13.035Z"
+    },
+    {
+      "conditionExpression": "(\n    $approvalToBeApproved := $keys(quote.approvals);\n    $rightEvent := eventName = \"policyQuoteApprovalApproved\";\n    $approvals := $map($keys(quote.approvals), function ($k, $i, $a) { \n        $lookup(quote.approvals, $k)\n    });\n    $nonApprovedApprovals := $filter($approvals, function ($v, $i, $a) {\n        $v.decision != 'APPROVAL_DECISION_APPROVED'\n    });\n    $hasNoPendingApproval := $count($nonApprovedApprovals) = 0;\n    $isVolvo := quote.productConfiguration.id = \"volvo\";\n    $isBmwmini := quote.productConfiguration.id = \"bmwmini\";\n    {\n        \"valid\": $rightEvent and $hasNoPendingApproval and ($isVolvo or $isBmwmini),\n        \"details\": {\n            \"rightEvent\": $rightEvent,\n            \"hasNoPendingApproval\": $hasNoPendingApproval,\n            \"isVolvo\": $isVolvo,\n            \"isBmwmini\": $isBmwmini\n        }\n    }\n)",
+      "id": "677f9fde84f58ca6911848b7",
+      "eventType": "EVENT_TYPE_POLICY_QUOTE_APPROVAL",
+      "name": "Motor IE - Send email - Quote approval",
+      "enabled": true,
+      "triggered": 5,
+      "actions": [
+        { "type": "ACTION_TYPE_SEND_EMAIL", "params": { "template": { "id": "<%= quote.productConfiguration.id %>-mail-approvals-ie" } } }
+      ],
+      "createdAt": "2025-01-09T10:07:26.535Z",
+      "updatedAt": "2025-07-24T14:51:58.130Z"
+    },
+    {
+      "conditionExpression": "(\n  $policyQuoteUpdated := eventName = \"policyQuoteUpdated\";\n  $stepHistoryArray := $split(quote.metadata.stepHistory, \",\");\n  $reachedSummaryPage := $stepHistoryArray[-1] = \"summary\";\n  $isVolvo := quote.productConfiguration.id = \"volvo\";\n  $isBmwmini := quote.productConfiguration.id = \"bmwmini\";\n  {\n    \"valid\": $policyQuoteUpdated and $reachedSummaryPage and ($isVolvo or $isBmwmini) ,\n    \"details\": {\n      \"policyQuoteUpdated\": $policyQuoteUpdated,\n      \"reachedSummaryPage\": $reachedSummaryPage,\n      \"isVolvo\": $isVolvo,\n      \"isBmwmini\": $isBmwmini\n    }\n  }\n)",
+      "id": "677f9af4e50ac64b0cdf4cbd",
+      "eventType": "EVENT_TYPE_POLICY_QUOTE",
+      "name": "Motor IE - Send email - Pre contractual",
+      "enabled": true,
+      "triggered": 47,
+      "actions": [
+        { "type": "ACTION_TYPE_SEND_EMAIL", "params": { "template": { "id": "<%= quote.productConfiguration.id %>-mail-pre-contract-ie" } } }
+      ],
+      "createdAt": "2025-01-09T09:46:28.208Z",
+      "updatedAt": "2025-08-25T13:08:24.014Z"
+    }
+  ];
+
+        let overlapMap = new Map();
+
+        /**
+         * Parses ISO 8601 duration format (like P1W, P2M) into a human-readable string.
+         */
+        function parseDuration(duration) {
+            if (!duration) return 'N/A';
+            const regex = /P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?/;
+            const matches = duration.match(regex);
+            if (!matches) return duration;
+
+            const parts = [];
+            const labels = ['year', 'month', 'week', 'day'];
+            for (let i = 1; i < matches.length; i++) {
+                if (matches[i]) {
+                    const value = parseInt(matches[i], 10);
+                    parts.push(`${value} ${labels[i-1]}${value > 1 ? 's' : ''}`);
+                }
+            }
+            return parts.join(', ') || duration;
+        }
+
+        /**
+         * Creates the HTML for a single action within a trigger card.
+         */
+        function createActionElement(action) {
+            let icon = '';
+            let title = `<strong class="text-gray-700">${action.type.replace('ACTION_TYPE_', '').replace(/_/g, ' ')}</strong>`;
+            let details = '';
+
+            switch (action.type) {
+                case 'ACTION_TYPE_SEND_EMAIL':
+                    icon = `<svg class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`;
+                    details = `<p class="text-sm text-gray-600">Template ID: <code class="bg-gray-200 text-gray-800 px-1.5 py-0.5 rounded">${action.params?.template?.id || 'N/A'}</code></p>`;
+                    break;
+                case 'ACTION_TYPE_SEND_REMINDER':
+                    icon = `<svg class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>`;
+                    const schedule = action.params?.schedule;
+                    if (schedule) {
+                        const startDate = parseDuration(schedule.dateSpec);
+                        const frequencies = schedule.recurrence?.offsets?.durationBetweenMessages?.map(parseDuration).join(', then ') || 'None';
+                        details = `
+                            <div class="text-sm text-gray-600 mt-2 space-y-1">
+                                <p><strong>Starts:</strong> ${startDate} after reference date</p>
+                                <p><strong>Time:</strong> ${schedule.time} (${schedule.timeZone})</p>
+                                <p><strong>Frequencies:</strong> ${frequencies}</p>
+                                <p><strong>Reminder ID:</strong> <code class="text-xs bg-gray-200 text-gray-800 px-1 py-0.5 rounded">${action.params.id}</code></p>
+                            </div>`;
+                    }
+                    break;
+                case 'ACTION_TYPE_CANCEL_REMINDER':
+                    icon = `<svg class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>`;
+                    details = `<p class="text-sm text-gray-600">Cancels ID: <code class="bg-gray-200 text-gray-800 px-1.5 py-0.5 rounded">${action.params?.reminderId || 'N/A'}</code></p>`;
+                    break;
+                case 'ACTION_TYPE_NOTIFY_SLACK':
+                    icon = `<svg class="h-6 w-6 text-purple-500" viewBox="0 0 122.8 122.8" xmlns="http://www.w3.org/2000/svg"><path d="M25.8,75.8A12.9,12.9,0,1,1,12.9,62.9H25.8v12.9Z" fill="#611f69"/><path d="M32.2,75.8A12.9,12.9,0,1,1,45.1,62.9v25.8A12.9,12.9,0,1,1,32.2,75.8Z" fill="#611f69"/><path d="M47,25.8A12.9,12.9,0,1,1,60,12.9V25.8H47Z" fill="#2eb67d"/><path d="M47,32.2A12.9,12.9,0,1,1,60,45.1H34.2A12.9,12.9,0,1,1,47,32.2Z" fill="#2eb67d"/><path d="M97,47A12.9,12.9,0,1,1,110,60H97V47Z" fill="#ecb22e"/><path d="M90.6,47A12.9,12.9,0,1,1,77.7,60V34.2A12.9,12.9,0,1,1,90.6,47Z" fill="#ecb22e"/><path d="M75.8,97A12.9,12.9,0,1,1,62.9,110V97H75.8Z" fill="#e01e5a"/><path d="M75.8,90.6A12.9,12.9,0,1,1,62.9,77.7h25.8A12.9,12.9,0,1,1,75.8,90.6Z" fill="#e01e5a"/></svg>`;
+                    details = `<p class="text-sm text-gray-600">Channel: <code class="bg-gray-200 text-gray-800 px-1.5 py-0.5 rounded">#${action.params?.channel || 'N/A'}</code></p>`;
+                    break;
+                case 'ACTION_TYPE_CREATE_TICKET':
+                     icon = `<svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 002 2h3m10 0h3a2 2 0 002-2v-3a2 2 0 00-2-2h-3m-3.5 1.5a.5.5 0 11-1 0 .5.5 0 011 0zM5 12a2 2 0 012-2h10a2 2 0 012 2v3a2 2 0 01-2 2H7a2 2 0 01-2-2v-3z" /></svg>`;
+                     details = `<p class="text-sm text-gray-600">Subject: <span class="italic">"${action.params?.request?.subject?.substring(0, 80) || 'N/A'}..."</span></p>`;
+                    break;
+                default:
+                    icon = `<svg class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>`;
+                    details = `<p class="text-sm text-gray-500">Params available in JSON view.</p>`;
+            }
+            
+            return `
+                <div class="flex items-start space-x-4 p-3 border-t border-gray-200">
+                    <div>${icon}</div>
+                    <div class="flex-grow">
+                        ${title}
+                        ${details}
+                    </div>
+                </div>`;
+        }
+        
+        /**
+         * Finds triggers with identical condition expressions to flag potential overlaps.
+         */
+        function findOverlaps(triggers) {
+            const conditionMap = new Map();
+            triggers.forEach(trigger => {
+                const condition = trigger.conditionExpression.trim();
+                if (!conditionMap.has(condition)) {
+                    conditionMap.set(condition, []);
+                }
+                conditionMap.get(condition).push(trigger.id);
+            });
+
+            const overlaps = new Map();
+            for (const [condition, ids] of conditionMap.entries()) {
+                if (ids.length > 1) {
+                    ids.forEach(id => {
+                        overlaps.set(id, ids.filter(otherId => otherId !== id));
+                    });
+                }
+            }
+            return overlaps;
+        }
+
+        /**
+         * Renders the triggers on the page, grouped and filtered.
+         */
+        function renderTriggers(triggers, groupBy = 'process', searchTerm = '') {
+            const container = document.getElementById('triggers-container');
+            container.innerHTML = '';
+
+            const filteredTriggers = triggers.filter(trigger => {
+                const searchLower = searchTerm.toLowerCase();
+                return (
+                    trigger.name.toLowerCase().includes(searchLower) ||
+                    trigger.id.toLowerCase().includes(searchLower) ||
+                    trigger.actions.some(a => a.type.toLowerCase().includes(searchLower))
+                );
+            });
+
+            if (filteredTriggers.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500">No triggers found matching your criteria.</p>`;
+                return;
+            }
+
+            const getGroupKey = (trigger) => {
+                if (groupBy === 'process') {
+                    return trigger.name.split(' - ')[0] || 'Uncategorized';
+                }
+                return trigger.eventType;
+            };
+
+            const grouped = filteredTriggers.reduce((acc, trigger) => {
+                const key = getGroupKey(trigger);
+                if (!acc[key]) {
+                    acc[key] = [];
+                }
+                acc[key].push(trigger);
+                return acc;
+            }, {});
+
+            const sortedGroupKeys = Object.keys(grouped).sort();
+
+            for (const groupName of sortedGroupKeys) {
+                const groupElement = document.createElement('div');
+                groupElement.innerHTML = `
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-blue-500">${groupName}</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        ${grouped[groupName].map(trigger => createTriggerCard(trigger)).join('')}
+                    </div>
+                `;
+                container.appendChild(groupElement);
+            }
+             // Add event listeners to toggle buttons after rendering
+            document.querySelectorAll('.toggle-json').forEach(button => {
+                button.addEventListener('click', () => {
+                    const viewerId = button.getAttribute('data-target');
+                    const viewer = document.getElementById(viewerId);
+                    viewer.classList.toggle('hidden');
+                });
+            });
+        }
+
+        /**
+         * Creates the HTML for a single trigger card.
+         */
+        function createTriggerCard(trigger) {
+            const overlapInfo = overlapMap.get(trigger.id);
+            const overlapHtml = overlapInfo ? `
+                <div class="p-3 bg-red-100 border-l-4 border-red-500 text-red-700 rounded-md mb-4">
+                    <p class="font-bold">Potential Overlap Detected</p>
+                    <p class="text-sm">This trigger has the exact same condition as trigger(s):
+                        ${overlapInfo.map(id => `<code class="text-xs">${id}</code>`).join(', ')}.
+                    This may cause duplicate notifications or actions.
+                    </p>
+                </div>` : '';
+
+            const jsonViewerId = `json-viewer-${trigger.id}`;
+
+            return `
+                <div class="card flex flex-col">
+                    <div class="p-5 flex-grow">
+                        ${overlapHtml}
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-semibold text-gray-800 pr-4">${trigger.name}</h3>
+                            <span class="whitespace-nowrap text-xs font-medium px-2.5 py-1 rounded-full ${trigger.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${trigger.enabled ? 'ENABLED' : 'DISABLED'}
+                            </span>
+                        </div>
+                        <div class="text-xs text-gray-500 space-x-4 mb-4">
+                            <span>ID: <code class="bg-gray-100 p-1 rounded">${trigger.id}</code></span>
+                            <span>Event: <code class="bg-gray-100 p-1 rounded">${trigger.eventType}</code></span>
+                            <span>Triggered: <strong>${trigger.triggered}</strong> times</span>
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-200">
+                        <h4 class="text-sm font-semibold p-3 bg-gray-50 rounded-t-lg">Actions</h4>
+                        ${trigger.actions.map(createActionElement).join('') || '<p class="p-3 text-sm text-gray-500">No actions configured.</p>'}
+                    </div>
+                     <div class="p-3 bg-gray-50 border-t border-gray-100 rounded-b-lg">
+                        <button class="toggle-json text-sm text-blue-600 hover:underline" data-target="${jsonViewerId}">View Full JSON</button>
+                        <div id="${jsonViewerId}" class="json-viewer hidden mt-2">
+                            ${JSON.stringify(trigger, null, 2)}
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        // --- Initial setup and event listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            overlapMap = findOverlaps(triggersData);
+            
+            const searchInput = document.getElementById('searchInput');
+            const groupBySelect = document.getElementById('groupBySelect');
+
+            const performRender = () => {
+                const searchTerm = searchInput.value;
+                const groupBy = groupBySelect.value;
+                renderTriggers(triggersData, groupBy, searchTerm);
+            };
+
+            searchInput.addEventListener('input', performRender);
+            groupBySelect.addEventListener('change', performRender);
+
+            // Initial render
+            performRender();
+        });
+    </script>
+</body>
+</html>
