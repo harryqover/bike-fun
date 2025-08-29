@@ -29,7 +29,7 @@
             border-radius: 8px;
             padding: 16px;
             position: fixed;
-            z-index: 1;
+            z-index: 100;
             left: 50%;
             bottom: 30px;
             opacity: 0;
@@ -41,6 +41,17 @@
         }
         .initial-view {
             transition: opacity 0.5s ease-in-out;
+        }
+        #sidebar {
+            position: sticky;
+            top: 1rem;
+            align-self: flex-start;
+        }
+        .modal {
+            transition: opacity 0.25s ease;
+        }
+        .modal-content {
+            transition: transform 0.25s ease;
         }
     </style>
 </head>
@@ -61,22 +72,93 @@
                 <button id="process-btn" class="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">Analyze Triggers</button>
             </div>
         </div>
-
-        <!-- Initial View / Welcome message -->
-        <div id="initial-view" class="initial-view text-center py-16 bg-white rounded-lg border-2 border-dashed border-slate-300">
-             <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <h3 class="mt-2 text-sm font-medium text-slate-900">Awaiting Data</h3>
-            <p class="mt-1 text-sm text-slate-500">Your trigger documentation will appear here.</p>
-        </div>
         
-        <!-- Results Section -->
-        <div id="results-container" class="space-y-12">
-             <!-- Warnings will be injected here -->
-            <div id="warnings-container"></div>
-            <!-- Trigger groups will be injected here -->
-            <div id="triggers-output" class="space-y-12"></div>
+        <div class="flex flex-col lg:flex-row lg:space-x-8">
+            <!-- Sidebar -->
+            <aside id="sidebar-container" class="lg:w-1/4 hidden">
+                <nav id="sidebar" class="p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
+                   <h3 class="text-sm font-semibold text-slate-900 tracking-wider uppercase">Processes</h3>
+                   <ul id="sidebar-nav" class="mt-2 space-y-1">
+                       <!-- Navigation items will be injected here -->
+                   </ul>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="w-full lg:flex-1">
+                <!-- Initial View / Welcome message -->
+                <div id="initial-view" class="initial-view text-center py-16 bg-white rounded-lg border-2 border-dashed border-slate-300">
+                    <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-slate-900">Awaiting Data</h3>
+                    <p class="mt-1 text-sm text-slate-500">Your trigger documentation will appear here.</p>
+                </div>
+
+                <!-- Controls -->
+                <div id="controls" class="hidden mb-6 p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                        <!-- Search -->
+                        <div>
+                            <label for="search-box" class="block text-sm font-medium text-slate-700">Search by Name/ID</label>
+                            <input type="text" id="search-box" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="e.g., Send email - Policy creation">
+                        </div>
+                        <!-- Filter by Status -->
+                        <div>
+                            <label for="filter-status" class="block text-sm font-medium text-slate-700">Filter by Status</label>
+                            <select id="filter-status" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                <option value="all">All</option>
+                                <option value="enabled">Enabled</option>
+                                <option value="disabled">Disabled</option>
+                            </select>
+                        </div>
+                        <!-- Filter by Action Type -->
+                        <div>
+                            <label for="filter-action" class="block text-sm font-medium text-slate-700">Filter by Action Type</label>
+                            <select id="filter-action" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                <option value="all">All Action Types</option>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+                        <!-- Sort By -->
+                        <div>
+                             <label class="block text-sm font-medium text-slate-700">Sort by</label>
+                             <div class="mt-2 flex space-x-4">
+                                 <label class="inline-flex items-center"><input type="radio" name="sort" value="default" checked class="form-radio h-4 w-4 text-indigo-600"> <span class="ml-2 text-sm">Default</span></label>
+                                 <label class="inline-flex items-center"><input type="radio" name="sort" value="triggered" class="form-radio h-4 w-4 text-indigo-600"> <span class="ml-2 text-sm">Triggered</span></label>
+                                 <label class="inline-flex items-center"><input type="radio" name="sort" value="updatedAt" class="form-radio h-4 w-4 text-indigo-600"> <span class="ml-2 text-sm">Updated</span></label>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results Section -->
+                <div id="results-container" class="space-y-12">
+                    <div id="warnings-container"></div>
+                    <div id="triggers-output" class="space-y-12"></div>
+                    <div id="no-results" class="hidden text-center py-16 bg-white rounded-lg border-2 border-dashed border-slate-300">
+                        <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <h3 class="mt-2 text-sm font-medium text-slate-900">No Triggers Found</h3>
+                        <p class="mt-1 text-sm text-slate-500">Adjust your search or filter criteria.</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal-backdrop" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-40"></div>
+    <div id="modal" class="modal fixed inset-0 flex items-center justify-center hidden z-50 p-4">
+        <div id="modal-content" class="modal-content bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col transform scale-95">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h2 id="modal-title" class="text-xl font-semibold">Modal Title</h2>
+                <button id="modal-close-btn" class="p-2 rounded-full hover:bg-slate-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div id="modal-body" class="p-6 overflow-y-auto">
+                <!-- Content injected here -->
+            </div>
         </div>
     </div>
 
@@ -92,7 +174,30 @@
             const warningsContainer = document.getElementById('warnings-container');
             const initialView = document.getElementById('initial-view');
             const toast = document.getElementById('toast');
+            
+            const controls = document.getElementById('controls');
+            const sidebarContainer = document.getElementById('sidebar-container');
+            const sidebarNav = document.getElementById('sidebar-nav');
+            const noResultsView = document.getElementById('no-results');
 
+            // Filters & Sort
+            const searchBox = document.getElementById('search-box');
+            const filterStatus = document.getElementById('filter-status');
+            const filterAction = document.getElementById('filter-action');
+            const sortRadios = document.querySelectorAll('input[name="sort"]');
+
+            // Modal
+            const modalBackdrop = document.getElementById('modal-backdrop');
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modal-content');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+
+            let allTriggers = [];
+            let displayedTriggers = [];
+
+            // Main processing logic
             processBtn.addEventListener('click', () => {
                 const jsonString = jsonPayloadTextarea.value;
                 if (!jsonString.trim()) {
@@ -101,17 +206,20 @@
                 }
 
                 try {
-                    const data = JSON.parse(jsonString);
+                    let data = JSON.parse(jsonString);
                     if (!Array.isArray(data)) {
                         showToast("The root of the JSON payload must be an array.", "error");
                         return;
                     }
-
-                    // Hide initial view
-                    initialView.style.opacity = '0';
+                    
+                    allTriggers = pairReminders(data);
+                    
                     initialView.style.display = 'none';
+                    controls.style.display = 'block';
+                    sidebarContainer.style.display = 'block';
 
-                    renderTriggers(data);
+                    populateActionFilter(allTriggers);
+                    updateView();
                     showToast("Analysis complete!", "success");
 
                 } catch (error) {
@@ -120,31 +228,67 @@
                 }
             });
 
-            function showToast(message, type = 'info') {
-                toast.textContent = message;
-                toast.className = `toast show ${type === 'error' ? 'bg-red-600' : 'bg-green-600'}`;
-                setTimeout(() => {
-                    toast.className = toast.className.replace("show", "");
-                }, 3000);
+            // Event Listeners for controls
+            searchBox.addEventListener('input', () => updateView());
+            filterStatus.addEventListener('change', () => updateView());
+            filterAction.addEventListener('change', () => updateView());
+            sortRadios.forEach(radio => radio.addEventListener('change', () => updateView()));
+
+            // Modal listeners
+            modalBackdrop.addEventListener('click', closeModal);
+            modalCloseBtn.addEventListener('click', closeModal);
+            resultsContainer.addEventListener('click', handleCardButtonClick);
+
+            function updateView() {
+                // 1. Filter
+                const searchTerm = searchBox.value.toLowerCase();
+                const status = filterStatus.value;
+                const actionType = filterAction.value;
+
+                let filtered = allTriggers.filter(trigger => {
+                    const searchMatch = !searchTerm || trigger.name.toLowerCase().includes(searchTerm) || trigger.id.toLowerCase().includes(searchTerm);
+                    const statusMatch = status === 'all' || (status === 'enabled' && trigger.enabled) || (status === 'disabled' && !trigger.enabled);
+                    const actionMatch = actionType === 'all' || trigger.actions.some(a => a.type === actionType);
+                    return searchMatch && statusMatch && actionMatch;
+                });
+                
+                // 2. Sort
+                const sortBy = document.querySelector('input[name="sort"]:checked').value;
+                 if (sortBy !== 'default') {
+                    filtered.sort((a, b) => {
+                        if (sortBy === 'triggered') return b.triggered - a.triggered;
+                        if (sortBy === 'updatedAt') return new Date(b.updatedAt) - new Date(a.updatedAt);
+                        return 0;
+                    });
+                }
+
+                displayedTriggers = filtered;
+
+                // 3. Render
+                renderSidebar(displayedTriggers);
+                renderTriggers(displayedTriggers);
             }
 
             function renderTriggers(triggers) {
                 triggersOutput.innerHTML = '';
                 warningsContainer.innerHTML = '';
+
+                if (triggers.length === 0) {
+                    noResultsView.style.display = 'block';
+                    triggersOutput.innerHTML = '';
+                    return;
+                }
+                noResultsView.style.display = 'none';
                 
-                // Group triggers by eventType
                 const groupedByProcess = triggers.reduce((acc, trigger) => {
                     const process = trigger.eventType || 'Uncategorized';
-                    if (!acc[process]) {
-                        acc[process] = [];
-                    }
+                    if (!acc[process]) acc[process] = [];
                     acc[process].push(trigger);
                     return acc;
                 }, {});
 
                 checkForWarnings(groupedByProcess);
 
-                // Sort processes alphabetically
                 const sortedProcesses = Object.keys(groupedByProcess).sort();
                 
                 sortedProcesses.forEach(processName => {
@@ -163,14 +307,21 @@
                 });
             }
 
-            function formatProcessName(name) {
-                return name.replace('EVENT_TYPE_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-            }
-
             function createTriggerCard(trigger) {
                 const statusBadge = trigger.enabled
                     ? '<span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">Enabled</span>'
                     : '<span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">Disabled</span>';
+
+                let reminderPairingInfo = '';
+                if(trigger.pairedReminderStart) {
+                    reminderPairingInfo = `<p class="text-xs text-slate-500 mt-2">Cancels reminder from: <em class="font-medium not-italic">"${trigger.pairedReminderStart}"</em></p>`;
+                }
+                if(trigger.pairedReminderCancel) {
+                     reminderPairingInfo = `<p class="text-xs text-slate-500 mt-2">Reminder cancelled by: <em class="font-medium not-italic">"${trigger.pairedReminderCancel}"</em></p>`;
+                }
+                if(trigger.isReminderStart && !trigger.pairedReminderCancel) {
+                    reminderPairingInfo = `<p class="text-xs text-yellow-700 bg-yellow-100 p-2 rounded-md mt-2"><strong>Warning:</strong> This reminder does not seem to have a corresponding cancellation trigger.</p>`
+                }
 
                 return `
                     <div class="bg-white rounded-lg shadow-md border border-slate-200 overflow-hidden">
@@ -180,8 +331,8 @@
                                 ${statusBadge}
                             </div>
                             <p class="text-sm text-slate-500 mt-1">ID: ${trigger.id}</p>
-                            <p class="text-sm text-slate-500 mt-1">Triggered: <span class="font-medium">${trigger.triggered} times</span></p>
-
+                            <p class="text-sm text-slate-500 mt-1">Triggered: <span class="font-medium">${trigger.triggered} times</span> | Last Updated: <span class="font-medium">${new Date(trigger.updatedAt).toLocaleDateString()}</span></p>
+                            ${reminderPairingInfo}
                             <!-- Conditions -->
                             <div class="mt-4">
                                 <h4 class="font-semibold text-slate-700">Conditions</h4>
@@ -194,17 +345,23 @@
                             <div class="mt-4">
                                 <h4 class="font-semibold text-slate-700">Actions</h4>
                                 <div class="mt-2 space-y-3">
-                                    ${trigger.actions.map(action => createActionDetails(action)).join('')}
+                                    ${trigger.actions.map(action => createActionDetails(action, trigger)).join('')}
                                 </div>
                             </div>
+
+                             <!-- Footer -->
+                             <div class="mt-4 pt-4 border-t border-slate-200 text-right">
+                                <button class="view-json-btn text-sm text-indigo-600 hover:text-indigo-800 font-medium" data-trigger-id="${trigger.id}">View Full JSON</button>
+                             </div>
                         </div>
                     </div>
                 `;
             }
             
-            function createActionDetails(action) {
+            function createActionDetails(action, trigger) {
                 let detailsHtml = '';
                 let specialStyling = '';
+                let footerHtml = '';
 
                 switch (action.type) {
                     case 'ACTION_TYPE_SEND_REMINDER':
@@ -230,6 +387,9 @@
                     case 'ACTION_TYPE_SEND_EMAIL':
                         const to = action.params.to.map(t => escapeHtml(t.address)).join(', ');
                         detailsHtml = `<p class="text-xs text-slate-600"><strong>Recipient:</strong> ${to}</p>`;
+                        if (action.params.template?.inline?.content) {
+                            footerHtml = `<button class="preview-email-btn mt-2 text-xs text-indigo-600 hover:text-indigo-800 font-medium" data-trigger-id="${trigger.id}" data-action-index="${trigger.actions.indexOf(action)}">Preview Email</button>`;
+                        }
                         break;
                     case 'ACTION_TYPE_NOTIFY_SLACK':
                         detailsHtml = `<p class="text-xs text-slate-600"><strong>Channel:</strong> #${action.params.channel}</p>`;
@@ -242,10 +402,110 @@
                     <div class="border rounded-md p-3 ${specialStyling}">
                         <p class="text-sm font-medium text-indigo-700">${formatProcessName(action.type.replace('ACTION_TYPE_', ''))}</p>
                         ${detailsHtml}
+                        ${footerHtml ? `<div class="text-right">${footerHtml}</div>` : ''}
                     </div>
                 `;
             }
+
+            function pairReminders(triggers) {
+                const starters = {};
+                const cancellers = {};
+                
+                triggers.forEach(trigger => {
+                    trigger.actions.forEach(action => {
+                        if (action.type === 'ACTION_TYPE_SEND_REMINDER') {
+                           trigger.isReminderStart = true;
+                           starters[action.params.id] = trigger;
+                        } else if (action.type === 'ACTION_TYPE_CANCEL_REMINDER') {
+                           cancellers[action.params.reminderId] = trigger;
+                        }
+                    });
+                });
+
+                Object.keys(starters).forEach(reminderId => {
+                    if (cancellers[reminderId]) {
+                        starters[reminderId].pairedReminderCancel = cancellers[reminderId].name;
+                        cancellers[reminderId].pairedReminderStart = starters[reminderId].name;
+                    }
+                });
+                
+                return triggers;
+            }
             
+            function renderSidebar(triggers) {
+                const grouped = triggers.reduce((acc, trigger) => {
+                    const process = trigger.eventType || 'Uncategorized';
+                    if (!acc[process]) acc[process] = 0;
+                    acc[process]++;
+                    return acc;
+                }, {});
+
+                sidebarNav.innerHTML = Object.keys(grouped).sort().map(processName => `
+                    <li>
+                        <a href="#process-${processName}" class="flex justify-between items-center px-2 py-1 text-sm text-slate-700 hover:bg-slate-100 rounded-md">
+                            ${formatProcessName(processName)}
+                            <span class="text-xs bg-slate-200 text-slate-600 font-semibold px-2 py-0.5 rounded-full">${grouped[processName]}</span>
+                        </a>
+                    </li>
+                `).join('');
+            }
+
+            function populateActionFilter(triggers) {
+                const actionTypes = new Set();
+                triggers.forEach(t => t.actions.forEach(a => actionTypes.add(a.type)));
+                const sortedActions = [...actionTypes].sort();
+                filterAction.innerHTML = '<option value="all">All Action Types</option>' + sortedActions.map(action => `<option value="${action}">${formatProcessName(action.replace('ACTION_TYPE_',''))}</option>`).join('');
+            }
+            
+            function handleCardButtonClick(e) {
+                const viewJsonBtn = e.target.closest('.view-json-btn');
+                const previewEmailBtn = e.target.closest('.preview-email-btn');
+
+                if (viewJsonBtn) {
+                    const triggerId = viewJsonBtn.dataset.triggerId;
+                    const trigger = allTriggers.find(t => t.id === triggerId);
+                    if (trigger) {
+                        modalTitle.textContent = 'Full JSON Payload';
+                        modalBody.innerHTML = `<pre class="text-xs">${escapeHtml(JSON.stringify(trigger, null, 2))}</pre>`;
+                        showModal();
+                    }
+                } else if (previewEmailBtn) {
+                    const triggerId = previewEmailBtn.dataset.triggerId;
+                    const actionIndex = parseInt(previewEmailBtn.dataset.actionIndex, 10);
+                    const trigger = allTriggers.find(t => t.id === triggerId);
+                    if (trigger && trigger.actions[actionIndex]) {
+                        const emailContent = trigger.actions[actionIndex].params.template.inline.content;
+                        modalTitle.textContent = `Email Preview: ${trigger.name}`;
+                        modalBody.innerHTML = `<p class="text-sm mb-2 text-slate-600">This is a raw HTML preview. Dynamic data (e.g., <%- data.code %>) will not be populated.</p>
+                                               <iframe srcdoc="${escapeHtml(emailContent)}" class="w-full h-[60vh] border rounded-md"></iframe>`;
+                        showModal();
+                    }
+                }
+            }
+
+            function showModal() {
+                modalBackdrop.style.display = 'block';
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    modalBackdrop.classList.remove('opacity-0');
+                    modalContent.classList.remove('scale-95');
+                }, 10);
+            }
+
+            function closeModal() {
+                modalBackdrop.classList.add('opacity-0');
+                modalContent.classList.add('scale-95');
+                setTimeout(() => {
+                    modalBackdrop.style.display = 'none';
+                    modal.style.display = 'none';
+                    modalBody.innerHTML = '';
+                }, 250);
+            }
+
+            function formatProcessName(name) {
+                return name.replace('EVENT_TYPE_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            }
+
             function parseDuration(duration) {
                 if (!duration) return 'N/A';
                 const match = duration.match(/P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?/);
@@ -259,73 +519,62 @@
             }
             
             function formatConditions(trigger) {
-                if (trigger.conditionExpression) {
-                    return trigger.conditionExpression;
-                }
-                if (trigger.conditions) {
-                    return JSON.stringify(trigger.conditions, null, 2);
-                }
+                if (trigger.conditionExpression) return trigger.conditionExpression;
+                if (trigger.conditions) return JSON.stringify(trigger.conditions, null, 2);
                 return 'No conditions specified.';
             }
             
-             function checkForWarnings(groupedByProcess) {
+            function checkForWarnings(groupedByProcess) {
                 let warnings = [];
                 Object.keys(groupedByProcess).forEach(processName => {
                     const triggers = groupedByProcess[processName];
                     const eventNameMap = {};
-
                     triggers.forEach(trigger => {
-                        if (!trigger.enabled) return; // Only check enabled triggers
-
+                        if (!trigger.enabled) return;
                         const conditions = trigger.conditions?.any || trigger.conditions?.all || [];
-                        conditions.forEach(cond => {
-                            if (cond.fact === 'eventName' && isNotificationAction(trigger)) {
-                                const key = `${processName}::${cond.value}`;
-                                if (!eventNameMap[key]) {
-                                    eventNameMap[key] = [];
+                        if (conditions.length > 0 && isNotificationAction(trigger)) {
+                            conditions.forEach(cond => {
+                                if (cond.fact === 'eventName') {
+                                    const key = `${processName}::${cond.value}`;
+                                    if (!eventNameMap[key]) eventNameMap[key] = [];
+                                    eventNameMap[key].push(trigger.name);
                                 }
-                                eventNameMap[key].push(trigger.name);
-                            }
-                        });
+                            });
+                        }
                     });
 
                     Object.keys(eventNameMap).forEach(key => {
                         if (eventNameMap[key].length > 1) {
                             const [process, event] = key.split('::');
-                            warnings.push(`
-                                <p>Potential duplicate notifications for event <code class="font-mono text-sm bg-yellow-200 text-yellow-800 px-1 rounded">${event}</code> in the <strong>${formatProcessName(process)}</strong> process. Found in triggers: ${eventNameMap[key].map(n => `"${n}"`).join(', ')}.</p>
-                            `);
+                            warnings.push(`<p>Potential duplicate notifications for event <code class="font-mono text-sm bg-yellow-200 text-yellow-800 px-1 rounded">${event}</code> in the <strong>${formatProcessName(process)}</strong> process. Found in triggers: ${eventNameMap[key].map(n => `"${n}"`).join(', ')}.</p>`);
                         }
                     });
                 });
                 
                 if (warnings.length > 0) {
-                    warningsContainer.innerHTML = `
-                        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-8 rounded-r-lg" role="alert">
-                            <p class="font-bold">Heads Up!</p>
-                            ${warnings.join('')}
-                        </div>
-                    `;
+                    warningsContainer.innerHTML = `<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-8 rounded-r-lg" role="alert"><p class="font-bold">Heads Up!</p>${warnings.join('')}</div>`;
                 }
             }
 
             function isNotificationAction(trigger) {
-                return trigger.actions.some(action => 
-                    action.type === 'ACTION_TYPE_SEND_EMAIL' || 
-                    action.type === 'ACTION_TYPE_NOTIFY_SLACK' ||
-                    action.type === 'ACTION_TYPE_SEND_REMINDER'
-                );
+                return trigger.actions.some(action => ['ACTION_TYPE_SEND_EMAIL', 'ACTION_TYPE_NOTIFY_SLACK', 'ACTION_TYPE_SEND_REMINDER'].includes(action.type));
             }
 
             function escapeHtml(str) {
-                return str
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
+                const p = document.createElement("p");
+                p.textContent = str;
+                return p.innerHTML;
+            }
+
+            function showToast(message, type = 'info') {
+                toast.textContent = message;
+                toast.className = `toast show ${type === 'error' ? 'bg-red-600' : 'bg-green-600'}`;
+                setTimeout(() => {
+                    toast.className = toast.className.replace("show", "");
+                }, 3000);
             }
         });
     </script>
 </body>
 </html>
+
