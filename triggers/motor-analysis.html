@@ -314,6 +314,7 @@
   ];
 
         let overlapMap = new Map();
+        let reminderFlowMap = new Map();
 
         /**
          * Parses ISO 8601 duration format (like P1W, P2M) into a human-readable string.
@@ -334,7 +335,7 @@
             }
             return parts.join(', ') || duration;
         }
-
+        
         /**
          * Creates the HTML for a single action within a trigger card.
          */
@@ -354,11 +355,15 @@
                     if (schedule) {
                         const startDate = parseDuration(schedule.dateSpec);
                         const frequencies = schedule.recurrence?.offsets?.durationBetweenMessages?.map(parseDuration).join(', then ') || 'None';
+                        const usesDateFormat = schedule.referenceDate && schedule.referenceDate.includes('dateFormat.dateLocaleFormat');
                         details = `
                             <div class="text-sm text-gray-600 mt-2 space-y-1">
                                 <p><strong>Starts:</strong> ${startDate} after reference date</p>
                                 <p><strong>Time:</strong> ${schedule.time} (${schedule.timeZone})</p>
                                 <p><strong>Frequencies:</strong> ${frequencies}</p>
+                                <p class="flex items-center"><strong>Reference:</strong>&nbsp;<code class="text-xs bg-gray-200 text-gray-800 px-1 py-0.5 rounded">${schedule.referenceDate}</code>
+                                ${usesDateFormat ? `<span class="ml-2 bg-purple-100 text-purple-800 text-xs font-medium px-2 py-0.5 rounded-full" title="This date is formatted dynamically based on the user's locale.">Uses dateFormat</span>` : ''}
+                                </p>
                                 <p><strong>Reminder ID:</strong> <code class="text-xs bg-gray-200 text-gray-800 px-1 py-0.5 rounded">${action.params.id}</code></p>
                             </div>`;
                     }
@@ -389,7 +394,7 @@
                     </div>
                 </div>`;
         }
-        
+
         /**
          * Finds triggers with identical condition expressions to flag potential overlaps.
          */
@@ -413,7 +418,39 @@
             }
             return overlaps;
         }
+        
+        /**
+         * Analyzes triggers to find start/stop pairs for reminders.
+         */
+        function linkReminderTriggers(triggers) {
+            const getBaseId = (idString = '') => idString.split('-<%=')[0];
 
+            triggers.forEach(trigger => {
+                trigger.actions.forEach(action => {
+                    let baseId;
+                    let type;
+
+                    if (action.type === 'ACTION_TYPE_SEND_REMINDER') {
+                        baseId = getBaseId(action.params.id);
+                        type = 'start';
+                    } else if (action.type === 'ACTION_TYPE_CANCEL_REMINDER') {
+                        baseId = getBaseId(action.params.reminderId);
+                        type = 'stop';
+                    }
+
+                    if (baseId) {
+                        if (!reminderFlowMap.has(baseId)) {
+                            reminderFlowMap.set(baseId, { start: [], stop: [] });
+                        }
+                        const flow = reminderFlowMap.get(baseId);
+                        if (!flow[type].includes(trigger.id)) {
+                            flow[type].push(trigger.id);
+                        }
+                    }
+                });
+            });
+        }
+        
         /**
          * Renders the triggers on the page, grouped and filtered.
          */
@@ -482,10 +519,36 @@
                 <div class="p-3 bg-red-100 border-l-4 border-red-500 text-red-700 rounded-md mb-4">
                     <p class="font-bold">Potential Overlap Detected</p>
                     <p class="text-sm">This trigger has the exact same condition as trigger(s):
-                        ${overlapInfo.map(id => `<code class="text-xs">${id}</code>`).join(', ')}.
+                        ${overlapInfo.map(id => `<code class="text-xs bg-red-200 px-1 rounded">${id}</code>`).join(', ')}.
                     This may cause duplicate notifications or actions.
                     </p>
                 </div>` : '';
+
+            let linkHtml = '';
+            const getBaseId = (idString = '') => idString.split('-<%=')[0];
+            trigger.actions.forEach(action => {
+                if (action.type === 'ACTION_TYPE_SEND_REMINDER' || action.type === 'ACTION_TYPE_CANCEL_REMINDER') {
+                    const isStart = action.type === 'ACTION_TYPE_SEND_REMINDER';
+                    const reminderId = isStart ? action.params.id : action.params.reminderId;
+                    const baseId = getBaseId(reminderId);
+                    const flow = reminderFlowMap.get(baseId);
+                    if (flow) {
+                        const relatedIds = isStart ? flow.stop : flow.start;
+                        if (relatedIds.length > 0) {
+                             linkHtml = `
+                            <div class="p-3 bg-blue-50 border-l-4 border-blue-400 text-blue-800 rounded-md mb-4 flex items-start space-x-3">
+                                <svg class="h-6 w-6 text-blue-500 flex-shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>
+                                <div>
+                                    <p class="font-bold">${isStart ? 'Starts Reminder Flow' : 'Stops Reminder Flow'}</p>
+                                    <p class="text-sm">${isStart ? 'Stopped by trigger(s):' : 'Started by trigger(s):'}
+                                        ${relatedIds.map(id => `<code class="text-xs bg-blue-100 px-1 rounded">${id}</code>`).join(', ')}
+                                    </p>
+                                </div>
+                            </div>`;
+                        }
+                    }
+                }
+            });
 
             const jsonViewerId = `json-viewer-${trigger.id}`;
 
@@ -493,6 +556,7 @@
                 <div class="card flex flex-col">
                     <div class="p-5 flex-grow">
                         ${overlapHtml}
+                        ${linkHtml}
                         <div class="flex justify-between items-start mb-2">
                             <h3 class="text-lg font-semibold text-gray-800 pr-4">${trigger.name}</h3>
                             <span class="whitespace-nowrap text-xs font-medium px-2.5 py-1 rounded-full ${trigger.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
@@ -521,6 +585,7 @@
         // --- Initial setup and event listeners ---
         document.addEventListener('DOMContentLoaded', () => {
             overlapMap = findOverlaps(triggersData);
+            linkReminderTriggers(triggersData);
             
             const searchInput = document.getElementById('searchInput');
             const groupBySelect = document.getElementById('groupBySelect');
@@ -540,3 +605,4 @@
     </script>
 </body>
 </html>
+
