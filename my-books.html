@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Comic Library</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles inspired by Belgian Comic Books */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #F0F4F8; /* Light, paper-like background */
+        }
+        .comic-header {
+            background-color: #E63946; /* Strong red, like a comic title box */
+            border-bottom: 4px solid #1D3557; /* Dark blue outline */
+        }
+        .comic-title {
+            font-weight: 700;
+            color: #F1FAEE; /* Off-white text */
+            text-shadow: 2px 2px 0 #1D3557; /* Classic comic title shadow */
+        }
+        .comic-button-primary {
+            background-color: #457B9D; /* A nice, friendly blue */
+            color: #F1FAEE;
+            border: 2px solid #1D3557;
+            box-shadow: 3px 3px 0 #1D3557;
+            transition: all 0.1s ease-in-out;
+        }
+        .comic-button-primary:hover {
+            transform: translate(1px, 1px);
+            box-shadow: 2px 2px 0 #1D3557;
+        }
+        .comic-button-primary:active {
+            transform: translate(3px, 3px);
+            box-shadow: none;
+        }
+         .comic-button-secondary {
+            background-color: #A8DADC;
+            color: #1D3557;
+            border: 2px solid #1D3557;
+        }
+        .comic-button-danger {
+            background-color: #E63946;
+            color: #F1FAEE;
+            border: 2px solid #1D3557;
+        }
+        .book-card {
+            background-color: #fff;
+            border: 3px solid #1D3557;
+            box-shadow: 5px 5px 0px rgba(29, 53, 87, 0.5);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 8px 8px 0px rgba(29, 53, 87, 0.6);
+        }
+        .comic-label {
+            background-color: #FFC947; /* Bright yellow for labels */
+            color: #1D3557;
+            border: 1px solid #1D3557;
+            font-weight: 600;
+        }
+        .modal-backdrop {
+            background-color: rgba(29, 53, 87, 0.6);
+            backdrop-filter: blur(5px);
+        }
+        .comic-modal-content {
+            background-color: #F1FAEE;
+            border: 4px solid #1D3557;
+        }
+        .form-input, .form-select {
+            border: 2px solid #1D3557;
+            background-color: #fff;
+            transition: box-shadow 0.2s;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px #457B9D;
+        }
+        .info-panel {
+            background-color: #A8DADC;
+            border: 2px dashed #1D3557;
+            color: #1D3557;
+        }
+        /* Loading spinner */
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 8px solid #457B9D;
+            width: 80px;
+            height: 80px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="comic-header p-4 sticky top-0 z-20">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="comic-title text-2xl md:text-4xl">My Kids' Comic Library</h1>
+            <div class="flex items-center gap-4">
+                 <button id="addBookBtn" class="comic-button-primary font-bold py-2 px-4 rounded-lg text-sm md:text-base">
+                    + Add Book
+                </button>
+                <button id="settingsBtn" title="Settings" class="text-white hover:text-yellow-300 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0l-.1.41a2 2 0 01-1.42 1.42l-.41.1c-1.56.38-1.56 2.6 0 2.98l.41.1a2 2 0 011.42 1.42l.1.41c.38 1.56 2.6 1.56 2.98 0l.1-.41a2 2 0 011.42-1.42l.41-.1c1.56-.38 1.56-2.6 0-2.98l-.41-.1a2 2 0 01-1.42-1.42l-.1-.41zM10 5a5 5 0 100 10 5 5 0 000-10zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 md:p-8">
+
+        <!-- Filters Section -->
+        <section id="filters" class="bg-white/80 backdrop-blur-sm p-4 rounded-xl border-2 border-dashed border-gray-400 mb-8 sticky top-[92px] z-10">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input type="text" id="searchInput" placeholder="Search title or author..." class="form-input w-full p-2 rounded-lg col-span-1 md:col-span-2">
+                <select id="labelFilter" class="form-select w-full p-2 rounded-lg">
+                    <option value="">Filter by Label</option>
+                    <!-- Labels will be populated by JS -->
+                </select>
+            </div>
+        </section>
+
+        <!-- Loading Indicator -->
+        <div id="loading" class="fixed inset-0 bg-gray-100/80 flex justify-center items-center z-50">
+             <div class="text-center">
+                <div class="loader mx-auto"></div>
+                <p class="text-xl font-semibold text-[#1D3557] mt-4">Loading Library...</p>
+             </div>
+        </div>
+
+        <!-- Books Grid -->
+        <section id="booksGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            <!-- Book cards will be inserted here by JavaScript -->
+        </section>
+        
+        <div id="noResults" class="hidden text-center py-16">
+            <p class="text-2xl font-bold text-[#1D3557]">Kapow! No books found.</p>
+            <p class="text-gray-600 mt-2">Try changing your search or filter settings.</p>
+        </div>
+        
+        <div id="setupMessage" class="hidden text-center p-8 bg-yellow-100 border-2 border-yellow-500 rounded-lg">
+            <h3 class="font-bold text-yellow-800 text-xl">Welcome! Let's get set up.</h3>
+            <p class="text-yellow-700 mt-2">Please add your Google Script URL in the settings panel.</p>
+            <button id="openSettingsFromMsgBtn" class="comic-button-primary mt-4 py-2 px-4 rounded-lg">Open Settings</button>
+        </div>
+
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 modal-backdrop items-center justify-center z-30 hidden">
+        <div class="comic-modal-content rounded-xl shadow-lg w-11/12 md:max-w-3xl max-h-[90vh] overflow-y-auto p-8">
+            <h2 class="text-2xl font-bold text-[#1D3557] mb-4">Settings</h2>
+            <div class="space-y-4">
+                <div>
+                    <label for="scriptUrlInput" class="font-bold text-[#1D3557] block mb-1">Google Script Web App URL*</label>
+                    <input type="url" id="scriptUrlInput" class="form-input w-full p-2 rounded-lg" placeholder="https://script.google.com/macros/s/..." required>
+                </div>
+                <div class="info-panel p-4 rounded-lg text-sm">
+                    <h4 class="font-bold mb-2">How to get your Script URL:</h4>
+                    <ol class="list-decimal list-inside space-y-1">
+                        <li>Create a new Google Sheet for your library.</li>
+                        <li>In the sheet, go to <strong>Extensions > Apps Script</strong>.</li>
+                        <li>Paste the provided <code>Code.gs</code> content and save the project.</li>
+                        <li>Click the blue <strong>Deploy</strong> button, then <strong>New deployment</strong>.</li>
+                        <li>Set "Who has access" to <strong>Anyone</strong>. This is important!</li>
+                        <li>Click <strong>Deploy</strong> and authorize the script when prompted.</li>
+                        <li>Copy the final <strong>Web app URL</strong> and paste it into the field above.</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="flex justify-end gap-4 mt-8">
+                <button type="button" id="cancelSettingsBtn" class="comic-button-secondary font-bold py-2 px-4 rounded-lg">Cancel</button>
+                <button type="button" id="saveSettingsBtn" class="comic-button-primary font-bold py-2 px-4 rounded-lg">Save & Reload</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Add/Edit Book Modal -->
+    <div id="bookModal" class="fixed inset-0 modal-backdrop items-center justify-center z-30 hidden">
+        <div class="comic-modal-content rounded-xl shadow-lg w-11/12 md:max-w-2xl max-h-[90vh] overflow-y-auto">
+            <form id="bookForm" class="p-8">
+                <h2 id="modalTitle" class="text-2xl font-bold text-[#1D3557] mb-6">Add a New Book</h2>
+                <input type="hidden" id="bookId">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Title -->
+                    <div>
+                        <label for="title" class="font-bold text-[#1D3557] block mb-1">Title*</label>
+                        <input type="text" id="title" class="form-input w-full p-2 rounded-lg" required>
+                    </div>
+                     <!-- Series -->
+                    <div>
+                        <label for="series" class="font-bold text-[#1D3557] block mb-1">Series</label>
+                        <input type="text" id="series" class="form-input w-full p-2 rounded-lg">
+                    </div>
+                    <!-- Author -->
+                    <div>
+                        <label for="author" class="font-bold text-[#1D3557] block mb-1">Author / Artist</label>
+                        <input type="text" id="author" class="form-input w-full p-2 rounded-lg">
+                    </div>
+                     <!-- Category -->
+                    <div>
+                        <label for="category" class="font-bold text-[#1D3557] block mb-1">Category</label>
+                        <select id="category" class="form-select w-full p-2 rounded-lg">
+                            <option>Comic Book</option>
+                            <option>Graphic Novel</option>
+                            <option>Activity Book</option>
+                            <option>Novel</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <!-- Cover Image URL -->
+                    <div class="md:col-span-2">
+                        <label for="coverImageUrl" class="font-bold text-[#1D3557] block mb-1">Cover Image URL</label>
+                        <input type="text" id="coverImageUrl" class="form-input w-full p-2 rounded-lg" placeholder="https://example.com/cover.jpg">
+                    </div>
+                    <!-- Labels -->
+                    <div class="md:col-span-2">
+                        <label for="labels" class="font-bold text-[#1D3557] block mb-1">Labels (comma separated)</label>
+                        <input type="text" id="labels" class="form-input w-full p-2 rounded-lg" placeholder="At home, With cousin, New">
+                    </div>
+                    <!-- Notes -->
+                    <div class="md:col-span-2">
+                        <label for="notes" class="font-bold text-[#1D3557] block mb-1">Notes</label>
+                        <textarea id="notes" class="form-input w-full p-2 rounded-lg" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex justify-end items-center gap-4 mt-8">
+                    <button type="button" id="deleteBtn" class="comic-button-danger font-bold py-2 px-4 rounded-lg hidden">Delete</button>
+                    <button type="button" id="cancelBtn" class="comic-button-secondary font-bold py-2 px-4 rounded-lg">Cancel</button>
+                    <button type="submit" id="saveBtn" class="comic-button-primary font-bold py-2 px-4 rounded-lg">Save Book</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Custom Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 modal-backdrop items-center justify-center z-40 hidden">
+        <div class="comic-modal-content rounded-xl shadow-lg w-11/12 max-w-sm p-6 text-center">
+            <h3 id="confirmTitle" class="text-xl font-bold text-[#1D3557] mb-4">Are you sure?</h3>
+            <p id="confirmMessage" class="text-gray-700 mb-6">Do you really want to delete this book? This action cannot be undone.</p>
+            <div class="flex justify-center gap-4">
+                <button id="confirmCancel" class="comic-button-secondary font-bold py-2 px-6 rounded-lg">Cancel</button>
+                <button id="confirmOk" class="comic-button-danger font-bold py-2 px-6 rounded-lg">Delete</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- CONFIGURATION ---
+        let SCRIPT_URL = '';
+
+        // --- DOM ELEMENTS ---
+        const bookGrid = document.getElementById('booksGrid');
+        const loadingIndicator = document.getElementById('loading');
+        const noResultsDiv = document.getElementById('noResults');
+        const setupMessageDiv = document.getElementById('setupMessage');
+        const searchInput = document.getElementById('searchInput');
+        const labelFilter = document.getElementById('labelFilter');
+        
+        // Header Buttons
+        const addBookBtn = document.getElementById('addBookBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const openSettingsFromMsgBtn = document.getElementById('openSettingsFromMsgBtn');
+
+        // Book Modal Elements
+        const bookModal = document.getElementById('bookModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const bookForm = document.getElementById('bookForm');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        
+        // Settings Modal Elements
+        const settingsModal = document.getElementById('settingsModal');
+        const scriptUrlInput = document.getElementById('scriptUrlInput');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
+
+        // Confirmation Modal Elements
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmOk = document.getElementById('confirmOk');
+        const confirmCancel = document.getElementById('confirmCancel');
+        
+        // --- STATE ---
+        let allBooks = [];
+        let uniqueLabels = new Set();
+        let currentDeleteCallback = null;
+
+        // --- DATA FETCHING & RENDERING ---
+
+        async function fetchBooks() {
+            if (!SCRIPT_URL) {
+                console.log("Script URL is not set. Aborting fetch.");
+                showSetupMessage(true);
+                showLoading(false);
+                return;
+            }
+            showSetupMessage(false);
+            showLoading(true);
+            
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=get`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}. Check your script URL and deployment settings.`);
+                }
+                const data = await response.json();
+                allBooks = data.data;
+                renderAll();
+            } catch (error) {
+                console.error('Error fetching books:', error);
+                bookGrid.innerHTML = `<div class="col-span-full text-center p-8 bg-red-100 border-2 border-red-500 rounded-lg">
+                    <h3 class="font-bold text-red-700">Oops! Could not load library.</h3>
+                    <p class="text-red-600 mt-2">${error.message}</p>
+                    <p class="text-red-600 mt-1">Please check the URL in Settings and ensure your Google Script is deployed correctly.</p>
+                </div>`;
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function renderAll() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedLabel = labelFilter.value;
+
+            const filteredBooks = allBooks.filter(book => {
+                const matchesSearch = book.title.toLowerCase().includes(searchTerm) ||
+                                      (book.author || '').toLowerCase().includes(searchTerm) ||
+                                      (book.series || '').toLowerCase().includes(searchTerm);
+                
+                const bookLabels = book.labels ? book.labels.split(',').map(l => l.trim()) : [];
+                const matchesLabel = !selectedLabel || bookLabels.includes(selectedLabel);
+
+                return matchesSearch && matchesLabel;
+            });
+
+            renderBooks(filteredBooks);
+            populateLabelFilter();
+        }
+
+        function renderBooks(books) {
+            bookGrid.innerHTML = '';
+            if (books.length === 0 && SCRIPT_URL) {
+                noResultsDiv.classList.remove('hidden');
+            } else {
+                noResultsDiv.classList.add('hidden');
+            }
+
+            books.forEach(book => {
+                const card = document.createElement('div');
+                card.className = 'book-card rounded-lg overflow-hidden flex flex-col cursor-pointer';
+                card.dataset.bookId = book.id;
+
+                const labelsHtml = (book.labels || '')
+                    .split(',')
+                    .filter(label => label.trim() !== '')
+                    .map(label => `<span class="comic-label text-xs py-1 px-2 rounded-full">${label.trim()}</span>`)
+                    .join(' ');
+                
+                const fallbackImage = `https://placehold.co/400x600/A8DADC/1D3557?text=${encodeURIComponent(book.title)}`;
+
+                card.innerHTML = `
+                    <img src="${book.coverImageUrl || fallbackImage}" 
+                         onerror="this.onerror=null;this.src='${fallbackImage}';" 
+                         alt="Cover of ${book.title}" 
+                         class="w-full h-auto aspect-[2/3] object-cover bg-gray-200">
+                    <div class="p-3 flex flex-col flex-grow">
+                        <h3 class="font-bold text-[#1D3557] leading-tight">${book.title}</h3>
+                        ${book.series ? `<p class="text-sm text-gray-600 italic">${book.series}</p>` : ''}
+                        <p class="text-sm text-gray-500 mt-1 flex-grow">${book.author || 'Unknown Author'}</p>
+                        <div class="flex flex-wrap gap-1 mt-2">${labelsHtml}</div>
+                    </div>
+                `;
+                card.addEventListener('click', () => openBookModal(book));
+                bookGrid.appendChild(card);
+            });
+        }
+        
+        function populateLabelFilter() {
+            uniqueLabels.clear();
+            allBooks.forEach(book => {
+                (book.labels || '').split(',').forEach(label => {
+                    const trimmedLabel = label.trim();
+                    if (trimmedLabel) uniqueLabels.add(trimmedLabel);
+                });
+            });
+
+            const currentVal = labelFilter.value;
+            labelFilter.innerHTML = '<option value="">Filter by Label</option>';
+            [...uniqueLabels].sort().forEach(label => {
+                const option = document.createElement('option');
+                option.value = label;
+                option.textContent = label;
+                labelFilter.appendChild(option);
+            });
+            labelFilter.value = currentVal;
+        }
+
+        // --- MODAL HANDLING ---
+
+        function openBookModal(book = null) {
+            bookForm.reset();
+            if (book) {
+                modalTitle.textContent = 'Edit Book';
+                document.getElementById('bookId').value = book.id;
+                document.getElementById('title').value = book.title;
+                document.getElementById('author').value = book.author;
+                document.getElementById('series').value = book.series;
+                document.getElementById('category').value = book.category;
+                document.getElementById('coverImageUrl').value = book.coverImageUrl;
+                document.getElementById('labels').value = book.labels;
+                document.getElementById('notes').value = book.notes;
+                deleteBtn.classList.remove('hidden');
+            } else {
+                modalTitle.textContent = 'Add a New Book';
+                document.getElementById('bookId').value = '';
+                deleteBtn.classList.add('hidden');
+            }
+            bookModal.classList.remove('hidden');
+            bookModal.classList.add('flex');
+        }
+
+        function closeBookModal() {
+            bookModal.classList.add('hidden');
+            bookModal.classList.remove('flex');
+        }
+        
+        function openSettingsModal() {
+            scriptUrlInput.value = SCRIPT_URL;
+            settingsModal.classList.remove('hidden');
+            settingsModal.classList.add('flex');
+        }
+
+        function closeSettingsModal() {
+            settingsModal.classList.add('hidden');
+            settingsModal.classList.remove('flex');
+        }
+        
+        // --- FORM SUBMISSION (CREATE/UPDATE/DELETE) ---
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const bookId = document.getElementById('bookId').value;
+            const action = bookId ? 'update' : 'create';
+
+            const bookData = {
+                id: bookId,
+                title: document.getElementById('title').value,
+                author: document.getElementById('author').value,
+                series: document.getElementById('series').value,
+                category: document.getElementById('category').value,
+                coverImageUrl: document.getElementById('coverImageUrl').value,
+                labels: document.getElementById('labels').value,
+                notes: document.getElementById('notes').value,
+            };
+
+            setSaveButtonState(true);
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action, data: bookData }),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Required for Apps Script POST
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    closeBookModal();
+                    await fetchBooks();
+                } else {
+                    throw new Error(result.message || 'An unknown error occurred.');
+                }
+            } catch (error) {
+                console.error(`Error saving book:`, error);
+                alert(`Failed to save book: ${error.message}`);
+            } finally {
+                setSaveButtonState(false);
+            }
+        }
+        
+        async function handleDelete() {
+            const bookId = document.getElementById('bookId').value;
+            if (!bookId) return;
+
+            showConfirmation("Are you sure?", "Do you really want to delete this book? This can't be undone.", async () => {
+                closeBookModal();
+                showLoading(true);
+                try {
+                    const response = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'delete', data: { id: bookId } }),
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        await fetchBooks();
+                    } else {
+                         throw new Error(result.message || 'An unknown error occurred.');
+                    }
+                } catch(error) {
+                    console.error('Error deleting book:', error);
+                    alert(`Failed to delete book: ${error.message}`);
+                } finally {
+                    showLoading(false);
+                }
+            });
+        }
+
+        function handleSaveSettings() {
+            const newUrl = scriptUrlInput.value.trim();
+            if (newUrl) {
+                localStorage.setItem('comicLibraryScriptUrl', newUrl);
+                SCRIPT_URL = newUrl;
+                closeSettingsModal();
+                fetchBooks();
+            } else {
+                alert("Please enter a valid URL.");
+            }
+        }
+
+        // --- UTILITY FUNCTIONS ---
+        function showLoading(isLoading) {
+            loadingIndicator.style.display = isLoading ? 'flex' : 'none';
+        }
+        
+        function showSetupMessage(shouldShow) {
+            setupMessageDiv.style.display = shouldShow ? 'block' : 'none';
+        }
+        
+        function setSaveButtonState(isSaving) {
+            if (isSaving) {
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+                saveBtn.classList.add('opacity-50');
+            } else {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Book';
+                saveBtn.classList.remove('opacity-50');
+            }
+        }
+
+        function showConfirmation(title, message, callback) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            confirmModal.classList.remove('hidden');
+            confirmModal.classList.add('flex');
+            currentDeleteCallback = callback;
+        }
+
+        function hideConfirmation() {
+            confirmModal.classList.add('hidden');
+            confirmModal.classList.remove('flex');
+            currentDeleteCallback = null;
+        }
+
+        // --- EVENT LISTENERS ---
+        addBookBtn.addEventListener('click', () => openBookModal());
+        cancelBtn.addEventListener('click', closeBookModal);
+        bookForm.addEventListener('submit', handleFormSubmit);
+        deleteBtn.addEventListener('click', handleDelete);
+
+        searchInput.addEventListener('input', renderAll);
+        labelFilter.addEventListener('change', renderAll);
+        
+        confirmCancel.addEventListener('click', hideConfirmation);
+        confirmOk.addEventListener('click', () => {
+            if (currentDeleteCallback) {
+                currentDeleteCallback();
+            }
+            hideConfirmation();
+        });
+        
+        // Settings listeners
+        settingsBtn.addEventListener('click', openSettingsModal);
+        openSettingsFromMsgBtn.addEventListener('click', openSettingsModal);
+        cancelSettingsBtn.addEventListener('click', closeSettingsModal);
+        saveSettingsBtn.addEventListener('click', handleSaveSettings);
+
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            SCRIPT_URL = localStorage.getItem('comicLibraryScriptUrl') || '';
+            fetchBooks();
+        });
+
+    </script>
+</body>
+</html>
+
