@@ -180,6 +180,10 @@
                             <input type="text" name="pilotId" id="add-pilotId" required class="form-input">
                         </div>
                         <div>
+                            <label for="add-pilotStartDate" class="block text-sm font-medium text-gray-700">Start Date</label>
+                            <input type="date" name="pilotStartDate" id="add-pilotStartDate" required class="form-input">
+                        </div>
+                        <div>
                             <label for="add-startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
                             <input type="date" name="startDate" id="add-startDate" required class="form-input">
                         </div>
@@ -216,7 +220,7 @@
 
                 <div id="view-bulk-add" class="hidden bg-white p-6 rounded-lg shadow">
                     <h2 class="text-2xl font-bold mb-4 text-gray-800">Bulk Add Pilots</h2>
-                    <p class="text-gray-600 mb-4">Paste CSV data below. The format should be: <code class="bg-gray-200 p-1 rounded">pilotId,startDate,wage,birthdate,gender,age</code>. No header row.</p>
+                    <p class="text-gray-600 mb-4">Paste CSV data below. The format should be: <code class="bg-gray-200 p-1 rounded">pilotId,startDate,wage,birthdate,gender,age,pilotStartDate</code>. No header row.</p>
                     <textarea id="csv-data" rows="10" class="form-input" placeholder="pilot001,2025-01-01,85000.50,1985-05-20,GENDER_FEMALE,39&#10;pilot002,2025-01-15,92000.75,1990-11-12,GENDER_MALE,34"></textarea>
                     <div class="flex justify-end mt-4">
                         <button id="bulk-add-btn" class="btn tui-bg-red text-white font-bold py-2 px-4 rounded-lg">Add Pilots</button>
@@ -225,7 +229,7 @@
 
                 <div id="view-bulk-upsert" class="hidden bg-white p-6 rounded-lg shadow">
                     <h2 class="text-2xl font-bold mb-4 text-gray-800">Bulk Upsert Pilots</h2>
-                     <p class="text-gray-600 mb-4">Paste CSV data of the active portfolio. The script will compare this with the existing data to add new pilots and update existing ones. Format: <code class="bg-gray-200 p-1 rounded">pilotId,startDate,wage,birthdate,gender,age</code>. No header row.</p>
+                     <p class="text-gray-600 mb-4">Paste CSV data of the active portfolio. The script will compare this with the existing data to add new pilots and update existing ones. Format: <code class="bg-gray-200 p-1 rounded">pilotId,startDate,wage,birthdate,gender,age,pilotStartDate</code>. No header row.</p>
                     <textarea id="upsert-csv-data" rows="10" class="form-input" placeholder="pilot001,2025-01-01,85500.00,1985-05-20,GENDER_FEMALE,40&#10;pilot003,2025-02-01,95000.00,1992-03-10,GENDER_MALE,33"></textarea>
                     
                     <div class="mt-4">
@@ -360,6 +364,10 @@
                     <div>
                         <label for="endorse-wage" class="block text-sm font-medium text-gray-700">New Monthly Wage (€)</label>
                         <input type="number" id="endorse-wage" step="any" class="form-input">
+                    </div>
+                    <div>
+                        <label for="endorse-pilotStartDate" class="block text-sm font-medium text-gray-700">Pilot Start Date</label>
+                        <input type="date" id="endorse-pilotStartDate" class="form-input">
                     </div>
                     <div>
                         <label for="endorse-birthdate" class="block text-sm font-medium text-gray-700">New Birthdate</label>
@@ -664,6 +672,7 @@
                         const tr = document.createElement('tr');
                         const pilotId = pilot.reference || 'N/A';
                         const currentWage = pilot.subject?.wage || '';
+                        const currentPilotStartDate = pilot.subject?.pilotStartDate || '';
                         const currentBirthdate = pilot.subject?.birthdate ? formatDate(pilot.subject.birthdate) : '';
                         const currentGender = pilot.subject?.gender || '';
                         // ✅ MODIFIED: Get current age
@@ -761,6 +770,7 @@
                 const payload = {
                     pilotId: this.elements['add-pilotId'].value,
                     startDate: this.elements['add-startDate'].value,
+                    pilotStartDate: this.elements['add-pilotStartDate'].value,
                     wage: parseFloat(this.elements['add-wage'].value),
                     birthdate: this.elements['add-birthdate'].value,
                     // ✅ MODIFIED: Added age to payload
@@ -784,11 +794,11 @@
                 const rows = csvData.split('\n');
                 const pilots = rows.map(row => {
                     // ✅ MODIFIED: Added age to CSV parsing
-                    const [pilotId, startDate, wage, birthdate, gender, age] = row.split(',');
+                    const [pilotId, startDate, wage, birthdate, gender, age, pilotStartDate] = row.split(',');
                     // ✅ MODIFIED: Added age to validation
-                    if (!pilotId || !startDate || !wage || !birthdate || !gender || !age) return null;
+                    if (!pilotId || !startDate || !wage || !birthdate || !gender || !age || !pilotStartDate) return null;
                     // ✅ MODIFIED: Added age to pilot object
-                    return { pilotId, startDate, wage: parseFloat(wage), birthdate, gender: gender.trim(), age: parseInt(age, 10) };
+                    return { pilotId, startDate, wage: parseFloat(wage), birthdate, gender: gender.trim(), age: parseInt(age, 10), pilotStartDate};
                 }).filter(p => p !== null);
 
                 if (pilots.length === 0) return showToast('No valid pilot data found in CSV.', true);
@@ -821,6 +831,7 @@
                     document.getElementById('endorse-pilot-id').textContent = endorseButton.dataset.pilotId;
                     document.getElementById('endorse-wage').value = endorseButton.dataset.wage;
                     document.getElementById('endorse-birthdate').value = endorseButton.dataset.birthdate;
+                    document.getElementById('endorse-pilotStartDate').value = endorseButton.dataset.pilotStartDate;
                     document.getElementById('endorse-gender').value = endorseButton.dataset.gender;
                     // ✅ MODIFIED: Populate age in endorse modal
                     document.getElementById('endorse-age').value = endorseButton.dataset.age;
@@ -854,6 +865,7 @@
                         pilotId: document.getElementById('endorse-pilot-id').textContent,
                         wage: document.getElementById('endorse-wage').value ? parseFloat(document.getElementById('endorse-wage').value) : undefined,
                         birthdate: document.getElementById('endorse-birthdate').value || undefined,
+                        pilotStartDate: document.getElementById('endorse-pilotStartDate').value || undefined,
                         // ✅ MODIFIED: Added age to endorsement payload
                         age: document.getElementById('endorse-age').value ? parseInt(document.getElementById('endorse-age').value, 10) : undefined,
                         gender: document.getElementById('endorse-gender').value
@@ -940,7 +952,7 @@
                         `;
 
                         const createList = document.getElementById('upsert-create-list');
-                        createList.innerHTML = toCreate.length ? toCreate.map(p => `<div>Pilot ID: ${p.pilotId}, Start: ${p.startDate}, Wage: ${p.wage}, Age: ${p.age}</div>`).join('') : 'None';
+                        createList.innerHTML = toCreate.length ? toCreate.map(p => `<div>Pilot ID: ${p.pilotId}, Start: ${p.startDate}, Wage: ${p.wage}, Age: ${p.age}; Pilot Start Date: ${formatDate(p.pilotStartDate)}</div>`).join('') : 'None';
                         
                         const updateList = document.getElementById('upsert-update-list');
                         updateList.innerHTML = toUpdate.length ? toUpdate.map(p => `
@@ -948,6 +960,7 @@
                                 <strong>Pilot ID: ${p.pilotId}</strong>
                                 <div>&nbsp;&nbsp;Wage: <span class="line-through">${p.old.wage}</span> -> <span class="font-bold">${p.new.wage}</span></div>
                                 <div>&nbsp;&nbsp;Birthdate: <span class="line-through">${formatDate(p.old.birthdate)}</span> -> <span class="font-bold">${p.new.birthdate}</span></div>
+                                <div>&nbsp;&nbsp;Pilot Start Date: <span class="line-through">${formatDate(p.old.pilotStartDate)}</span> -> <span class="font-bold">${p.new.pilotStartDate}</span></div>
                                 <div>&nbsp;&nbsp;Age: <span class="line-through">${p.old.age}</span> -> <span class="font-bold">${p.new.age}</span></div>
                             </div>
                         `).join('') : 'None';
@@ -988,7 +1001,7 @@
             handleInitialLoad();
         });
         // ✅ Versioning: Helps confirm the latest code is running.
-        console.log("version v2003-add-age-field age parseInt");
+        console.log("version V3-add pilot start date");
     </script>
 </body>
 </html>
