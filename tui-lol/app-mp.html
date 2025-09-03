@@ -953,15 +953,15 @@
                         `;
 
                         const createList = document.getElementById('upsert-create-list');
-                        createList.innerHTML = toCreate.length ? toCreate.map(p => `<div>Pilot ID: ${p.pilotId}, Start: ${p.startDate}, Wage: ${p.wage}, Age: ${p.age}; Pilot Start Date: ${formatDate(p.pilotStartDate)}</div>`).join('') : 'None';
+                        createList.innerHTML = toCreate.length ? toCreate.map(p => `<div>Pilot ID: ${p.pilotId}, Start: ${p.startDate}, Wage: ${p.wage}, Age: ${p.age}; Pilot Start Date: ${p.pilotStartDate}</div>`).join('') : 'None';
                         
                         const updateList = document.getElementById('upsert-update-list');
                         updateList.innerHTML = toUpdate.length ? toUpdate.map(p => `
                             <div>
                                 <strong>Pilot ID: ${p.pilotId}</strong>
                                 <div>&nbsp;&nbsp;Wage: <span class="line-through">${p.old.wage}</span> -> <span class="font-bold">${p.new.wage}</span></div>
-                                <div>&nbsp;&nbsp;Birthdate: <span class="line-through">${formatDate(p.old.birthdate)}</span> -> <span class="font-bold">${p.new.birthdate}</span></div>
-                                <div>&nbsp;&nbsp;Pilot Start Date: <span class="line-through">${formatDate(p.old.pilotStartDate)}</span> -> <span class="font-bold">${p.new.pilotStartDate}</span></div>
+                                <div>&nbsp;&nbsp;Birthdate: <span class="line-through">${p.old.birthdate}</span> -> <span class="font-bold">${p.new.birthdate}</span></div>
+                                <div>&nbsp;&nbsp;Pilot Start Date: <span class="line-through">${p.old.pilotStartDate}</span> -> <span class="font-bold">${p.new.pilotStartDate}</span></div>
                                 <div>&nbsp;&nbsp;Age: <span class="line-through">${p.old.age}</span> -> <span class="font-bold">${p.new.age}</span></div>
                             </div>
                         `).join('') : 'None';
