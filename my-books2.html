@@ -221,15 +221,25 @@
         <main class="container mx-auto p-4 md:p-8">
 
             <!-- Filters Section -->
-            <section id="filters" class="bg-white/80 backdrop-blur-sm p-4 rounded-xl border-2 border-dashed border-gray-400 mb-8 sticky top-[92px] z-10 flex justify-between items-center">
-                 <div class="flex-grow grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <input type="text" id="searchInput" placeholder="Search title or author..." class="form-input w-full p-2 rounded-lg col-span-1 md:col-span-2">
-                    <select id="labelFilter" class="form-select w-full p-2 rounded-lg">
+            <section id="filters" class="bg-white/80 backdrop-blur-sm p-4 rounded-xl border-2 border-dashed border-gray-400 mb-8 sticky top-[92px] z-10 flex flex-wrap justify-between items-center gap-4">
+                 <div class="flex-grow flex flex-wrap gap-4 w-full md:w-auto">
+                    <input type="text" id="searchInput" placeholder="Search title or author..." class="form-input p-2 rounded-lg flex-grow" style="min-width: 200px;">
+                    <select id="categoryFilter" class="form-select p-2 rounded-lg flex-grow">
+                        <option value="">Filter by Category</option>
+                    </select>
+                    <select id="labelFilter" class="form-select p-2 rounded-lg flex-grow">
                         <option value="">Filter by Label</option>
-                        <!-- Labels will be populated by JS -->
+                    </select>
+                     <select id="sortOrder" class="form-select p-2 rounded-lg flex-grow">
+                        <option value="dateAdded-desc">Sort by Date (Newest)</option>
+                        <option value="dateAdded-asc">Sort by Date (Oldest)</option>
+                        <option value="title-asc">Sort by Title (A-Z)</option>
+                        <option value="title-desc">Sort by Title (Z-A)</option>
+                        <option value="author-asc">Sort by Author (A-Z)</option>
+                        <option value="author-desc">Sort by Author (Z-A)</option>
                     </select>
                 </div>
-                <div class="view-toggle flex rounded-lg ml-4">
+                <div class="view-toggle flex rounded-lg">
                     <button id="cardViewBtn" class="p-2 rounded-l-lg" title="Card View">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
                     </button>
@@ -260,6 +270,7 @@
                             <th>Title</th>
                             <th>Series</th>
                             <th>Author</th>
+                            <th>Category</th>
                             <th>Labels</th>
                         </tr>
                     </thead>
@@ -718,6 +729,8 @@ function createJsonResponse(obj) {
         const setupMessageDiv = document.getElementById('setupMessage');
         const searchInput = document.getElementById('searchInput');
         const labelFilter = document.getElementById('labelFilter');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const sortOrder = document.getElementById('sortOrder');
         const libraryTitle = document.getElementById('libraryTitle');
         
         // Header Buttons
@@ -788,6 +801,7 @@ function createJsonResponse(obj) {
         // --- STATE ---
         let allBooks = [];
         let uniqueLabels = new Set();
+        let uniqueCategories = new Set();
         let currentDeleteCallback = null;
 
         // --- GEMINI API FUNCTIONS ---
@@ -1165,31 +1179,57 @@ function createJsonResponse(obj) {
         function renderAll() {
             const searchTerm = searchInput.value.toLowerCase();
             const selectedLabel = labelFilter.value;
+            const selectedCategory = categoryFilter.value;
+            const sortOrderValue = sortOrder.value;
 
-            const filteredBooks = allBooks.filter(book => {
+            let processedBooks = [...allBooks];
+
+            // 1. Filter
+            processedBooks = processedBooks.filter(book => {
                 const matchesSearch = book.title.toLowerCase().includes(searchTerm) ||
                                       (book.author || '').toLowerCase().includes(searchTerm) ||
                                       (book.series || '').toLowerCase().includes(searchTerm);
                 
                 const bookLabels = book.labels ? book.labels.split(',').map(l => l.trim()) : [];
                 const matchesLabel = !selectedLabel || bookLabels.includes(selectedLabel);
+                
+                const matchesCategory = !selectedCategory || book.category === selectedCategory;
 
-                return matchesSearch && matchesLabel;
+                return matchesSearch && matchesLabel && matchesCategory;
+            });
+            
+            // 2. Sort
+            const [sortField, sortDir] = sortOrderValue.split('-');
+            processedBooks.sort((a, b) => {
+                let valA, valB;
+
+                if (sortField === 'dateAdded') {
+                    valA = new Date(a.dateAdded || 0);
+                    valB = new Date(b.dateAdded || 0);
+                } else {
+                    valA = (a[sortField] || '').toLowerCase();
+                    valB = (b[sortField] || '').toLowerCase();
+                }
+
+                if (valA < valB) return sortDir === 'asc' ? -1 : 1;
+                if (valA > valB) return sortDir === 'asc' ? 1 : -1;
+                return 0;
             });
             
             if (currentView === 'card') {
-                renderCardView(filteredBooks);
+                renderCardView(processedBooks);
             } else {
-                renderTableView(filteredBooks);
+                renderTableView(processedBooks);
             }
 
-            if (filteredBooks.length === 0 && (SCRIPT_URL && GEMINI_API_KEY)) {
+            if (processedBooks.length === 0 && allBooks.length > 0) {
                 noResultsDiv.classList.remove('hidden');
             } else {
                 noResultsDiv.classList.add('hidden');
             }
 
             populateLabelFilter();
+            populateCategoryFilter();
         }
 
         function renderCardView(books) {
@@ -1234,6 +1274,7 @@ function createJsonResponse(obj) {
                     <td>${book.title}</td>
                     <td>${book.series || ''}</td>
                     <td>${book.author || ''}</td>
+                    <td>${book.category || ''}</td>
                     <td>${book.labels || ''}</td>
                 `;
                 row.addEventListener('click', () => {
@@ -1262,6 +1303,25 @@ function createJsonResponse(obj) {
                 labelFilter.appendChild(option);
             });
             labelFilter.value = currentVal;
+        }
+
+        function populateCategoryFilter() {
+            uniqueCategories.clear();
+            allBooks.forEach(book => {
+                if (book.category && book.category.trim()) {
+                    uniqueCategories.add(book.category.trim());
+                }
+            });
+
+            const currentVal = categoryFilter.value;
+            categoryFilter.innerHTML = '<option value="">Filter by Category</option>';
+            [...uniqueCategories].sort().forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categoryFilter.appendChild(option);
+            });
+            categoryFilter.value = currentVal;
         }
 
         // --- MODAL HANDLING ---
@@ -1575,6 +1635,8 @@ function createJsonResponse(obj) {
 
                 searchInput.addEventListener('input', renderAll);
                 labelFilter.addEventListener('change', renderAll);
+                categoryFilter.addEventListener('change', renderAll);
+                sortOrder.addEventListener('change', renderAll);
                 
                 confirmCancel.addEventListener('click', hideConfirmation);
                 confirmOk.addEventListener('click', () => {
@@ -1644,6 +1706,4 @@ function createJsonResponse(obj) {
     </script>
 </body>
 </html>
-
-
 
