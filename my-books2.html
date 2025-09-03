@@ -9,105 +9,147 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --color-background: #FFFBEB;
+            --color-header: #E63946;
+            --color-header-border: #1D3557;
+            --color-header-text: #F1FAEE;
+            --color-header-text-shadow: #1D3557;
+            --color-primary-button-bg: #457B9D;
+            --color-primary-button-text: #F1FAEE;
+            --color-primary-button-border: #1D3557;
+            --color-secondary-button-bg: #A8DADC;
+            --color-secondary-button-text: #1D3557;
+            --color-accent: #f59e0b;
+            --color-accent-text: #1D3557;
+            --color-danger-button-bg: #E63946;
+            --color-danger-button-text: #F1FAEE;
+            --color-text-dark: #1D3557;
+            --color-card-border: #1D3557;
+            --color-table-header-bg: #A8DADC;
+            --color-modal-bg: #F1FAEE;
+            --color-modal-border: #1D3557;
+        }
+
         /* Custom styles inspired by Belgian Comic Books */
         body {
             font-family: 'Comic Neue', cursive;
-            background-color: #FFFBEB; /* Warm, paper-like background */
+            background-color: var(--color-background);
             /* Subtle noise texture for a vintage paper feel */
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cfilter id='noise' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+            color: var(--color-text-dark);
         }
         .comic-header {
-            background-color: #E63946; /* Strong red, like a comic title box */
-            border-bottom: 4px solid #1D3557; /* Dark blue outline */
+            background-color: var(--color-header);
+            border-bottom: 4px solid var(--color-header-border);
         }
         .comic-title {
             font-weight: 700;
-            color: #F1FAEE; /* Off-white text */
-            text-shadow: 2px 2px 0 #1D3557; /* Classic comic title shadow */
+            color: var(--color-header-text);
+            text-shadow: 2px 2px 0 var(--color-header-text-shadow);
         }
         .comic-button-primary {
-            background-color: #457B9D; /* A nice, friendly blue */
-            color: #F1FAEE;
-            border: 2px solid #1D3557;
-            box-shadow: 3px 3px 0 #1D3557;
+            background-color: var(--color-primary-button-bg);
+            color: var(--color-primary-button-text);
+            border: 2px solid var(--color-primary-button-border);
+            box-shadow: 3px 3px 0 var(--color-primary-button-border);
             transition: all 0.1s ease-in-out;
         }
         .comic-button-primary:hover {
             transform: translate(1px, 1px);
-            box-shadow: 2px 2px 0 #1D3557;
+            box-shadow: 2px 2px 0 var(--color-primary-button-border);
         }
         .comic-button-primary:active, .comic-button-primary:disabled {
             transform: translate(3px, 3px);
             box-shadow: none;
         }
         .comic-button-ai {
-            background-color: #f59e0b; /* A nice, friendly blue */
-            color: #1D3557;
-            border: 2px solid #1D3557;
-            box-shadow: 3px 3px 0 #1D3557;
+            background-color: var(--color-accent);
+            color: var(--color-accent-text);
+            border: 2px solid var(--color-text-dark);
+            box-shadow: 3px 3px 0 var(--color-text-dark);
             transition: all 0.1s ease-in-out;
         }
         .comic-button-ai:hover {
             transform: translate(1px, 1px);
-            box-shadow: 2px 2px 0 #1D3557;
+            box-shadow: 2px 2px 0 var(--color-text-dark);
         }
         .comic-button-ai:active, .comic-button-ai:disabled {
             transform: translate(3px, 3px);
             box-shadow: none;
         }
          .comic-button-secondary {
-            background-color: #A8DADC;
-            color: #1D3557;
-            border: 2px solid #1D3557;
+            background-color: var(--color-secondary-button-bg);
+            color: var(--color-secondary-button-text);
+            border: 2px solid var(--color-text-dark);
         }
         .comic-button-danger {
-            background-color: #E63946;
-            color: #F1FAEE;
-            border: 2px solid #1D3557;
+            background-color: var(--color-danger-button-bg);
+            color: var(--color-danger-button-text);
+            border: 2px solid var(--color-text-dark);
         }
         .book-card {
             background-color: #fff;
-            border: 3px solid #1D3557;
-            box-shadow: 5px 5px 0px rgba(29, 53, 87, 0.5);
+            border: 3px solid var(--color-card-border);
+            box-shadow: 5px 5px 0px color-mix(in srgb, var(--color-card-border) 50%, transparent);
             transition: transform 0.2s, box-shadow 0.2s;
+            position: relative; /* For checkbox positioning */
         }
-        .book-card:hover {
+        .book-card.is-selectable {
+            cursor: pointer;
+        }
+        .book-card.is-selectable:hover {
             transform: translateY(-5px);
-            box-shadow: 8px 8px 0px rgba(29, 53, 87, 0.6);
+            box-shadow: 8px 8px 0px color-mix(in srgb, var(--color-card-border) 60%, transparent);
+        }
+        .book-card.selected {
+            transform: scale(0.95);
+            border-color: var(--color-accent);
+            box-shadow: 0 0 15px color-mix(in srgb, var(--color-accent) 50%, transparent);
         }
         .comic-label {
-            background-color: #FFC947; /* Bright yellow for labels */
-            color: #1D3557;
-            border: 1px solid #1D3557;
+            background-color: var(--color-accent);
+            color: var(--color-accent-text);
+            border: 1px solid var(--color-text-dark);
             font-weight: 600;
+        }
+        .comic-label[data-label="wish list"] {
+            background-color: #d8b4fe; /* purple-300 */
+            border-color: #9333ea; /* purple-600 */
+            color: #581c87;
+        }
+        .comic-label[data-label="ordered"] {
+            background-color: #fcd34d; /* amber-300 */
+            border-color: #d97706; /* amber-600 */
+            color: #92400e;
         }
         .modal-backdrop {
             background-color: rgba(29, 53, 87, 0.6);
             backdrop-filter: blur(5px);
         }
         .comic-modal-content {
-            background-color: #F1FAEE;
-            border: 4px solid #1D3557;
+            background-color: var(--color-modal-bg);
+            border: 4px solid var(--color-modal-border);
         }
         .form-input, .form-select {
-            border: 2px solid #1D3557;
+            border: 2px solid var(--color-text-dark);
             background-color: #fff;
             transition: box-shadow 0.2s;
         }
         .form-input:focus, .form-select:focus {
             outline: none;
-            box-shadow: 0 0 0 3px #457B9D;
+            box-shadow: 0 0 0 3px var(--color-primary-button-bg);
         }
         .info-panel {
             background-color: #FEF3C7;
-            border: 2px dashed #1D3557;
-            color: #1D3557;
+            border: 2px dashed var(--color-text-dark);
+            color: var(--color-text-dark);
         }
         /* Loading spinner */
         .loader {
             border: 8px solid #f3f3f3;
             border-radius: 50%;
-            border-top: 8px solid #457B9D;
+            border-top: 8px solid var(--color-primary-button-bg);
             width: 80px;
             height: 80px;
             animation: spin 1s linear infinite;
@@ -120,7 +162,7 @@
         .custom-checkbox {
             appearance: none;
             background-color: #fff;
-            border: 2px solid #1D3557;
+            border: 2px solid var(--color-text-dark);
             border-radius: 4px;
             width: 1.5em;
             height: 1.5em;
@@ -130,17 +172,23 @@
             vertical-align: middle;
         }
         .custom-checkbox:checked {
-            background-color: #457B9D;
-            border-color: #1D3557;
+            background-color: var(--color-primary-button-bg);
+            border-color: var(--color-primary-button-border);
         }
         .custom-checkbox:checked::after {
             content: '✔';
             position: absolute;
-            color: white;
+            color: var(--color-primary-button-text);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 1.2em;
+        }
+        .card-checkbox {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
         }
         /* Table styles */
         .comic-table {
@@ -148,33 +196,38 @@
             border-collapse: collapse;
         }
         .comic-table th, .comic-table td {
-            border: 2px solid #1D3557;
+            border: 2px solid var(--color-text-dark);
             padding: 12px;
             text-align: left;
         }
         .comic-table th {
-            background-color: #A8DADC;
-            color: #1D3557;
+            background-color: var(--color-table-header-bg);
+            color: var(--color-text-dark);
             font-weight: 700;
         }
         .comic-table tr:nth-child(even) {
-            background-color: #F1FAEE;
+            background-color: color-mix(in srgb, var(--color-background) 80%, white);
         }
         .comic-table tr:nth-child(odd) {
             background-color: #FFFFFF;
         }
-        .comic-table tr:hover {
-            background-color: #FFC947;
+        .comic-table tr.is-selectable {
             cursor: pointer;
+        }
+        .comic-table tr:hover:not(.is-select-mode) {
+            background-color: var(--color-accent);
+        }
+        .comic-table tr.selected {
+            background-color: color-mix(in srgb, var(--color-accent) 50%, white);
         }
         /* View toggle button styles */
         .view-toggle button {
-            background-color: #A8DADC;
-            border: 2px solid #1D3557;
+            background-color: var(--color-secondary-button-bg);
+            border: 2px solid var(--color-text-dark);
         }
         .view-toggle button.active {
-            background-color: #457B9D;
-            color: #F1FAEE;
+            background-color: var(--color-primary-button-bg);
+            color: var(--color-primary-button-text);
         }
         /* Setup page styles */
         #setupPage code {
@@ -239,15 +292,28 @@
                         <option value="author-desc">Sort by Author (Z-A)</option>
                     </select>
                 </div>
-                <div class="view-toggle flex rounded-lg">
-                    <button id="cardViewBtn" class="p-2 rounded-l-lg" title="Card View">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
-                    </button>
-                    <button id="tableViewBtn" class="p-2 rounded-r-lg" title="Table View">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
-                    </button>
+                <div class="flex items-center gap-4">
+                    <button id="selectModeBtn" class="comic-button-secondary font-bold py-2 px-4 rounded-lg">Select</button>
+                    <div class="view-toggle flex rounded-lg">
+                        <button id="cardViewBtn" class="p-2 rounded-l-lg" title="Card View">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                        </button>
+                        <button id="tableViewBtn" class="p-2 rounded-r-lg" title="Table View">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+                        </button>
+                    </div>
                 </div>
             </section>
+            
+            <!-- Bulk Actions Bar -->
+            <section id="bulkActions" class="hidden bg-yellow-200 p-4 rounded-xl border-2 border-dashed border-yellow-500 mb-8 sticky top-[92px] z-10 flex justify-between items-center">
+                <span id="selectionCount" class="font-bold text-yellow-800">0 books selected</span>
+                <div>
+                    <button id="exitSelectModeBtn" class="comic-button-secondary font-bold py-2 px-4 rounded-lg">Cancel</button>
+                    <button id="bulkDeleteBtn" class="comic-button-danger font-bold py-2 px-4 rounded-lg ml-4" disabled>Delete Selected</button>
+                </div>
+            </section>
+
 
             <!-- Loading Indicator -->
             <div id="loading" class="fixed inset-0 bg-gray-100/80 flex justify-center items-center z-50">
@@ -267,6 +333,7 @@
                  <table class="comic-table">
                     <thead>
                         <tr>
+                            <th class="w-10"></th>
                             <th>Title</th>
                             <th>Series</th>
                             <th>Author</th>
@@ -404,6 +471,8 @@ function doPost(e) {
         return handleUpdate(bookSheet, data);
       case 'delete':
         return handleDelete(bookSheet, data);
+      case 'bulkDelete':
+        return handleBulkDelete(bookSheet, data);
       case 'updateSettings':
         return handleUpdateSettings(settingsSheet, data);
       default:
@@ -459,6 +528,33 @@ function handleDelete(sheet, data) {
   return createJsonResponse({ success: false, message: 'Book not found' });
 }
 
+function handleBulkDelete(sheet, data) {
+  const idsToDelete = data.ids || [];
+  if (idsToDelete.length === 0) {
+    return createJsonResponse({ success: true, message: 'No IDs provided' });
+  }
+
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const idColIndex = headers.indexOf('id') + 1;
+  
+  const idRange = sheet.getRange(2, idColIndex, sheet.getLastRow() - 1, 1).getValues();
+  const rowsToDelete = [];
+
+  idRange.forEach((row, index) => {
+    if (idsToDelete.includes(row[0])) {
+      rowsToDelete.push(index + 2); // +1 for 0-index, +1 for header
+    }
+  });
+
+  // Delete rows from the bottom up to avoid index shifting issues
+  for (let i = rowsToDelete.length - 1; i >= 0; i--) {
+    sheet.deleteRow(rowsToDelete[i]);
+  }
+
+  return createJsonResponse({ success: true, deletedCount: rowsToDelete.length });
+}
+
+
 function handleUpdateSettings(sheet, data) {
     if (data.libraryName !== undefined) {
         sheet.getRange("B2").setValue(data.libraryName);
@@ -506,6 +602,13 @@ function createJsonResponse(obj) {
                  <div>
                     <label for="libraryNameInput" class="font-bold text-[#1D3557] block mb-1">Library Name</label>
                     <input type="text" id="libraryNameInput" class="form-input w-full p-2 rounded-lg" placeholder="e.g., The Kids' Awesome Library">
+                </div>
+                
+                 <div>
+                    <label for="themeSelector" class="font-bold text-[#1D3557] block mb-1">Theme</label>
+                    <select id="themeSelector" class="form-select w-full p-2 rounded-lg">
+                        <!-- Themes will be populated here -->
+                    </select>
                 </div>
 
                 <hr class="border-dashed border-gray-400">
@@ -740,6 +843,13 @@ function createJsonResponse(obj) {
         const recommendationsBtn = document.getElementById('recommendationsBtn');
         const statsBtn = document.getElementById('statsBtn');
         const shareBtn = document.getElementById('shareBtn');
+        const selectModeBtn = document.getElementById('selectModeBtn');
+
+        // Bulk Actions
+        const bulkActionsBar = document.getElementById('bulkActions');
+        const selectionCount = document.getElementById('selectionCount');
+        const exitSelectModeBtn = document.getElementById('exitSelectModeBtn');
+        const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
 
         // Book Modal Elements
         const bookModal = document.getElementById('bookModal');
@@ -758,6 +868,7 @@ function createJsonResponse(obj) {
         const languageSelect = document.getElementById('languageSelect');
         const saveSettingsBtn = document.getElementById('saveSettingsBtn');
         const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
+        const themeSelector = document.getElementById('themeSelector');
         
         // Recommendations Modal Elements
         const recommendationsModal = document.getElementById('recommendationsModal');
@@ -803,6 +914,134 @@ function createJsonResponse(obj) {
         let uniqueLabels = new Set();
         let uniqueCategories = new Set();
         let currentDeleteCallback = null;
+        let isSelectModeActive = false;
+        let selectedBookIds = new Set();
+        
+        // --- THEMES ---
+        const THEMES = {
+            "Default": {
+                "--color-background": "#FFFBEB",
+                "--color-header": "#E63946",
+                "--color-header-border": "#1D3557",
+                "--color-header-text": "#F1FAEE",
+                "--color-header-text-shadow": "#1D3557",
+                "--color-primary-button-bg": "#457B9D",
+                "--color-primary-button-text": "#F1FAEE",
+                "--color-primary-button-border": "#1D3557",
+                "--color-secondary-button-bg": "#A8DADC",
+                "--color-secondary-button-text": "#1D3557",
+                "--color-accent": "#f59e0b",
+                "--color-accent-text": "#1D3557",
+                "--color-danger-button-bg": "#E63946",
+                "--color-danger-button-text": "#F1FAEE",
+                "--color-text-dark": "#1D3557",
+                "--color-card-border": "#1D3557",
+                "--color-table-header-bg": "#A8DADC",
+                "--color-modal-bg": "#F1FAEE",
+                "--color-modal-border": "#1D3557",
+            },
+            "The Adventures of Tintin": {
+                "--color-background": "#FDFCF5",
+                "--color-header": "#EE3830",
+                "--color-header-border": "#0A3B66",
+                "--color-header-text": "#FDFCF5",
+                "--color-header-text-shadow": "#0A3B66",
+                "--color-primary-button-bg": "#0A3B66",
+                "--color-primary-button-text": "#FDFCF5",
+                "--color-primary-button-border": "#2B2B2B",
+                "--color-secondary-button-bg": "#E5BF42",
+                "--color-secondary-button-text": "#2B2B2B",
+                "--color-accent": "#E5BF42",
+                "--color-accent-text": "#2B2B2B",
+                "--color-danger-button-bg": "#EE3830",
+                "--color-danger-button-text": "#FDFCF5",
+                "--color-text-dark": "#2B2B2B",
+                "--color-card-border": "#0A3B66",
+                "--color-table-header-bg": "#E5BF42",
+                "--color-modal-bg": "#FDFCF5",
+                "--color-modal-border": "#0A3B66",
+            },
+            "The Smurfs": {
+                "--color-background": "#E6F3FF",
+                "--color-header": "#457CA2",
+                "--color-header-border": "#FFFFFF",
+                "--color-header-text": "#FFFFFF",
+                "--color-header-text-shadow": "#212121",
+                "--color-primary-button-bg": "#FFFFFF",
+                "--color-primary-button-text": "#457CA2",
+                "--color-primary-button-border": "#457CA2",
+                "--color-secondary-button-bg": "#FFE815",
+                "--color-secondary-button-text": "#212121",
+                "--color-accent": "#E02120",
+                "--color-accent-text": "#FFFFFF",
+                "--color-danger-button-bg": "#E02120",
+                "--color-danger-button-text": "#FFFFFF",
+                "--color-text-dark": "#212121",
+                "--color-card-border": "#457CA2",
+                "--color-table-header-bg": "#FFFFFF",
+                "--color-modal-bg": "#FFFFFF",
+                "--color-modal-border": "#457CA2",
+            },
+            "Lucky Luke": {
+                "--color-background": "#F5D6A3",
+                "--color-header": "#000000",
+                "--color-header-border": "#FFD300",
+                "--color-header-text": "#FFD300",
+                "--color-header-text-shadow": "#835C44",
+                "--color-primary-button-bg": "#835C44",
+                "--color-primary-button-text": "#FFFFFF",
+                "--color-primary-button-border": "#000000",
+                "--color-secondary-button-bg": "#FFFFFF",
+                "--color-secondary-button-text": "#835C44",
+                "--color-accent": "#FFD300",
+                "--color-accent-text": "#000000",
+                "--color-danger-button-bg": "#D72C16",
+                "--color-danger-button-text": "#FFFFFF",
+                "--color-text-dark": "#000000",
+                "--color-card-border": "#835C44",
+                "--color-table-header-bg": "#FFFFFF",
+                "--color-modal-bg": "#FFFFFF",
+                "--color-modal-border": "#835C44",
+            },
+            "Spirou & Fantasio": {
+                "--color-background": "#F8F5EB",
+                "--color-header": "#E00000",
+                "--color-header-border": "#2E2E2E",
+                "--color-header-text": "#FFFFFF",
+                "--color-header-text-shadow": "#2E2E2E",
+                "--color-primary-button-bg": "#468160",
+                "--color-primary-button-text": "#FFFFFF",
+                "--color-primary-button-border": "#2E2E2E",
+                "--color-secondary-button-bg": "#F8F5EB",
+                "--color-secondary-button-text": "#2E2E2E",
+                "--color-accent": "#FFA500",
+                "--color-accent-text": "#2E2E2E",
+                "--color-danger-button-bg": "#E00000",
+                "--color-danger-button-text": "#FFFFFF",
+                "--color-text-dark": "#2E2E2E",
+                "--color-card-border": "#468160",
+                "--color-table-header-bg": "#FFA500",
+                "--color-modal-bg": "#F8F5EB",
+                "--color-modal-border": "#2E2E2E",
+            }
+        };
+
+        function applyTheme(themeName) {
+            const theme = THEMES[themeName] || THEMES["Default"];
+            for (const [key, value] of Object.entries(theme)) {
+                document.documentElement.style.setProperty(key, value);
+            }
+        }
+        
+        function populateThemeSelector() {
+            for (const themeName in THEMES) {
+                const option = document.createElement('option');
+                option.value = themeName;
+                option.textContent = themeName;
+                themeSelector.appendChild(option);
+            }
+        }
+
 
         // --- GEMINI API FUNCTIONS ---
         async function callGemini(prompt, isJson = true) {
@@ -1236,18 +1475,31 @@ function createJsonResponse(obj) {
             cardView.innerHTML = '';
             books.forEach(book => {
                 const card = document.createElement('div');
-                card.className = 'book-card rounded-lg overflow-hidden flex flex-col cursor-pointer';
+                card.className = 'book-card rounded-lg overflow-hidden flex flex-col';
                 card.dataset.bookId = book.id;
+
+                if (isSelectModeActive) {
+                    card.classList.add('is-selectable');
+                    if (selectedBookIds.has(book.id)) {
+                        card.classList.add('selected');
+                    }
+                } else {
+                    card.classList.add('cursor-pointer');
+                }
 
                 const labelsHtml = (book.labels || '')
                     .split(',')
                     .filter(label => label.trim() !== '')
-                    .map(label => `<span class="comic-label text-xs py-1 px-2 rounded-full ${label.trim() === 'wish list' ? 'bg-purple-300 border-purple-600' : ''}">${label.trim()}</span>`)
+                    .map(label => {
+                        const trimmedLabel = label.trim();
+                        return `<span class="comic-label text-xs py-1 px-2 rounded-full" data-label="${trimmedLabel.toLowerCase()}">${trimmedLabel}</span>`
+                    })
                     .join(' ');
                 
                 const fallbackImage = `https://placehold.co/400x600/A8DADC/1D3557?text=${encodeURIComponent(book.title)}`;
 
                 card.innerHTML = `
+                    ${isSelectModeActive ? `<input type="checkbox" class="custom-checkbox card-checkbox" ${selectedBookIds.has(book.id) ? 'checked' : ''}>` : ''}
                     <img src="${book.coverImageUrl || fallbackImage}" 
                          onerror="this.onerror=null;this.src='${fallbackImage}';" 
                          alt="Cover of ${book.title}" 
@@ -1259,7 +1511,13 @@ function createJsonResponse(obj) {
                         <div class="flex flex-wrap gap-1 mt-2">${labelsHtml}</div>
                     </div>
                 `;
-                card.addEventListener('click', () => openBookModal(book));
+                card.addEventListener('click', () => {
+                    if (isSelectModeActive) {
+                        toggleSelection(book.id, card.querySelector('.custom-checkbox'));
+                    } else {
+                        openBookModal(book);
+                    }
+                });
                 cardView.appendChild(card);
             });
         }
@@ -1268,18 +1526,35 @@ function createJsonResponse(obj) {
             tableBody.innerHTML = '';
             books.forEach(book => {
                 const row = document.createElement('tr');
-                row.className = 'cursor-pointer';
                 row.dataset.bookId = book.id;
+
+                if (isSelectModeActive) {
+                    row.classList.add('is-selectable');
+                    if (selectedBookIds.has(book.id)) {
+                        row.classList.add('selected');
+                    }
+                } else {
+                     row.classList.add('cursor-pointer');
+                }
+                
                 row.innerHTML = `
+                    <td class="w-10 text-center">${isSelectModeActive ? `<input type="checkbox" class="custom-checkbox" ${selectedBookIds.has(book.id) ? 'checked' : ''}>` : ''}</td>
                     <td>${book.title}</td>
                     <td>${book.series || ''}</td>
                     <td>${book.author || ''}</td>
                     <td>${book.category || ''}</td>
                     <td>${book.labels || ''}</td>
                 `;
-                row.addEventListener('click', () => {
-                    const fullBook = allBooks.find(b => b.id === book.id);
-                    if (fullBook) openBookModal(fullBook);
+                row.addEventListener('click', (e) => {
+                    if (isSelectModeActive) {
+                        // Prevent click on checkbox from firing twice
+                        if (e.target.tagName !== 'INPUT') {
+                            toggleSelection(book.id, row.querySelector('.custom-checkbox'));
+                        }
+                    } else {
+                        const fullBook = allBooks.find(b => b.id === book.id);
+                        if (fullBook) openBookModal(fullBook);
+                    }
                 });
                 tableBody.appendChild(row);
             });
@@ -1358,6 +1633,7 @@ function createJsonResponse(obj) {
             geminiApiKeyInput.value = GEMINI_API_KEY;
             languageSelect.value = currentLanguage;
             libraryNameInput.value = libraryTitle.textContent;
+            themeSelector.value = localStorage.getItem('comicLibraryTheme') || 'Default';
             settingsModal.classList.remove('hidden');
             settingsModal.classList.add('flex');
         }
@@ -1464,20 +1740,51 @@ function createJsonResponse(obj) {
                 }
             });
         }
+        
+        async function handleBulkDelete() {
+            const idsToDelete = Array.from(selectedBookIds);
+            if (idsToDelete.length === 0) return;
+
+            showConfirmation(`Delete ${idsToDelete.length} books?`, "Do you really want to delete the selected books? This action cannot be undone.", async () => {
+                showLoading(true);
+                 try {
+                    const response = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'bulkDelete', data: { ids: idsToDelete } }),
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        toggleSelectMode(false); // Exit select mode on success
+                        await fetchBooks();
+                    } else {
+                         throw new Error(result.message || 'An unknown error occurred on the backend.');
+                    }
+                } catch(error) {
+                    console.error('Error bulk deleting books:', error);
+                    alert(`Failed to delete books: ${error.message}`);
+                } finally {
+                    showLoading(false);
+                }
+            });
+        }
 
         async function handleSaveSettings() {
             const newUrl = scriptUrlInput.value.trim();
             const newApiKey = geminiApiKeyInput.value.trim();
             const newLang = languageSelect.value;
             const newLibraryName = libraryNameInput.value.trim();
+            const newTheme = themeSelector.value;
             
             localStorage.setItem('comicLibraryScriptUrl', newUrl);
             localStorage.setItem('comicLibraryApiKey', newApiKey);
             localStorage.setItem('comicLibraryLanguage', newLang);
+            localStorage.setItem('comicLibraryTheme', newTheme);
 
             SCRIPT_URL = newUrl;
             GEMINI_API_KEY = newApiKey;
             currentLanguage = newLang;
+            applyTheme(newTheme);
             
             // Save library name to backend
             try {
@@ -1492,11 +1799,61 @@ function createJsonResponse(obj) {
 
             closeSettingsModal();
             
-            cardView.innerHTML = '';
-            tableBody.innerHTML = '';
-            noResultsDiv.classList.add('hidden');
-            fetchBooks();
+            // Only refetch if the URL changed.
+            if (newUrl !== SCRIPT_URL) {
+                cardView.innerHTML = '';
+                tableBody.innerHTML = '';
+                noResultsDiv.classList.add('hidden');
+                fetchBooks();
+            } else {
+                libraryTitle.textContent = newLibraryName;
+            }
         }
+
+        // --- SELECT MODE ---
+
+        function toggleSelectMode(forceState) {
+            isSelectModeActive = typeof forceState === 'boolean' ? forceState : !isSelectModeActive;
+            
+            if (isSelectModeActive) {
+                document.getElementById('filters').classList.add('hidden');
+                bulkActionsBar.classList.remove('hidden');
+                bulkActionsBar.classList.add('flex');
+            } else {
+                document.getElementById('filters').classList.remove('hidden');
+                bulkActionsBar.classList.add('hidden');
+                bulkActionsBar.classList.remove('flex');
+                selectedBookIds.clear();
+            }
+            updateSelectionCount();
+            renderAll(); // Re-render to show/hide checkboxes
+        }
+        
+        function updateSelectionCount() {
+            const count = selectedBookIds.size;
+            selectionCount.textContent = `${count} book${count !== 1 ? 's' : ''} selected`;
+            bulkDeleteBtn.disabled = count === 0;
+        }
+
+        function toggleSelection(bookId, checkbox) {
+            if (selectedBookIds.has(bookId)) {
+                selectedBookIds.delete(bookId);
+                checkbox.checked = false;
+            } else {
+                selectedBookIds.add(bookId);
+                checkbox.checked = true;
+            }
+            
+            // Visually update the item
+            const card = document.querySelector(`.book-card[data-book-id="${bookId}"]`);
+            if (card) card.classList.toggle('selected', checkbox.checked);
+            
+            const row = document.querySelector(`tr[data-book-id="${bookId}"]`);
+            if (row) row.classList.toggle('selected', checkbox.checked);
+
+            updateSelectionCount();
+        }
+
 
         // --- UTILITY & OTHER FUNCTIONS ---
         function switchView(view) {
@@ -1513,7 +1870,7 @@ function createJsonResponse(obj) {
                 cardViewBtn.classList.remove('active');
                 tableViewBtn.classList.add('active');
             }
-            renderAll();
+            if (!isSelectModeActive) renderAll();
         }
         
         function showStats() {
@@ -1625,6 +1982,11 @@ function createJsonResponse(obj) {
             } else {
                 // --- MAIN APP ---
                 
+                // Initial theme setup
+                populateThemeSelector();
+                const savedTheme = localStorage.getItem('comicLibraryTheme') || 'Default';
+                applyTheme(savedTheme);
+
                 // Attach listeners for main app elements
                 addBookBtn.addEventListener('click', () => openBookModal());
                 addImageBtn.addEventListener('click', openImageUploadModal);
@@ -1679,6 +2041,12 @@ function createJsonResponse(obj) {
 
                 cardViewBtn.addEventListener('click', () => switchView('card'));
                 tableViewBtn.addEventListener('click', () => switchView('table'));
+                
+                // Select Mode listeners
+                selectModeBtn.addEventListener('click', () => toggleSelectMode(true));
+                exitSelectModeBtn.addEventListener('click', () => toggleSelectMode(false));
+                bulkDeleteBtn.addEventListener('click', handleBulkDelete);
+
 
                 // Initialize the app
                 const sharedScriptUrl = params.get('script_url');
