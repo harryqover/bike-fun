@@ -246,23 +246,23 @@
     <div id="appContainer">
         <!-- Header -->
         <header class="comic-header p-4 sticky top-0 z-20">
-            <div class="container mx-auto flex justify-between items-center">
-                <h1 id="libraryTitle" class="comic-title text-2xl md:text-4xl">My Comic Library</h1>
-                <div class="flex items-center gap-2 md:gap-3">
-                     <button id="shareBtn" class="comic-button-secondary font-bold py-2 px-4 rounded-lg text-sm md:text-base">Share</button>
-                     <button id="statsBtn" class="comic-button-secondary font-bold py-2 px-4 rounded-lg text-sm md:text-base">Stats</button>
-                     <button id="addBookBtn" class="comic-button-primary font-bold py-2 px-4 rounded-lg text-sm md:text-base">
-                        + Add Book
+            <div class="container mx-auto flex justify-between items-center gap-2">
+                <h1 id="libraryTitle" class="comic-title text-xl sm:text-2xl md:text-4xl whitespace-nowrap">My Comic Library</h1>
+                <div class="flex items-center flex-wrap justify-end gap-2">
+                     <button id="shareBtn" class="comic-button-secondary font-bold py-2 px-3 rounded-lg text-sm">Share</button>
+                     <button id="statsBtn" class="comic-button-secondary font-bold py-2 px-3 rounded-lg text-sm">Stats</button>
+                     <button id="addBookBtn" class="comic-button-primary font-bold py-2 px-3 rounded-lg text-sm flex items-center gap-1">
+                        + <span class="hidden sm:inline">Add Book</span>
                     </button>
-                     <button id="addImageBtn" class="comic-button-primary font-bold py-2 px-4 rounded-lg text-sm md:text-base flex items-center gap-2">
+                     <button id="addImageBtn" class="comic-button-primary font-bold py-2 px-3 rounded-lg text-sm flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" /></svg>
-                        Add from Image
+                        <span class="hidden sm:inline">From Image</span>
                     </button>
-                    <button id="recommendationsBtn" class="comic-button-ai font-bold py-2 px-4 rounded-lg text-sm md:text-base">
-                        ✨ Recommendations
+                    <button id="recommendationsBtn" class="comic-button-ai font-bold py-2 px-3 rounded-lg text-sm flex items-center gap-1">
+                        ✨<span class="hidden sm:inline">Recs</span>
                     </button>
-                    <button id="settingsBtn" title="Settings" class="text-white hover:text-yellow-300 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+                    <button id="settingsBtn" title="Settings" class="text-white hover:text-yellow-300 transition-colors p-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0l-.1.41a2 2 0 01-1.42 1.42l-.41.1c-1.56.38-1.56 2.6 0 2.98l.41.1a2 2 0 011.42 1.42l.1.41c.38 1.56 2.6 1.56 2.98 0l.1-.41a2 2 0 011.42-1.42l.41-.1c1.56-.38-1.56-2.6 0-2.98l-.41-.1a2 2 0 01-1.42-1.42l-.1-.41zM10 5a5 5 0 100 10 5 5 0 000-10zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
                         </svg>
                     </button>
@@ -275,15 +275,15 @@
 
             <!-- Filters Section -->
             <section id="filters" class="bg-white/80 backdrop-blur-sm p-4 rounded-xl border-2 border-dashed border-gray-400 mb-8 sticky top-[92px] z-10 flex flex-wrap justify-between items-center gap-4">
-                 <div class="flex-grow flex flex-wrap gap-4 w-full md:w-auto">
-                    <input type="text" id="searchInput" placeholder="Search title or author..." class="form-input p-2 rounded-lg flex-grow" style="min-width: 200px;">
-                    <select id="categoryFilter" class="form-select p-2 rounded-lg flex-grow">
+                 <div class="flex-grow grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+                    <input type="text" id="searchInput" placeholder="Search title or author..." class="form-input p-2 rounded-lg w-full sm:col-span-2 lg:col-span-1">
+                    <select id="categoryFilter" class="form-select p-2 rounded-lg w-full">
                         <option value="">Filter by Category</option>
                     </select>
-                    <select id="labelFilter" class="form-select p-2 rounded-lg flex-grow">
+                    <select id="labelFilter" class="form-select p-2 rounded-lg w-full">
                         <option value="">Filter by Label</option>
                     </select>
-                     <select id="sortOrder" class="form-select p-2 rounded-lg flex-grow">
+                     <select id="sortOrder" class="form-select p-2 rounded-lg w-full">
                         <option value="dateAdded-desc">Sort by Date (Newest)</option>
                         <option value="dateAdded-asc">Sort by Date (Oldest)</option>
                         <option value="title-asc">Sort by Title (A-Z)</option>
@@ -292,7 +292,7 @@
                         <option value="author-desc">Sort by Author (Z-A)</option>
                     </select>
                 </div>
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 w-full sm:w-auto justify-end">
                     <button id="selectModeBtn" class="comic-button-secondary font-bold py-2 px-4 rounded-lg">Select</button>
                     <div class="view-toggle flex rounded-lg">
                         <button id="cardViewBtn" class="p-2 rounded-l-lg" title="Card View">
@@ -2074,4 +2074,3 @@ function createJsonResponse(obj) {
     </script>
 </body>
 </html>
-
