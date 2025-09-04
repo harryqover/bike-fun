@@ -1,4 +1,6 @@
-console.log("20250627 correct appid")
+console.log("20250904 1547")
+
+const ENABLE_VEHICLE_TYPE_IN_PRODUCTION = false;
 
 const appId = {
   sbx: {
@@ -32,6 +34,10 @@ function getRootDomain(hostname) {
 
 const domain = getRootDomain(window.location.hostname);
 const urlParams = new URLSearchParams(window.location.search);
+const forceVehicleType = urlParams.get('forceVehicleType') === 'true';
+
+const isSandbox = domain.includes('webflow.io');
+const isProduction = !isSandbox;
 
 const localeRegex = /^[a-z]{2}-[A-Z]{2}$/;  
 if (urlParams.has('locale')) {
@@ -1302,10 +1308,6 @@ $("#quoteForm").on("submit", function(e) {
       }
       
 
-      // Ensure boolean conversion for radio button values like "true"/"false"
-      /*const carIsReadyVal = formData.get("carIsReadyToBeRegistred");
-      carIsReadyToBeRegistred = carIsReadyVal === "true";*/
-
       const registeredCarVal = formData.get("registeredCar");
       registeredCar = registeredCarVal === "true";
 
@@ -1510,6 +1512,11 @@ $("#quoteForm").on("submit", function(e) {
           reference: previousInsurerReference,
           vrn: previousInsurerVRN,
         };
+      }
+
+      if (isSandbox || (isProduction && ENABLE_VEHICLE_TYPE_IN_PRODUCTION) || forceVehicleType) {
+        console.log("Applying Germany-specific vehicleType...");
+        payload.subject.vehicleType = "VEHICLE_TYPE_LIGHT";
       }
       
       payload.subject.policyholderIsRegisteredOwner = policyholderIsRegisteredOwner;
