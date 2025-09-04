@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La communauté de l'acier - Agenda Sportif Terdelt</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
+
+    <!-- Icons Library: Lucide -->
+    <script src="https://unpkg.com/lucide-react@0.309.0/dist/lucide-react.js"></script>
+    <script>
+      // Make Lucide icons available globally
+      const { createLucideIcon, ...icons } = LucideReact;
+      window.lucide = icons;
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .bg-steel-gradient { background: linear-gradient(135deg, #4b5563 0%, #1f2937 100%); }
+        .event-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .event-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .filter-btn { transition: all 0.2s ease-in-out; }
+        .filter-btn.active { background-color: #10B981; color: white; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2); }
+        .filter-btn:not(.active):hover { background-color: #e5e7eb; }
+        /* Modal styles */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 50;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-backdrop.flex { display: flex; }
+        .modal-content {
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .modal-backdrop.flex .modal-content {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        /* Spinner */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="text-gray-800">
+    <!-- Header -->
+    <header class="bg-steel-gradient text-white shadow-lg relative">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <div class="flex justify-center items-center gap-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <h1 class="text-4xl md:text-5xl font-bold tracking-tight">La communauté de l'acier</h1>
+            </div>
+            <p class="mt-4 text-lg text-gray-300 max-w-2xl mx-auto">L'agenda sportif des voisins du Terdelt.</p>
+        </div>
+        <!-- Action Buttons -->
+        <div class="absolute top-4 right-4 flex gap-2">
+            <button id="propose-event-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Proposer un événement</button>
+            <button id="settings-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold p-2 rounded-full shadow-md transition-transform transform hover:scale-105">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-12">
+        <section id="agenda">
+             <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">L'Agenda des Événements</h2>
+
+            <!-- Filters -->
+            <div id="filters" class="flex flex-col sm:flex-row justify-center gap-4 mb-10">
+                <div class="flex justify-center items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
+                    <span class="font-semibold text-gray-700 mr-2">Sport:</span>
+                    <button class="filter-btn px-4 py-2 rounded-md text-sm font-medium" data-filter-group="sport" data-filter="all">Tous</button>
+                    <button class="filter-btn px-4 py-2 rounded-md text-sm font-medium" data-filter-group="sport" data-filter="Running">Course</button>
+                    <button class="filter-btn px-4 py-2 rounded-md text-sm font-medium" data-filter-group="sport" data-filter="Cycling">Vélo</button>
+                    <button class="filter-btn px-4 py-2 rounded-md text-sm font-medium" data-filter-group="sport" data-filter="Multi-sport">Multi-sport</button>
+                </div>
+                <div class="flex justify-center items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
+                    <span class="font-semibold text-gray-700 mr-2">Période:</span>
+                    <button class="filter-btn active px-4 py-2 rounded-md text-sm font-medium" data-filter-group="period" data-filter="upcoming">À venir</button>
+                    <button class="filter-btn px-4 py-2 rounded-md text-sm font-medium" data-filter-group="period" data-filter="past">Passés</button>
+                </div>
+            </div>
+
+            <!-- Events Grid -->
+            <div id="events-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[300px] relative">
+                <div id="loader" class="absolute inset-0 flex items-center justify-center bg-white/50">
+                    <div class="loader"></div>
+                </div>
+                <p id="no-events-message" class="text-center text-gray-500 col-span-full hidden">Aucun événement ne correspond à votre recherche.</p>
+                 <p id="error-message" class="text-center text-red-500 col-span-full hidden">Impossible de charger les événements. Vérifiez l'URL du script et la configuration de la Google Sheet.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-6 text-center">
+            <p>&copy; 2025 La communauté de l'acier - Fait avec passion dans le Terdelt.</p>
+        </div>
+    </footer>
+    
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-backdrop">
+        <div class="modal-content bg-white w-full max-w-md p-6 rounded-lg shadow-xl m-4">
+            <h3 class="text-2xl font-bold mb-4">Vos informations</h3>
+            <p class="text-sm text-gray-600 mb-4">Votre nom sera visible par les autres membres lorsque vous rejoignez un événement. Un ID unique est enregistré dans votre navigateur.</p>
+            <form id="settings-form">
+                <label for="username" class="block text-sm font-medium text-gray-700">Votre nom ou pseudo</label>
+                <input type="text" id="username" name="username" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" required>
+                <div class="mt-6 flex justify-end gap-3">
+                    <button type="button" class="modal-close-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300">Annuler</button>
+                    <button type="submit" class="bg-emerald-500 text-white px-4 py-2 rounded-md hover:bg-emerald-600">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Propose Event Modal -->
+    <div id="propose-modal" class="modal-backdrop">
+         <div class="modal-content bg-white w-full max-w-lg p-6 rounded-lg shadow-xl m-4">
+            <h3 class="text-2xl font-bold mb-2">Proposer un nouvel événement</h3>
+             <p class="text-sm text-gray-600 mb-4">Votre proposition sera soumise à un admin pour validation avant d'apparaître sur le site.</p>
+            <form id="propose-form">
+                <div class="grid grid-cols-1 gap-4">
+                    <input type="text" name="title" placeholder="Titre de l'événement" class="input" required>
+                    <input type="text" name="link" placeholder="Lien officiel (https://...)" class="input" required>
+                    <textarea name="description" placeholder="Courte description" rows="3" class="input" required></textarea>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="date" name="date" class="input" required>
+                        <select name="sport" class="input" required>
+                            <option value="" disabled selected>Choisir un sport...</option>
+                            <option value="Running">Course</option>
+                            <option value="Cycling">Vélo</option>
+                            <option value="Multi-sport">Multi-sport</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end gap-3">
+                    <button type="button" class="modal-close-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300">Annuler</button>
+                    <button type="submit" class="bg-emerald-500 text-white px-4 py-2 rounded-md hover:bg-emerald-600 disabled:bg-gray-400" id="propose-submit-btn">
+                        <span class="submit-text">Soumettre</span>
+                        <span class="submit-spinner hidden loader !w-5 !h-5 !border-2 !border-t-transparent"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Generic Message/Toast element -->
+    <div id="toast" class="fixed top-5 right-5 bg-green-500 text-white py-2 px-5 rounded-lg shadow-xl opacity-0 translate-y-10 transition-all duration-300">
+        Message
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // !!! IMPORTANT !!!
+        // REPLACE THIS URL with the one you get after deploying your Google Apps Script as a web app.
+        const GSCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0YwzHmUQtv1cLqnZwkYG19fG-c2700q1gIPVhEK0IVGT7uNrndPO9JWRHKcAYKCuHAg/exec";
+
+        // --- STATE ---
+        let eventsCache = [];
+        let userInfo = { id: null, name: null };
+        let currentFilters = { sport: 'all', period: 'upcoming' };
+
+        // --- DOM ELEMENTS ---
+        const eventsGrid = document.getElementById('events-grid');
+        const loader = document.getElementById('loader');
+        const noEventsMessage = document.getElementById('no-events-message');
+        const errorMessage = document.getElementById('error-message');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const toast = document.getElementById('toast');
+
+        // Modals
+        const settingsModal = document.getElementById('settings-modal');
+        const proposeModal = document.getElementById('propose-modal');
+
+        // Forms
+        const settingsForm = document.getElementById('settings-form');
+        const proposeForm = document.getElementById('propose-form');
+        
+        // --- USER MANAGEMENT ---
+        function loadUser() {
+            const storedUser = localStorage.getItem('community_user');
+            if (storedUser) {
+                userInfo = JSON.parse(storedUser);
+            } else {
+                userInfo.id = crypto.randomUUID();
+                // Prompt for name if not set
+                setTimeout(() => openModal(settingsModal), 1000);
+            }
+            document.getElementById('username').value = userInfo.name || '';
+        }
+
+        function saveUser(name) {
+            userInfo.name = name;
+            localStorage.setItem('community_user', JSON.stringify(userInfo));
+            showToast(`Bienvenue, ${name} !`);
+            closeModal(settingsModal);
+            renderEvents(); // Re-render to update participation status
+        }
+        
+        // --- API CALLS (GSCRIPT) ---
+        async function fetchEvents() {
+            if (GSCRIPT_URL === "VOTRE_URL_DE_SCRIPT_ICI") {
+                loader.classList.add('hidden');
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+            try {
+                const response = await fetch(GSCRIPT_URL);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                eventsCache = data.events;
+                renderEvents();
+            } catch (error) {
+                console.error("Error fetching events:", error);
+                errorMessage.classList.remove('hidden');
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+        
+        async function postData(payload) {
+             if (!userInfo.name) {
+                showToast("Veuillez d'abord définir votre nom dans les paramètres.", 'error');
+                openModal(settingsModal);
+                return;
+            }
+            try {
+                const response = await fetch(GSCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Required for simple POST to Google Scripts
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                return { success: true }; // no-cors means we can't read the response
+            } catch (error) {
+                console.error('Error posting data:', error);
+                return { success: false, error };
+            }
+        }
+
+        // --- RENDERING ---
+        function renderEvents() {
+            eventsGrid.innerHTML = ''; 
+            const now = new Date();
+
+            const filteredEvents = eventsCache.filter(event => {
+                if (!event.date) return false;
+                const eventDate = new Date(event.date);
+                const isUpcoming = eventDate >= now;
+                const matchesPeriod = (currentFilters.period === 'upcoming' && isUpcoming) || (currentFilters.period === 'past' && !isUpcoming);
+                const matchesSport = currentFilters.sport === 'all' || event.sport === currentFilters.sport;
+                return matchesPeriod && matchesSport;
+            });
+            
+            filteredEvents.sort((a, b) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                return currentFilters.period === 'upcoming' ? dateA - dateB : dateB - dateA;
+            });
+
+            if (filteredEvents.length === 0) {
+                eventsGrid.appendChild(noEventsMessage);
+                noEventsMessage.classList.remove('hidden');
+            } else {
+                noEventsMessage.classList.add('hidden');
+            }
+
+            filteredEvents.forEach(event => {
+                const card = document.createElement('div');
+                card.className = 'event-card bg-white rounded-xl shadow-md overflow-hidden flex flex-col';
+                const participants = Array.isArray(event.participants) ? event.participants : [];
+                const isUserParticipant = participants.some(p => p.id === userInfo.id);
+
+                let actionButtonHTML = '';
+                if (currentFilters.period === 'upcoming') {
+                     if (isUserParticipant) {
+                        actionButtonHTML = `<button class="w-full bg-gray-400 text-white font-bold py-2 px-4 rounded-b-xl cursor-not-allowed" disabled>✅ Vous participez !</button>`;
+                    } else {
+                        actionButtonHTML = `<button class="join-btn w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-b-xl transition" data-event-id="${event.id}">💪 Je participe !</button>`;
+                    }
+                }
+                
+                card.innerHTML = `
+                    <div class="p-6 flex-grow flex flex-col">
+                        <div class="flex justify-between items-start mb-2">
+                             <span class="bg-gray-100 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full">${event.sport}</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">${event.title}</h3>
+                        <p class="text-emerald-600 font-semibold text-sm mb-3">${new Date(event.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                        <p class="text-gray-600 text-sm mb-4 flex-grow">${event.description}</p>
+                         <a href="${event.link}" target="_blank" rel="noopener noreferrer" class="text-sm text-blue-600 hover:underline">Voir le site officiel →</a>
+                        <div class="mt-4 pt-4 border-t">
+                             <h4 class="text-sm font-semibold text-gray-700 mb-2">Participants (${participants.length}) :</h4>
+                             <div class="flex flex-wrap gap-2">
+                                ${participants.map(p => `<span class="bg-gray-200 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">${p.name}</span>`).join('') || '<span class="text-xs text-gray-500">Personne pour le moment.</span>'}
+                             </div>
+                        </div>
+                    </div>
+                    ${actionButtonHTML}
+                `;
+                eventsGrid.appendChild(card);
+            });
+        }
+
+        // --- UI & MODALS ---
+        function showToast(message, type = 'success') {
+            toast.textContent = message;
+            toast.className = `fixed top-5 right-5 text-white py-2 px-5 rounded-lg shadow-xl transition-all duration-300 ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} opacity-100 -translate-y-0`;
+            setTimeout(() => {
+                 toast.className = toast.className.replace('opacity-100 -translate-y-0', 'opacity-0 translate-y-10');
+            }, 3000);
+        }
+
+        function openModal(modal) { modal.classList.add('flex'); }
+        function closeModal(modal) { modal.classList.remove('flex'); }
+
+        // --- EVENT LISTENERS ---
+        document.getElementById('settings-btn').addEventListener('click', () => openModal(settingsModal));
+        document.getElementById('propose-event-btn').addEventListener('click', () => openModal(proposeModal));
+        document.querySelectorAll('.modal-close-btn').forEach(btn => btn.addEventListener('click', () => {
+            closeModal(settingsModal);
+            closeModal(proposeModal);
+        }));
+
+        settingsForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            if (username) saveUser(username);
+        });
+
+        proposeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('propose-submit-btn');
+            btn.disabled = true;
+            btn.querySelector('.submit-text').classList.add('hidden');
+            btn.querySelector('.submit-spinner').classList.remove('hidden');
+
+            const formData = new FormData(proposeForm);
+            const data = {
+                action: 'propose',
+                payload: Object.fromEntries(formData.entries())
+            };
+
+            const result = await postData(data);
+            if(result.success) {
+                showToast("Votre événement a été proposé !");
+                proposeForm.reset();
+                closeModal(proposeModal);
+            } else {
+                 showToast("Erreur lors de la proposition.", 'error');
+            }
+            btn.disabled = false;
+            btn.querySelector('.submit-text').classList.remove('hidden');
+            btn.querySelector('.submit-spinner').classList.add('hidden');
+        });
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const group = button.dataset.filterGroup;
+                currentFilters[group] = button.dataset.filter;
+                document.querySelectorAll(`.filter-btn[data-filter-group="${group}"]`).forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                renderEvents();
+            });
+        });
+        
+        eventsGrid.addEventListener('click', async function(e) {
+            if (e.target.classList.contains('join-btn')) {
+                const eventId = e.target.dataset.eventId;
+                const event = eventsCache.find(ev => ev.id == eventId);
+                
+                if (event) {
+                    const payload = { 
+                        action: 'join', 
+                        payload: { 
+                            eventId: eventId, 
+                            user: userInfo 
+                        } 
+                    };
+                    const result = await postData(payload);
+                     if(result.success) {
+                        showToast(`Vous avez rejoint: ${event.title}`);
+                        // Optimistic update
+                        const userAlreadyIn = event.participants.some(p => p.id === userInfo.id);
+                        if (!userAlreadyIn) {
+                           event.participants.push({id: userInfo.id, name: userInfo.name});
+                        }
+                        renderEvents();
+                        
+                        // Fetch fresh data in background to ensure consistency
+                        setTimeout(fetchEvents, 1000);
+                    } else {
+                        showToast("Erreur pour rejoindre l'événement.", 'error');
+                    }
+                }
+            }
+        });
+
+        // --- INITIALIZATION ---
+        loadUser();
+        fetchEvents();
+    });
+    </script>
+</body>
+</html>
+
+
