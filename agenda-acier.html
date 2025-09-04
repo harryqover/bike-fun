@@ -91,6 +91,13 @@
         .calendar-dropdown-item:hover {
             background-color: #f3f4f6;
         }
+        .input-group { position: relative; }
+        .input-group button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -157,10 +164,19 @@
     <div id="settings-modal" class="modal-backdrop">
         <div class="modal-content bg-white w-full max-w-md p-6 rounded-lg shadow-xl m-4">
             <h3 class="text-2xl font-bold mb-4">Vos informations</h3>
-            <p class="text-sm text-gray-600 mb-4">Votre nom sera visible par les autres membres lorsque vous rejoignez un événement. Un ID unique est enregistré dans votre navigateur.</p>
+            <p class="text-sm text-gray-600 mb-4">Votre nom sera visible par les autres membres. Votre clé API Gemini est utilisée pour les fonctionnalités IA et n'est stockée que dans votre navigateur.</p>
             <form id="settings-form">
-                <label for="username" class="block text-sm font-medium text-gray-700">Votre nom ou pseudo</label>
-                <input type="text" id="username" name="username" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" required>
+                <div class="space-y-4">
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-700">Votre nom ou pseudo</label>
+                        <input type="text" id="username" name="username" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" required>
+                    </div>
+                    <div>
+                        <label for="gemini-api-key" class="block text-sm font-medium text-gray-700">Clé API Gemini</label>
+                        <input type="password" id="gemini-api-key" name="geminiApiKey" placeholder="Entrez votre clé API" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+                         <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 block">Obtenir une clé API Gemini</a>
+                    </div>
+                </div>
                 <div class="mt-6 flex justify-end gap-3">
                     <button type="button" class="modal-close-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300">Annuler</button>
                     <button type="submit" class="bg-emerald-500 text-white px-4 py-2 rounded-md hover:bg-emerald-600">Enregistrer</button>
@@ -176,12 +192,28 @@
              <p class="text-sm text-gray-600 mb-4">Votre proposition sera soumise à un admin pour validation avant d'apparaître sur le site.</p>
             <form id="propose-form">
                 <div class="grid grid-cols-1 gap-4">
-                    <input type="text" name="title" placeholder="Titre de l'événement" class="input" required>
-                    <input type="text" name="link" placeholder="Lien officiel (https://...)" class="input" required>
-                    <textarea name="description" placeholder="Courte description" rows="3" class="input" required></textarea>
+                    <div class="input-group">
+                        <input type="text" name="link" id="propose-link" placeholder="Lien officiel (https://...)" class="input w-full pr-28" required>
+                        <button type="button" id="extract-info-btn" class="flex items-center gap-2 text-sm bg-purple-100 text-purple-800 hover:bg-purple-200 font-semibold py-1 px-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            ✨
+                            <span class="btn-text">Extraire les infos</span>
+                            <span class="btn-spinner hidden loader !w-4 !h-4 !border-2 !border-t-transparent"></span>
+                        </button>
+                    </div>
+                    <input type="text" name="title" id="propose-title" placeholder="Titre de l'événement" class="input" required>
+                    <div>
+                        <textarea name="description" id="propose-description" placeholder="Courte description" rows="3" class="input w-full" required></textarea>
+                        <div class="flex justify-end mt-2">
+                             <button type="button" id="generate-description-btn" class="flex items-center gap-2 text-sm bg-blue-100 text-blue-800 hover:bg-blue-200 font-semibold py-1 px-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                ✨ 
+                                <span class="btn-text">Générer avec l'IA</span>
+                                <span class="btn-spinner hidden loader !w-4 !h-4 !border-2 !border-t-transparent"></span>
+                            </button>
+                        </div>
+                    </div>
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="date" name="date" class="input" required>
-                        <select name="sport" class="input" required>
+                        <input type="date" name="date" id="propose-date" class="input" required>
+                        <select name="sport" id="propose-sport" class="input" required>
                             <option value="" disabled selected>Choisir un sport...</option>
                             <option value="Running">Course</option>
                             <option value="Cycling">Vélo</option>
@@ -207,13 +239,12 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // !!! IMPORTANT !!!
-        // REPLACE THIS URL with the one you get after deploying your Google Apps Script as a web app.
         const GSCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0YwzHmUQtv1cLqnZwkYG19fG-c2700q1gIPVhEK0IVGT7uNrndPO9JWRHKcAYKCuHAg/exec";
+        const GEMINI_API_URL_CLIENT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=";
 
         // --- STATE ---
         let eventsCache = [];
-        let userInfo = { id: null, name: null };
+        let userInfo = { id: null, name: null, geminiApiKey: null };
         let currentFilters = { sport: 'all', period: 'upcoming' };
 
         // --- DOM ELEMENTS ---
@@ -223,14 +254,12 @@
         const errorMessage = document.getElementById('error-message');
         const filterButtons = document.querySelectorAll('.filter-btn');
         const toast = document.getElementById('toast');
-
-        // Modals
         const settingsModal = document.getElementById('settings-modal');
         const proposeModal = document.getElementById('propose-modal');
-
-        // Forms
         const settingsForm = document.getElementById('settings-form');
         const proposeForm = document.getElementById('propose-form');
+        const generateDescriptionBtn = document.getElementById('generate-description-btn');
+        const extractInfoBtn = document.getElementById('extract-info-btn');
         
         // --- USER MANAGEMENT ---
         function loadUser() {
@@ -239,22 +268,24 @@
                 userInfo = JSON.parse(storedUser);
             } else {
                 userInfo.id = crypto.randomUUID();
-                // Prompt for name if not set
                 setTimeout(() => openModal(settingsModal), 1000);
             }
             document.getElementById('username').value = userInfo.name || '';
+            document.getElementById('gemini-api-key').value = userInfo.geminiApiKey || '';
         }
 
-        function saveUser(name) {
+        function saveUser(name, apiKey) {
             userInfo.name = name;
+            userInfo.geminiApiKey = apiKey;
             localStorage.setItem('community_user', JSON.stringify(userInfo));
-            showToast(`Bienvenue, ${name} !`);
+            showToast(`Paramètres enregistrés !`);
             closeModal(settingsModal);
-            renderEvents(); // Re-render to update participation status
+            renderEvents();
         }
         
-        // --- API CALLS (GSCRIPT) ---
+        // --- API CALLS ---
         async function fetchEvents() {
+            // ... (rest of the function is unchanged)
             if (GSCRIPT_URL === "VOTRE_URL_DE_SCRIPT_ICI") {
                 loader.classList.add('hidden');
                 errorMessage.classList.remove('hidden');
@@ -274,27 +305,128 @@
             }
         }
         
-        async function postData(payload) {
+        async function postToGoogleScript(payload, expectResponse = false) {
              if (!userInfo.name) {
                 showToast("Veuillez d'abord définir votre nom dans les paramètres.", 'error');
                 openModal(settingsModal);
-                return;
+                return null;
             }
             try {
-                const response = await fetch(GSCRIPT_URL, {
+                const options = {
                     method: 'POST',
-                    mode: 'no-cors', // Required for simple POST to Google Scripts
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
-                });
-                return { success: true }; // no-cors means we can't read the response
+                };
+                if (!expectResponse) {
+                    options.mode = 'no-cors';
+                }
+
+                const response = await fetch(GSCRIPT_URL, options);
+
+                if (expectResponse) {
+                    if (!response.ok) throw new Error(`Google Script error! Status: ${response.status}`);
+                    return await response.json();
+                }
+                return { success: true };
             } catch (error) {
                 console.error('Error posting data:', error);
-                return { success: false, error };
+                return expectResponse ? null : { success: false, error };
             }
         }
 
+        // --- GEMINI API CALL (Client-Side for Description) ---
+        async function generateDescriptionWithGemini() {
+            if (!userInfo.geminiApiKey) {
+                showToast("Veuillez ajouter votre clé API Gemini dans les paramètres.", 'error');
+                openModal(settingsModal);
+                return;
+            }
+            const title = document.getElementById('propose-title').value;
+            const sport = document.getElementById('propose-sport').value;
+            const date = document.getElementById('propose-date').value;
+
+            if (!title || !sport || !date) {
+                showToast("Veuillez d'abord remplir le titre, le sport et la date.", 'error');
+                return;
+            }
+
+            setButtonLoading(generateDescriptionBtn, true, 'Génération...');
+
+            const systemPrompt = `You are a friendly and enthusiastic community sports organizer for a local neighborhood group in Brussels called 'La communauté de l'acier'. Your task is to write a short, engaging, and motivating event description for the group's agenda. The tone should be welcoming for all skill levels. Always write in French. Include a call to action to join. Do not use markdown. The description should be 2-3 sentences long.`;
+            const userQuery = `Event Name: ${title}, Sport: ${sport}, Date: ${new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', month: 'long', day: 'numeric' })}`;
+            
+            try {
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                };
+
+                const response = await fetch(`${GEMINI_API_URL_CLIENT}${userInfo.geminiApiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error(`API error! Status: ${response.status}`);
+                const result = await response.json();
+                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (generatedText) {
+                    document.getElementById('propose-description').value = generatedText.trim();
+                    showToast("Description générée avec succès !");
+                } else {
+                    throw new Error("No content received from API.");
+                }
+
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                showToast("Impossible de générer la description.", 'error');
+            } finally {
+                setButtonLoading(generateDescriptionBtn, false, "Générer avec l'IA");
+            }
+        }
+        
+        // --- GEMINI API CALL (Server-Side via GScript for URL Extraction) ---
+        async function extractEventInfoFromUrl() {
+            if (!userInfo.geminiApiKey) {
+                showToast("Veuillez ajouter votre clé API Gemini dans les paramètres.", 'error');
+                openModal(settingsModal);
+                return;
+            }
+            const url = document.getElementById('propose-link').value;
+            if (!url || !url.startsWith('http')) {
+                showToast("Veuillez entrer une URL valide.", 'error');
+                return;
+            }
+
+            setButtonLoading(extractInfoBtn, true, "Extraction...");
+
+            const payload = {
+                action: 'extractInfo',
+                payload: {
+                    url: url,
+                    apiKey: userInfo.geminiApiKey 
+                }
+            };
+
+            const result = await postToGoogleScript(payload, true);
+
+            if (result && result.status === 'success' && result.data) {
+                const { title, date, description } = result.data;
+                if (title) document.getElementById('propose-title').value = title;
+                if (date) document.getElementById('propose-date').value = date;
+                if (description) document.getElementById('propose-description').value = description;
+                showToast("Informations extraites avec succès !");
+            } else {
+                showToast(result ? result.message : "Erreur d'extraction.", 'error');
+            }
+            
+            setButtonLoading(extractInfoBtn, false, "Extraire les infos");
+        }
+
+
         // --- CALENDAR HELPERS ---
+        // ... (rest of the functions are unchanged)
         function formatDateForCalendar(date, isEndDate = false) {
             const d = new Date(date);
             if (isEndDate) {
@@ -327,6 +459,7 @@
         }
 
         // --- RENDERING ---
+        // ... (renderEvents is unchanged)
         function renderEvents() {
             eventsGrid.innerHTML = ''; 
             const now = new Date();
@@ -413,6 +546,19 @@
             }, 3000);
         }
 
+        function setButtonLoading(btn, isLoading, loadingText) {
+            btn.disabled = isLoading;
+            const textEl = btn.querySelector('.btn-text');
+            const spinnerEl = btn.querySelector('.btn-spinner');
+            if (isLoading) {
+                textEl.textContent = loadingText;
+                spinnerEl.classList.remove('hidden');
+            } else {
+                textEl.textContent = btn.dataset.originalText || textEl.textContent;
+                spinnerEl.classList.add('hidden');
+            }
+        }
+        
         function openModal(modal) { modal.classList.add('flex'); }
         function closeModal(modal) { modal.classList.remove('flex'); }
 
@@ -427,23 +573,22 @@
         settingsForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const username = document.getElementById('username').value.trim();
-            if (username) saveUser(username);
+            const apiKey = document.getElementById('gemini-api-key').value.trim();
+            if (username) saveUser(username, apiKey);
         });
+
+        generateDescriptionBtn.addEventListener('click', generateDescriptionWithGemini);
+        extractInfoBtn.addEventListener('click', extractEventInfoFromUrl);
 
         proposeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('propose-submit-btn');
-            btn.disabled = true;
-            btn.querySelector('.submit-text').classList.add('hidden');
-            btn.querySelector('.submit-spinner').classList.remove('hidden');
-
+            setButtonLoading(btn, true, 'Soumission...');
+            
             const formData = new FormData(proposeForm);
-            const data = {
-                action: 'propose',
-                payload: Object.fromEntries(formData.entries())
-            };
+            const data = { action: 'propose', payload: Object.fromEntries(formData.entries()) };
 
-            const result = await postData(data);
+            const result = await postToGoogleScript(data);
             if(result.success) {
                 showToast("Votre événement a été proposé !");
                 proposeForm.reset();
@@ -451,9 +596,7 @@
             } else {
                  showToast("Erreur lors de la proposition.", 'error');
             }
-            btn.disabled = false;
-            btn.querySelector('.submit-text').classList.remove('hidden');
-            btn.querySelector('.submit-spinner').classList.add('hidden');
+            setButtonLoading(btn, false, 'Soumettre');
         });
 
         filterButtons.forEach(button => {
@@ -473,24 +616,13 @@
                 const event = eventsCache.find(ev => ev.id == eventId);
                 
                 if (event) {
-                    const payload = { 
-                        action: 'join', 
-                        payload: { 
-                            eventId: eventId, 
-                            user: userInfo 
-                        } 
-                    };
-                    const result = await postData(payload);
+                    const payload = { action: 'join', payload: { eventId: eventId, user: userInfo } };
+                    const result = await postToGoogleScript(payload);
                      if(result.success) {
                         showToast(`Vous avez rejoint: ${event.title}`);
-                        // Optimistic update
                         const userAlreadyIn = event.participants.some(p => p.id === userInfo.id);
-                        if (!userAlreadyIn) {
-                           event.participants.push({id: userInfo.id, name: userInfo.name});
-                        }
+                        if (!userAlreadyIn) { event.participants.push({id: userInfo.id, name: userInfo.name}); }
                         renderEvents();
-                        
-                        // Fetch fresh data in background to ensure consistency
                         setTimeout(fetchEvents, 1000);
                     } else {
                         showToast("Erreur pour rejoindre l'événement.", 'error');
@@ -504,11 +636,8 @@
                 const eventId = button.dataset.eventId;
                 const dropdown = document.getElementById(`dropdown-${eventId}`);
                 
-                // Close all other dropdowns
                 document.querySelectorAll('.calendar-dropdown.show').forEach(openDropdown => {
-                    if(openDropdown !== dropdown) {
-                        openDropdown.classList.remove('show');
-                    }
+                    if(openDropdown !== dropdown) openDropdown.classList.remove('show');
                 });
                 
                 if (dropdown) dropdown.classList.toggle('show');
@@ -516,14 +645,14 @@
             }
         });
         
-        // Close calendar dropdowns when clicking anywhere else
-        window.addEventListener('click', function(e) {
-            document.querySelectorAll('.calendar-dropdown.show').forEach(openDropdown => {
-                openDropdown.classList.remove('show');
-            });
-        });
+        window.addEventListener('click', () => document.querySelectorAll('.calendar-dropdown.show').forEach(d => d.classList.remove('show')));
 
         // --- INITIALIZATION ---
+        // Store original button text for loading states
+        document.querySelectorAll('button[id$="-btn"]').forEach(btn => {
+            const textEl = btn.querySelector('.btn-text');
+            if (textEl) btn.dataset.originalText = textEl.textContent;
+        });
         loadUser();
         fetchEvents();
     });
