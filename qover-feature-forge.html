@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qover Feature Forge</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* Custom Styles & Animations for the "Wow Effect" */
+        :root {
+            --bg-primary: #111827; /* bg-gray-900 */
+            --bg-secondary: #1F2937; /* bg-gray-800 */
+            --bg-tertiary: #374151; /* bg-gray-700 */
+            --border-color: #4B5563; /* bg-gray-600 */
+            --text-primary: #F9FAFB; /* text-gray-50 */
+            --text-secondary: #D1D5DB; /* text-gray-300 */
+            --accent-primary: #4f46e5; /* indigo-600 */
+            --accent-secondary: #3b82f6; /* blue-500 */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .glass-effect {
+            background: rgba(31, 41, 55, 0.6); /* bg-gray-800 with opacity */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        
+        .btn-primary {
+            background-image: linear-gradient(to right, var(--accent-primary) 0%, var(--accent-secondary) 51%, var(--accent-primary) 100%);
+            background-size: 200% auto;
+            transition: all 0.5s;
+        }
+
+        .btn-primary:hover {
+            background-position: right center;
+        }
+        
+        /* Keyframe animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.95); }
+            to { transform: scale(1); }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .modal-animate {
+             animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .vote-button.voted {
+            background-color: var(--accent-primary);
+            color: white;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border-color);
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+
+    <!-- Background Gradient Shapes -->
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+        <div class="absolute top-0 -left-4 w-72 h-72 bg-indigo-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-purple-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+    </div>
+    
+    <!-- Main Container -->
+    <div id="app" class="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- Header -->
+        <header class="flex flex-col sm:flex-row justify-between items-center py-4 mb-8 border-b border-gray-700/50">
+            <div class="text-center sm:text-left mb-4 sm:mb-0">
+                <h1 class="text-3xl font-extrabold tracking-tight gradient-text">
+                    <i class="fas fa-lightbulb mr-2"></i>Qover Feature Forge
+                </h1>
+                <p class="text-gray-400 mt-1">Shape the future of our platform, one idea at a time.</p>
+            </div>
+            <button id="add-request-btn" class="flex items-center justify-center px-5 py-3 text-base font-medium text-white rounded-lg btn-primary shadow-lg hover:shadow-indigo-500/50 transform hover:scale-105">
+                <i class="fas fa-plus mr-2"></i> Add Request
+            </button>
+        </header>
+
+        <!-- User Info & Filters -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
+            <div class="text-sm text-gray-400 glass-effect p-2 rounded-lg">
+                <i class="fas fa-user-circle mr-2"></i> User ID: <span id="user-id-display" class="font-mono">loading...</span>
+            </div>
+            <div class="flex items-center space-x-2 bg-gray-800 rounded-lg p-1">
+                 <button data-sort="trending" class="sort-btn bg-gray-700 text-white px-3 py-1.5 text-sm font-medium rounded-md">Trending</button>
+                 <button data-sort="newest" class="sort-btn text-gray-300 px-3 py-1.5 text-sm font-medium rounded-md">Newest</button>
+                 <button data-sort="most_votes" class="sort-btn text-gray-300 px-3 py-1.5 text-sm font-medium rounded-md">Most Votes</button>
+            </div>
+        </div>
+        
+        <!-- Loading Spinner -->
+        <div id="loader" class="text-center py-10">
+            <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+            <p class="mt-2 text-gray-400">Forging great ideas...</p>
+        </div>
+
+        <!-- Feature Requests List -->
+        <main id="requests-container" class="space-y-4">
+            <!-- Feature request cards will be dynamically inserted here -->
+        </main>
+    </div>
+
+    <!-- Add/Edit Request Modal -->
+    <div id="request-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="modal-animate glass-effect rounded-xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-700">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold gradient-text">Submit a Feature Request</h2>
+                    <button id="close-request-modal-btn" class="text-gray-400 hover:text-white">&times;</button>
+                </div>
+                <form id="request-form">
+                    <input type="hidden" id="request-id">
+                    <div class="mb-4">
+                        <label for="request-title" class="block text-sm font-medium text-gray-300 mb-1">Title</label>
+                        <input type="text" id="request-title" name="title" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., Add dark mode to dashboard" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="request-description" class="block text-sm font-medium text-gray-300 mb-1">Description</label>
+                        <textarea id="request-description" name="description" rows="4" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Explain the feature and why it's important..." required></textarea>
+                    </div>
+                    <div class="mb-6">
+                         <label class="block text-sm font-medium text-gray-300 mb-1">Importance Tags</label>
+                         <div class="flex flex-wrap gap-2">
+                            <button type="button" class="tag-btn bg-red-500/20 text-red-300 border border-red-500/30" data-tag="Legal">Legal</button>
+                            <button type="button" class="tag-btn bg-green-500/20 text-green-300 border border-green-500/30" data-tag="Revenue">Revenue</button>
+                            <button type="button" class="tag-btn bg-blue-500/20 text-blue-300 border border-blue-500/30" data-tag="UX">UX</button>
+                            <button type="button" class="tag-btn bg-yellow-500/20 text-yellow-300 border border-yellow-500/30" data-tag="Efficiency">Efficiency</button>
+                         </div>
+                    </div>
+                    <button type="submit" class="w-full text-white font-bold py-3 px-4 rounded-lg btn-primary shadow-lg">Submit Request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Comments Modal -->
+    <div id="comments-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="modal-animate glass-effect rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden border border-gray-700 max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b border-gray-700">
+                <div class="flex justify-between items-start">
+                    <div>
+                      <h2 id="comment-modal-title" class="text-2xl font-bold gradient-text"></h2>
+                      <p id="comment-modal-description" class="text-gray-300 mt-1"></p>
+                    </div>
+                    <button id="close-comments-modal-btn" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+                </div>
+            </div>
+            <div id="comments-list" class="flex-grow p-6 overflow-y-auto space-y-4">
+                <!-- Comments will be dynamically inserted here -->
+            </div>
+            <div class="p-6 border-t border-gray-700 bg-gray-900/50">
+                <form id="comment-form" class="flex items-center gap-3">
+                    <input type="hidden" id="comment-request-id">
+                    <input type="text" id="comment-input" class="flex-grow bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Add a comment..." required>
+                    <button type="submit" class="text-white font-semibold py-2 px-4 rounded-lg btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, addDoc, updateDoc, serverTimestamp, getDoc, arrayUnion, arrayRemove, runTransaction, query, orderBy, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- DO NOT EDIT: Firebase Config ---
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : { apiKey: "YOUR_API_KEY", authDomain: "YOUR_AUTH_DOMAIN", projectId: "YOUR_PROJECT_ID" }; // Fallback for local testing
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'qover-feature-forge';
+        
+        // --- App State ---
+        let db, auth, userId, userIsAuthenticated = false;
+        let requests = [];
+        let currentSort = 'trending';
+        let selectedTags = [];
+
+        // --- UI Elements ---
+        const loader = document.getElementById('loader');
+        const requestsContainer = document.getElementById('requests-container');
+        const addRequestBtn = document.getElementById('add-request-btn');
+        const requestModal = document.getElementById('request-modal');
+        const closeRequestModalBtn = document.getElementById('close-request-modal-btn');
+        const requestForm = document.getElementById('request-form');
+        const commentsModal = document.getElementById('comments-modal');
+        const closeCommentsModalBtn = document.getElementById('close-comments-modal-btn');
+        const commentForm = document.getElementById('comment-form');
+        const commentsList = document.getElementById('comments-list');
+        const sortButtons = document.querySelectorAll('.sort-btn');
+        
+        // --- Initialize App ---
+        function init() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                setupAuthListener();
+            } catch (e) {
+                console.error("Firebase initialization error:", e);
+                loader.innerText = "Error connecting to the service.";
+            }
+        }
+        
+        // --- Authentication ---
+        async function setupAuthListener() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    userIsAuthenticated = true;
+                    document.getElementById('user-id-display').textContent = userId.substring(0, 12) + '...';
+                    await fetchRequests();
+                } else {
+                    // Sign in if not authenticated
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Authentication failed:", error);
+                        loader.innerText = "Authentication failed. Please refresh.";
+                    }
+                }
+            });
+        }
+        
+        // --- Data Fetching & Rendering ---
+        async function fetchRequests() {
+            if (!userIsAuthenticated) return;
+            const requestsCollection = collection(db, `artifacts/${appId}/public/data/feature_requests`);
+            
+            onSnapshot(requestsCollection, async (snapshot) => {
+                loader.style.display = 'flex';
+                const requestsPromises = snapshot.docs.map(async doc => {
+                    const commentsCollection = collection(db, `artifacts/${appId}/public/data/feature_requests/${doc.id}/comments`);
+                    const commentsSnapshot = await getDocs(commentsCollection);
+                    return {
+                        id: doc.id,
+                        ...doc.data(),
+                        commentCount: commentsSnapshot.size
+                    }
+                });
+                
+                requests = await Promise.all(requestsPromises);
+                renderRequests();
+                loader.style.display = 'none';
+            }, (error) => {
+                console.error("Error fetching requests:", error);
+                loader.innerText = "Could not load requests.";
+            });
+        }
+        
+        function renderRequests() {
+            if (!userIsAuthenticated) return;
+            requestsContainer.innerHTML = '';
+            
+            const sortedRequests = sortRequests(requests, currentSort);
+
+            if(sortedRequests.length === 0) {
+                 requestsContainer.innerHTML = `
+                    <div class="text-center py-12 bg-gray-800/50 rounded-lg animate-fadeIn">
+                        <i class="fas fa-box-open text-4xl text-gray-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-white">No requests yet!</h3>
+                        <p class="text-gray-400 mt-1">Be the first to suggest a new feature.</p>
+                    </div>
+                 `;
+                 return;
+            }
+            
+            sortedRequests.forEach((req, index) => {
+                const isVoted = req.voters && req.voters.includes(userId);
+                const reqEl = document.createElement('div');
+                reqEl.className = 'animate-fadeIn card-item glass-effect p-5 rounded-xl border border-gray-700/80 hover:border-indigo-500/60 transition-all duration-300 cursor-pointer flex gap-4';
+                reqEl.style.animationDelay = `${index * 50}ms`;
+                reqEl.dataset.id = req.id;
+                
+                reqEl.innerHTML = `
+                    <div class="flex flex-col items-center">
+                        <button class="vote-button ${isVoted ? 'voted' : 'bg-gray-700 hover:bg-gray-600'} w-12 h-12 rounded-lg flex flex-col items-center justify-center transition-colors" data-id="${req.id}">
+                            <i class="fas fa-chevron-up"></i>
+                            <span class="text-sm font-bold">${req.upvotes || 0}</span>
+                        </button>
+                    </div>
+                    <div class="flex-grow">
+                        <h3 class="text-lg font-bold text-white">${req.title}</h3>
+                        <p class="text-gray-400 text-sm mt-1 mb-3">${req.description.substring(0, 100)}${req.description.length > 100 ? '...' : ''}</p>
+                        <div class="flex flex-wrap items-center gap-2">
+                             ${(req.tags || []).map(tag => getTagHTML(tag)).join('')}
+                             <div class="flex items-center text-gray-400 text-xs ml-auto">
+                                <i class="fas fa-comment-alt mr-1.5"></i> ${req.commentCount || 0}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                reqEl.addEventListener('click', (e) => {
+                    if (!e.target.closest('.vote-button')) {
+                        openCommentsModal(req.id);
+                    }
+                });
+                
+                reqEl.querySelector('.vote-button').addEventListener('click', () => handleVote(req.id));
+                
+                requestsContainer.appendChild(reqEl);
+            });
+        }
+        
+        // --- Sorting ---
+        function sortRequests(reqs, sortBy) {
+            return [...reqs].sort((a, b) => {
+                switch (sortBy) {
+                    case 'newest':
+                        return (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0);
+                    case 'most_votes':
+                        return (b.upvotes || 0) - (a.upvotes || 0);
+                    case 'trending': // Simple trending: combination of votes and recency
+                    default:
+                        const scoreA = (a.upvotes || 0) + ((a.createdAt?.toMillis() || 0) / 1e11);
+                        const scoreB = (b.upvotes || 0) + ((b.createdAt?.toMillis() || 0) / 1e11);
+                        return scoreB - scoreA;
+                }
+            });
+        }
+        
+        sortButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                currentSort = button.dataset.sort;
+                sortButtons.forEach(btn => {
+                    btn.classList.remove('bg-gray-700', 'text-white');
+                    btn.classList.add('text-gray-300');
+                });
+                button.classList.add('bg-gray-700', 'text-white');
+                renderRequests();
+            });
+        });
+
+        // --- Event Handlers & Actions ---
+        function getTagHTML(tag) {
+            const styles = {
+                'Legal': 'bg-red-500/20 text-red-300 border border-red-500/30',
+                'Revenue': 'bg-green-500/20 text-green-300 border border-green-500/30',
+                'UX': 'bg-blue-500/20 text-blue-300 border border-blue-500/30',
+                'Efficiency': 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
+            };
+            return `<span class="px-2 py-0.5 text-xs font-semibold rounded-full ${styles[tag] || 'bg-gray-500/20 text-gray-300'}">${tag}</span>`;
+        }
+        
+        async function handleVote(requestId) {
+            if (!userIsAuthenticated) return;
+            const requestRef = doc(db, `artifacts/${appId}/public/data/feature_requests`, requestId);
+            
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const reqDoc = await transaction.get(requestRef);
+                    if (!reqDoc.exists()) { throw "Document does not exist!"; }
+                    
+                    const data = reqDoc.data();
+                    const currentVoters = data.voters || [];
+                    let newUpvotes = data.upvotes || 0;
+                    let newVoters;
+
+                    if (currentVoters.includes(userId)) {
+                        newUpvotes--;
+                        newVoters = arrayRemove(userId);
+                    } else {
+                        newUpvotes++;
+                        newVoters = arrayUnion(userId);
+                    }
+                    
+                    transaction.update(requestRef, { upvotes: newUpvotes, voters: newVoters });
+                });
+            } catch (e) {
+                console.error("Vote transaction failed: ", e);
+            }
+        }
+        
+        function openRequestModal() {
+            requestForm.reset();
+            document.getElementById('request-id').value = '';
+            selectedTags = [];
+            document.querySelectorAll('.tag-btn').forEach(btn => btn.classList.remove('active', 'ring-2', 'ring-offset-2', 'ring-offset-gray-800'));
+            requestModal.classList.remove('hidden');
+        }
+
+        function closeRequestModal() {
+            requestModal.classList.add('hidden');
+        }
+        
+        async function openCommentsModal(requestId) {
+            const request = requests.find(r => r.id === requestId);
+            if (!request) return;
+
+            document.getElementById('comment-modal-title').textContent = request.title;
+            document.getElementById('comment-modal-description').textContent = request.description;
+            document.getElementById('comment-request-id').value = requestId;
+            commentsModal.classList.remove('hidden');
+            
+            commentsList.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i></div>';
+            
+            const commentsCollection = collection(db, `artifacts/${appId}/public/data/feature_requests/${requestId}/comments`);
+            const q = query(commentsCollection, orderBy("createdAt", "asc"));
+
+            onSnapshot(q, (snapshot) => {
+                commentsList.innerHTML = '';
+                if(snapshot.empty) {
+                     commentsList.innerHTML = '<p class="text-gray-400 text-center">No comments yet. Start the conversation!</p>';
+                     return;
+                }
+                snapshot.forEach(doc => {
+                    const comment = doc.data();
+                    const commentEl = document.createElement('div');
+                    commentEl.className = 'flex items-start gap-3';
+                    const isCurrentUser = comment.commenterId === userId;
+                    commentEl.innerHTML = `
+                        <div class="w-8 h-8 rounded-full ${isCurrentUser ? 'bg-indigo-500' : 'bg-gray-600'} flex items-center justify-center font-bold text-sm">${comment.commenterName.substring(0,1).toUpperCase()}</div>
+                        <div>
+                            <p class="font-semibold text-sm text-white">${comment.commenterName} <span class="text-xs text-gray-400 font-normal ml-2">${new Date(comment.createdAt?.toDate()).toLocaleString()}</span></p>
+                            <p class="text-gray-300">${comment.text}</p>
+                        </div>
+                    `;
+                    commentsList.appendChild(commentEl);
+                });
+            });
+        }
+
+        function closeCommentsModal() {
+            commentsModal.classList.add('hidden');
+        }
+        
+        // --- Event Listeners ---
+        addRequestBtn.addEventListener('click', openRequestModal);
+        closeRequestModalBtn.addEventListener('click', closeRequestModal);
+        closeCommentsModalBtn.addEventListener('click', closeCommentsModal);
+
+        requestForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!userIsAuthenticated) return;
+            
+            const title = document.getElementById('request-title').value.trim();
+            const description = document.getElementById('request-description').value.trim();
+            
+            if (title && description) {
+                const requestsCollection = collection(db, `artifacts/${appId}/public/data/feature_requests`);
+                await addDoc(requestsCollection, {
+                    title,
+                    description,
+                    tags: selectedTags,
+                    submitterId: userId,
+                    submitterName: `User-${userId.substring(0, 5)}`,
+                    createdAt: serverTimestamp(),
+                    upvotes: 1,
+                    voters: [userId]
+                });
+                closeRequestModal();
+            }
+        });
+        
+        commentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!userIsAuthenticated) return;
+
+            const requestId = document.getElementById('comment-request-id').value;
+            const commentInput = document.getElementById('comment-input');
+            const text = commentInput.value.trim();
+            
+            if (text && requestId) {
+                const commentsCollection = collection(db, `artifacts/${appId}/public/data/feature_requests/${requestId}/comments`);
+                await addDoc(commentsCollection, {
+                    text,
+                    commenterId: userId,
+                    commenterName: `User-${userId.substring(0, 5)}`,
+                    createdAt: serverTimestamp(),
+                });
+                commentInput.value = '';
+            }
+        });
+
+        document.querySelectorAll('.tag-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tag = btn.dataset.tag;
+                btn.classList.toggle('active');
+                btn.classList.toggle('ring-2');
+                btn.classList.toggle('ring-offset-2');
+                btn.classList.toggle('ring-offset-gray-800');
+                
+                if (btn.classList.contains('active')) {
+                    btn.classList.add(`ring-${btn.dataset.tag.toLowerCase()}-500`);
+                    selectedTags.push(tag);
+                } else {
+                     btn.classList.remove(`ring-${btn.dataset.tag.toLowerCase()}-500`);
+                     selectedTags = selectedTags.filter(t => t !== tag);
+                }
+            });
+        });
+
+        // Close modals on escape key
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeRequestModal();
+                closeCommentsModal();
+            }
+        });
+
+        // Initialize the application
+        init();
+    </script>
+</body>
+</html>
