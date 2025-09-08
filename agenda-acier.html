@@ -115,7 +115,7 @@
         <!-- Action Buttons -->
         <div class="absolute top-4 right-4 flex gap-2">
             <button id="propose-event-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Proposer un événement</button>
-            <button id="settings-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold p-2 rounded-full shadow-md transition-transform transform hover:scale-105">
+            <button id="auth-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold p-2 rounded-full shadow-md transition-transform transform hover:scale-105">
                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </button>
         </div>
@@ -160,30 +160,45 @@
         </div>
     </footer>
     
-    <!-- Settings Modal -->
-    <div id="settings-modal" class="modal-backdrop">
+    <!-- Auth/Settings Modal -->
+    <div id="auth-modal" class="modal-backdrop">
         <div class="modal-content bg-white w-full max-w-md p-6 rounded-lg shadow-xl m-4">
-            <h3 class="text-2xl font-bold mb-4">Vos informations</h3>
-            <p class="text-sm text-gray-600 mb-4">Votre nom sera visible par les autres membres. Votre clé API Gemini est utilisée pour les fonctionnalités IA et n'est stockée que dans votre navigateur.</p>
-            <form id="settings-form">
-                <div class="space-y-4">
-                    <div>
-                        <label for="username" class="block text-sm font-medium text-gray-700">Votre nom ou pseudo</label>
-                        <input type="text" id="username" name="username" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" required>
+            <!-- Logged Out View -->
+            <div id="logged-out-view">
+                <h3 class="text-2xl font-bold mb-4">Connexion / Inscription</h3>
+                <p class="text-sm text-gray-600 mb-4">Entrez votre email pour recevoir un lien de connexion magique. Il n'y a pas de mot de passe à retenir.</p>
+                <form id="login-request-form">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Votre email</label>
+                    <input type="email" id="email" name="email" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" required>
+                    <div class="mt-6 flex justify-end gap-3">
+                        <button type="button" class="modal-close-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300">Annuler</button>
+                        <button type="submit" class="bg-emerald-500 text-white px-4 py-2 rounded-md hover:bg-emerald-600">Envoyer le lien</button>
                     </div>
-                    <div>
-                        <label for="gemini-api-key" class="block text-sm font-medium text-gray-700">Clé API Gemini</label>
-                        <input type="password" id="gemini-api-key" name="geminiApiKey" placeholder="Entrez votre clé API" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
-                         <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 block">Obtenir une clé API Gemini</a>
+                </form>
+            </div>
+            <!-- Logged In View -->
+            <div id="logged-in-view" class="hidden">
+                <h3 class="text-2xl font-bold mb-4">Vos informations</h3>
+                <p class="text-sm text-gray-600 mb-4">Votre nom sera visible par les autres membres.</p>
+                <form id="settings-form">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="username" class="block text-sm font-medium text-gray-700">Votre nom ou pseudo</label>
+                            <input type="text" id="username" name="username" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500" required>
+                        </div>
                     </div>
-                </div>
-                <div class="mt-6 flex justify-end gap-3">
-                    <button type="button" class="modal-close-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300">Annuler</button>
-                    <button type="submit" class="bg-emerald-500 text-white px-4 py-2 rounded-md hover:bg-emerald-600">Enregistrer</button>
-                </div>
-            </form>
+                    <div class="mt-6 flex justify-between items-center gap-3">
+                        <button type="button" id="logout-btn" class="text-sm text-red-600 hover:underline">Se déconnecter</button>
+                        <div>
+                            <button type="button" class="modal-close-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300">Annuler</button>
+                            <button type="submit" class="bg-emerald-500 text-white px-4 py-2 rounded-md hover:bg-emerald-600">Enregistrer</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
+
 
     <!-- Propose Event Modal -->
     <div id="propose-modal" class="modal-backdrop">
@@ -224,9 +239,7 @@
                 <div class="mt-6 flex justify-end gap-3">
                     <button type="button" class="modal-close-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300">Annuler</button>
                     <button type="submit" class="bg-emerald-500 text-white px-4 py-2 rounded-md hover:bg-emerald-600 disabled:bg-gray-400" id="propose-submit-btn">
-                        <!-- FIX: Changed class from "submit-text" to "btn-text" to match the JavaScript function -->
                         <span class="btn-text">Soumettre</span>
-                        <!-- FIX: Changed class from "submit-spinner" to "btn-spinner" -->
                         <span class="btn-spinner hidden loader !w-5 !h-5 !border-2 !border-t-transparent"></span>
                     </button>
                 </div>
@@ -242,11 +255,10 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const GSCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0YwzHmUQtv1cLqnZwkYG19fG-c2700q1gIPVhEK0IVGT7uNrndPO9JWRHKcAYKCuHAg/exec";
-        const GEMINI_API_URL_CLIENT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=";
 
         // --- STATE ---
         let eventsCache = [];
-        let userInfo = { id: null, name: null, geminiApiKey: null };
+        let userInfo = { id: null, name: null, authToken: null };
         let currentFilters = { sport: 'all', period: 'upcoming' };
 
         // --- DOM ELEMENTS ---
@@ -256,39 +268,81 @@
         const errorMessage = document.getElementById('error-message');
         const filterButtons = document.querySelectorAll('.filter-btn');
         const toast = document.getElementById('toast');
-        const settingsModal = document.getElementById('settings-modal');
-        const proposeModal = document.getElementById('propose-modal');
+        
+        const authModal = document.getElementById('auth-modal');
+        const loggedOutView = document.getElementById('logged-out-view');
+        const loggedInView = document.getElementById('logged-in-view');
+        const loginRequestForm = document.getElementById('login-request-form');
         const settingsForm = document.getElementById('settings-form');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        const proposeModal = document.getElementById('propose-modal');
         const proposeForm = document.getElementById('propose-form');
         const generateDescriptionBtn = document.getElementById('generate-description-btn');
         const extractInfoBtn = document.getElementById('extract-info-btn');
         
-        // --- USER MANAGEMENT ---
-        function loadUser() {
-            const storedUser = localStorage.getItem('community_user');
-            if (storedUser) {
-                userInfo = JSON.parse(storedUser);
-            } else {
-                userInfo.id = crypto.randomUUID();
-                setTimeout(() => openModal(settingsModal), 1000);
-            }
-            document.getElementById('username').value = userInfo.name || '';
-            document.getElementById('gemini-api-key').value = userInfo.geminiApiKey || '';
-        }
+        // --- AUTHENTICATION & USER MANAGEMENT ---
 
-        function saveUser(name, apiKey) {
-            userInfo.name = name;
-            userInfo.geminiApiKey = apiKey;
-            localStorage.setItem('community_user', JSON.stringify(userInfo));
-            showToast(`Paramètres enregistrés !`);
-            closeModal(settingsModal);
+        function updateAuthState(data) {
+            if (data && data.authToken) {
+                userInfo = { ...data };
+                localStorage.setItem('community_auth_token', data.authToken);
+                localStorage.setItem('community_user_name', data.name);
+                localStorage.setItem('community_user_id', data.id);
+            } else {
+                userInfo = { id: null, name: null, authToken: null };
+                localStorage.removeItem('community_auth_token');
+                localStorage.removeItem('community_user_name');
+                localStorage.removeItem('community_user_id');
+            }
+            renderUIForAuthState();
             renderEvents();
         }
-        
+
+        function renderUIForAuthState() {
+            if (userInfo.authToken) {
+                loggedOutView.classList.add('hidden');
+                loggedInView.classList.remove('hidden');
+                document.getElementById('username').value = userInfo.name || '';
+            } else {
+                loggedOutView.classList.remove('hidden');
+                loggedInView.classList.add('hidden');
+            }
+        }
+
+        async function attemptLoginWithToken(loginToken) {
+            showToast("Vérification du lien de connexion...");
+            const result = await postToGoogleScript({ action: 'authenticateUser', payload: { loginToken } }, true);
+            if (result && result.status === 'success') {
+                updateAuthState(result.data);
+                showToast(`Bienvenue, ${result.data.name}!`, 'success');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else {
+                showToast(result.message || "Lien de connexion invalide.", 'error');
+                updateAuthState(null);
+            }
+        }
+
+        function loadUserOnStartup() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const loginToken = urlParams.get('login_token');
+
+            if (loginToken) {
+                attemptLoginWithToken(loginToken);
+            } else {
+                const authToken = localStorage.getItem('community_auth_token');
+                if (authToken) {
+                    userInfo.authToken = authToken;
+                    userInfo.name = localStorage.getItem('community_user_name');
+                    userInfo.id = localStorage.getItem('community_user_id');
+                }
+                renderUIForAuthState();
+            }
+        }
+
         // --- API CALLS ---
         async function fetchEvents() {
-            // ... (rest of the function is unchanged)
-            if (GSCRIPT_URL === "VOTRE_URL_DE_SCRIPT_ICI") {
+            if (GSCRIPT_URL.includes("YOUR_URL")) {
                 loader.classList.add('hidden');
                 errorMessage.classList.remove('hidden');
                 return;
@@ -307,24 +361,17 @@
             }
         }
         
-        async function postToGoogleScript(payload, expectResponse = false) {
-             if (!userInfo.name) {
-                showToast("Veuillez d'abord définir votre nom dans les paramètres.", 'error');
-                openModal(settingsModal);
-                return null;
-            }
+        async function postToGoogleScript(data, expectResponse = false) {
             try {
                 const options = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(data)
                 };
-                if (!expectResponse) {
-                    options.mode = 'no-cors';
-                }
-
+                if (!expectResponse) options.mode = 'no-cors';
+                
                 const response = await fetch(GSCRIPT_URL, options);
-
+                
                 if (expectResponse) {
                     if (!response.ok) throw new Error(`Google Script error! Status: ${response.status}`);
                     return await response.json();
@@ -336,64 +383,42 @@
             }
         }
 
-        // --- GEMINI API CALL (Client-Side for Description) ---
+        // --- GEMINI-POWERED FUNCTIONS (NOW CALLING BACKEND) ---
         async function generateDescriptionWithGemini() {
-            if (!userInfo.geminiApiKey) {
-                showToast("Veuillez ajouter votre clé API Gemini dans les paramètres.", 'error');
-                openModal(settingsModal);
-                return;
+             if (!userInfo.authToken) {
+                 showToast("Veuillez vous connecter pour utiliser cette fonction.", 'error');
+                 openModal(authModal);
+                 return;
             }
             const title = document.getElementById('propose-title').value;
             const sport = document.getElementById('propose-sport').value;
             const date = document.getElementById('propose-date').value;
-
             if (!title || !sport || !date) {
                 showToast("Veuillez d'abord remplir le titre, le sport et la date.", 'error');
                 return;
             }
 
             setButtonLoading(generateDescriptionBtn, true, 'Génération...');
+            const payload = {
+                action: 'generateDescription',
+                payload: { authToken: userInfo.authToken, details: { title, sport, date } }
+            };
+            const result = await postToGoogleScript(payload, true);
 
-            const systemPrompt = `You are a friendly and enthusiastic community sports organizer for a local neighborhood group in Brussels called 'La communauté de l'acier'. Your task is to write a short, engaging, and motivating event description for the group's agenda. The tone should be welcoming for all skill levels. Always write in French. Include a call to action to join. Do not use markdown. The description should be 2-3 sentences long.`;
-            const userQuery = `Event Name: ${title}, Sport: ${sport}, Date: ${new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', month: 'long', day: 'numeric' })}`;
-            
-            try {
-                const payload = {
-                    contents: [{ parts: [{ text: userQuery }] }],
-                    systemInstruction: { parts: [{ text: systemPrompt }] },
-                };
-
-                const response = await fetch(`${GEMINI_API_URL_CLIENT}${userInfo.geminiApiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) throw new Error(`API error! Status: ${response.status}`);
-                const result = await response.json();
-                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if (generatedText) {
-                    document.getElementById('propose-description').value = generatedText.trim();
-                    showToast("Description générée avec succès !");
-                } else {
-                    throw new Error("No content received from API.");
-                }
-
-            } catch (error) {
-                console.error("Gemini API Error:", error);
-                showToast("Impossible de générer la description.", 'error');
-            } finally {
-                setButtonLoading(generateDescriptionBtn, false, "Générer avec l'IA");
+            if (result && result.status === 'success' && result.data.description) {
+                document.getElementById('propose-description').value = result.data.description;
+                showToast("Description générée avec succès !");
+            } else {
+                showToast(result ? result.message : "Erreur de génération.", 'error');
             }
+            setButtonLoading(generateDescriptionBtn, false, "Générer avec l'IA");
         }
         
-        // --- GEMINI API CALL (Server-Side via GScript for URL Extraction) ---
         async function extractEventInfoFromUrl() {
-            if (!userInfo.geminiApiKey) {
-                showToast("Veuillez ajouter votre clé API Gemini dans les paramètres.", 'error');
-                openModal(settingsModal);
-                return;
+            if (!userInfo.authToken) {
+                 showToast("Veuillez vous connecter pour utiliser cette fonction.", 'error');
+                 openModal(authModal);
+                 return;
             }
             const url = document.getElementById('propose-link').value;
             if (!url || !url.startsWith('http')) {
@@ -402,15 +427,10 @@
             }
 
             setButtonLoading(extractInfoBtn, true, "Extraction...");
-
             const payload = {
                 action: 'extractInfo',
-                payload: {
-                    url: url,
-                    apiKey: userInfo.geminiApiKey 
-                }
+                payload: { authToken: userInfo.authToken, api: { url } }
             };
-
             const result = await postToGoogleScript(payload, true);
 
             if (result && result.status === 'success' && result.data) {
@@ -422,48 +442,33 @@
             } else {
                 showToast(result ? result.message : "Erreur d'extraction.", 'error');
             }
-            
             setButtonLoading(extractInfoBtn, false, "Extraire les infos");
         }
 
 
-        // --- CALENDAR HELPERS ---
-        // ... (rest of the functions are unchanged)
+        // --- CALENDAR HELPERS (Unchanged) ---
         function formatDateForCalendar(date, isEndDate = false) {
             const d = new Date(date);
-            if (isEndDate) {
-                d.setDate(d.getDate() + 1); // For all-day events, end date is the next day
-            }
+            if (isEndDate) d.setDate(d.getDate() + 1);
             const year = d.getUTCFullYear();
             const month = (d.getUTCMonth() + 1).toString().padStart(2, '0');
             const day = d.getUTCDate().toString().padStart(2, '0');
             return `${year}${month}${day}`;
         }
-
         function createIcsContent(event) {
             const startDate = formatDateForCalendar(event.date);
             const endDate = formatDateForCalendar(event.date, true);
             const description = `${event.description}\\n\\nLien officiel: ${event.link}`;
-            const icsContent = [
-                'BEGIN:VCALENDAR',
-                'VERSION:2.0',
-                'BEGIN:VEVENT',
-                `UID:${event.id}@communautedelacier.be`,
-                `DTSTAMP:${new Date().toISOString().replace(/[-:.]/g, '')}Z`,
-                `DTSTART;VALUE=DATE:${startDate}`,
-                `DTEND;VALUE=DATE:${endDate}`,
-                `SUMMARY:${event.title}`,
-                `DESCRIPTION:${description}`,
-                'END:VEVENT',
-                'END:VCALENDAR'
-            ].join('\r\n');
+            const icsContent = ['BEGIN:VCALENDAR','VERSION:2.0','BEGIN:VEVENT',`UID:${event.id}@communautedelacier.be`,`DTSTAMP:${new Date().toISOString().replace(/[-:.]/g, '')}Z`,`DTSTART;VALUE=DATE:${startDate}`,`DTEND;VALUE=DATE:${endDate}`,`SUMMARY:${event.title}`,`DESCRIPTION:${description}`,'END:VEVENT','END:VCALENDAR'].join('\r\n');
             return encodeURIComponent(icsContent);
         }
 
         // --- RENDERING ---
-        // ... (renderEvents is unchanged)
         function renderEvents() {
-            eventsGrid.innerHTML = ''; 
+            const container = eventsGrid;
+            while (container.firstChild && container.firstChild.id !== 'loader' && container.firstChild.id !== 'no-events-message' && container.firstChild.id !== 'error-message') {
+                container.removeChild(container.firstChild);
+            }
             const now = new Date();
 
             const filteredEvents = eventsCache.filter(event => {
@@ -473,26 +478,20 @@
                 const matchesPeriod = (currentFilters.period === 'upcoming' && isUpcoming) || (currentFilters.period === 'past' && !isUpcoming);
                 const matchesSport = currentFilters.sport === 'all' || event.sport === currentFilters.sport;
                 return matchesPeriod && matchesSport;
-            });
-            
-            filteredEvents.sort((a, b) => {
+            }).sort((a, b) => {
                 const dateA = new Date(a.date);
                 const dateB = new Date(b.date);
                 return currentFilters.period === 'upcoming' ? dateA - dateB : dateB - dateA;
             });
 
-            if (filteredEvents.length === 0) {
-                eventsGrid.appendChild(noEventsMessage);
-                noEventsMessage.classList.remove('hidden');
-            } else {
-                noEventsMessage.classList.add('hidden');
-            }
+            if (filteredEvents.length === 0) noEventsMessage.classList.remove('hidden');
+            else noEventsMessage.classList.add('hidden');
 
             filteredEvents.forEach(event => {
                 const card = document.createElement('div');
                 card.className = 'event-card bg-white rounded-xl shadow-md overflow-hidden flex flex-col';
                 const participants = Array.isArray(event.participants) ? event.participants : [];
-                const isUserParticipant = participants.some(p => p.id === userInfo.id);
+                const isUserParticipant = userInfo.id ? participants.some(p => p.id === userInfo.id) : false;
 
                 let actionButtonHTML = '';
                 if (currentFilters.period === 'upcoming') {
@@ -535,7 +534,7 @@
                     </div>
                     ${actionButtonHTML}
                 `;
-                eventsGrid.appendChild(card);
+                eventsGrid.insertBefore(card, loader);
             });
         }
 
@@ -553,7 +552,6 @@
             const textEl = btn.querySelector('.btn-text');
             const spinnerEl = btn.querySelector('.btn-spinner');
             if (isLoading) {
-                // The error was here: textEl was null because the submit button had 'submit-text' class instead of 'btn-text'
                 if(textEl) textEl.textContent = loadingText;
                 if(spinnerEl) spinnerEl.classList.remove('hidden');
             } else {
@@ -566,18 +564,55 @@
         function closeModal(modal) { modal.classList.remove('flex'); }
 
         // --- EVENT LISTENERS ---
-        document.getElementById('settings-btn').addEventListener('click', () => openModal(settingsModal));
-        document.getElementById('propose-event-btn').addEventListener('click', () => openModal(proposeModal));
+        document.getElementById('auth-btn').addEventListener('click', () => openModal(authModal));
+        document.getElementById('propose-event-btn').addEventListener('click', () => {
+            if (!userInfo.authToken) {
+                showToast("Veuillez vous connecter pour proposer un événement.", 'error');
+                openModal(authModal);
+            } else {
+                openModal(proposeModal);
+            }
+        });
+
         document.querySelectorAll('.modal-close-btn').forEach(btn => btn.addEventListener('click', () => {
-            closeModal(settingsModal);
+            closeModal(authModal);
             closeModal(proposeModal);
         }));
 
-        settingsForm.addEventListener('submit', (e) => {
+        loginRequestForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const username = document.getElementById('username').value.trim();
-            const apiKey = document.getElementById('gemini-api-key').value.trim();
-            if (username) saveUser(username, apiKey);
+            const email = e.target.email.value;
+            showToast("Envoi du lien en cours...");
+            const result = await postToGoogleScript({ action: 'requestLoginLink', payload: { email } }, true);
+            if(result.status === 'success') {
+                 showToast("Lien envoyé ! Veuillez consulter votre boîte mail.");
+                 closeModal(authModal);
+            } else {
+                 showToast(result.message || "Erreur lors de l'envoi.", 'error');
+            }
+        });
+
+        settingsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('username').value.trim();
+            if (!name) return;
+            const payload = { authToken: userInfo.authToken, name };
+            const result = await postToGoogleScript({action: 'updateUser', payload}, true);
+            if(result.status === 'success') {
+                showToast("Paramètres enregistrés !");
+                userInfo.name = name;
+                localStorage.setItem('community_user_name', name);
+                renderEvents();
+                closeModal(authModal);
+            } else {
+                showToast(result.message || "Erreur lors de la sauvegarde.", 'error');
+            }
+        });
+        
+        logoutBtn.addEventListener('click', () => {
+            updateAuthState(null);
+            showToast("Vous avez été déconnecté.");
+            closeModal(authModal);
         });
 
         generateDescriptionBtn.addEventListener('click', generateDescriptionWithGemini);
@@ -586,12 +621,13 @@
         proposeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('propose-submit-btn');
-            // This is the line that was calling the function and causing the error
             setButtonLoading(btn, true, 'Soumission...');
             
             const formData = new FormData(proposeForm);
-            const data = { action: 'propose', payload: Object.fromEntries(formData.entries()) };
-
+            const data = { action: 'propose', payload: {
+                data: Object.fromEntries(formData.entries()),
+                authToken: userInfo.authToken
+            }};
             const result = await postToGoogleScript(data);
             if(result.success) {
                 showToast("Votre événement a été proposé !");
@@ -616,18 +652,19 @@
         eventsGrid.addEventListener('click', async function(e) {
             // Handle Join Button
             if (e.target.classList.contains('join-btn')) {
+                if (!userInfo.authToken) {
+                    showToast("Veuillez vous connecter pour participer.", 'error');
+                    openModal(authModal);
+                    return;
+                }
                 const eventId = e.target.dataset.eventId;
                 const event = eventsCache.find(ev => ev.id == eventId);
-                
                 if (event) {
-                    const payload = { action: 'join', payload: { eventId: eventId, user: userInfo } };
+                    const payload = { action: 'join', payload: { eventId, authToken: userInfo.authToken } };
                     const result = await postToGoogleScript(payload);
                      if(result.success) {
                         showToast(`Vous avez rejoint: ${event.title}`);
-                        const userAlreadyIn = event.participants.some(p => p.id === userInfo.id);
-                        if (!userAlreadyIn) { event.participants.push({id: userInfo.id, name: userInfo.name}); }
-                        renderEvents();
-                        setTimeout(fetchEvents, 1000);
+                        fetchEvents();
                     } else {
                         showToast("Erreur pour rejoindre l'événement.", 'error');
                     }
@@ -639,11 +676,9 @@
                 const button = e.target.closest('.add-to-calendar-btn');
                 const eventId = button.dataset.eventId;
                 const dropdown = document.getElementById(`dropdown-${eventId}`);
-                
                 document.querySelectorAll('.calendar-dropdown.show').forEach(openDropdown => {
                     if(openDropdown !== dropdown) openDropdown.classList.remove('show');
                 });
-                
                 if (dropdown) dropdown.classList.toggle('show');
                 e.stopPropagation(); 
             }
@@ -652,14 +687,14 @@
         window.addEventListener('click', () => document.querySelectorAll('.calendar-dropdown.show').forEach(d => d.classList.remove('show')));
 
         // --- INITIALIZATION ---
-        // Store original button text for loading states
         document.querySelectorAll('button[id$="-btn"]').forEach(btn => {
             const textEl = btn.querySelector('.btn-text');
             if (textEl) btn.dataset.originalText = textEl.textContent;
         });
-        loadUser();
+        loadUserOnStartup();
         fetchEvents();
     });
     </script>
 </body>
 </html>
+
