@@ -205,10 +205,10 @@
                         <textarea name="description" id="propose-description" placeholder="Courte description" rows="3" class="input w-full" required></textarea>
                         <div class="flex justify-end mt-2">
                              <button type="button" id="generate-description-btn" class="flex items-center gap-2 text-sm bg-blue-100 text-blue-800 hover:bg-blue-200 font-semibold py-1 px-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                ✨ 
-                                <span class="btn-text">Générer avec l'IA</span>
-                                <span class="btn-spinner hidden loader !w-4 !h-4 !border-2 !border-t-transparent"></span>
-                            </button>
+                                 ✨ 
+                                 <span class="btn-text">Générer avec l'IA</span>
+                                 <span class="btn-spinner hidden loader !w-4 !h-4 !border-2 !border-t-transparent"></span>
+                             </button>
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
@@ -224,8 +224,10 @@
                 <div class="mt-6 flex justify-end gap-3">
                     <button type="button" class="modal-close-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300">Annuler</button>
                     <button type="submit" class="bg-emerald-500 text-white px-4 py-2 rounded-md hover:bg-emerald-600 disabled:bg-gray-400" id="propose-submit-btn">
-                        <span class="submit-text">Soumettre</span>
-                        <span class="submit-spinner hidden loader !w-5 !h-5 !border-2 !border-t-transparent"></span>
+                        <!-- FIX: Changed class from "submit-text" to "btn-text" to match the JavaScript function -->
+                        <span class="btn-text">Soumettre</span>
+                        <!-- FIX: Changed class from "submit-spinner" to "btn-spinner" -->
+                        <span class="btn-spinner hidden loader !w-5 !h-5 !border-2 !border-t-transparent"></span>
                     </button>
                 </div>
             </form>
@@ -551,11 +553,12 @@
             const textEl = btn.querySelector('.btn-text');
             const spinnerEl = btn.querySelector('.btn-spinner');
             if (isLoading) {
-                textEl.textContent = loadingText;
-                spinnerEl.classList.remove('hidden');
+                // The error was here: textEl was null because the submit button had 'submit-text' class instead of 'btn-text'
+                if(textEl) textEl.textContent = loadingText;
+                if(spinnerEl) spinnerEl.classList.remove('hidden');
             } else {
-                textEl.textContent = btn.dataset.originalText || textEl.textContent;
-                spinnerEl.classList.add('hidden');
+                if(textEl) textEl.textContent = btn.dataset.originalText || textEl.textContent;
+                if(spinnerEl) spinnerEl.classList.add('hidden');
             }
         }
         
@@ -583,6 +586,7 @@
         proposeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('propose-submit-btn');
+            // This is the line that was calling the function and causing the error
             setButtonLoading(btn, true, 'Soumission...');
             
             const formData = new FormData(proposeForm);
@@ -659,4 +663,3 @@
     </script>
 </body>
 </html>
-
