@@ -1,6 +1,6 @@
 console.log("20250904 1547")
 
-const ENABLE_VEHICLE_TYPE_IN_PRODUCTION = false;
+const ENABLE_VEHICLE_TYPE_IN_PRODUCTION = true;
 
 const appId = {
   sbx: {
