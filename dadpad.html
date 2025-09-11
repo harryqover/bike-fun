@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DadPad - Be the Best Father</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* Dark gray background */
+        }
+        .task-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .task-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+        }
+        .modal {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+        .btn-glow {
+            box-shadow: 0 0 5px rgba(59, 130, 246, 0.5), 0 0 10px rgba(59, 130, 246, 0.3);
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+    </style>
+</head>
+<body class="text-gray-200">
+
+    <!-- Main Container -->
+    <div id="app-container" class="min-h-screen p-4 sm:p-6 md:p-8 bg-gray-900">
+        <!-- Onboarding Screen -->
+        <div id="onboarding-screen" class="hidden max-w-4xl mx-auto text-center">
+            <i class="fas fa-rocket text-5xl text-blue-400 mb-4"></i>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-white mb-4">Welcome to DadPad</h1>
+            <p class="text-lg text-gray-400 mb-8">Let's set up your personalized fatherhood dashboard. Select the tasks you want to track to get started.</p>
+            <div id="onboarding-task-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
+                <!-- Onboarding tasks will be populated here -->
+            </div>
+            <button id="finish-onboarding-btn" class="mt-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-xl shadow-lg btn-glow transition-transform transform hover:scale-105">
+                Let's Go! <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+
+        <!-- Main App Screen -->
+        <div id="main-app-screen" class="hidden">
+            <header class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-white">DadPad</h1>
+                    <p class="text-gray-400">Your command center for being an awesome dad.</p>
+                </div>
+                <div class="text-right">
+                     <button id="manage-presets-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 mr-2">
+                        <i class="fas fa-list-check mr-2"></i>Manage Presets
+                    </button>
+                     <button id="add-task-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                        <i class="fas fa-plus mr-2"></i>New Task
+                    </button>
+                </div>
+            </header>
+
+            <main>
+                <!-- Gamification Section -->
+                <section id="gamification-section" class="bg-gray-800 p-6 rounded-xl mb-8 shadow-2xl">
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div class="flex items-center gap-4">
+                            <i class="fas fa-trophy text-4xl text-yellow-400"></i>
+                            <div>
+                                <h2 class="text-xl font-bold text-white">Dad Level: <span id="dad-level">1</span></h2>
+                                <p class="text-sm text-gray-400">Keep completing tasks to level up!</p>
+                            </div>
+                        </div>
+                        <div class="w-full sm:w-1/2">
+                            <div class="w-full bg-gray-700 rounded-full h-4">
+                                <div id="level-progress-bar" class="bg-blue-500 h-4 rounded-full transition-all duration-500" style="width: 10%;"></div>
+                            </div>
+                            <p class="text-right text-xs mt-1 text-gray-400"><span id="dad-score">0</span> / <span id="next-level-score">100</span> XP</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Task Dashboard -->
+                <section id="task-dashboard">
+                    <h2 class="text-2xl font-bold text-white mb-4">Task Dashboard</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="task-list-container">
+                        <!-- Tasks will be populated here -->
+                    </div>
+                     <div id="empty-state" class="hidden text-center py-16 bg-gray-800 rounded-xl mt-6">
+                        <i class="fas fa-box-open text-6xl text-gray-500 mb-4"></i>
+                        <h3 class="text-2xl font-bold text-white">No Tasks Yet!</h3>
+                        <p class="text-gray-400 mt-2">Click the "New Task" button to add your first responsibility.</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- Add/Edit Task Modal -->
+        <div id="task-modal" class="modal fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 opacity-0 pointer-events-none -translate-y-10">
+            <div class="modal-content bg-gray-800 w-full max-w-md p-6 rounded-2xl shadow-2xl transform transition-transform duration-300 scale-95">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="modal-title" class="text-2xl font-bold text-white">Add a New Task</h2>
+                    <button id="close-modal-btn" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+                </div>
+                <form id="task-form">
+                    <input type="hidden" id="task-id">
+                    <div class="mb-4">
+                        <label for="task-name" class="block text-sm font-medium text-gray-300 mb-1">Task Name</label>
+                        <input type="text" id="task-name" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Schedule annual doctor appointments" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="task-last-completed" class="block text-sm font-medium text-gray-300 mb-1">Last Completed On (Optional)</label>
+                        <input type="date" id="task-last-completed" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="mb-4">
+                        <label for="task-category" class="block text-sm font-medium text-gray-300 mb-1">Category</label>
+                        <select id="task-category" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500">
+                            <option>Financial & Legal</option>
+                            <option>Health & Wellness</option>
+                            <option>Home & Vehicle</option>
+                            <option>Family & Personal</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-6">
+                        <label for="task-frequency" class="block text-sm font-medium text-gray-300 mb-1">Frequency</label>
+                        <select id="task-frequency" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="7">Weekly</option>
+                            <option value="14">Bi-Weekly</option>
+                            <option value="30">Monthly</option>
+                            <option value="90">Quarterly</option>
+                            <option value="365">Annually</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end gap-4">
+                        <button type="button" id="delete-task-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg hidden">Delete</button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Save Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- PREDEFINED DATA ---
+        const initialTasks = [
+            { id: 1, name: 'Create and maintain a household budget', category: 'Financial & Legal', frequency: 30, recommended: 'Monthly', lastCompleted: null, isActive: false },
+            { id: 2, name: 'Contribute to a retirement fund', category: 'Financial & Legal', frequency: 14, recommended: 'Bi-Weekly/Monthly', lastCompleted: null, isActive: false },
+            { id: 3, name: 'Establish and update a will and trust', category: 'Financial & Legal', frequency: 1825, recommended: 'Every 5 years', lastCompleted: null, isActive: false },
+            { id: 4, name: 'Purchase and review life insurance', category: 'Financial & Legal', frequency: 365, recommended: 'Annually', lastCompleted: null, isActive: false },
+            { id: 5, name: 'Schedule annual doctor and dentist appointments', category: 'Health & Wellness', frequency: 365, recommended: 'Annually', lastCompleted: null, isActive: false },
+            { id: 6, name: 'Review and update health insurance policies', category: 'Health & Wellness', frequency: 365, recommended: 'Annually', lastCompleted: null, isActive: false },
+            { id: 7, name: 'Book annual car inspections and maintenance', category: 'Home & Vehicle', frequency: 365, recommended: 'Annually', lastCompleted: null, isActive: false },
+            { id: 8, name: 'Deep clean dishwasher and other appliances', category: 'Home & Vehicle', frequency: 90, recommended: 'Quarterly', lastCompleted: null, isActive: false },
+            { id: 9, name: 'Plan seasonal home maintenance tasks', category: 'Home & Vehicle', frequency: 90, recommended: 'Seasonally', lastCompleted: null, isActive: false },
+            { id: 10, name: 'Plan and book family vacations in advance', category: 'Family & Personal', frequency: 365, recommended: '6-12 months prior', lastCompleted: null, isActive: false },
+            { id: 11, name: 'Save for children’s education', category: 'Family & Personal', frequency: 30, recommended: 'Monthly', lastCompleted: null, isActive: false },
+            { id: 12, name: 'Plan regular family meetings', category: 'Family & Personal', frequency: 14, recommended: 'Weekly or Bi-weekly', lastCompleted: null, isActive: false },
+            { id: 13, name: 'Keep up with tech and online safety', category: 'Family & Personal', frequency: 90, recommended: 'Quarterly', lastCompleted: null, isActive: false },
+            { id: 14, name: 'Schedule date nights with your partner', category: 'Family & Personal', frequency: 14, recommended: 'Bi-weekly or monthly', lastCompleted: null, isActive: false },
+        ];
+        
+        const categoryStyles = {
+            'Financial & Legal': { icon: 'fa-landmark', color: 'bg-green-500' },
+            'Health & Wellness': { icon: 'fa-heart-pulse', color: 'bg-red-500' },
+            'Home & Vehicle': { icon: 'fa-home', color: 'bg-yellow-500' },
+            'Family & Personal': { icon: 'fa-users', color: 'bg-purple-500' },
+            'Other': { icon: 'fa-star', color: 'bg-gray-500' }
+        };
+
+        // --- DOM ELEMENTS ---
+        const onboardingScreen = document.getElementById('onboarding-screen');
+        const mainAppScreen = document.getElementById('main-app-screen');
+        const onboardingTaskList = document.getElementById('onboarding-task-list');
+        const finishOnboardingBtn = document.getElementById('finish-onboarding-btn');
+        const taskListContainer = document.getElementById('task-list-container');
+        const emptyState = document.getElementById('empty-state');
+        const addTaskBtn = document.getElementById('add-task-btn');
+        const managePresetsBtn = document.getElementById('manage-presets-btn');
+        const taskModal = document.getElementById('task-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const taskForm = document.getElementById('task-form');
+        const modalTitle = document.getElementById('modal-title');
+        const deleteTaskBtn = document.getElementById('delete-task-btn');
+        
+        // Gamification Elements
+        const dadLevelEl = document.getElementById('dad-level');
+        const dadScoreEl = document.getElementById('dad-score');
+        const nextLevelScoreEl = document.getElementById('next-level-score');
+        const levelProgressBar = document.getElementById('level-progress-bar');
+
+        // --- APP STATE ---
+        let appData = {
+            tasks: [],
+            gamification: {
+                score: 0,
+                level: 1,
+            },
+            isOnboarded: false
+        };
+
+        // --- LOCALSTORAGE FUNCTIONS ---
+        const loadData = () => {
+            const savedData = localStorage.getItem('dadPadData');
+            if (savedData) {
+                appData = JSON.parse(savedData);
+            }
+        };
+
+        const saveData = () => {
+            localStorage.setItem('dadPadData', JSON.stringify(appData));
+        };
+
+        // --- UTILITY FUNCTIONS ---
+        const getDaysBetween = (date1, date2) => {
+            return Math.round((date2 - date1) / (1000 * 60 * 60 * 24));
+        };
+        
+        const getNextDueDate = (lastCompleted, frequency) => {
+            const nextDate = new Date(lastCompleted);
+            nextDate.setDate(nextDate.getDate() + parseInt(frequency));
+            return nextDate.toISOString().split('T')[0];
+        };
+
+        // --- GAMIFICATION LOGIC ---
+        const getXPForTask = (frequency) => {
+            if (frequency <= 7) return 10;
+            if (frequency <= 14) return 20;
+            if (frequency <= 30) return 50;
+            if (frequency <= 90) return 100;
+            return 250;
+        };
+        
+        const getNextLevelXP = (level) => 100 * Math.pow(level, 1.5);
+
+        const updateGamification = (xp) => {
+            appData.gamification.score += xp;
+            let nextLevelXP = getNextLevelXP(appData.gamification.level);
+            while (appData.gamification.score >= nextLevelXP) {
+                appData.gamification.level++;
+                // When leveling up, carry over the extra XP
+                const previousLevelXP = getNextLevelXP(appData.gamification.level - 1);
+                appData.gamification.score -= previousLevelXP;
+                nextLevelXP = getNextLevelXP(appData.gamification.level);
+            }
+            saveData();
+            renderGamification();
+        };
+
+        // --- RENDER FUNCTIONS ---
+        const renderGamification = () => {
+            const { score, level } = appData.gamification;
+            const nextLevelXP = getNextLevelXP(level);
+            dadLevelEl.textContent = level;
+            dadScoreEl.textContent = Math.round(score);
+            nextLevelScoreEl.textContent = Math.round(nextLevelXP);
+            const progress = Math.min(100, (score / nextLevelXP) * 100);
+            levelProgressBar.style.width = `${progress}%`;
+        };
+
+        const renderTasks = () => {
+            taskListContainer.innerHTML = '';
+            const activeTasks = appData.tasks.filter(t => t.isActive);
+
+            if(activeTasks.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            // Sort tasks by urgency
+            activeTasks.sort((a, b) => {
+                const now = new Date();
+                const dueDateA = a.lastCompleted ? new Date(getNextDueDate(a.lastCompleted, a.frequency)) : new Date(0);
+                const dueDateB = b.lastCompleted ? new Date(getNextDueDate(b.lastCompleted, b.frequency)) : new Date(0);
+                return dueDateA - dueDateB;
+            });
+
+            activeTasks.forEach(task => {
+                const style = categoryStyles[task.category] || categoryStyles['Other'];
+                const now = new Date();
+                const dueDate = task.lastCompleted ? new Date(getNextDueDate(task.lastCompleted, task.frequency)) : null;
+                const daysRemaining = dueDate ? getDaysBetween(now, dueDate) : Infinity;
+
+                let statusText = '';
+                let statusColor = '';
+
+                if (!task.lastCompleted) {
+                    statusText = 'Ready to start!';
+                    statusColor = 'text-blue-400';
+                } else if (daysRemaining < 0) {
+                    statusText = `Overdue by ${Math.abs(daysRemaining)} days`;
+                    statusColor = 'text-red-400';
+                } else if (daysRemaining <= 7) {
+                    statusText = `Due in ${daysRemaining} days`;
+                    statusColor = 'text-yellow-400';
+                } else {
+                    statusText = `Due in ${daysRemaining} days`;
+                    statusColor = 'text-gray-400';
+                }
+
+                const card = `
+                    <div class="task-card bg-gray-800 p-5 rounded-xl shadow-lg flex flex-col justify-between" data-task-id="${task.id}">
+                        <div>
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 ${style.color} rounded-lg flex items-center justify-center">
+                                        <i class="fas ${style.icon} text-xl text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-white text-lg">${task.name}</h3>
+                                        <p class="text-sm text-gray-400">${task.category}</p>
+                                    </div>
+                                </div>
+                                <button class="edit-task-btn text-gray-500 hover:text-white" data-task-id="${task.id}">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
+                            <div class="mt-4 text-sm">
+                                <p class="${statusColor} font-semibold">${statusText}</p>
+                                <p class="text-gray-500">Last completed: ${task.lastCompleted ? new Date(task.lastCompleted).toLocaleDateString() : 'Never'}</p>
+                            </div>
+                        </div>
+                        <button class="complete-task-btn w-full mt-4 bg-gray-700 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                           <i class="fas fa-check mr-2"></i> Mark as Done
+                        </button>
+                    </div>
+                `;
+                taskListContainer.innerHTML += card;
+            });
+        };
+
+        // --- ONBOARDING LOGIC ---
+        const initializeOnboarding = () => {
+            onboardingTaskList.innerHTML = '';
+            initialTasks.forEach(task => {
+                const existingTask = appData.tasks.find(t => t.id === task.id);
+                const isSelected = existingTask ? existingTask.isActive : false;
+
+                const card = `
+                    <div class="onboarding-task-card p-4 ${isSelected ? 'bg-blue-900 border-blue-500' : 'bg-gray-800 border-transparent'} rounded-lg flex items-center justify-between cursor-pointer border-2 transition-all" data-task-id="${task.id}">
+                        <div>
+                            <p class="font-semibold text-white">${task.name}</p>
+                            <p class="text-sm text-gray-400">Recommended: ${task.recommended}</p>
+                        </div>
+                        <div class="w-8 h-8 rounded-full ${isSelected ? 'bg-blue-600' : 'bg-gray-700'} flex items-center justify-center text-white check-icon">
+                            <i class="fas ${isSelected ? 'fa-check' : 'fa-plus'}"></i>
+                        </div>
+                    </div>
+                `;
+                onboardingTaskList.innerHTML += card;
+            });
+        };
+
+        onboardingTaskList.addEventListener('click', (e) => {
+            const card = e.target.closest('.onboarding-task-card');
+            if (card) {
+                card.classList.toggle('bg-blue-900');
+                card.classList.toggle('border-blue-500');
+                const checkIcon = card.querySelector('.check-icon');
+                checkIcon.classList.toggle('bg-blue-600');
+                checkIcon.innerHTML = card.classList.contains('bg-blue-900') ? '<i class="fas fa-check"></i>' : '<i class="fas fa-plus"></i>';
+            }
+        });
+
+        finishOnboardingBtn.addEventListener('click', () => {
+            const selectedCards = document.querySelectorAll('.onboarding-task-card.bg-blue-900');
+            const selectedTaskIds = Array.from(selectedCards).map(card => parseInt(card.dataset.taskId));
+            
+            // Get custom tasks to preserve them
+            const customTasks = appData.tasks.filter(t => t.isCustom);
+
+            const updatedPresetTasks = initialTasks.map(task => ({
+                ...task,
+                // If the task was already in the appData, keep its lastCompleted date
+                lastCompleted: appData.tasks.find(t => t.id === task.id)?.lastCompleted || null,
+                isActive: selectedTaskIds.includes(task.id)
+            }));
+
+            appData.tasks = [...updatedPresetTasks, ...customTasks];
+            
+            appData.isOnboarded = true;
+            saveData();
+            showMainApp();
+        });
+
+        // --- MODAL LOGIC ---
+        const openModal = (task = null) => {
+            taskForm.reset();
+            if (task) {
+                modalTitle.textContent = 'Edit Task';
+                document.getElementById('task-id').value = task.id;
+                document.getElementById('task-name').value = task.name;
+                document.getElementById('task-last-completed').value = task.lastCompleted || '';
+                document.getElementById('task-category').value = task.category;
+                document.getElementById('task-frequency').value = task.frequency;
+                deleteTaskBtn.classList.remove('hidden');
+            } else {
+                modalTitle.textContent = 'Add a New Task';
+                document.getElementById('task-id').value = '';
+                deleteTaskBtn.classList.add('hidden');
+            }
+            taskModal.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-10');
+            taskModal.querySelector('.modal-content').classList.remove('scale-95');
+        };
+
+        const closeModal = () => {
+            taskModal.classList.add('opacity-0', '-translate-y-10');
+            taskModal.querySelector('.modal-content').classList.add('scale-95');
+            setTimeout(() => {
+                taskModal.classList.add('pointer-events-none');
+            }, 300);
+        };
+        
+        addTaskBtn.addEventListener('click', () => openModal());
+        closeModalBtn.addEventListener('click', closeModal);
+        taskModal.addEventListener('click', (e) => {
+            if (e.target === taskModal) {
+                closeModal();
+            }
+        });
+
+        // --- TASK CRUD OPERATIONS ---
+        taskForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('task-id').value;
+            const taskData = {
+                name: document.getElementById('task-name').value,
+                category: document.getElementById('task-category').value,
+                frequency: parseInt(document.getElementById('task-frequency').value),
+                lastCompleted: document.getElementById('task-last-completed').value || null,
+            };
+
+            if (id) { // Editing existing task
+                const taskIndex = appData.tasks.findIndex(t => t.id == id);
+                if (taskIndex > -1) {
+                    appData.tasks[taskIndex] = { ...appData.tasks[taskIndex], ...taskData };
+                }
+            } else { // Adding new task
+                const newId = appData.tasks.length > 0 ? Math.max(...appData.tasks.map(t => t.id)) + 1 : 1;
+                appData.tasks.push({
+                    id: newId,
+                    name: taskData.name,
+                    category: taskData.category,
+                    frequency: taskData.frequency,
+                    lastCompleted: taskData.lastCompleted,
+                    isActive: true,
+                    isCustom: true
+                });
+            }
+            saveData();
+            renderAll();
+            closeModal();
+        });
+        
+        deleteTaskBtn.addEventListener('click', () => {
+            const id = document.getElementById('task-id').value;
+            if (id) {
+                appData.tasks = appData.tasks.filter(t => t.id != id);
+                saveData();
+                renderAll();
+                closeModal();
+            }
+        });
+
+        // --- EVENT LISTENERS FOR TASKS ---
+        taskListContainer.addEventListener('click', (e) => {
+            const completeBtn = e.target.closest('.complete-task-btn');
+            const editBtn = e.target.closest('.edit-task-btn');
+
+            if (completeBtn) {
+                const card = completeBtn.closest('.task-card');
+                const taskId = card.dataset.taskId;
+                const taskIndex = appData.tasks.findIndex(t => t.id == taskId);
+
+                if (taskIndex > -1) {
+                    appData.tasks[taskIndex].lastCompleted = new Date().toISOString().split('T')[0];
+                    const xpGained = getXPForTask(appData.tasks[taskIndex].frequency);
+                    updateGamification(xpGained);
+                    
+                    // Confetti effect!
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                    
+                    saveData();
+                    renderAll();
+                }
+            }
+
+            if (editBtn) {
+                const taskId = editBtn.dataset.taskId;
+                const task = appData.tasks.find(t => t.id == taskId);
+                if (task) {
+                    openModal(task);
+                }
+            }
+        });
+
+        // --- PAGE SWITCHING & INITIALIZATION ---
+        const showPresetManager = () => {
+            mainAppScreen.classList.add('hidden');
+            onboardingScreen.classList.remove('hidden');
+            
+            // Update UI for "manage" mode
+            onboardingScreen.querySelector('h1').textContent = 'Manage Preset Tasks';
+            onboardingScreen.querySelector('p').textContent = 'Add or remove predefined tasks from your dashboard.';
+            finishOnboardingBtn.innerHTML = 'Save Changes <i class="fas fa-save ml-2"></i>';
+
+            initializeOnboarding(); // This now correctly reflects current state
+        };
+        
+        managePresetsBtn.addEventListener('click', showPresetManager);
+        
+        // --- APP INITIALIZATION ---
+        const showOnboarding = () => {
+            mainAppScreen.classList.add('hidden');
+            onboardingScreen.classList.remove('hidden');
+            initializeOnboarding();
+        };
+        
+        const showMainApp = () => {
+            onboardingScreen.classList.add('hidden');
+            mainAppScreen.classList.remove('hidden');
+            renderAll();
+        };
+        
+        const renderAll = () => {
+            renderGamification();
+            renderTasks();
+        };
+
+        const init = () => {
+            loadData();
+            if (appData.isOnboarded) {
+                showMainApp();
+            } else {
+                showOnboarding();
+            }
+        };
+
+        init();
+    });
+    </script>
+</body>
+</html>
+
