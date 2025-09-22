@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Form - Intelligent JSON Editor</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Custom styles to complement Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #e2e8f0; /* slate-200 */
+            background-color: #0f172a; /* slate-900 */
+        }
+
+        /* Custom scrollbar for a more modern look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b; /* slate-800 */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569; /* slate-600 */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b; /* slate-500 */
+        }
+
+        /* Monaco editor overrides */
+        .monaco-editor .view-lines {
+            font-family: 'SFMono-Regular', Consolas, 'Courier New', monospace !important;
+        }
+
+        /* Resizable handle styling */
+        .resize-handle {
+            cursor: col-resize;
+            width: 8px;
+            background-color: #1e293b; /* slate-800 */
+            transition: background-color 0.2s;
+        }
+        .resize-handle:hover, .resize-handle.resizing {
+            background-color: #3b82f6; /* blue-500 */
+        }
+        
+        /* Tree View Styling */
+        .tree-view ul {
+            padding-left: 1.25rem;
+            border-left: 1px solid #334155; /* slate-700 */
+        }
+        .tree-view li {
+            position: relative;
+        }
+        .tree-view li::before {
+            content: '';
+            position: absolute;
+            top: 0.7em;
+            left: -1.25rem;
+            width: 1rem;
+            height: 1px;
+            background: #334155; /* slate-700 */
+        }
+        .tree-node {
+            cursor: pointer;
+        }
+        .tree-node.collapsed > .tree-children {
+            display: none;
+        }
+        .tree-node.collapsed > .toggler::before {
+            content: '►';
+            font-size: 0.6em;
+            display: inline-block;
+            margin-right: 6px;
+            transform: translateY(-1px);
+        }
+        .tree-node:not(.collapsed) > .toggler::before {
+            content: '▼';
+            font-size: 0.6em;
+            display: inline-block;
+            margin-right: 6px;
+            transform: translateY(-1px);
+        }
+        .tree-key { color: #94a3b8; } /* slate-400 */
+        .tree-string { color: #a5f3fc; } /* cyan-200 */
+        .tree-number { color: #f0abfc; } /* fuchsia-300 */
+        .tree-boolean { color: #fdba74; } /* orange-300 */
+        .tree-null { color: #64748b; } /* slate-500 */
+        .tree-info { color: #64748b; font-size: 0.8em; margin-left: 8px;} /* slate-500 */
+
+        /* Message box styling */
+        .message-box {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.2s ease-out;
+        }
+        .modal-content {
+            background-color: #1e293b; /* slate-800 */
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #334155; /* slate-700 */
+        }
+        
+        /* Loading spinner */
+        .loader {
+            width: 16px;
+            height: 16px;
+            border: 2px solid currentColor;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="overflow-hidden">
+
+    <div id="app" class="h-screen w-screen flex flex-col">
+        <!-- Header -->
+        <header class="flex-shrink-0 bg-slate-900/80 backdrop-blur-sm border-b border-slate-800 px-4 py-2 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-blue-500">
+                    <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 7L12 12M22 7L12 12M12 22V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M17 4.5L7 9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1 class="text-xl font-bold text-slate-100">JSON Form</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="settings-btn" class="text-slate-400 hover:text-white transition-colors">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                </button>
+                <a href="https://github.com/topics/json-editor" target="_blank" class="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors">
+                    <i data-lucide="star" class="w-4 h-4"></i>
+                    <span>Star on GitHub</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow flex min-h-0">
+            <!-- Left Panel: Editor -->
+            <div id="left-panel" class="flex flex-col h-full" style="width: 50%;">
+                <div class="flex-shrink-0 p-2 border-b border-slate-800 bg-slate-800/50 flex items-center gap-2 flex-wrap">
+                    <button id="fetch-url" class="px-3 py-1.5 text-sm bg-slate-700 hover:bg-slate-600 rounded-md flex items-center gap-2 transition-colors"><i data-lucide="link" class="w-4 h-4"></i><span>Fetch URL</span></button>
+                    <button id="upload-file" class="px-3 py-1.5 text-sm bg-slate-700 hover:bg-slate-600 rounded-md flex items-center gap-2 transition-colors"><i data-lucide="upload" class="w-4 h-4"></i><span>Upload File</span></button>
+                    
+                    <div class="w-full my-1 border-t border-slate-700/50"></div>
+                    
+                    <button id="gemini-infer-schema" class="px-3 py-1.5 text-sm bg-purple-600/80 hover:bg-purple-500/80 rounded-md flex items-center gap-2 transition-colors">✨<span class="button-text">Infer Schema</span><span class="loader hidden"></span></button>
+                    <button id="gemini-generate-data" class="px-3 py-1.5 text-sm bg-purple-600/80 hover:bg-purple-500/80 rounded-md flex items-center gap-2 transition-colors">✨<span class="button-text">Generate Sample</span><span class="loader hidden"></span></button>
+                    <button id="gemini-explain-json" class="px-3 py-1.5 text-sm bg-purple-600/80 hover:bg-purple-500/80 rounded-md flex items-center gap-2 transition-colors">✨<span class="button-text">Explain JSON</span><span class="loader hidden"></span></button>
+                    
+                    <div class="flex-grow"></div>
+                    
+                    <button id="format-json" class="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-500 rounded-md flex items-center gap-2 transition-colors"><i data-lucide="align-left" class="w-4 h-4"></i>Format</button>
+                    <button id="minify-json" class="px-3 py-1.5 text-sm bg-slate-700 hover:bg-slate-600 rounded-md flex items-center gap-2 transition-colors"><i data-lucide="minimize-2" class="w-4 h-4"></i>Minify</button>
+                    <button id="copy-json" class="px-3 py-1.5 text-sm bg-slate-700 hover:bg-slate-600 rounded-md flex items-center gap-2 transition-colors"><i data-lucide="copy" class="w-4 h-4"></i>Copy</button>
+                    <button id="clear-json" class="px-3 py-1.5 text-sm bg-red-800/50 hover:bg-red-700/50 rounded-md flex items-center gap-2 transition-colors text-red-300"><i data-lucide="trash-2" class="w-4 h-4"></i>Clear</button>
+                </div>
+                <div id="monaco-container" class="flex-grow w-full h-full min-h-0"></div>
+                <div id="status-bar" class="flex-shrink-0 px-3 py-1 text-sm border-t border-slate-800 bg-slate-900 flex items-center"></div>
+            </div>
+
+            <!-- Resizer -->
+            <div id="resize-handle" class="resize-handle flex-shrink-0"></div>
+            
+            <!-- Right Panel: Views -->
+            <div id="right-panel" class="flex flex-col flex-grow h-full min-w-0">
+                <div class="flex-shrink-0 p-1 border-b border-slate-800 bg-slate-800/50 flex items-center gap-1">
+                     <button data-view="tree" class="view-tab active-tab px-3 py-1.5 text-sm rounded-md flex items-center gap-2 transition-colors bg-slate-700"><i data-lucide="binary" class="w-4 h-4"></i>Tree</button>
+                     <button data-view="table" class="view-tab px-3 py-1.5 text-sm rounded-md flex items-center gap-2 transition-colors hover:bg-slate-700 text-slate-400"><i data-lucide="table" class="w-4 h-4"></i>Table</button>
+                     <button data-view="raw" class="view-tab px-3 py-1.5 text-sm rounded-md flex items-center gap-2 transition-colors hover:bg-slate-700 text-slate-400"><i data-lucide="file-code" class="w-4 h-4"></i>Raw</button>
+                </div>
+                <div id="views-container" class="flex-grow p-4 overflow-auto bg-slate-950/50 relative">
+                    <div id="tree-view" class="view-content text-sm"></div>
+                    <div id="table-view" class="view-content hidden"></div>
+                    <div id="raw-view" class="view-content hidden">
+                        <pre class="text-sm"><code id="raw-code"></code></pre>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Hidden file input for upload -->
+    <input type="file" id="file-input" class="hidden" accept=".json,application/json">
+
+    <!-- Message Box Container -->
+    <div id="message-box-container" class="fixed top-5 right-5 z-50"></div>
+
+    <!-- Modal Container -->
+    <div id="modal-container"></div>
+
+    <!-- Monaco Editor Loader -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.49.0/min/vs/loader.js"></script>
+    
+    <script type="module">
+        // --- INITIALIZATION ---
+        lucide.createIcons();
+        
+        // --- STATE & ELEMENTS ---
+        const state = {
+            editor: null,
+            jsonData: null,
+            currentView: 'tree'
+        };
+
+        const elements = {
+            monacoContainer: document.getElementById('monaco-container'),
+            statusBar: document.getElementById('status-bar'),
+            fetchBtn: document.getElementById('fetch-url'),
+            uploadBtn: document.getElementById('upload-file'),
+            fileInput: document.getElementById('file-input'),
+            formatBtn: document.getElementById('format-json'),
+            minifyBtn: document.getElementById('minify-json'),
+            copyBtn: document.getElementById('copy-json'),
+            clearBtn: document.getElementById('clear-json'),
+            viewTabs: document.querySelectorAll('.view-tab'),
+            viewContents: document.querySelectorAll('.view-content'),
+            treeView: document.getElementById('tree-view'),
+            tableView: document.getElementById('table-view'),
+            rawViewCode: document.getElementById('raw-code'),
+            resizeHandle: document.getElementById('resize-handle'),
+            leftPanel: document.getElementById('left-panel'),
+            rightPanel: document.getElementById('right-panel'),
+            messageBoxContainer: document.getElementById('message-box-container'),
+            modalContainer: document.getElementById('modal-container'),
+            settingsBtn: document.getElementById('settings-btn'),
+            geminiInferSchemaBtn: document.getElementById('gemini-infer-schema'),
+            geminiGenerateDataBtn: document.getElementById('gemini-generate-data'),
+            geminiExplainJsonBtn: document.getElementById('gemini-explain-json')
+        };
+        
+        const initialJson = {
+            "hello": "world",
+            "message": "Welcome to JSON Form! Edit this content to get started.",
+            "features": [
+                "Real-time JSON Validation",
+                "Monaco Editor (VS Code)",
+                "Tree View",
+                "Table View for Arrays",
+                "Format & Minify Tools"
+            ],
+            "isValid": true,
+            "version": 1.0,
+            "data": null
+        };
+        
+        // --- MONACO EDITOR SETUP ---
+        require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.49.0/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            state.editor = monaco.editor.create(elements.monacoContainer, {
+                value: JSON.stringify(initialJson, null, 2),
+                language: 'json',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                minimap: { enabled: false },
+                wordWrap: 'on',
+                fontFamily: "SFMono-Regular, Consolas, 'Courier New', monospace",
+            });
+
+            state.editor.onDidChangeModelContent(() => {
+                parseAndRender();
+            });
+
+            // Initial parse
+            parseAndRender();
+        });
+
+        // --- GEMINI API INTEGRATION ---
+        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
+
+        function getApiKey() {
+            return localStorage.getItem('geminiApiKey') || '';
+        }
+
+        function setApiKey(key) {
+            localStorage.setItem('geminiApiKey', key);
+        }
+
+        async function callGemini(prompt, buttonElem) {
+            const apiKey = getApiKey();
+            if (!apiKey) {
+                showMessage('Gemini API Key not set. Please set it in Settings.', 'error');
+                showSettingsModal();
+                return null;
+            }
+
+            const buttonText = buttonElem.querySelector('.button-text');
+            const loader = buttonElem.querySelector('.loader');
+            buttonText.classList.add('hidden');
+            loader.classList.remove('hidden');
+            buttonElem.disabled = true;
+
+            try {
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                };
+
+                const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.json();
+                    throw new Error(`API Error: ${errorBody.error.message}`);
+                }
+
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    return candidate.content.parts[0].text;
+                } else {
+                    throw new Error("Invalid response structure from API.");
+                }
+            } catch (error) {
+                showMessage(error.message, 'error');
+                return null;
+            } finally {
+                buttonText.classList.remove('hidden');
+                loader.classList.add('hidden');
+                buttonElem.disabled = false;
+            }
+        }
+        
+        elements.geminiInferSchemaBtn.addEventListener('click', async () => {
+            if (!state.jsonData) {
+                showMessage('No valid JSON to infer schema from.', 'error');
+                return;
+            }
+            const userPrompt = `Based on the following JSON data, generate a JSON Schema that describes its structure. Respond with only the JSON Schema object, without any markdown formatting or explanations.\n\n${JSON.stringify(state.jsonData, null, 2)}`;
+            const result = await callGemini(userPrompt, elements.geminiInferSchemaBtn);
+            if (result) {
+                try {
+                    // Clean up potential markdown fences
+                    const cleanedResult = result.replace(/```json|```/g, '').trim();
+                    const schemaJson = JSON.parse(cleanedResult);
+                    state.editor.setValue(JSON.stringify(schemaJson, null, 2));
+                    showMessage('JSON Schema inferred successfully!', 'success');
+                } catch (e) {
+                    showMessage('Failed to parse the schema from AI response.', 'error');
+                    console.error("Gemini Response (unparsable):", result);
+                }
+            }
+        });
+
+        elements.geminiGenerateDataBtn.addEventListener('click', async () => {
+             if (!state.jsonData) {
+                showMessage('No valid JSON to use as a template.', 'error');
+                return;
+            }
+            const userPrompt = `Based on the structure and content of the following JSON data, generate a new, similar JSON object with different but plausible values. Respond with only the new JSON object, without any markdown formatting or explanations.\n\n${JSON.stringify(state.jsonData, null, 2)}`;
+            const result = await callGemini(userPrompt, elements.geminiGenerateDataBtn);
+            if (result) {
+                try {
+                    const cleanedResult = result.replace(/```json|```/g, '').trim();
+                    const newJson = JSON.parse(cleanedResult);
+                    state.editor.setValue(JSON.stringify(newJson, null, 2));
+                    showMessage('New sample data generated!', 'success');
+                } catch (e) {
+                    showMessage('Failed to parse the data from AI response.', 'error');
+                     console.error("Gemini Response (unparsable):", result);
+                }
+            }
+        });
+
+        elements.geminiExplainJsonBtn.addEventListener('click', async () => {
+            if (!state.jsonData) {
+                showMessage('No valid JSON to explain.', 'error');
+                return;
+            }
+            const userPrompt = `In simple terms, explain what the following JSON data represents. Use markdown for formatting your response (e.g., headings, lists, bold text).\n\n${JSON.stringify(state.jsonData, null, 2)}`;
+            const result = await callGemini(userPrompt, elements.geminiExplainJsonBtn);
+            if (result) {
+                showExplanationModal(result);
+            }
+        });
+
+        // --- CORE LOGIC ---
+        function parseAndRender() {
+            const jsonString = state.editor.getValue();
+            if (jsonString.trim() === '') {
+                state.jsonData = null;
+                updateStatusBar('empty', 'JSON is empty.');
+                renderViews();
+                return;
+            }
+            try {
+                state.jsonData = JSON.parse(jsonString);
+                updateStatusBar('valid', 'Valid JSON');
+                renderViews();
+            } catch (e) {
+                state.jsonData = null;
+                updateStatusBar('invalid', e.message);
+                renderViews();
+            }
+        }
+        
+        function updateStatusBar(status, message) {
+            const statusClasses = {
+                valid: 'text-green-400',
+                invalid: 'text-red-400',
+                empty: 'text-slate-500'
+            };
+            const statusIcons = {
+                valid: '<i data-lucide="check-circle" class="w-4 h-4 mr-2"></i>',
+                invalid: '<i data-lucide="x-circle" class="w-4 h-4 mr-2"></i>',
+                empty: '<i data-lucide="info" class="w-4 h-4 mr-2"></i>'
+            }
+            elements.statusBar.className = `flex-shrink-0 px-3 py-1 text-sm border-t border-slate-800 bg-slate-900 flex items-center ${statusClasses[status]}`;
+            elements.statusBar.innerHTML = `${statusIcons[status]} ${message}`;
+            lucide.createIcons({
+                attrs: { 'stroke-width': 1.5 },
+                nodes: [elements.statusBar]
+            });
+        }
+
+        // --- VIEW RENDERING ---
+        function renderViews() {
+            renderTreeView();
+            renderTableView();
+            renderRawView();
+        }
+
+        function renderTreeView() {
+            if (state.jsonData === null) {
+                elements.treeView.innerHTML = `<div class="text-slate-500">Invalid or empty JSON.</div>`;
+                return;
+            }
+            elements.treeView.innerHTML = '';
+            const rootNode = createTreeNode(state.jsonData, 'root');
+            elements.treeView.appendChild(rootNode);
+        }
+
+        function createTreeNode(data, key) {
+            const type = getJsonType(data);
+            const li = document.createElement('li');
+            li.className = 'tree-node collapsed';
+
+            let content = `<span class="tree-key">${key}: </span>`;
+            
+            if (type === 'object' || type === 'array') {
+                const isArray = type === 'array';
+                const keys = Object.keys(data);
+                const count = keys.length;
+                const info = isArray ? `[${count}]` : `{${count}}`;
+                
+                content += `<span class="tree-info">${info}</span>`;
+
+                const toggler = document.createElement('span');
+                toggler.className = 'toggler';
+                toggler.innerHTML = content;
+                toggler.onclick = (e) => {
+                    e.stopPropagation();
+                    li.classList.toggle('collapsed');
+                };
+                li.appendChild(toggler);
+
+                if (count > 0) {
+                    const childrenUl = document.createElement('ul');
+                    childrenUl.className = 'tree-children';
+                    keys.forEach(childKey => {
+                        childrenUl.appendChild(createTreeNode(data[childKey], childKey));
+                    });
+                    li.appendChild(childrenUl);
+                } else {
+                    li.classList.remove('collapsed');
+                }
+
+            } else {
+                content += `<span class="tree-${type}">${JSON.stringify(data)}</span>`;
+                li.innerHTML = content;
+                li.classList.remove('collapsed');
+            }
+            return li;
+        }
+
+        function getJsonType(value) {
+            if (value === null) return 'null';
+            if (Array.isArray(value)) return 'array';
+            return typeof value;
+        }
+
+        function renderTableView() {
+            if (!Array.isArray(state.jsonData) || !state.jsonData.every(item => typeof item === 'object' && item !== null)) {
+                elements.tableView.innerHTML = `<div class="text-slate-500">Table view is only available for an array of objects.</div>`;
+                return;
+            }
+            
+            if (state.jsonData.length === 0) {
+                elements.tableView.innerHTML = `<div class="text-slate-500">Array is empty.</div>`;
+                return;
+            }
+
+            const headers = [...new Set(state.jsonData.flatMap(obj => Object.keys(obj)))];
+            
+            let tableHtml = `<div class="overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap">`;
+            tableHtml += `<thead class="bg-slate-800 sticky top-0"><tr>`;
+            headers.forEach(h => tableHtml += `<th class="p-2 font-semibold">${h}</th>`);
+            tableHtml += `</tr></thead>`;
+            
+            tableHtml += `<tbody>`;
+            state.jsonData.forEach(row => {
+                tableHtml += `<tr class="border-b border-slate-800 hover:bg-slate-800/50">`;
+                headers.forEach(header => {
+                    const value = row[header];
+                    const type = getJsonType(value);
+                    const displayValue = value === undefined ? '<i class="text-slate-600">undefined</i>' : JSON.stringify(value);
+                    tableHtml += `<td class="p-2 align-top"><span class="tree-${type}">${displayValue}</span></td>`;
+                });
+                tableHtml += `</tr>`;
+            });
+            tableHtml += `</tbody></table></div>`;
+            
+            elements.tableView.innerHTML = tableHtml;
+        }
+
+        function renderRawView() {
+            if (state.jsonData === null) {
+                elements.rawViewCode.textContent = '';
+                return;
+            }
+            elements.rawViewCode.textContent = JSON.stringify(state.jsonData, null, 2);
+        }
+
+        // --- EVENT LISTENERS ---
+        elements.formatBtn.addEventListener('click', () => {
+            if (state.jsonData) {
+                state.editor.setValue(JSON.stringify(state.jsonData, null, 2));
+                showMessage('Formatted JSON', 'success');
+            } else {
+                 showMessage('Cannot format invalid JSON', 'error');
+            }
+        });
+
+        elements.minifyBtn.addEventListener('click', () => {
+            if (state.jsonData) {
+                state.editor.setValue(JSON.stringify(state.jsonData));
+                showMessage('Minified JSON', 'success');
+            } else {
+                showMessage('Cannot minify invalid JSON', 'error');
+            }
+        });
+        
+        elements.copyBtn.addEventListener('click', () => {
+            if (!state.editor) return;
+            navigator.clipboard.writeText(state.editor.getValue())
+                .then(() => showMessage('Copied to clipboard', 'success'))
+                .catch(() => showMessage('Failed to copy', 'error'));
+        });
+
+        elements.clearBtn.addEventListener('click', () => {
+            state.editor.setValue('');
+        });
+
+        elements.fetchBtn.addEventListener('click', async () => {
+            const url = prompt("Enter URL to fetch JSON from:");
+            if (!url) return;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                state.editor.setValue(JSON.stringify(data, null, 2));
+                showMessage('Fetched and loaded JSON successfully', 'success');
+            } catch (error) {
+                showMessage(`Failed to fetch JSON: ${error.message}`, 'error');
+            }
+        });
+        
+        elements.uploadBtn.addEventListener('click', () => {
+            elements.fileInput.click();
+        });
+
+        elements.fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const content = e.target.result;
+                    // Test if it's valid JSON before setting
+                    JSON.parse(content);
+                    state.editor.setValue(content);
+                    showMessage(`Loaded ${file.name}`, 'success');
+                } catch(err) {
+                     showMessage(`Error reading file: Not a valid JSON`, 'error');
+                }
+            };
+            reader.onerror = () => {
+                 showMessage(`Error reading file`, 'error');
+            };
+            reader.readAsText(file);
+            elements.fileInput.value = ''; // Reset for next upload
+        });
+
+        // View switching
+        elements.viewTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const view = tab.dataset.view;
+                if (view === state.currentView) return;
+
+                state.currentView = view;
+                
+                elements.viewTabs.forEach(t => {
+                    t.classList.remove('bg-slate-700', 'text-slate-200');
+                    t.classList.add('hover:bg-slate-700', 'text-slate-400');
+                });
+                tab.classList.add('bg-slate-700', 'text-slate-200');
+                tab.classList.remove('hover:bg-slate-700', 'text-slate-400');
+
+                elements.viewContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById(`${view}-view`).classList.remove('hidden');
+            });
+        });
+        
+        // Panel resizing
+        let isResizing = false;
+        elements.resizeHandle.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            elements.resizeHandle.classList.add('resizing');
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', stopResize);
+        });
+
+        function handleMouseMove(e) {
+            if (!isResizing) return;
+            const totalWidth = document.body.clientWidth;
+            const leftPanelWidth = e.clientX;
+            const rightPanelWidth = totalWidth - leftPanelWidth - elements.resizeHandle.offsetWidth;
+
+            if (leftPanelWidth > 200 && rightPanelWidth > 200) {
+                 elements.leftPanel.style.width = `${leftPanelWidth}px`;
+            }
+        }
+
+        function stopResize() {
+            isResizing = false;
+            elements.resizeHandle.classList.remove('resizing');
+            document.body.style.cursor = 'default';
+            document.body.style.userSelect = 'auto';
+
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', stopResize);
+            if (state.editor) {
+                state.editor.layout();
+            }
+        }
+
+        // --- MODALS ---
+        function showSettingsModal() {
+            const currentKey = getApiKey();
+            const modalHtml = `
+                <div class="modal-overlay" id="settings-overlay">
+                    <div class="modal-content">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-bold">Settings</h2>
+                            <button id="close-settings" class="p-1 rounded-full hover:bg-slate-700">&times;</button>
+                        </div>
+                        <p class="text-sm text-slate-400 mb-2">
+                            To use AI features, please provide your Gemini API key. Your key is saved securely in your browser's local storage and is never sent anywhere except to the Google AI API.
+                        </p>
+                        <div class="mb-4">
+                            <label for="api-key-input" class="block text-sm font-medium mb-1">Gemini API Key</label>
+                            <input type="password" id="api-key-input" value="${currentKey}" class="w-full bg-slate-900 border border-slate-600 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Enter your API key">
+                        </div>
+                        <div class="flex justify-end gap-2">
+                            <button id="cancel-settings" class="px-4 py-2 text-sm bg-slate-600 hover:bg-slate-500 rounded-md">Cancel</button>
+                            <button id="save-settings" class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded-md">Save</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            elements.modalContainer.innerHTML = modalHtml;
+            document.getElementById('save-settings').onclick = () => {
+                const newKey = document.getElementById('api-key-input').value;
+                setApiKey(newKey);
+                showMessage('API Key saved!', 'success');
+                closeModal();
+            };
+            document.getElementById('settings-overlay').onclick = (e) => { if(e.target.id === 'settings-overlay') closeModal(); };
+            document.getElementById('close-settings').onclick = closeModal;
+            document.getElementById('cancel-settings').onclick = closeModal;
+        }
+
+        function showExplanationModal(content) {
+             const modalHtml = `
+                <div class="modal-overlay" id="explanation-overlay">
+                    <div class="modal-content">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-bold">✨ AI Explanation</h2>
+                            <button id="close-explanation" class="p-1 rounded-full hover:bg-slate-700">&times;</button>
+                        </div>
+                        <div class="prose prose-invert max-w-none text-slate-300">${content.replace(/\n/g, '<br>')}</div>
+                    </div>
+                </div>
+            `;
+            elements.modalContainer.innerHTML = modalHtml;
+            document.getElementById('explanation-overlay').onclick = (e) => { if(e.target.id === 'explanation-overlay') closeModal(); };
+            document.getElementById('close-explanation').onclick = closeModal;
+        }
+
+        function closeModal() {
+            elements.modalContainer.innerHTML = '';
+        }
+        
+        elements.settingsBtn.addEventListener('click', showSettingsModal);
+
+        // --- UTILITIES ---
+        function showMessage(text, type = 'info') {
+            const colors = {
+                success: 'bg-green-600/90 border-green-500',
+                error: 'bg-red-600/90 border-red-500',
+                info: 'bg-blue-600/90 border-blue-500'
+            };
+            const icons = {
+                success: '<i data-lucide="check-circle" class="w-5 h-5"></i>',
+                error: '<i data-lucide="alert-triangle" class="w-5 h-5"></i>',
+                info: '<i data-lucide="info" class="w-5 h-5"></i>'
+            };
+
+            const box = document.createElement('div');
+            box.className = `message-box flex items-center gap-3 p-3 rounded-lg shadow-lg text-white border-l-4 mb-2 ${colors[type]}`;
+            box.innerHTML = `
+                ${icons[type]}
+                <span class="text-sm font-medium">${text}</span>
+            `;
+            
+            elements.messageBoxContainer.appendChild(box);
+            lucide.createIcons({ nodes: [box] });
+
+            setTimeout(() => {
+                box.style.transition = 'opacity 0.5s ease';
+                box.style.opacity = '0';
+                setTimeout(() => box.remove(), 500);
+            }, 3000);
+        }
+
+    </script>
+</body>
+</html>
+
