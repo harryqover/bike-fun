@@ -157,7 +157,6 @@
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden col-risk-id">Risk ID</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pilot ID</th>
-                                    <!-- ✅ NEW: Added Name column -->
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
@@ -178,7 +177,6 @@
                 <div id="view-add-pilot" class="hidden bg-white p-6 rounded-lg shadow">
                     <h2 class="text-2xl font-bold mb-4 text-gray-800">Add New Pilot</h2>
                     <form id="add-pilot-form" class="space-y-6">
-                        <!-- ✅ NEW: Added First and Last Name inputs -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label for="add-firstName" class="block text-sm font-medium text-gray-700">First Name</label>
@@ -234,7 +232,6 @@
 
                 <div id="view-bulk-add" class="hidden bg-white p-6 rounded-lg shadow">
                     <h2 class="text-2xl font-bold mb-4 text-gray-800">Bulk Add Pilots</h2>
-                    <!-- ✅ MODIFIED: Updated CSV format instructions -->
                     <p class="text-gray-600 mb-4">Paste CSV data below. The format should be: <code class="bg-gray-200 p-1 rounded">pilotId,firstName,lastName,startDate,wage,birthdate,gender,age,pilotStartDate</code>. No header row.</p>
                     <textarea id="csv-data" rows="10" class="form-input" placeholder="pilot001,John,Doe,2025-01-01,85000.50,1985-05-20,GENDER_MALE,39,2024-12-01&#10;pilot002,Jane,Smith,2025-01-15,92000.75,1990-11-12,GENDER_FEMALE,34,2024-12-15"></textarea>
                     <div class="flex justify-end mt-4">
@@ -244,7 +241,6 @@
 
                 <div id="view-bulk-upsert" class="hidden bg-white p-6 rounded-lg shadow">
                     <h2 class="text-2xl font-bold mb-4 text-gray-800">Bulk Upsert Pilots</h2>
-                     <!-- ✅ MODIFIED: Updated CSV format instructions -->
                      <p class="text-gray-600 mb-4">Paste CSV data of the active portfolio. The script will compare this with the existing data to add new pilots and update existing ones. Format: <code class="bg-gray-200 p-1 rounded">pilotId,firstName,lastName,startDate,wage,birthdate,gender,age,pilotStartDate</code>. No header row.</p>
                     <textarea id="upsert-csv-data" rows="10" class="form-input" placeholder="pilot001,John,Doe,2025-01-01,85500.00,1985-05-20,GENDER_MALE,40,2024-12-01&#10;pilot003,Peter,Jones,2025-02-01,95000.00,1992-03-10,GENDER_MALE,33,2025-01-15"></textarea>
                     
@@ -305,11 +301,13 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="upgrade-firstName" class="block text-sm font-medium text-gray-700">First Name</label>
-                            <input type="text" id="upgrade-firstName" class="form-input" value="fname" required>
+                            <!-- ✅ MODIFIED: Removed hardcoded value -->
+                            <input type="text" id="upgrade-firstName" class="form-input" required>
                         </div>
                         <div>
                             <label for="upgrade-lastName" class="block text-sm font-medium text-gray-700">Last Name</label>
-                            <input type="text" id="upgrade-lastName" class="form-input" value="lname" required>
+                             <!-- ✅ MODIFIED: Removed hardcoded value -->
+                            <input type="text" id="upgrade-lastName" class="form-input" required>
                         </div>
                     </div>
                      <div>
@@ -318,11 +316,11 @@
                     </div>
                     <div>
                         <label for="upgrade-birthdate" class="block text-sm font-medium text-gray-700">Birthdate</label>
-                        <input type="date" id="upgrade-birthdate" class="form-input" value="1988-01-01" required>
+                        <input type="date" id="upgrade-birthdate" class="form-input" required>
                     </div>
                     <div>
                         <label for="upgrade-age" class="block text-sm font-medium text-gray-700">Age</label>
-                        <input type="text" id="upgrade-age" class="form-input" value="46" required>
+                        <input type="text" id="upgrade-age" class="form-input" required>
                     </div>
                     <hr class="my-4">
                     <h4 class="text-md font-medium text-gray-800">Address</h4>
@@ -377,7 +375,6 @@
                     <input type="hidden" id="endorse-risk-id">
                     <input type="hidden" id="endorse-gender">
                     <p class="text-sm">Pilot ID: <strong id="endorse-pilot-id" class="text-base"></strong></p>
-                     <!-- ✅ NEW: Added First and Last Name to Endorse modal -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                              <label for="endorse-firstName" class="block text-sm font-medium text-gray-700">First Name</label>
@@ -677,12 +674,6 @@
                     });
             };
             
-            /**
-             * ✅ FIXED: The birthdate was off by one day due to timezone conversion issues.
-             * The old method incorrectly tried to adjust for the user's timezone.
-             * The new method simply takes the date part from the full ISO string (e.g., "1962-06-17T00:00:00.000Z" -> "1962-06-17"),
-             * which avoids any timezone conversions and displays the correct date as stored in the database.
-             */
             const formatDate = (dateString) => {
                 if (!dateString) return 'N/A';
                 return dateString.split('T')[0];
@@ -735,8 +726,9 @@
                                     </span>
                                 </a>`;
                         } else {
+                             // ✅ MODIFIED: Added data-first-name and data-last-name to the upgrade button
                             actionsHtml += `
-                                <button class="text-blue-600 hover:text-blue-900 upgrade-btn" title="Upgrade Coverage" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-birthdate="${currentBirthdate}" data-gender="${currentGender}" data-age="${currentAge}">
+                                <button class="text-blue-600 hover:text-blue-900 upgrade-btn" title="Upgrade Coverage" data-risk-id="${pilot.id}" data-pilot-id="${pilotId}" data-birthdate="${currentBirthdate}" data-gender="${currentGender}" data-age="${currentAge}" data-first-name="${currentFirstName}" data-last-name="${currentLastName}">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" />
                                     </svg>
@@ -799,7 +791,6 @@
             document.getElementById('add-pilot-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const payload = {
-                    // ✅ NEW: Added firstName and lastName to payload
                     firstName: this.elements['firstName'].value,
                     lastName: this.elements['lastName'].value,
                     pilotId: this.elements['pilotId'].value,
@@ -826,11 +817,8 @@
                 
                 const rows = csvData.split('\n');
                 const pilots = rows.map(row => {
-                    // ✅ MODIFIED: Added firstName, lastName to CSV parsing
                     const [pilotId, firstName, lastName, startDate, wage, birthdate, gender, age, pilotStartDate] = row.split(',');
-                    // ✅ MODIFIED: Added firstName, lastName to validation
                     if (!pilotId || !firstName || !lastName || !startDate || !wage || !birthdate || !gender || !age || !pilotStartDate) return null;
-                    // ✅ MODIFIED: Added firstName, lastName to pilot object
                     return { pilotId, firstName, lastName, startDate, wage: parseFloat(wage), birthdate, gender: gender.trim(), age: parseInt(age, 10), pilotStartDate};
                 }).filter(p => p !== null);
 
@@ -862,7 +850,6 @@
                 if (endorseButton) {
                     document.getElementById('endorse-risk-id').value = endorseButton.dataset.riskId;
                     document.getElementById('endorse-pilot-id').textContent = endorseButton.dataset.pilotId;
-                    // ✅ NEW: Populate name in endorse modal
                     document.getElementById('endorse-firstName').value = endorseButton.dataset.firstName;
                     document.getElementById('endorse-lastName').value = endorseButton.dataset.lastName;
                     document.getElementById('endorse-wage').value = endorseButton.dataset.wage;
@@ -884,6 +871,9 @@
                 if (upgradeButton) {
                     document.getElementById('upgrade-risk-id').value = upgradeButton.dataset.riskId;
                     document.getElementById('upgrade-pilot-id').value = upgradeButton.dataset.pilotId;
+                    // ✅ MODIFIED: Populate first and last name in upgrade modal
+                    document.getElementById('upgrade-firstName').value = upgradeButton.dataset.firstName;
+                    document.getElementById('upgrade-lastName').value = upgradeButton.dataset.lastName;
                     document.getElementById('upgrade-birthdate').value = upgradeButton.dataset.birthdate;
                     document.getElementById('upgrade-age').value = upgradeButton.dataset.age;
                     document.getElementById('upgrade-gender').value = upgradeButton.dataset.gender;
@@ -898,7 +888,6 @@
                     effectiveDate: document.getElementById('endorse-effective-date').value,
                     subject: {
                         pilotId: document.getElementById('endorse-pilot-id').textContent,
-                        // ✅ NEW: Added names to endorsement payload
                         firstName: document.getElementById('endorse-firstName').value || undefined,
                         lastName: document.getElementById('endorse-lastName').value || undefined,
                         wage: document.getElementById('endorse-wage').value ? parseFloat(document.getElementById('endorse-wage').value) : undefined,
@@ -988,11 +977,9 @@
                         `;
 
                         const createList = document.getElementById('upsert-create-list');
-                        // ✅ MODIFIED: Display name for new pilots
                         createList.innerHTML = toCreate.length ? toCreate.map(p => `<div>Pilot ID: ${p.pilotId}, Name: ${p.firstName} ${p.lastName}, Start: ${p.startDate}, Wage: ${p.wage}</div>`).join('') : 'None';
                         
                         const updateList = document.getElementById('upsert-update-list');
-                        // ✅ MODIFIED: Display name changes for updated pilots
                         updateList.innerHTML = toUpdate.length ? toUpdate.map(p => `
                             <div>
                                 <strong>Pilot ID: ${p.pilotId}</strong>
@@ -1040,7 +1027,8 @@
             handleInitialLoad();
         });
         // ✅ Versioning: Helps confirm the latest code is running.
-        console.log("Version: V4-birthdate-fix-and-names");
+        console.log("Version: V5-upgrade-modal-names");
     </script>
 </body>
 </html>
+
