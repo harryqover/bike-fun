@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Discovery Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Warm Neutrals with Muted Teal Accent) -->
+    <!-- Application Structure Plan: The application is structured as an interactive checklist to transform the static source document into a functional tool for the handoff meeting. It uses a two-column layout with sticky side navigation for quick access to topics and a main content area where questions are grouped into expandable accordions. This non-linear structure supports the natural flow of conversation. Key interactions include checkboxes to track progress and integrated note-taking fields, making the app a live document for capturing meeting outcomes. This design was chosen for its high utility and user-friendliness over a simple static page. -->
+    <!-- Visualization & Content Choices: Report Info: Categorized list of discovery questions. -> Goal: Organize, track, and annotate discussion points. -> Viz/Presentation Method: The primary structure uses interactive accordions for each section. A dynamic progress bar visualizes completion status. -> Interaction: Users can click navigation links to scroll to sections, expand/collapse accordions, check off items, and type notes. -> Justification: As the source material is qualitative and procedural, traditional data charts are irrelevant. This interactive checklist format is the most effective way to make the content usable and valuable during a live meeting. -> Library/Method: Vanilla JavaScript for all interactivity, Tailwind CSS for layout and styling. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .section-content {
+            display: none;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .section-content.open {
+            display: block;
+        }
+        .nav-link.active {
+            background-color: #e6f4f1;
+            color: #0d9488;
+            font-weight: 600;
+        }
+        .notes-textarea {
+            transition: all 0.2s ease-in-out;
+            min-height: 40px;
+        }
+        .notes-textarea:focus {
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-teal-700 mb-2">Project Discovery Hub</h1>
+            <p class="text-gray-600">An interactive checklist for the SE & AE Handoff Meeting.</p>
+            <div class="mt-4">
+                <div class="flex justify-between mb-1">
+                    <span class="text-base font-medium text-teal-700">Progress</span>
+                    <span class="text-sm font-medium text-teal-700" id="progress-text">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div id="progress-bar" class="bg-teal-600 h-2.5 rounded-full" style="width: 0%; transition: width 0.5s ease-in-out;"></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <aside class="lg:w-1/4">
+                <nav id="navigation" class="sticky top-8 bg-white p-4 rounded-lg shadow-sm">
+                    <h2 class="font-bold text-lg mb-3 text-gray-700">Sections</h2>
+                    <ul id="nav-list" class="space-y-2"></ul>
+                </nav>
+            </aside>
+
+            <main id="main-content" class="lg:w-3/4">
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const kickoffData = [
+            {
+                id: 'sectionA',
+                title: 'A. Project Context & High-Level Scope',
+                intro: "This section helps us understand the 'why' behind the project and confirm the overall landscape. We'll cover the partner's goals, the value proposition, and the project's boundaries.",
+                questions: [
+                    { id: 'a1', text: "What are the partner's primary business goals for launching this insurance program? What does success look like for them?", role: 'AE' },
+                    { id: 'a2', text: "Can you walk us through the core value proposition that was sold? Were any specific promises or commitments made regarding the customer experience or features?", role: 'AE' },
+                    { id: 'a3', text: "Who are the key stakeholders on the partner's side (business, technical, legal)?", role: 'AE' },
+                    { id: 'a4', text: "Which **countries** are in scope for the initial launch? Are there any known legal or regulatory nuances in these regions we should be aware of?", role: 'SE/AE' },
+                    { id: 'a5', text: "Who is the **risk carrier** (insurer)? Do we have an existing relationship with them? Are their requirements already known to us?", role: 'SE/AE' },
+                    { id: 'a6', text: "Was a formal **design phase** discussed or included in the SOW?", role: 'SE/AE' }
+                ]
+            },
+            {
+                id: 'sectionB',
+                title: 'B. Product Definition & Customer Journey',
+                intro: "Here, we need to get into the specifics of the insurance product itself, from its structure to how the end-customer will interact with it.",
+                questions: [
+                    { id: 'b1', text: "Can you detail the **coverages, variants, and packages** that were scoped? Which coverages are mandatory versus optional for the customer?", role: 'SE' },
+                    { id: 'b2', text: "What is the product type? Is it an **Individual Policy** or a **Group Policy** with risk items under a master policy?", role: 'SE' },
+                    { id: 'b3', text: "What is the agreed **term duration** (e.g., monthly, yearly)?", role: 'SE' },
+                    { id: 'b4', text: "How will customers purchase this insurance? Was a specific **sales flow** discussed (e.g., a standalone flow, embedded within the partner's app)?", role: 'SE' },
+                    { id: 'b5', text: "If this is a subscription-based product, how did you scope the handling of **plan changes** (e.g., upgrades, downgrades, cancellations)?", role: 'SE' }
+                ]
+            },
+            {
+                id: 'sectionC',
+                title: 'C. Technical Integration & APIs',
+                intro: "This section focuses on the technical nuts and bolts of how our systems will connect with the partner's and any other third parties.",
+                questions: [
+                    { id: 'c1', text: "What is the integration plan? Will the partner use our **Policy API** to create and manage policies?", role: 'SE' },
+                    { id: 'c2', text: "Will they use our **Claims API**, for instance, to submit the First Notice of Loss (FNOL)?", role: 'SE' },
+                    { id: 'c3', text: "Have we already shared our API documentation with the partner's technical team?", role: 'SE' },
+                    { id: 'c4', text: "Are there any other **required integrations** with third parties, such as the risk carrier or a data enrichment service?", role: 'SE' },
+                    { id: 'c5', text: "What have we learned about the partner's technical capabilities and limitations?", role: 'SE' }
+                ]
+            },
+            {
+                id: 'sectionD',
+                title: 'D. Data & Business Rules',
+                intro: "Here we clarify the data we need to collect to make the product work and the specific logic or rules that govern its behavior.",
+                questions: [
+                    { id: 'd1', text: "What specific **subject data** fields must be collected to price and issue a policy (e.g., for a vehicle, the VIN, make, model)?", role: 'SE' },
+                    { id: 'd2', text: "Are there any fields that are only required for completion **after** the policy is created?", role: 'SE' },
+                    { id: 'd3', text: "What **data validation** rules were discussed (e.g., string patterns, min/max values)?", role: 'SE' },
+                    { id: 'd4', text: "Were any specific **business rules** defined during pre-sales? For example, 'A driver must be over 25 years old' or 'The main driver must be the policyholder.'", role: 'SE' },
+                    { id: 'd5', text: "Is **compliance screening** enabled for this product? If so, who needs to be checked (e.g., policyholder, claimant)?", role: 'SE' }
+                ]
+            },
+            {
+                id: 'sectionE',
+                title: 'E. Claims Process',
+                intro: "Understanding our role in the claims journey is critical for operational readiness. This section dives deep into the process, rules, and communications.",
+                questions: [
+                    { id: 'e1', text: "What is our exact responsibility for claims? Do we handle the **full end-to-end process**, or just the **FNOL** before handing off to a Third-Party Administrator (TPA)?", role: 'SE/AE' },
+                    { id: 'e2', text: "If a TPA is involved, who are they and what is the agreed data-transfer process?", role: 'SE/AE' },
+                    { id: 'e3', text: "**Who is handling the payment of claims** to the end customer?", role: 'AE' },
+                    { id: 'e4', text: "Does the partner have a predefined **claims flow**, or can we reuse a standard flow from a similar program we currently manage?", role: 'SE' },
+                    { id: 'e5', text: "How will the end-customer **initiate a claim**? Will they use a Qover-hosted form, or will it be initiated through the partner's interface?", role: 'SE' },
+                    { id: 'e6', text: "Does the partner have a specific **list of questions** that must be asked during the claims submission process?", role: 'SE' },
+                    { id: 'e7', text: "Are there defined **eligibility rules** for claims? Are these 'soft checks' (warnings for manual review) or 'hard checks' (which automatically reject the claim)?", role: 'SE' },
+                    { id: 'e8', text: "Is there a requirement for the **insurer or the partner to perform a manual check** or approval on claims?", role: 'SE' },
+                    { id: 'e9', text: "How do we handle **claims communications**?", role: 'SE/AE' },
+                    { id: 'e10', text: "Should the **partner** be notified of key events (e.g., new claim submitted, claim paid)?", role: 'SE/AE' },
+                    { id: 'e11', text: "What notifications should the **customer** receive (e.g., claim status updates)?", role: 'SE/AE' },
+                    { id: 'e12', text: "Regarding rejected claims, should we inform the customer of the **rejection and the reason**, or should this information be hidden from them and only communicated to the partner?", role: 'AE' }
+                ]
+            },
+            {
+                id: 'sectionF',
+                title: 'F. Documents & Communications',
+                intro: "This section covers all official documents that need to be generated and dispatched throughout the policy lifecycle.",
+                questions: [
+                    { id: 'f1', text: "Which specific documents must we generate (e.g., **Policy Schedule**, IPID, Terms & Conditions)?", role: 'SE' },
+                    { id: 'f2', text: "At what lifecycle events should these documents be triggered and sent?", role: 'SE' },
+                    { id: 'f3', text: "Are there any special **certificates** required, such as a travel or green card certificate?", role: 'SE' }
+                ]
+            },
+            {
+                id: 'sectionG',
+                title: 'G. Final Checks & Uncaptured Agreements',
+                intro: "This final section is a crucial catch-all to ensure no verbal agreements, nuances, or important context has been missed.",
+                questions: [
+                    { id: 'g1', text: "Are there any other important points, features, or processes that were **agreed upon or discussed with the partner** that are not explicitly mentioned in the SOW or covered in the questions above?", role: 'AE/SE' }
+                ]
+            }
+        ];
+
+        let state = kickoffData.map(section => ({
+            ...section,
+            questions: section.questions.map(q => ({ ...q, checked: false, notes: '' }))
+        }));
+
+        const mainContent = document.getElementById('main-content');
+        const navList = document.getElementById('nav-list');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const navigation = document.getElementById('navigation');
+        let totalQuestions = 0;
+
+        function render() {
+            mainContent.innerHTML = '';
+            navList.innerHTML = '';
+            totalQuestions = 0;
+
+            state.forEach((section, sectionIndex) => {
+                totalQuestions += section.questions.length;
+
+                const navItem = document.createElement('li');
+                navItem.innerHTML = `<a href="#${section.id}" class="nav-link block px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors duration-200">${section.title}</a>`;
+                navList.appendChild(navItem);
+
+                const sectionWrapper = document.createElement('section');
+                sectionWrapper.id = section.id;
+                sectionWrapper.className = 'bg-white p-6 rounded-lg shadow-sm mb-6 scroll-mt-24';
+                
+                let questionsHTML = section.questions.map((question, qIndex) => `
+                    <li class="py-4 border-b border-gray-200 last:border-b-0">
+                        <div class="flex items-start gap-4">
+                            <input type="checkbox" id="${question.id}" data-section-index="${sectionIndex}" data-q-index="${qIndex}" class="mt-1 h-5 w-5 rounded border-gray-300 text-teal-600 focus:ring-teal-500" ${question.checked ? 'checked' : ''}>
+                            <div class="flex-1">
+                                <label for="${question.id}" class="block text-gray-700 select-none">${question.text}</label>
+                                <span class="text-xs font-semibold uppercase text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full">${question.role}</span>
+                                <textarea data-section-index="${sectionIndex}" data-q-index="${qIndex}" class="notes-textarea mt-3 w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:bg-white focus:border-teal-400 focus:ring-teal-400" placeholder="Add notes here...">${question.notes}</textarea>
+                            </div>
+                        </div>
+                    </li>
+                `).join('');
+
+                sectionWrapper.innerHTML = `
+                    <button class="section-toggle w-full text-left">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h2 class="text-xl font-bold text-gray-800">${section.title}</h2>
+                                <p class="text-sm text-gray-500 mt-1">${section.intro}</p>
+                            </div>
+                            <svg class="w-6 h-6 transform transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </div>
+                    </button>
+                    <div class="section-content mt-4">
+                        <ul class="divide-y divide-gray-200">${questionsHTML}</ul>
+                    </div>
+                `;
+                mainContent.appendChild(sectionWrapper);
+            });
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const checkedQuestions = state.flatMap(s => s.questions).filter(q => q.checked).length;
+            const percentage = totalQuestions > 0 ? Math.round((checkedQuestions / totalQuestions) * 100) : 0;
+            progressBar.style.width = `${percentage}%`;
+            progressText.textContent = `${percentage}%`;
+        }
+
+        function handleInteraction(e) {
+            const target = e.target;
+            const sectionIndex = target.dataset.sectionIndex;
+            const qIndex = target.dataset.qIndex;
+
+            if (target.matches('input[type="checkbox"]')) {
+                state[sectionIndex].questions[qIndex].checked = target.checked;
+                updateProgress();
+            }
+
+            if (target.matches('textarea')) {
+                state[sectionIndex].questions[qIndex].notes = target.value;
+            }
+        }
+        
+        mainContent.addEventListener('click', (e) => {
+            const toggle = e.target.closest('.section-toggle');
+            if (toggle) {
+                const content = toggle.nextElementSibling;
+                const icon = toggle.querySelector('svg');
+                content.classList.toggle('open');
+                icon.classList.toggle('rotate-180');
+            }
+        });
+
+        navList.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') {
+                e.preventDefault();
+                const targetId = e.target.getAttribute('href');
+                document.querySelector(targetId).scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+        
+        function updateActiveNav() {
+            let currentSection = '';
+            const sections = mainContent.querySelectorAll('section');
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.scrollY >= sectionTop - 120) {
+                    currentSection = section.getAttribute('id');
+                }
+            });
+
+            const navLinks = navList.querySelectorAll('a');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${currentSection}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', updateActiveNav);
+        mainContent.addEventListener('change', handleInteraction);
+        mainContent.addEventListener('input', handleInteraction);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            render();
+            const firstSectionContent = mainContent.querySelector('.section-content');
+            if (firstSectionContent) {
+                firstSectionContent.classList.add('open');
+                firstSectionContent.previousElementSibling.querySelector('svg').classList.add('rotate-180');
+            }
+            updateActiveNav();
+        });
+    </script>
+</body>
+</html>
