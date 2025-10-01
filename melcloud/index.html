@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AC Control Panel</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1f2937"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AC Control">
+    <link rel="apple-touch-icon" href="logo_180.png">
+    <link id="manifest-link" rel="manifest">
+    <!-- End PWA Meta Tags -->
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .temp-dial {
-            position: relative; width: 280px; height: 280px; border-radius: 50%;
-            background: conic-gradient(from 135deg, #3b82f6, #9333ea, #ec4899, #f97316, #14b8a6, #3b82f6);
-            display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease; user-select: none;
-        }
-        .temp-dial-inner {
-            position: absolute; width: 240px; height: 240px; background-color: #1f2937;
-            border-radius: 50%;
-        }
-        .temp-dial-center { z-index: 10; }
         .loader {
             border: 4px solid #f3f3f3; border-top: 4px solid #4f46e5;
             border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
@@ -109,15 +109,19 @@
                 <div class="w-10"></div>
             </div>
             
-            <div class="flex justify-center">
-                <div id="temp-dial" class="temp-dial cursor-pointer">
-                    <div class="temp-dial-inner"></div>
-                    <div class="temp-dial-center text-center">
-                         <p class="text-gray-400 text-sm">SET TO</p>
-                         <p class="text-6xl font-bold leading-tight"><span id="set-temp-dial">--</span><span class="text-4xl text-gray-400 align-top">°</span></p>
-                         <p class="text-gray-400 text-sm -mt-2">Room is <span id="room-temp-dial">--</span>°</p>
-                    </div>
+            <!-- NEW Temperature Control Section -->
+            <div class="flex justify-center items-center space-x-6">
+                <button id="temp-down" class="p-4 bg-gray-700 rounded-full transition-transform transform hover:scale-110 active:bg-gray-600">
+                    <i data-feather="minus" class="w-10 h-10"></i>
+                </button>
+                <div class="text-center w-40">
+                    <p class="text-gray-400 text-sm">SET TO</p>
+                    <p class="text-7xl font-bold leading-tight"><span id="set-temp-display">--</span><span class="text-5xl text-gray-400 align-top">°</span></p>
+                    <p class="text-gray-400 text-sm -mt-2">Room is <span id="room-temp-display">--</span>°</p>
                 </div>
+                <button id="temp-up" class="p-4 bg-gray-700 rounded-full transition-transform transform hover:scale-110 active:bg-gray-600">
+                    <i data-feather="plus" class="w-10 h-10"></i>
+                </button>
             </div>
             
             <div id="mode-controls">
@@ -149,20 +153,83 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // --- PWA SETUP ---
+        function setupPWA() {
+            const manifest = {
+                "name": "MELCloud AC Control",
+                "short_name": "AC Control",
+                "start_url": "/bike-fun/melcloud/",
+                "scope": "/bike-fun/melcloud/",
+                "display": "standalone",
+                "background_color": "#111827",
+                "theme_color": "#1f2937",
+                "description": "A simple progressive web app to control a MELCloud air conditioner.",
+                "icons": [
+                    { "src": "logo_192.png", "sizes": "192x192", "type": "image/png" },
+                    { "src": "logo_512.png", "sizes": "512x512", "type": "image/png" }
+                ]
+            };
+            const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+            document.getElementById('manifest-link').setAttribute('href', manifestUrl);
+
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    const swCode = `
+                        const CACHE_NAME = 'melcloud-pwa-cache-v2'; // Incremented cache version
+                        const urlsToCache = [
+                            '/bike-fun/melcloud/',
+                            '/bike-fun/melcloud/index.html',
+                            'https://cdn.tailwindcss.com',
+                            'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+                            'https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js'
+                        ];
+                        self.addEventListener('install', event => {
+                            event.waitUntil(
+                                caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+                            );
+                        });
+                        self.addEventListener('fetch', event => {
+                            event.respondWith(
+                                caches.match(event.request).then(response => response || fetch(event.request))
+                            );
+                        });
+                         self.addEventListener('activate', event => {
+                          const cacheWhitelist = [CACHE_NAME];
+                          event.waitUntil(
+                            caches.keys().then(cacheNames => {
+                              return Promise.all(
+                                cacheNames.map(cacheName => {
+                                  if (cacheWhitelist.indexOf(cacheName) === -1) {
+                                    return caches.delete(cacheName);
+                                  }
+                                })
+                              );
+                            })
+                          );
+                        });
+                    `;
+                    const swBlob = new Blob([swCode], {type: 'application/javascript'});
+                    const swUrl = URL.createObjectURL(swBlob);
+                    navigator.serviceWorker.register(swUrl)
+                        .then(reg => console.log('ServiceWorker registration successful:', reg.scope))
+                        .catch(err => console.log('ServiceWorker registration failed:', err));
+                });
+            }
+        }
+        setupPWA();
+        // --- END PWA SETUP ---
+
         feather.replace();
 
         // --- STATE MANAGEMENT ---
         const state = {
-            credentials: null,
-            contextKey: null,
-            device: null,
-            userName: null,
-            location: null,
+            credentials: null, contextKey: null, device: null,
+            userName: null, location: null,
         };
-
         const MELCLOUD_BASE_URL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client';
         const API_HEADERS = { 'Content-Type': 'application/json; charset=UTF-8' };
-
+        
         // --- UI ELEMENTS ---
         const loginView = document.getElementById('login-view');
         const appView = document.getElementById('app');
@@ -170,25 +237,22 @@
         const loginForm = document.getElementById('login-form');
         const loginError = document.getElementById('login-error');
         const logoutButton = document.getElementById('logout-button');
-        
         const dashboardHeader = document.getElementById('dashboard-view');
         const deviceCardView = document.getElementById('device-card-view');
         const deviceControlView = document.getElementById('device-control-view');
-
+        
         // --- UI HELPER FUNCTIONS ---
         const showLoading = (show) => loadingOverlay.style.display = show ? 'flex' : 'none';
         const showLoginError = (message) => {
             loginError.textContent = message;
             loginError.style.display = message ? 'block' : 'none';
         };
-
         function showDeviceControl() {
             dashboardHeader.style.display = 'none';
             deviceCardView.style.display = 'none';
             deviceControlView.style.display = 'block';
         }
         window.showDeviceControl = showDeviceControl;
-
         function showDashboard() {
             dashboardHeader.style.display = 'block';
             deviceCardView.style.display = 'block';
@@ -198,41 +262,30 @@
 
         function updateUI() {
             if (!state.device) return;
-
             const device = state.device.Device;
             const deviceName = state.device.DeviceName;
-            
-            // Names & Location
             document.getElementById('user-name').textContent = state.userName;
             document.getElementById('location').textContent = state.location;
             document.getElementById('device-name-header').textContent = deviceName;
             document.getElementById('device-name-card').textContent = deviceName;
             document.getElementById('device-name-control').textContent = deviceName;
-
-            // Outdoor Temp
             const outdoorTemp = state.device.Device.OutdoorTemperature !== -273 ? state.device.Device.OutdoorTemperature : '--';
             document.getElementById('outdoor-temp').textContent = outdoorTemp;
-            
-            // Status & Power
             const powerStatus = device.Power;
             const statusText = powerStatus ? getModeName(device.OperationMode) : 'Off';
             const statusColor = powerStatus ? getModeColor(device.OperationMode) : 'text-gray-500';
-
             const deviceStatusEl = document.getElementById('device-status');
             deviceStatusEl.textContent = `Status: ${statusText}`;
             deviceStatusEl.className = `font-semibold mt-1 ${statusColor}`;
             document.getElementById('power-toggle-card').checked = powerStatus;
-            
             const powerButtonControl = document.getElementById('power-button-control');
             powerButtonControl.textContent = powerStatus ? 'Turn Off' : 'Turn On';
             powerButtonControl.className = `w-full py-4 text-lg font-bold rounded-xl transition-transform transform hover:scale-105 ${powerStatus ? 'bg-red-600 hover:bg-red-700' : 'bg-indigo-600 hover:bg-indigo-700'}`;
-
-            // Temperatures
             document.getElementById('room-temp-card').textContent = device.RoomTemperature.toFixed(1);
-            document.getElementById('set-temp-dial').textContent = device.SetTemperature.toFixed(1);
-            document.getElementById('room-temp-dial').textContent = device.RoomTemperature.toFixed(1);
+            
+            document.getElementById('set-temp-display').textContent = device.SetTemperature.toFixed(1);
+            document.getElementById('room-temp-display').textContent = device.RoomTemperature.toFixed(1);
 
-            // Mode Buttons
             document.querySelectorAll('.mode-button').forEach(btn => {
                 btn.classList.remove('bg-indigo-600', 'ring-2', 'ring-indigo-400');
                 btn.classList.add('bg-gray-700');
@@ -241,8 +294,6 @@
                     btn.classList.remove('bg-gray-700');
                 }
             });
-
-            // Fan Speed Buttons
             document.querySelectorAll('.fan-button').forEach(btn => {
                 btn.classList.remove('bg-indigo-600');
                 btn.classList.add('bg-gray-700');
@@ -253,34 +304,26 @@
             });
             feather.replace();
         }
-
+        
         // --- API CALLS ---
         async function apiRequest(url, options) {
             showLoading(true);
             try {
                 const response = await fetch(url, options);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 return await response.json();
             } catch (error) {
                 console.error('API Request Failed:', error);
-                showLoginError('An API error occurred. Check console for details. (Possible CORS issue)');
-                if (url.includes('Login')) logout(); // If login fails, force logout
+                showLoginError('An API error occurred. (Possible CORS issue)');
+                if (url.includes('Login')) logout();
                 return null;
             } finally {
                 showLoading(false);
             }
         }
-
         async function login(email, password) {
             const payload = { Email: email, Password: password, Language: 7, AppVersion: "1.37.2.0", Persist: true, CaptchaResponse: null };
-            const data = await apiRequest(`${MELCLOUD_BASE_URL}/Login/ClientLogin3`, {
-                method: 'POST',
-                headers: API_HEADERS,
-                body: JSON.stringify(payload),
-            });
-
+            const data = await apiRequest(`${MELCLOUD_BASE_URL}/Login/ClientLogin3`, { method: 'POST', headers: API_HEADERS, body: JSON.stringify(payload) });
             if (data && data.ErrorId == null) {
                 state.contextKey = data.LoginData.ContextKey;
                 state.userName = data.LoginData.Name.split(' ')[0];
@@ -290,56 +333,33 @@
                 appView.style.display = 'block';
                 await getDevices();
             } else {
-                showLoginError(data ? data.ErrorMessage : 'Login failed. Please check your credentials.');
+                showLoginError(data ? data.ErrorMessage : 'Login failed.');
             }
         }
-
         function logout() {
             localStorage.removeItem('melcloudCreds');
-            state.credentials = null;
-            state.contextKey = null;
-            state.device = null;
-            appView.style.display = 'none';
-            loginView.style.display = 'flex';
+            state.credentials = null; state.contextKey = null; state.device = null;
+            appView.style.display = 'none'; loginView.style.display = 'flex';
         }
-
         async function getDevices() {
             if (!state.contextKey) return;
-            const data = await apiRequest(`${MELCLOUD_BASE_URL}/User/ListDevices`, {
-                method: 'GET',
-                headers: { 'X-MitsContextKey': state.contextKey },
-            });
-
+            const data = await apiRequest(`${MELCLOUD_BASE_URL}/User/ListDevices`, { method: 'GET', headers: { 'X-MitsContextKey': state.contextKey } });
             if (data && data.length > 0) {
-                // Find the first device in the first building
                 state.device = data[0].Structure.Devices[0];
                 state.location = `${data[0].City}, ${data[0].Postcode}`;
                 updateUI();
             }
         }
-
         async function setDeviceState(newState) {
              if (!state.device) return;
-
-            // EffectiveFlags is a bitmask for what properties are being changed.
-            // 1: Power, 2: SetTemp, 4: OpMode, 8: FanSpeed, 16: VaneVertical, 256: VaneHorizontal
             let effectiveFlags = 0;
             if (newState.hasOwnProperty('Power')) effectiveFlags += 1;
             if (newState.hasOwnProperty('SetTemperature')) effectiveFlags += 2;
             if (newState.hasOwnProperty('OperationMode')) effectiveFlags += 4;
             if (newState.hasOwnProperty('FanSpeed')) effectiveFlags += 8;
-
-            const currentDeviceState = { ...state.device.Device };
-            const payload = { ...currentDeviceState, ...newState, DeviceID: state.device.DeviceID, EffectiveFlags: effectiveFlags };
-            
-            const data = await apiRequest(`${MELCLOUD_BASE_URL}/Device/SetAta`, {
-                method: 'POST',
-                headers: { ...API_HEADERS, 'X-MitsContextKey': state.contextKey },
-                body: JSON.stringify(payload)
-            });
-
+            const payload = { ...state.device.Device, ...newState, DeviceID: state.device.DeviceID, EffectiveFlags: effectiveFlags };
+            const data = await apiRequest(`${MELCLOUD_BASE_URL}/Device/SetAta`, { method: 'POST', headers: { ...API_HEADERS, 'X-MitsContextKey': state.contextKey }, body: JSON.stringify(payload) });
             if (data && data.ErrorCode === 8000) {
-                // Update local state with the confirmed new state from the server
                 state.device.Device = { ...state.device.Device, ...data };
                 updateUI();
             } else {
@@ -348,76 +368,35 @@
         }
         
         // --- EVENT LISTENERS ---
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            login(email, password);
-        });
-
+        loginForm.addEventListener('submit', (e) => { e.preventDefault(); login(document.getElementById('email').value, document.getElementById('password').value); });
         logoutButton.addEventListener('click', logout);
+        document.getElementById('power-toggle-card').addEventListener('change', (e) => setDeviceState({ Power: e.target.checked }));
+        document.getElementById('power-button-control').addEventListener('click', () => setDeviceState({ Power: !state.device.Device.Power }));
+        document.querySelectorAll('.mode-button').forEach(btn => btn.addEventListener('click', () => setDeviceState({ OperationMode: parseInt(btn.dataset.mode) })));
+        document.querySelectorAll('.fan-button').forEach(btn => btn.addEventListener('click', () => setDeviceState({ FanSpeed: parseInt(btn.dataset.fan) })));
         
-        document.getElementById('power-toggle-card').addEventListener('change', (e) => {
-            setDeviceState({ Power: e.target.checked });
+        // Temperature control listeners
+        document.getElementById('temp-up').addEventListener('click', () => {
+            if (!state.device) return;
+            let currentTemp = state.device.Device.SetTemperature;
+            let newTemp = Math.min(31, currentTemp + 0.5); // Max temp 31
+            setDeviceState({ SetTemperature: newTemp });
         });
-        document.getElementById('power-button-control').addEventListener('click', () => {
-             setDeviceState({ Power: !state.device.Device.Power });
+        document.getElementById('temp-down').addEventListener('click', () => {
+            if (!state.device) return;
+            let currentTemp = state.device.Device.SetTemperature;
+            let newTemp = Math.max(10, currentTemp - 0.5); // Min temp 10
+            setDeviceState({ SetTemperature: newTemp });
         });
-
-        document.querySelectorAll('.mode-button').forEach(btn => {
-            btn.addEventListener('click', () => setDeviceState({ OperationMode: parseInt(btn.dataset.mode) }));
-        });
-
-        document.querySelectorAll('.fan-button').forEach(btn => {
-            btn.addEventListener('click', () => setDeviceState({ FanSpeed: parseInt(btn.dataset.fan) }));
-        });
-
-        // Interactive temperature dial
-        const dial = document.getElementById('temp-dial');
-        let isDragging = false;
-        dial.addEventListener('mousedown', () => isDragging = true);
-        window.addEventListener('mouseup', (e) => {
-            if (isDragging) {
-                isDragging = false;
-                // On mouse up, send the final temperature to the API
-                setDeviceState({ SetTemperature: parseFloat(document.getElementById('set-temp-dial').textContent) });
-            }
-        });
-        window.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                const rect = dial.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180 / Math.PI;
-
-                // Simple logic to map angle to temperature (10C to 31C)
-                let temp = 20.5 + (angle / 15); // Adjust divisor for sensitivity
-                temp = Math.max(10, Math.min(31, temp)); // Clamp between min/max
-                
-                // Update UI instantly for responsiveness, rounded to .5
-                const roundedTemp = Math.round(temp * 2) / 2;
-                document.getElementById('set-temp-dial').textContent = roundedTemp.toFixed(1);
-            }
-        });
-
+        
         // --- HELPERS ---
         function getModeName(mode) {
-            switch(mode) {
-                case 1: return 'Heat';
-                case 2: return 'Dry';
-                case 3: return 'Cool';
-                case 8: return 'Auto';
-                default: return 'Unknown';
-            }
+            return {1: 'Heat', 2: 'Dry', 3: 'Cool', 8: 'Auto'}[mode] || 'Unknown';
         }
         function getModeColor(mode) {
-             switch(mode) {
-                case 1: return 'text-orange-400';
-                case 3: return 'text-blue-400';
-                default: return 'text-gray-300';
-            }
+            return {1: 'text-orange-400', 3: 'text-blue-400'}[mode] || 'text-gray-300';
         }
-
+        
         // --- INITIALIZATION ---
         function init() {
             const savedCreds = localStorage.getItem('melcloudCreds');
