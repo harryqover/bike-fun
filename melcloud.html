@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AC Control Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .temp-dial {
+            position: relative; width: 280px; height: 280px; border-radius: 50%;
+            background: conic-gradient(from 135deg, #3b82f6, #9333ea, #ec4899, #f97316, #14b8a6, #3b82f6);
+            display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease; user-select: none;
+        }
+        .temp-dial-inner {
+            position: absolute; width: 240px; height: 240px; background-color: #1f2937;
+            border-radius: 50%;
+        }
+        .temp-dial-center { z-index: 10; }
+        .loader {
+            border: 4px solid #f3f3f3; border-top: 4px solid #4f46e5;
+            border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
+
+    <!-- Login View -->
+    <div id="login-view" class="min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-md w-full bg-gray-800 p-8 rounded-2xl space-y-6">
+            <div>
+                <h1 class="text-3xl font-bold">MELCloud Login</h1>
+                <p class="text-gray-400 mt-1">Enter your credentials to continue.</p>
+            </div>
+            <form id="login-form" class="space-y-4">
+                <input id="email" type="email" placeholder="Email Address" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <input id="password" type="password" placeholder="Password" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <button type="submit" class="w-full py-3 bg-indigo-600 font-bold rounded-lg transition-transform transform hover:scale-105">
+                    Login
+                </button>
+            </form>
+            <p id="login-error" class="text-red-400 text-center hidden"></p>
+        </div>
+    </div>
+    
+    <!-- App View -->
+    <div id="app" class="max-w-md mx-auto p-4 space-y-6 hidden">
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden">
+             <div class="loader"></div>
+        </div>
+
+        <!-- Header Section -->
+        <header id="dashboard-view">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="text-gray-400 text-lg">Good Evening, <span id="user-name">User</span></p>
+                    <h1 class="text-3xl font-bold">Control Panel</h1>
+                </div>
+                <button id="logout-button" class="p-2 rounded-full hover:bg-gray-700" title="Logout">
+                    <i data-feather="log-out" class="w-6 h-6 text-red-400"></i>
+                </button>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-2xl flex items-center justify-between mt-4">
+                <div>
+                    <p class="text-gray-400" id="location">Location</p>
+                    <p class="text-4xl font-bold flex items-center">
+                        <i data-feather="thermometer" class="w-10 h-10 mr-3 text-blue-400"></i>
+                        <span id="outdoor-temp">--</span><span class="text-2xl text-gray-400">°C</span>
+                    </p>
+                </div>
+                <div class="text-right">
+                    <p class="text-gray-400">Device</p>
+                    <p class="font-semibold text-lg" id="device-name-header">--</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Device Card -->
+        <div id="device-card-view" class="space-y-4">
+            <div class="bg-gray-800 p-6 rounded-2xl cursor-pointer transition-transform transform hover:scale-105" onclick="showDeviceControl()">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h2 class="text-2xl font-bold" id="device-name-card">--</h2>
+                        <p id="device-status" class="font-semibold mt-1">Status: --</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="power-toggle-card" class="sr-only peer">
+                        <div class="w-14 h-8 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-indigo-600"></div>
+                    </label>
+                </div>
+                <div class="mt-6 text-center">
+                    <p class="text-gray-400">Room Temperature</p>
+                    <p class="text-6xl font-bold"><span id="room-temp-card">--</span><span class="text-4xl text-gray-400 align-top">°C</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Device Control View (hidden by default) -->
+        <div id="device-control-view" class="hidden bg-gray-800 p-6 rounded-2xl space-y-8">
+            <div class="flex justify-between items-center">
+                <button onclick="showDashboard()" class="p-2 rounded-full hover:bg-gray-700">
+                    <i data-feather="arrow-left" class="w-6 h-6"></i>
+                </button>
+                <h2 class="text-2xl font-bold" id="device-name-control">--</h2>
+                <div class="w-10"></div>
+            </div>
+            
+            <div class="flex justify-center">
+                <div id="temp-dial" class="temp-dial cursor-pointer">
+                    <div class="temp-dial-inner"></div>
+                    <div class="temp-dial-center text-center">
+                         <p class="text-gray-400 text-sm">SET TO</p>
+                         <p class="text-6xl font-bold leading-tight"><span id="set-temp-dial">--</span><span class="text-4xl text-gray-400 align-top">°</span></p>
+                         <p class="text-gray-400 text-sm -mt-2">Room is <span id="room-temp-dial">--</span>°</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="mode-controls">
+                <p class="text-gray-400 text-center mb-3">MODE</p>
+                <div class="grid grid-cols-4 gap-3">
+                    <button data-mode="1" class="mode-button flex flex-col items-center p-3 bg-gray-700 rounded-lg transition hover:bg-gray-600"><i data-feather="sun" class="w-6 h-6 mb-1"></i> Heat</button>
+                    <button data-mode="3" class="mode-button flex flex-col items-center p-3 bg-gray-700 rounded-lg transition hover:bg-gray-600"><i data-feather="wind" class="w-6 h-6 mb-1"></i> Cool</button>
+                    <button data-mode="2" class="mode-button flex flex-col items-center p-3 bg-gray-700 rounded-lg transition hover:bg-gray-600"><i data-feather="droplet" class="w-6 h-6 mb-1"></i> Dry</button>
+                    <button data-mode="8" class="mode-button flex flex-col items-center p-3 bg-gray-700 rounded-lg transition hover:bg-gray-600"><i data-feather="rotate-cw" class="w-6 h-6 mb-1"></i> Auto</button>
+                </div>
+            </div>
+
+            <div id="fan-controls">
+                 <p class="text-gray-400 text-center mb-3">FAN SPEED</p>
+                 <div class="grid grid-cols-5 gap-2 text-center text-sm font-medium">
+                     <button data-fan="0" class="fan-button p-3 bg-gray-700 rounded-lg transition hover:bg-gray-600">Auto</button>
+                     <button data-fan="1" class="fan-button p-3 bg-gray-700 rounded-lg transition hover:bg-gray-600">1</button>
+                     <button data-fan="2" class="fan-button p-3 bg-gray-700 rounded-lg transition hover:bg-gray-600">2</button>
+                     <button data-fan="3" class="fan-button p-3 bg-gray-700 rounded-lg transition hover:bg-gray-600">3</button>
+                     <button data-fan="4" class="fan-button p-3 bg-gray-700 rounded-lg transition hover:bg-gray-600">4</button>
+                 </div>
+            </div>
+
+            <button id="power-button-control" class="w-full py-4 text-lg font-bold rounded-xl transition-transform transform hover:scale-105">
+                Turn Off
+            </button>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        feather.replace();
+
+        // --- STATE MANAGEMENT ---
+        const state = {
+            credentials: null,
+            contextKey: null,
+            device: null,
+            userName: null,
+            location: null,
+        };
+
+        const MELCLOUD_BASE_URL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client';
+        const API_HEADERS = { 'Content-Type': 'application/json; charset=UTF-8' };
+
+        // --- UI ELEMENTS ---
+        const loginView = document.getElementById('login-view');
+        const appView = document.getElementById('app');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const logoutButton = document.getElementById('logout-button');
+        
+        const dashboardHeader = document.getElementById('dashboard-view');
+        const deviceCardView = document.getElementById('device-card-view');
+        const deviceControlView = document.getElementById('device-control-view');
+
+        // --- UI HELPER FUNCTIONS ---
+        const showLoading = (show) => loadingOverlay.style.display = show ? 'flex' : 'none';
+        const showLoginError = (message) => {
+            loginError.textContent = message;
+            loginError.style.display = message ? 'block' : 'none';
+        };
+
+        function showDeviceControl() {
+            dashboardHeader.style.display = 'none';
+            deviceCardView.style.display = 'none';
+            deviceControlView.style.display = 'block';
+        }
+        window.showDeviceControl = showDeviceControl;
+
+        function showDashboard() {
+            dashboardHeader.style.display = 'block';
+            deviceCardView.style.display = 'block';
+            deviceControlView.style.display = 'none';
+        }
+        window.showDashboard = showDashboard;
+
+        function updateUI() {
+            if (!state.device) return;
+
+            const device = state.device.Device;
+            const deviceName = state.device.DeviceName;
+            
+            // Names & Location
+            document.getElementById('user-name').textContent = state.userName;
+            document.getElementById('location').textContent = state.location;
+            document.getElementById('device-name-header').textContent = deviceName;
+            document.getElementById('device-name-card').textContent = deviceName;
+            document.getElementById('device-name-control').textContent = deviceName;
+
+            // Outdoor Temp
+            const outdoorTemp = state.device.Device.OutdoorTemperature !== -273 ? state.device.Device.OutdoorTemperature : '--';
+            document.getElementById('outdoor-temp').textContent = outdoorTemp;
+            
+            // Status & Power
+            const powerStatus = device.Power;
+            const statusText = powerStatus ? getModeName(device.OperationMode) : 'Off';
+            const statusColor = powerStatus ? getModeColor(device.OperationMode) : 'text-gray-500';
+
+            const deviceStatusEl = document.getElementById('device-status');
+            deviceStatusEl.textContent = `Status: ${statusText}`;
+            deviceStatusEl.className = `font-semibold mt-1 ${statusColor}`;
+            document.getElementById('power-toggle-card').checked = powerStatus;
+            
+            const powerButtonControl = document.getElementById('power-button-control');
+            powerButtonControl.textContent = powerStatus ? 'Turn Off' : 'Turn On';
+            powerButtonControl.className = `w-full py-4 text-lg font-bold rounded-xl transition-transform transform hover:scale-105 ${powerStatus ? 'bg-red-600 hover:bg-red-700' : 'bg-indigo-600 hover:bg-indigo-700'}`;
+
+            // Temperatures
+            document.getElementById('room-temp-card').textContent = device.RoomTemperature.toFixed(1);
+            document.getElementById('set-temp-dial').textContent = device.SetTemperature.toFixed(1);
+            document.getElementById('room-temp-dial').textContent = device.RoomTemperature.toFixed(1);
+
+            // Mode Buttons
+            document.querySelectorAll('.mode-button').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'ring-2', 'ring-indigo-400');
+                btn.classList.add('bg-gray-700');
+                if (parseInt(btn.dataset.mode) === device.OperationMode) {
+                    btn.classList.add('bg-indigo-600', 'ring-2', 'ring-indigo-400');
+                    btn.classList.remove('bg-gray-700');
+                }
+            });
+
+            // Fan Speed Buttons
+            document.querySelectorAll('.fan-button').forEach(btn => {
+                btn.classList.remove('bg-indigo-600');
+                btn.classList.add('bg-gray-700');
+                if (parseInt(btn.dataset.fan) === device.FanSpeed) {
+                    btn.classList.add('bg-indigo-600');
+                    btn.classList.remove('bg-gray-700');
+                }
+            });
+            feather.replace();
+        }
+
+        // --- API CALLS ---
+        async function apiRequest(url, options) {
+            showLoading(true);
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('API Request Failed:', error);
+                showLoginError('An API error occurred. Check console for details. (Possible CORS issue)');
+                if (url.includes('Login')) logout(); // If login fails, force logout
+                return null;
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function login(email, password) {
+            const payload = { Email: email, Password: password, Language: 7, AppVersion: "1.37.2.0", Persist: true, CaptchaResponse: null };
+            const data = await apiRequest(`${MELCLOUD_BASE_URL}/Login/ClientLogin3`, {
+                method: 'POST',
+                headers: API_HEADERS,
+                body: JSON.stringify(payload),
+            });
+
+            if (data && data.ErrorId == null) {
+                state.contextKey = data.LoginData.ContextKey;
+                state.userName = data.LoginData.Name.split(' ')[0];
+                state.credentials = { email, password };
+                localStorage.setItem('melcloudCreds', JSON.stringify(state.credentials));
+                loginView.style.display = 'none';
+                appView.style.display = 'block';
+                await getDevices();
+            } else {
+                showLoginError(data ? data.ErrorMessage : 'Login failed. Please check your credentials.');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('melcloudCreds');
+            state.credentials = null;
+            state.contextKey = null;
+            state.device = null;
+            appView.style.display = 'none';
+            loginView.style.display = 'flex';
+        }
+
+        async function getDevices() {
+            if (!state.contextKey) return;
+            const data = await apiRequest(`${MELCLOUD_BASE_URL}/User/ListDevices`, {
+                method: 'GET',
+                headers: { 'X-MitsContextKey': state.contextKey },
+            });
+
+            if (data && data.length > 0) {
+                // Find the first device in the first building
+                state.device = data[0].Structure.Devices[0];
+                state.location = `${data[0].City}, ${data[0].Postcode}`;
+                updateUI();
+            }
+        }
+
+        async function setDeviceState(newState) {
+             if (!state.device) return;
+
+            // EffectiveFlags is a bitmask for what properties are being changed.
+            // 1: Power, 2: SetTemp, 4: OpMode, 8: FanSpeed, 16: VaneVertical, 256: VaneHorizontal
+            let effectiveFlags = 0;
+            if (newState.hasOwnProperty('Power')) effectiveFlags += 1;
+            if (newState.hasOwnProperty('SetTemperature')) effectiveFlags += 2;
+            if (newState.hasOwnProperty('OperationMode')) effectiveFlags += 4;
+            if (newState.hasOwnProperty('FanSpeed')) effectiveFlags += 8;
+
+            const currentDeviceState = { ...state.device.Device };
+            const payload = { ...currentDeviceState, ...newState, DeviceID: state.device.DeviceID, EffectiveFlags: effectiveFlags };
+            
+            const data = await apiRequest(`${MELCLOUD_BASE_URL}/Device/SetAta`, {
+                method: 'POST',
+                headers: { ...API_HEADERS, 'X-MitsContextKey': state.contextKey },
+                body: JSON.stringify(payload)
+            });
+
+            if (data && data.ErrorCode === 8000) {
+                // Update local state with the confirmed new state from the server
+                state.device.Device = { ...state.device.Device, ...data };
+                updateUI();
+            } else {
+                console.error("Failed to set device state", data);
+            }
+        }
+        
+        // --- EVENT LISTENERS ---
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            login(email, password);
+        });
+
+        logoutButton.addEventListener('click', logout);
+        
+        document.getElementById('power-toggle-card').addEventListener('change', (e) => {
+            setDeviceState({ Power: e.target.checked });
+        });
+        document.getElementById('power-button-control').addEventListener('click', () => {
+             setDeviceState({ Power: !state.device.Device.Power });
+        });
+
+        document.querySelectorAll('.mode-button').forEach(btn => {
+            btn.addEventListener('click', () => setDeviceState({ OperationMode: parseInt(btn.dataset.mode) }));
+        });
+
+        document.querySelectorAll('.fan-button').forEach(btn => {
+            btn.addEventListener('click', () => setDeviceState({ FanSpeed: parseInt(btn.dataset.fan) }));
+        });
+
+        // Interactive temperature dial
+        const dial = document.getElementById('temp-dial');
+        let isDragging = false;
+        dial.addEventListener('mousedown', () => isDragging = true);
+        window.addEventListener('mouseup', (e) => {
+            if (isDragging) {
+                isDragging = false;
+                // On mouse up, send the final temperature to the API
+                setDeviceState({ SetTemperature: parseFloat(document.getElementById('set-temp-dial').textContent) });
+            }
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const rect = dial.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180 / Math.PI;
+
+                // Simple logic to map angle to temperature (10C to 31C)
+                let temp = 20.5 + (angle / 15); // Adjust divisor for sensitivity
+                temp = Math.max(10, Math.min(31, temp)); // Clamp between min/max
+                
+                // Update UI instantly for responsiveness, rounded to .5
+                const roundedTemp = Math.round(temp * 2) / 2;
+                document.getElementById('set-temp-dial').textContent = roundedTemp.toFixed(1);
+            }
+        });
+
+        // --- HELPERS ---
+        function getModeName(mode) {
+            switch(mode) {
+                case 1: return 'Heat';
+                case 2: return 'Dry';
+                case 3: return 'Cool';
+                case 8: return 'Auto';
+                default: return 'Unknown';
+            }
+        }
+        function getModeColor(mode) {
+             switch(mode) {
+                case 1: return 'text-orange-400';
+                case 3: return 'text-blue-400';
+                default: return 'text-gray-300';
+            }
+        }
+
+        // --- INITIALIZATION ---
+        function init() {
+            const savedCreds = localStorage.getItem('melcloudCreds');
+            if (savedCreds) {
+                const { email, password } = JSON.parse(savedCreds);
+                login(email, password);
+            } else {
+                loginView.style.display = 'flex';
+                appView.style.display = 'none';
+            }
+        }
+        init();
+    });
+    </script>
+</body>
+</html>
+
