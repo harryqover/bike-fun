@@ -151,6 +151,17 @@
                  <p id="error-message" class="text-center text-red-500 col-span-full hidden">Impossible de charger les événements. Vérifiez l'URL du script et la configuration de la Google Sheet.</p>
             </div>
         </section>
+
+        <!-- Hall of Fame Section -->
+        <section id="ranking" class="mt-20">
+            <h2 class="text-3xl font-bold text-gray-900 mb-10 text-center">🏆 Hall of Fame des Sportifs</h2>
+            <div id="podium-container" class="flex justify-center items-end gap-2 md:gap-4 max-w-2xl mx-auto mb-8 min-h-[200px]">
+                <!-- Podium will be dynamically generated here -->
+            </div>
+            <div id="ranking-list" class="max-w-md mx-auto bg-white p-4 rounded-lg shadow-sm">
+                <!-- Rest of the ranking will be dynamically generated here -->
+            </div>
+        </section>
     </main>
 
     <!-- Footer -->
@@ -353,6 +364,7 @@
                 const data = await response.json();
                 eventsCache = data.events;
                 renderEvents();
+                calculateAndRenderRankings(); // <-- Call ranking calculation
             } catch (error) {
                 console.error("Error fetching events:", error);
                 errorMessage.classList.remove('hidden');
@@ -361,17 +373,12 @@
             }
         }
         
-        /**
-         * UPDATED: A more robust function to post data to the Google Script.
-         * It now always expects a JSON response and handles errors more gracefully.
-         */
         async function postToGoogleScript(data) {
             try {
                 const options = {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(data),
-                    // We always expect a JSON response, so the default 'cors' mode is used.
                 };
                 
                 const response = await fetch(GSCRIPT_URL, options);
@@ -381,11 +388,9 @@
                     console.error("Google Script Response Error Body:", errorText);
                     throw new Error(`Google Script error! Status: ${response.status}`);
                 }
-                // The script should always return JSON, which we parse here.
                 return await response.json(); 
             } catch (error) {
                 console.error('Error posting data to Google Script:', error);
-                // Return a consistent error object format for easier handling.
                 return { status: 'error', message: error.message };
             }
         }
@@ -469,6 +474,82 @@
             const icsContent = ['BEGIN:VCALENDAR','VERSION:2.0','BEGIN:VEVENT',`UID:${event.id}@communautedelacier.be`,`DTSTAMP:${new Date().toISOString().replace(/[-:.]/g, '')}Z`,`DTSTART;VALUE=DATE:${startDate}`,`DTEND;VALUE=DATE:${endDate}`,`SUMMARY:${event.title}`,`DESCRIPTION:${description}`,'END:VEVENT','END:VCALENDAR'].join('\r\n');
             return encodeURIComponent(icsContent);
         }
+
+        // --- RANKING LOGIC ---
+        function calculateAndRenderRankings() {
+            const userScores = {};
+            const now = new Date();
+            const pastEvents = eventsCache.filter(event => event.date && new Date(event.date) < now);
+
+            pastEvents.forEach(event => {
+                if (Array.isArray(event.participants)) {
+                    event.participants.forEach(participant => {
+                        if (participant.name) {
+                            userScores[participant.name] = (userScores[participant.name] || 0) + 1;
+                        }
+                    });
+                }
+            });
+
+            const sortedUsers = Object.entries(userScores)
+                .map(([name, score]) => ({ name, score }))
+                .sort((a, b) => b.score - a.score);
+
+            const podiumContainer = document.getElementById('podium-container');
+            const rankingListContainer = document.getElementById('ranking-list');
+            podiumContainer.innerHTML = '';
+            rankingListContainer.innerHTML = '';
+
+            if (sortedUsers.length === 0) {
+                podiumContainer.innerHTML = '<p class="text-gray-500">Le classement apparaîtra ici une fois les premiers événements passés.</p>';
+                return;
+            }
+            
+            // Render Podium
+            const podiumData = [
+                { user: sortedUsers[1], height: 'h-32', color: 'bg-slate-300', icon: '🥈', nameColor: 'text-slate-800' }, // 2nd place
+                { user: sortedUsers[0], height: 'h-48', color: 'bg-amber-300', icon: '🥇', nameColor: 'text-amber-800' }, // 1st place
+                { user: sortedUsers[2], height: 'h-24', color: 'bg-orange-400', icon: '🥉', nameColor: 'text-orange-800' }  // 3rd place
+            ];
+
+            let podiumHTML = '';
+            podiumData.forEach(item => {
+                podiumHTML += `
+                    <div class="text-center flex-1">
+                        <p class="font-bold text-lg h-7 truncate ${item.user ? item.nameColor : ''}" title="${item.user ? item.user.name : ''}">${item.user ? item.user.name : ''}</p>
+                        <div class="${item.user ? item.color : 'bg-gray-100'} rounded-t-lg flex flex-col justify-center items-center p-2 md:p-4 ${item.height} shadow-inner">
+                             ${item.user ? `
+                                <span class="text-4xl md:text-5xl">${item.icon}</span>
+                                <p class="text-xl md:text-2xl font-bold mt-2">${item.user.score}</p>
+                                <p class="text-xs font-medium text-gray-700">event${item.user.score > 1 ? 's' : ''}</p>
+                             ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            podiumContainer.innerHTML = podiumHTML;
+
+            // Render Ranking List (4th and beyond)
+            const restOfUsers = sortedUsers.slice(3);
+            if (restOfUsers.length > 0) {
+                const listEl = document.createElement('ul');
+                listEl.className = 'space-y-2';
+                restOfUsers.forEach((user, index) => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'flex justify-between items-center p-2 rounded-md hover:bg-gray-100 transition-colors';
+                    listItem.innerHTML = `
+                        <div class="flex items-center">
+                            <span class="text-gray-500 font-semibold w-8">${index + 4}.</span>
+                            <span class="font-medium">${user.name}</span>
+                        </div>
+                        <span class="font-bold text-gray-700 bg-gray-200 px-2 py-0.5 rounded-full text-sm">${user.score}</span>
+                    `;
+                    listEl.appendChild(listItem);
+                });
+                rankingListContainer.appendChild(listEl);
+            }
+        }
+
 
         // --- RENDERING ---
         function renderEvents() {
@@ -610,6 +691,7 @@
                 userInfo.name = name;
                 localStorage.setItem('community_user_name', name);
                 renderEvents();
+                calculateAndRenderRankings();
                 closeModal(authModal);
             } else {
                 showToast(result.message || "Erreur lors de la sauvegarde.", 'error');
@@ -704,3 +786,4 @@
     </script>
 </body>
 </html>
+
