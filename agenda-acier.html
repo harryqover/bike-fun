@@ -312,7 +312,7 @@
 
         async function attemptLoginWithToken(loginToken) {
             showToast("Vérification du lien de connexion...");
-            const result = await postToGoogleScript({ action: 'authenticateUser', payload: { loginToken } }, true);
+            const result = await postToGoogleScript({ action: 'authenticateUser', payload: { loginToken } });
             if (result && result.status === 'success') {
                 updateAuthState(result.data);
                 showToast(`Bienvenue, ${result.data.name}!`, 'success');
@@ -361,25 +361,32 @@
             }
         }
         
-        async function postToGoogleScript(data, expectResponse = false) {
+        /**
+         * UPDATED: A more robust function to post data to the Google Script.
+         * It now always expects a JSON response and handles errors more gracefully.
+         */
+        async function postToGoogleScript(data) {
             try {
                 const options = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(data),
+                    // We always expect a JSON response, so the default 'cors' mode is used.
                 };
-                if (!expectResponse) options.mode = 'no-cors';
                 
                 const response = await fetch(GSCRIPT_URL, options);
                 
-                if (expectResponse) {
-                    if (!response.ok) throw new Error(`Google Script error! Status: ${response.status}`);
-                    return await response.json();
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Google Script Response Error Body:", errorText);
+                    throw new Error(`Google Script error! Status: ${response.status}`);
                 }
-                return { success: true };
+                // The script should always return JSON, which we parse here.
+                return await response.json(); 
             } catch (error) {
-                console.error('Error posting data:', error);
-                return expectResponse ? null : { success: false, error };
+                console.error('Error posting data to Google Script:', error);
+                // Return a consistent error object format for easier handling.
+                return { status: 'error', message: error.message };
             }
         }
 
@@ -403,7 +410,7 @@
                 action: 'generateDescription',
                 payload: { authToken: userInfo.authToken, details: { title, sport, date } }
             };
-            const result = await postToGoogleScript(payload, true);
+            const result = await postToGoogleScript(payload);
 
             if (result && result.status === 'success' && result.data.description) {
                 document.getElementById('propose-description').value = result.data.description;
@@ -431,7 +438,7 @@
                 action: 'extractInfo',
                 payload: { authToken: userInfo.authToken, api: { url } }
             };
-            const result = await postToGoogleScript(payload, true);
+            const result = await postToGoogleScript(payload);
 
             if (result && result.status === 'success' && result.data) {
                 const { title, date, description } = result.data;
@@ -583,8 +590,8 @@
             e.preventDefault();
             const email = e.target.email.value;
             showToast("Envoi du lien en cours...");
-            const result = await postToGoogleScript({ action: 'requestLoginLink', payload: { email } }, true);
-            if(result.status === 'success') {
+            const result = await postToGoogleScript({ action: 'requestLoginLink', payload: { email } });
+            if(result && result.status === 'success') {
                  showToast("Lien envoyé ! Veuillez consulter votre boîte mail.");
                  closeModal(authModal);
             } else {
@@ -597,8 +604,8 @@
             const name = document.getElementById('username').value.trim();
             if (!name) return;
             const payload = { authToken: userInfo.authToken, name };
-            const result = await postToGoogleScript({action: 'updateUser', payload}, true);
-            if(result.status === 'success') {
+            const result = await postToGoogleScript({action: 'updateUser', payload});
+            if(result && result.status === 'success') {
                 showToast("Paramètres enregistrés !");
                 userInfo.name = name;
                 localStorage.setItem('community_user_name', name);
@@ -629,12 +636,12 @@
                 authToken: userInfo.authToken
             }};
             const result = await postToGoogleScript(data);
-            if(result.success) {
+            if(result && result.status === 'success') {
                 showToast("Votre événement a été proposé !");
                 proposeForm.reset();
                 closeModal(proposeModal);
             } else {
-                 showToast("Erreur lors de la proposition.", 'error');
+                 showToast(result.message || "Erreur lors de la proposition.", 'error');
             }
             setButtonLoading(btn, false, 'Soumettre');
         });
@@ -662,11 +669,11 @@
                 if (event) {
                     const payload = { action: 'join', payload: { eventId, authToken: userInfo.authToken } };
                     const result = await postToGoogleScript(payload);
-                     if(result.success) {
+                     if(result && result.status === 'success') {
                         showToast(`Vous avez rejoint: ${event.title}`);
                         fetchEvents();
                     } else {
-                        showToast("Erreur pour rejoindre l'événement.", 'error');
+                        showToast(result.message || "Erreur pour rejoindre l'événement.", 'error');
                     }
                 }
             }
@@ -697,4 +704,3 @@
     </script>
 </body>
 </html>
-
