@@ -112,9 +112,8 @@
             </div>
             <p class="mt-4 text-lg text-gray-300 max-w-2xl mx-auto">L'agenda sportif des voisins du Terdelt.</p>
         </div>
-        <!-- Action Buttons -->
-        <div class="absolute top-4 right-4 flex gap-2">
-            <button id="propose-event-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Proposer un événement</button>
+        <!-- Auth Button -->
+        <div class="absolute top-4 right-4">
             <button id="auth-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold p-2 rounded-full shadow-md transition-transform transform hover:scale-105">
                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </button>
@@ -171,6 +170,11 @@
         </div>
     </footer>
     
+    <!-- Propose Event FAB -->
+    <button id="propose-event-btn" title="Proposer un événement" class="fixed bottom-6 right-6 z-40 bg-emerald-500 hover:bg-emerald-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+    </button>
+
     <!-- Auth/Settings Modal -->
     <div id="auth-modal" class="modal-backdrop">
         <div class="modal-content bg-white w-full max-w-md p-6 rounded-lg shadow-xl m-4">
