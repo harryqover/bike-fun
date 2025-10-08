@@ -15,12 +15,15 @@
         }
         .flowchart-container {
             position: relative;
-            overflow: auto;
+            overflow: hidden; /* Changed from auto to hidden */
             min-height: 100vh;
             cursor: grab;
         }
         .flowchart-container:active {
             cursor: grabbing;
+        }
+        .flowchart-canvas {
+            transform-origin: 0 0; /* Set transform origin for zooming */
         }
         .node {
             position: absolute;
@@ -39,6 +42,8 @@
         }
         .connector {
             position: absolute;
+            top: 0;
+            left: 0;
             pointer-events: none;
             z-index: -1;
         }
@@ -143,12 +148,24 @@
                 <div class="flex-1 flex items-center justify-center">
                     <h2 id="flowchart-title" class="text-lg font-semibold text-slate-700">Bike Theft Insurance Claim</h2>
                 </div>
-                 <div class="w-10 lg:w-0"></div> <!-- Spacer -->
+                 <div class="flex items-center">
+                    <button id="settings-btn" class="p-2 rounded-md text-slate-600 hover:bg-slate-100">
+                       <i data-lucide="settings"></i>
+                   </button>
+                </div>
             </header>
-            <div id="flowchart-container" class="flowchart-container flex-1 p-8">
-                <svg id="connector-svg" class="connector" width="100%" height="100%"></svg>
-                <div id="flowchart-nodes">
-                    <!-- Nodes will be injected here -->
+            <div id="flowchart-container" class="flowchart-container flex-1">
+                <div id="flowchart-canvas" class="flowchart-canvas relative">
+                    <svg id="connector-svg" class="connector" width="10000" height="10000"></svg>
+                    <div id="flowchart-nodes" class="absolute top-0 left-0">
+                        <!-- Nodes will be injected here -->
+                    </div>
+                </div>
+                <!-- Zoom Controls -->
+                <div class="absolute bottom-4 right-4 flex items-center bg-white rounded-lg shadow-lg border border-slate-200">
+                    <button id="zoom-out-btn" class="p-2 text-slate-600 hover:bg-slate-100 rounded-l-md"><i data-lucide="zoom-out" class="w-5 h-5"></i></button>
+                    <button id="zoom-reset-btn" class="p-2 text-slate-600 hover:bg-slate-100 border-l border-r border-slate-200 text-sm font-semibold">100%</button>
+                    <button id="zoom-in-btn" class="p-2 text-slate-600 hover:bg-slate-100 rounded-r-md"><i data-lucide="zoom-in" class="w-5 h-5"></i></button>
                 </div>
             </div>
         </main>
@@ -177,9 +194,34 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="gemini-modal-content bg-white rounded-xl shadow-2xl w-full max-w-lg">
+            <div class="p-6 border-b border-slate-200 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-800">Settings</h3>
+                <button id="close-settings-modal-btn-settings" class="p-1 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="p-8 space-y-4">
+                <div>
+                    <label for="api-key-input" class="block text-sm font-medium text-slate-700">Gemini API Key</label>
+                    <input type="password" id="api-key-input" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter your API key">
+                    <p class="mt-2 text-xs text-slate-500">Your API key is stored locally in your browser and is never sent to any servers.</p>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-200 text-right">
+                 <button id="save-settings-btn" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg shadow-sm hover:bg-indigo-700">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         const flowchartContainer = document.getElementById('flowchart-container');
+        const flowchartCanvas = document.getElementById('flowchart-canvas');
         const nodesContainer = document.getElementById('flowchart-nodes');
         const connectorSvg = document.getElementById('connector-svg');
         const nodeEditor = document.getElementById('node-editor');
@@ -202,43 +244,90 @@
         const geminiExecuteBtn = document.getElementById('gemini-execute-btn');
         const geminiStatus = document.getElementById('gemini-status');
         const geminiPromptTextarea = document.getElementById('gemini-prompt-textarea');
+        
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsModal = document.getElementById('settings-modal');
+        const closeSettingsModalBtn = document.getElementById('close-settings-modal-btn-settings');
+        const saveSettingsBtn = document.getElementById('save-settings-btn');
+        const apiKeyInput = document.getElementById('api-key-input');
+
+        const zoomInBtn = document.getElementById('zoom-in-btn');
+        const zoomOutBtn = document.getElementById('zoom-out-btn');
+        const zoomResetBtn = document.getElementById('zoom-reset-btn');
 
 
-        // --- Panning Logic ---
+        // --- Pan and Zoom Logic ---
+        let scale = 1;
+        let panX = 0;
+        let panY = 0;
         let isPanning = false;
-        let startX, startY, scrollLeft, scrollTop;
+        let startX, startY;
+
+        function updateTransform() {
+            flowchartCanvas.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+            zoomResetBtn.textContent = `${Math.round(scale * 100)}%`;
+        }
 
         flowchartContainer.addEventListener('mousedown', (e) => {
-            // Do not pan when clicking on a node
-            if (e.target.closest('.node')) {
-                return;
-            }
+            if (e.target.closest('.node') || e.target.closest('button')) return;
             isPanning = true;
-            // Record the initial mouse position and scroll position
-            startX = e.pageX;
-            startY = e.pageY;
-            scrollLeft = flowchartContainer.scrollLeft;
-            scrollTop = flowchartContainer.scrollTop;
+            startX = e.clientX - panX;
+            startY = e.clientY - panY;
+            flowchartContainer.style.cursor = 'grabbing';
         });
 
-        flowchartContainer.addEventListener('mouseleave', () => {
-            isPanning = false;
-        });
-
-        // Listen for mouseup on the whole window to end panning
         window.addEventListener('mouseup', () => {
             isPanning = false;
+            flowchartContainer.style.cursor = 'grab';
         });
 
-        flowchartContainer.addEventListener('mousemove', (e) => {
+        window.addEventListener('mousemove', (e) => {
             if (!isPanning) return;
             e.preventDefault();
-            // Calculate the distance the mouse has moved
-            const walkX = e.pageX - startX;
-            const walkY = e.pageY - startY;
-            // Update the scroll position based on the initial position and the walk distance
-            flowchartContainer.scrollLeft = scrollLeft - walkX;
-            flowchartContainer.scrollTop = scrollTop - walkY;
+            panX = e.clientX - startX;
+            panY = e.clientY - startY;
+            updateTransform();
+        });
+
+        flowchartContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomSpeed = 0.1;
+            const minScale = 0.2;
+            const maxScale = 2;
+
+            const rect = flowchartContainer.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            const mousePointX = (mouseX - panX) / scale;
+            const mousePointY = (mouseY - panY) / scale;
+            
+            const newScale = scale - e.deltaY * zoomSpeed * 0.01;
+            const clampedScale = Math.max(minScale, Math.min(maxScale, newScale));
+            
+            panX = mouseX - mousePointX * clampedScale;
+            panY = mouseY - mousePointY * clampedScale;
+
+            scale = clampedScale;
+            
+            updateTransform();
+        });
+        
+        zoomInBtn.addEventListener('click', () => {
+            scale = Math.min(2, scale + 0.1);
+            updateTransform();
+        });
+
+        zoomOutBtn.addEventListener('click', () => {
+            scale = Math.max(0.2, scale - 0.1);
+            updateTransform();
+        });
+
+        zoomResetBtn.addEventListener('click', () => {
+            scale = 1;
+            panX = 0;
+            panY = 0;
+            updateTransform();
         });
 
 
@@ -283,7 +372,6 @@
             nodesContainer.innerHTML = '';
             connectorSvg.innerHTML = '';
             
-            // Auto-layout algorithm
             const layout = autoLayout(nodes);
 
             nodes.forEach(node => {
@@ -322,7 +410,6 @@
             });
             lucide.createIcons();
             drawConnectors();
-            updateContainerSize();
         }
 
         function autoLayout(nodes) {
@@ -343,25 +430,20 @@
             });
 
             const positions = {};
-            const HORIZONTAL_SPACING = 220;
-            const VERTICAL_SPACING = 100;
-            let yOffset = 0;
+            const HORIZONTAL_SPACING = 250;
+            const VERTICAL_SPACING = 120;
 
             function traverse(node, x, y) {
                 if (!node) return 0;
                 
                 positions[node.id] = { x, y };
 
-                let currentY = y;
-                let maxHeight = 0;
-                let childrenHeight = 0;
-                
                 const sortedChildren = node.children.sort((a, b) => (a.branch === 'No' ? 1 : -1));
 
                 if (sortedChildren.length > 0) {
                      const totalChildrenHeight = sortedChildren.reduce((acc, child) => acc + traverse(child, x + HORIZONTAL_SPACING, 0), 0) + (sortedChildren.length - 1) * VERTICAL_SPACING;
                     
-                    let childYOffset = y - (totalChildrenHeight / 2) + 50;
+                    let childYOffset = y - (totalChildrenHeight / 2) + 60;
                     
                     sortedChildren.forEach(child => {
                         const childHeight = traverse(child, x + HORIZONTAL_SPACING, childYOffset);
@@ -369,17 +451,16 @@
                     });
                 }
                 
-                return VERTICAL_SPACING; // return height of a single node for now
+                return VERTICAL_SPACING;
             }
             
             roots.forEach(root => {
-                traverse(root, 50, 300); // Start y can be adjusted
+                traverse(root, 50, 500); // Start y can be adjusted
             });
             
-            // This is a simplified layout, now we need to fix overlaps
             const levels = {};
             nodes.forEach(n => {
-                if (positions[n.id]) { // Check if position exists to prevent crash on orphaned nodes
+                if (positions[n.id]) {
                     const x = positions[n.id].x;
                     if (!levels[x]) levels[x] = [];
                     levels[x].push(n.id);
@@ -408,14 +489,14 @@
                     const nodeEl = document.getElementById(`node-${node.id}`);
                     if (!parentEl || !nodeEl) return;
 
-                    const pRect = parentEl.getBoundingClientRect();
-                    const nRect = nodeEl.getBoundingClientRect();
-                    const containerRect = flowchartContainer.getBoundingClientRect();
+                    const parentWidth = parentEl.offsetWidth;
+                    const parentHeight = parentEl.offsetHeight;
+                    const nodeHeight = nodeEl.offsetHeight;
 
-                    const startX = pRect.right - containerRect.left + flowchartContainer.scrollLeft;
-                    const startY = pRect.top - containerRect.top + pRect.height / 2 + flowchartContainer.scrollTop;
-                    const endX = nRect.left - containerRect.left + flowchartContainer.scrollLeft;
-                    const endY = nRect.top - containerRect.top + nRect.height / 2 + flowchartContainer.scrollTop;
+                    const startX = parent.x + parentWidth;
+                    const startY = parent.y + parentHeight / 2;
+                    const endX = node.x;
+                    const endY = node.y + nodeHeight / 2;
                     
                     const midX = startX + (endX - startX) / 2;
 
@@ -453,21 +534,6 @@
             }
         }
         
-        function updateContainerSize() {
-            let maxX = 0;
-            let maxY = 0;
-            nodes.forEach(node => {
-                if (node.x > maxX) maxX = node.x;
-                if (node.y > maxY) maxY = node.y;
-            });
-            const containerWidth = maxX + 300;
-            const containerHeight = maxY + 200;
-            nodesContainer.style.width = `${containerWidth}px`;
-            nodesContainer.style.height = `${containerHeight}px`;
-            connectorSvg.setAttribute('width', containerWidth);
-            connectorSvg.setAttribute('height', containerHeight);
-        }
-
         function renderEditor() {
             const node = nodes.find(n => n.id === selectedNodeId);
             if (!node) {
@@ -804,6 +870,13 @@
         });
 
         geminiExecuteBtn.addEventListener('click', async () => {
+            const apiKey = localStorage.getItem('geminiApiKey');
+            if (!apiKey || apiKey.trim() === '') {
+                geminiStatus.innerHTML = `<p class="text-red-600 font-medium">API Key is missing. Click the <i data-lucide="settings" class="inline-block w-4 h-4"></i> icon in the top right to add it.</p>`;
+                lucide.createIcons();
+                return;
+            }
+
             const userText = geminiPromptTextarea.value;
             if (userText.trim().length < 20) {
                 geminiStatus.innerHTML = `<p class="text-red-600 font-medium">Please provide a more detailed description of the claims process.</p>`;
@@ -871,7 +944,7 @@
         });
 
         async function callGeminiForGeneration(prompt) {
-            const apiKey = "xxxxx";
+            const apiKey = localStorage.getItem('geminiApiKey') || "";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
             const payload = {
@@ -930,6 +1003,26 @@
         openSidebarBtn.addEventListener('click', () => sidebar.classList.remove('closed'));
         closeSidebarBtn.addEventListener('click', () => sidebar.classList.add('closed'));
         
+        // --- Settings Logic ---
+        settingsBtn.addEventListener('click', () => {
+            apiKeyInput.value = localStorage.getItem('geminiApiKey') || '';
+            settingsModal.classList.remove('hidden');
+        });
+
+        closeSettingsModalBtn.addEventListener('click', () => {
+            settingsModal.classList.add('hidden');
+        });
+
+        saveSettingsBtn.addEventListener('click', () => {
+            const apiKey = apiKeyInput.value.trim();
+            if (apiKey) {
+                localStorage.setItem('geminiApiKey', apiKey);
+            } else {
+                localStorage.removeItem('geminiApiKey');
+            }
+            settingsModal.classList.add('hidden');
+        });
+
         // Setup for mobile
         function setupMobileView() {
             if (window.innerWidth < 1024) {
@@ -944,7 +1037,8 @@
             renderFlowchart();
             renderEditor();
             setupMobileView();
-            lucide.createIcons(); // Ensure all icons are rendered on load
+            lucide.createIcons();
+            updateTransform();
         });
         
         window.addEventListener('resize', setupMobileView);
