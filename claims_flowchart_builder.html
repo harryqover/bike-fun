@@ -3,393 +3,953 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claims Form Flowchart Builder</title>
-    
-    <!-- Tailwind CSS for styling -->
+    <title>Qover - Claims Form Flowchart Visualizer</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Drawflow for flowchart functionality -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.css">
-    <script src="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.js"></script>
-
-    <!-- Google Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
-
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Custom styles for the application and Drawflow nodes */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc; /* slate-50 */
+            background-color: #f8fafc;
+            color: #1e293b;
         }
-        .drawflow .drawflow-node {
-            border-radius: 8px;
+        .flowchart-container {
+            position: relative;
+            overflow: auto;
+            min-height: 100vh;
+            cursor: grab;
+        }
+        .flowchart-container:active {
+            cursor: grabbing;
+        }
+        .node {
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            border: 1px solid #e2e8f0; /* slate-200 */
+            border: 2px solid transparent;
         }
-        .drawflow .drawflow-node .title-box {
-            background-color: #f1f5f9; /* slate-100 */
-            border-bottom: 1px solid #e2e8f0;
-            font-weight: 600;
+        .node.selected {
+            border-color: #4f46e5;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1), 0 0 0 4px rgba(79, 70, 229, 0.2);
         }
-        .drawflow .drawflow-node .box {
-            padding: 16px;
+        .node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
         }
-
-        /* Custom Node Styles */
-        .drawflow-node.page .title-box { background-color: #dbeafe; border-color: #bfdbfe; color: #1e40af; } /* blue-200 */
-        .drawflow-node.question .title-box { background-color: #d1fae5; border-color: #a7f3d0; color: #065f46; } /* green-200 */
-        .drawflow-node.condition .title-box { background-color: #fee2e2; border-color: #fecaca; color: #991b1b; } /* red-200 */
-
-        .drawflow-node.condition .drawflow_content_node {
-             width: 200px;
-             height: 120px;
+        .connector {
+            position: absolute;
+            pointer-events: none;
+            z-index: -1;
         }
-        .drawflow-node.condition .box {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-            background-color: #fef2f2; /* red-50 */
-        }
-        
-        /* Sidebar styling */
-        #details-panel {
+        .sidebar {
             transition: transform 0.3s ease-in-out;
         }
-
-        /* Material Symbols styling */
-        .material-symbols-outlined {
-          font-variation-settings:
-          'FILL' 0,
-          'wght' 400,
-          'GRAD' 0,
-          'opsz' 24
+        .sidebar.closed {
+            transform: translateX(-100%);
+        }
+         /* Scrollbar styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .gemini-modal-content {
+            animation: slide-up 0.3s ease-out;
+        }
+        @keyframes slide-up {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4f46e5;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body class="flex flex-col h-screen overflow-hidden">
-
-    <!-- Header -->
-    <header class="bg-white border-b border-slate-200 p-3 flex items-center justify-between shadow-sm z-20">
-        <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-3xl text-blue-600">schema</span>
-            <h1 class="text-xl font-bold text-slate-800">Claims Form Flowchart Builder</h1>
-        </div>
-        <div class="flex items-center gap-2">
-            <label for="import-file" class="cursor-pointer bg-white border border-slate-300 text-slate-700 font-semibold py-2 px-4 rounded-lg shadow-sm hover:bg-slate-50 transition-colors flex items-center gap-2">
-                <span class="material-symbols-outlined">upload_file</span>
-                Import
-            </label>
-            <input type="file" id="import-file" class="hidden" accept=".json">
-            <button id="export-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-sm hover:bg-blue-700 transition-colors flex items-center gap-2">
-                <span class="material-symbols-outlined">download</span>
-                Export
-            </button>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="flex flex-1 overflow-hidden">
-        
-        <!-- Left Toolbar -->
-        <aside class="w-60 bg-white p-4 border-r border-slate-200 shadow-md flex flex-col gap-4 z-10">
-            <h2 class="text-lg font-semibold text-slate-700">Add Blocks</h2>
-            <p class="text-sm text-slate-500 -mt-2">Drag and drop blocks onto the canvas.</p>
+<body class="overflow-hidden">
+    <div class="flex h-screen w-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar absolute lg:relative z-20 h-full w-96 bg-white border-r border-slate-200 shadow-lg p-6 flex flex-col transition-transform duration-300 ease-in-out">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-2">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-indigo-600"><path d="M16 32C24.8366 32 32 24.8366 32 16C32 7.16344 24.8366 0 16 0C7.16344 0 0 7.16344 0 16C0 24.8366 7.16344 32 16 32Z" fill="currentColor"></path><path d="M15.0306 14.739L19.2343 9.42383H23.0061L17.2031 16.5165L23.2798 23.947H19.508L14.7308 18.0163L11.238 22.155H10.1504L15.0306 14.739ZM12.0161 11.259L13.8016 13.5627L8.98145 20.8999H7.8938L12.0161 11.259Z" fill="white"></path></svg>
+                    <h1 class="text-xl font-bold text-slate-800">Qover Claims Flow</h1>
+                </div>
+                 <button id="close-sidebar-btn" class="lg:hidden p-1 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
             
-            <div draggable="true" ondragstart="drag(event)" data-node-type="page" class="cursor-grab bg-blue-100 border-2 border-dashed border-blue-300 p-4 rounded-lg text-center text-blue-800 font-semibold hover:bg-blue-200 transition-colors">
-                Page / Section
-            </div>
-            <div draggable="true" ondragstart="drag(event)" data-node-type="question" class="cursor-grab bg-green-100 border-2 border-dashed border-green-300 p-4 rounded-lg text-center text-green-800 font-semibold hover:bg-green-200 transition-colors">
-                Question
-            </div>
-            <div draggable="true" ondragstart="drag(event)" data-node-type="condition" class="cursor-grab bg-red-100 border-2 border-dashed border-red-300 p-4 rounded-lg text-center text-red-800 font-semibold hover:bg-red-200 transition-colors">
-                Condition
+            <div id="node-editor" class="flex-grow overflow-y-auto pr-2 -mr-2">
+                <!-- Editor content will be injected here -->
             </div>
 
-            <div class="mt-auto p-3 bg-slate-100 rounded-lg text-sm text-slate-600">
-                <h3 class="font-bold mb-2">How to use:</h3>
-                <ul class="list-disc list-inside space-y-1">
-                    <li>Drag blocks to the canvas.</li>
-                    <li>Click a block to edit its details.</li>
-                    <li>Connect blocks by dragging from the small circles.</li>
-                    <li>Use Import/Export to save and load your work.</li>
-                </ul>
+            <div class="mt-6 pt-6 border-t border-slate-200 space-y-3">
+                <button id="add-node-btn" class="w-full bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center gap-2">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                    <span>Add New Step</span>
+                </button>
+                 <button id="gemini-generate-btn" class="w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold py-3 px-4 rounded-lg shadow-sm hover:from-purple-600 hover:to-indigo-700 flex items-center justify-center gap-2">
+                    <i data-lucide="wand-2" class="w-5 h-5"></i>
+                     <span>Generate From Text</span>
+                </button>
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <button id="import-btn" class="w-full bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-lg hover:bg-slate-200 flex items-center justify-center gap-2">
+                        <i data-lucide="upload" class="w-4 h-4"></i>
+                        Import
+                    </button>
+                     <button id="export-flow-btn" class="w-full bg-slate-100 text-slate-700 font-semibold py-2 px-3 rounded-lg hover:bg-slate-200 flex items-center justify-center gap-2">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        Export
+                    </button>
+                </div>
+                 <button id="export-fields-btn" class="w-full bg-sky-600 text-white font-semibold py-3 px-4 rounded-lg shadow-sm hover:bg-sky-700 flex items-center justify-center gap-2">
+                    <i data-lucide="file-output" class="w-5 h-5"></i>
+                    <span>Export Fields as JSON</span>
+                </button>
             </div>
         </aside>
 
-        <!-- Canvas -->
-        <div id="drawflow-container" class="flex-1 relative">
-            <div id="drawflow" class="w-full h-full"></div>
-        </div>
-
-        <!-- Right Details Panel -->
-        <aside id="details-panel" class="w-96 bg-white p-6 border-l border-slate-200 shadow-lg z-10 transform translate-x-full absolute right-0 top-0 h-full overflow-y-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold text-slate-800">Edit Details</h2>
-                 <button id="close-panel-btn" class="p-1 rounded-full hover:bg-slate-200">
-                    <span class="material-symbols-outlined text-slate-600">close</span>
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col h-screen bg-slate-50">
+            <header class="bg-white border-b border-slate-200 p-4 flex items-center justify-between shadow-sm z-10">
+                 <button id="open-sidebar-btn" class="lg:hidden p-2 rounded-md text-slate-600 hover:bg-slate-100">
+                    <i data-lucide="panel-left"></i>
                 </button>
-            </div>
-            <form id="details-form" class="space-y-4">
-                <input type="hidden" id="node-id">
-                
-                <div>
-                    <label for="node-title" class="block text-sm font-medium text-slate-700 mb-1">Title / Question Text</label>
-                    <input type="text" id="node-title" class="w-full border border-slate-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+                <div class="flex-1 flex items-center justify-center">
+                    <h2 id="flowchart-title" class="text-lg font-semibold text-slate-700">Bike Theft Insurance Claim</h2>
                 </div>
-                
-                <div>
-                    <label for="node-description" class="block text-sm font-medium text-slate-700 mb-1">Short Description</label>
-                    <textarea id="node-description" rows="3" class="w-full border border-slate-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                 <div class="w-10 lg:w-0"></div> <!-- Spacer -->
+            </header>
+            <div id="flowchart-container" class="flowchart-container flex-1 p-8">
+                <svg id="connector-svg" class="connector" width="100%" height="100%"></svg>
+                <div id="flowchart-nodes">
+                    <!-- Nodes will be injected here -->
                 </div>
-                
-                <div id="question-fields" class="space-y-4 hidden">
-                    <div>
-                        <label for="node-field-type" class="block text-sm font-medium text-slate-700 mb-1">Field Type</label>
-                        <select id="node-field-type" class="w-full border border-slate-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option>Text</option>
-                            <option>Number</option>
-                            <option>Date</option>
-                            <option>Email</option>
-                            <option>Dropdown</option>
-                            <option>Checkbox</option>
-                            <option>Radio Buttons</option>
-                            <option>File Upload</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label for="node-accepted-values" class="block text-sm font-medium text-slate-700 mb-1">Accepted Values (comma-separated)</label>
-                        <input type="text" id="node-accepted-values" placeholder="e.g. Yes, No, Maybe" class="w-full border border-slate-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                         <div class="flex items-center gap-2">
-                             <input id="node-is-mandatory" type="checkbox" class="h-4 w-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
-                             <label for="node-is-mandatory" class="text-sm font-medium text-slate-700">Is Mandatory?</label>
-                         </div>
-                         <div class="flex items-center gap-2">
-                             <input id="node-is-visible" type="checkbox" class="h-4 w-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
-                             <label for="node-is-visible" class="text-sm font-medium text-slate-700">Is Visible?</label>
-                         </div>
-                    </div>
-                </div>
-                
-                <button type="button" id="delete-node-btn" class="w-full mt-4 bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-sm hover:bg-red-700 transition-colors flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined">delete</span>
-                    Delete Node
-                </button>
-            </form>
-        </aside>
-    </main>
-
-<script>
-    // --- Drawflow setup and event handling ---
-    const container = document.getElementById('drawflow');
-    const editor = new Drawflow(container);
-    editor.reroute = true;
-    editor.start();
-
-    // --- DOM element references ---
-    const detailsPanel = document.getElementById('details-panel');
-    const detailsForm = document.getElementById('details-form');
-    const questionFields = document.getElementById('question-fields');
-    const nodeIdInput = document.getElementById('node-id');
-    const nodeTitleInput = document.getElementById('node-title');
-    const nodeDescriptionInput = document.getElementById('node-description');
-    const nodeFieldTypeSelect = document.getElementById('node-field-type');
-    const nodeAcceptedValuesInput = document.getElementById('node-accepted-values');
-    const nodeIsMandatoryCheckbox = document.getElementById('node-is-mandatory');
-    const nodeIsVisibleCheckbox = document.getElementById('node-is-visible');
-
-    // --- Initial data for the flowchart ---
-    const initialData = {
-        "drawflow": {
-            "Home": {
-                "data": {
-                    "1": { "id": 1, "name": "page", "data": { "title": "Claim Start", "description": "The starting point for all claims submissions." }, "class": "page", "html": "pageNode", "typenode": false, "inputs": {}, "outputs": { "output_1": { "connections": [{ "node": "2", "output": "input_1" }] } }, "pos_x": 100, "pos_y": 150 },
-                    "2": { "id": 2, "name": "question", "data": { "title": "Is this a new claim?", "description": "Determine if the user is filing a new claim or updating an existing one.", "fieldType": "Radio Buttons", "acceptedValues": "Yes, No", "isMandatory": true, "isVisible": true }, "class": "question", "html": "questionNode", "typenode": false, "inputs": { "input_1": { "connections": [{ "node": "1", "input": "output_1" }] } }, "outputs": { "output_1": { "connections": [{ "node": "3", "output": "input_1" }] }, "output_2": { "connections": [] } }, "pos_x": 450, "pos_y": 120 },
-                    "3": { "id": 3, "name": "condition", "data": { "title": "Check Eligibility", "description": "Based on initial policy checks." }, "class": "condition", "html": "conditionNode", "typenode": false, "inputs": { "input_1": { "connections": [{ "node": "2", "input": "output_1" }] } }, "outputs": { "output_1": { "connections": [] }, "output_2": { "connections": [] } }, "pos_x": 800, "pos_y": 200 }
-                }
-            }
-        }
-    };
-    editor.import(initialData);
-
-
-    // --- Node registration ---
-    const pageNodeContent = `
-        <div>
-            <div class="title-box">Page / Section</div>
-            <div class="box">
-                <p data-df-title>Page Title</p>
-                <small data-df-description class="text-slate-500">Description...</small>
             </div>
-        </div>`;
-    editor.registerNode('pageNode', pageNodeContent, null, null);
-
-    const questionNodeContent = `
-        <div>
-            <div class="title-box">Question</div>
-            <div class="box">
-                <p data-df-title class="font-semibold">Question Text...</p>
-                <small data-df-description class="text-slate-500">Description...</small>
-            </div>
-        </div>`;
-    editor.registerNode('questionNode', questionNodeContent, null, null);
+        </main>
+    </div>
+    <input type="file" id="import-file-input" class="hidden" accept=".json">
     
-    const conditionNodeContent = `
-        <div>
-            <div class="title-box !bg-transparent !border-none"></div>
-            <div class="box !p-0">
-                <p data-df-title class="font-semibold text-sm">Condition...</p>
+    <!-- Gemini Suggestions Modal -->
+    <div id="gemini-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="gemini-modal-content bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b border-slate-200 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600">✨ Generate Flowchart from Text</h3>
+                <button id="close-gemini-modal-btn" class="p-1 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i data-lucide="x"></i>
+                </button>
             </div>
-        </div>`;
-    editor.registerNode('conditionNode', conditionNodeContent, null, null);
+            <div id="gemini-input-container" class="p-8 overflow-y-auto flex-grow flex flex-col">
+                <p class="text-slate-600 mb-4">Describe your claims process below. Be descriptive! Mention sections, questions, and conditions (e.g., "if the user answers yes to the police report question, then ask for the report number").</p>
+                <textarea id="gemini-prompt-textarea" class="w-full h-full flex-grow p-3 border border-slate-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., The form starts with a section for policyholder details. It asks for their policy number and email address. Then, a new section called 'Incident Details' asks for the date of the incident..."></textarea>
+                <div id="gemini-status" class="mt-4 h-10"></div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-200 text-right">
+                 <button id="gemini-execute-btn" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg shadow-sm hover:bg-indigo-700 flex items-center justify-center gap-2">
+                    Generate Flowchart
+                </button>
+            </div>
+        </div>
+    </div>
 
 
-    // --- Functions to update UI ---
-    function showDetailsPanel(nodeId) {
-        const node = editor.getNodeFromId(nodeId);
-        if (!node) return;
+    <script>
+        const flowchartContainer = document.getElementById('flowchart-container');
+        const nodesContainer = document.getElementById('flowchart-nodes');
+        const connectorSvg = document.getElementById('connector-svg');
+        const nodeEditor = document.getElementById('node-editor');
+        const addNodeBtn = document.getElementById('add-node-btn');
+        const flowchartTitle = document.getElementById('flowchart-title');
+        
+        const sidebar = document.getElementById('sidebar');
+        const openSidebarBtn = document.getElementById('open-sidebar-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+        
+        const importBtn = document.getElementById('import-btn');
+        const exportFlowBtn = document.getElementById('export-flow-btn');
+        const exportFieldsBtn = document.getElementById('export-fields-btn');
+        const importFileInput = document.getElementById('import-file-input');
+        
+        const geminiGenerateBtn = document.getElementById('gemini-generate-btn');
+        const geminiModal = document.getElementById('gemini-modal');
+        const closeGeminiModalBtn = document.getElementById('close-gemini-modal-btn');
+        const geminiInputContainer = document.getElementById('gemini-input-container');
+        const geminiExecuteBtn = document.getElementById('gemini-execute-btn');
+        const geminiStatus = document.getElementById('gemini-status');
+        const geminiPromptTextarea = document.getElementById('gemini-prompt-textarea');
 
-        // Populate general fields
-        nodeIdInput.value = nodeId;
-        nodeTitleInput.value = node.data.title || '';
-        nodeDescriptionInput.value = node.data.description || '';
 
-        // Handle specific fields for 'question' nodes
-        if (node.name === 'question') {
-            questionFields.classList.remove('hidden');
-            nodeFieldTypeSelect.value = node.data.fieldType || 'Text';
-            nodeAcceptedValuesInput.value = node.data.acceptedValues || '';
-            nodeIsMandatoryCheckbox.checked = node.data.isMandatory || false;
-            nodeIsVisibleCheckbox.checked = node.data.isVisible || false;
-        } else {
-            questionFields.classList.add('hidden');
-        }
+        // --- Panning Logic ---
+        let isPanning = false;
+        let startX, startY, scrollLeft, scrollTop;
 
-        detailsPanel.classList.remove('translate-x-full');
-    }
+        flowchartContainer.addEventListener('mousedown', (e) => {
+            // Do not pan when clicking on a node
+            if (e.target.closest('.node')) {
+                return;
+            }
+            isPanning = true;
+            // Record the initial mouse position and scroll position
+            startX = e.pageX;
+            startY = e.pageY;
+            scrollLeft = flowchartContainer.scrollLeft;
+            scrollTop = flowchartContainer.scrollTop;
+        });
 
-    function hideDetailsPanel() {
-        detailsPanel.classList.add('translate-x-full');
-    }
+        flowchartContainer.addEventListener('mouseleave', () => {
+            isPanning = false;
+        });
 
-    function updateNodeInEditor(nodeId) {
-        const nodeData = {
-            title: nodeTitleInput.value,
-            description: nodeDescriptionInput.value,
+        // Listen for mouseup on the whole window to end panning
+        window.addEventListener('mouseup', () => {
+            isPanning = false;
+        });
+
+        flowchartContainer.addEventListener('mousemove', (e) => {
+            if (!isPanning) return;
+            e.preventDefault();
+            // Calculate the distance the mouse has moved
+            const walkX = e.pageX - startX;
+            const walkY = e.pageY - startY;
+            // Update the scroll position based on the initial position and the walk distance
+            flowchartContainer.scrollLeft = scrollLeft - walkX;
+            flowchartContainer.scrollTop = scrollTop - walkY;
+        });
+
+
+        // Initial sample data
+        let nodes = [
+            { id: 1, type: 'start', title: 'Claim Started', parentId: null, x: 50, y: 50, details: {} },
+            { id: 2, type: 'section', title: 'Policyholder Details', parentId: 1, x: 250, y: 50, details: { description: 'Collect basic information about the policyholder.' } },
+            { id: 3, type: 'question', title: 'Policy Number', parentId: 2, x: 450, y: 50, details: { description: 'The unique identifier for the insurance policy.', fieldType: 'text', values: '', mandatory: true, visible: true, modelPropertyPath: 'policyNumber' } },
+            { id: 4, type: 'question', title: 'Email Address', parentId: 2, x: 450, y: 150, details: { description: 'Contact email of the policyholder.', fieldType: 'email', values: '', mandatory: true, visible: true, modelPropertyPath: 'claimant.email' } },
+            { id: 5, type: 'section', title: 'Incident Information', parentId: 2, x: 250, y: 250, details: { description: 'Gather details about the theft incident.' } },
+            { id: 6, type: 'question', title: 'Date of Incident', parentId: 5, x: 450, y: 250, details: { description: 'When did the theft occur?', fieldType: 'date', values: '', mandatory: true, visible: true, modelPropertyPath: 'incidentDate' } },
+            { id: 7, type: 'question', title: 'Was a police report filed?', parentId: 5, x: 450, y: 350, details: { description: 'Confirmation if the incident was reported to the police.', fieldType: 'radio', values: 'Yes,No', mandatory: true, visible: true, modelPropertyPath: 'data.policeReportFiled' } },
+            { id: 8, type: 'condition', title: 'Police Report Filed?', parentId: 7, x: 650, y: 350, details: {} },
+            { id: 9, type: 'question', title: 'Police Report Number', parentId: 8, branch: 'Yes', x: 850, y: 300, details: { description: 'The official report number.', fieldType: 'text', values: '', mandatory: true, visible: true, modelPropertyPath: 'data.policeReportNumber' } },
+            { id: 10, type: 'end', title: 'Claim Rejected', parentId: 8, branch: 'No', x: 850, y: 400, details: { description: 'A police report is mandatory for this type of claim.' } },
+            { id: 11, type: 'section', title: 'Upload Documents', parentId: 9, x: 1050, y: 300, details: { description: 'Provide supporting documentation.' } },
+            { id: 12, type: 'question', title: 'Upload Police Report', parentId: 11, x: 1250, y: 250, details: { description: 'A scanned copy or PDF of the police report.', fieldType: 'file', values: '', mandatory: true, visible: true, modelPropertyPath: 'documents.policeReport' } },
+            { id: 13, type: 'question', title: 'Upload Proof of Ownership', parentId: 11, x: 1250, y: 350, details: { description: 'Receipt or invoice for the bike.', fieldType: 'file', values: '', mandatory: true, visible: true, modelPropertyPath: 'documents.proofOfOwnership' } },
+            { id: 14, type: 'end', title: 'Claim Submitted for Review', parentId: 11, x: 1050, y: 450, details: { description: 'The claim is now with our team for processing.' } },
+        ];
+
+        let selectedNodeId = null;
+        let nextId = nodes.length + 1;
+
+        const ICONS = {
+            start: 'flag',
+            end: 'check-circle-2',
+            section: 'folder-open',
+            question: 'help-circle',
+            condition: 'git-branch-plus'
+        };
+        
+        const COLORS = {
+            start: 'bg-green-100 border-green-300 text-green-800',
+            end: 'bg-slate-100 border-slate-300 text-slate-800',
+            section: 'bg-sky-100 border-sky-300 text-sky-800',
+            question: 'bg-amber-100 border-amber-300 text-amber-800',
+            condition: 'bg-purple-100 border-purple-300 text-purple-800',
         };
 
-        const node = editor.getNodeFromId(nodeId);
-        if (node.name === 'question') {
-            nodeData.fieldType = nodeFieldTypeSelect.value;
-            nodeData.acceptedValues = nodeAcceptedValuesInput.value;
-            nodeData.isMandatory = nodeIsMandatoryCheckbox.checked;
-            nodeData.isVisible = nodeIsVisibleCheckbox.checked;
+        function renderFlowchart() {
+            nodesContainer.innerHTML = '';
+            connectorSvg.innerHTML = '';
+            
+            // Auto-layout algorithm
+            const layout = autoLayout(nodes);
+
+            nodes.forEach(node => {
+                const nodeLayout = layout[node.id];
+                if (!nodeLayout) return;
+
+                node.x = nodeLayout.x;
+                node.y = nodeLayout.y;
+                
+                const nodeEl = document.createElement('div');
+                nodeEl.id = `node-${node.id}`;
+                nodeEl.className = `node w-56 rounded-lg p-3 flex items-center gap-3 border ${COLORS[node.type]}`;
+                nodeEl.style.left = `${node.x}px`;
+                nodeEl.style.top = `${node.y}px`;
+                if (node.id === selectedNodeId) {
+                    nodeEl.classList.add('selected');
+                }
+
+                nodeEl.innerHTML = `
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${COLORS[node.type].replace('bg-', 'bg-').replace('-100', '-200')}">
+                        <i data-lucide="${ICONS[node.type]}" class="w-5 h-5"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <p class="font-semibold text-sm">${node.title}</p>
+                        ${node.type !== 'start' && node.type !== 'end' && node.details && node.details.description ? `<p class="text-xs text-slate-500 truncate">${node.details.description}</p>` : ''}
+                    </div>
+                `;
+
+                nodeEl.addEventListener('click', () => {
+                    selectedNodeId = node.id;
+                    renderFlowchart();
+                    renderEditor();
+                });
+
+                nodesContainer.appendChild(nodeEl);
+            });
+            lucide.createIcons();
+            drawConnectors();
+            updateContainerSize();
         }
 
-        editor.updateNodeDataFromId(nodeId, nodeData);
-    }
+        function autoLayout(nodes) {
+            const graph = {};
+            nodes.forEach(node => {
+                graph[node.id] = { ...node, children: [], branch: node.branch };
+            });
 
-    // --- Event listeners ---
-    editor.on('nodeSelected', (id) => showDetailsPanel(id));
-    editor.on('nodeUnselected', () => hideDetailsPanel());
-    
-    detailsForm.addEventListener('input', () => {
-        if (nodeIdInput.value) {
-            updateNodeInEditor(nodeIdInput.value);
+            const roots = [];
+            nodes.forEach(node => {
+                if (node.parentId !== null) {
+                    if (graph[node.parentId]) {
+                       graph[node.parentId].children.push(graph[node.id]);
+                    }
+                } else {
+                    roots.push(graph[node.id]);
+                }
+            });
+
+            const positions = {};
+            const HORIZONTAL_SPACING = 220;
+            const VERTICAL_SPACING = 100;
+            let yOffset = 0;
+
+            function traverse(node, x, y) {
+                if (!node) return 0;
+                
+                positions[node.id] = { x, y };
+
+                let currentY = y;
+                let maxHeight = 0;
+                let childrenHeight = 0;
+                
+                const sortedChildren = node.children.sort((a, b) => (a.branch === 'No' ? 1 : -1));
+
+                if (sortedChildren.length > 0) {
+                     const totalChildrenHeight = sortedChildren.reduce((acc, child) => acc + traverse(child, x + HORIZONTAL_SPACING, 0), 0) + (sortedChildren.length - 1) * VERTICAL_SPACING;
+                    
+                    let childYOffset = y - (totalChildrenHeight / 2) + 50;
+                    
+                    sortedChildren.forEach(child => {
+                        const childHeight = traverse(child, x + HORIZONTAL_SPACING, childYOffset);
+                        childYOffset += childHeight + VERTICAL_SPACING;
+                    });
+                }
+                
+                return VERTICAL_SPACING; // return height of a single node for now
+            }
+            
+            roots.forEach(root => {
+                traverse(root, 50, 300); // Start y can be adjusted
+            });
+            
+            // This is a simplified layout, now we need to fix overlaps
+            const levels = {};
+            nodes.forEach(n => {
+                if (positions[n.id]) { // Check if position exists to prevent crash on orphaned nodes
+                    const x = positions[n.id].x;
+                    if (!levels[x]) levels[x] = [];
+                    levels[x].push(n.id);
+                }
+            });
+
+            Object.values(levels).forEach(levelNodes => {
+                levelNodes.sort((a,b) => positions[a].y - positions[b].y);
+                let currentY = 50;
+                levelNodes.forEach(nodeId => {
+                    positions[nodeId].y = currentY;
+                    currentY += VERTICAL_SPACING;
+                })
+            });
+
+            return positions;
         }
-    });
 
-    document.getElementById('close-panel-btn').addEventListener('click', () => {
-        const selectedNodes = editor.getSelectedNodes();
-        if (selectedNodes.length > 0) {
-            // A bit of a hack to force unselection
-            editor.removeReroutePoint(); // This often clears selection
+        function drawConnectors() {
+            nodes.forEach(node => {
+                if (node.parentId !== null) {
+                    const parent = nodes.find(p => p.id === node.parentId);
+                    if (!parent) return;
+
+                    const parentEl = document.getElementById(`node-${parent.id}`);
+                    const nodeEl = document.getElementById(`node-${node.id}`);
+                    if (!parentEl || !nodeEl) return;
+
+                    const pRect = parentEl.getBoundingClientRect();
+                    const nRect = nodeEl.getBoundingClientRect();
+                    const containerRect = flowchartContainer.getBoundingClientRect();
+
+                    const startX = pRect.right - containerRect.left + flowchartContainer.scrollLeft;
+                    const startY = pRect.top - containerRect.top + pRect.height / 2 + flowchartContainer.scrollTop;
+                    const endX = nRect.left - containerRect.left + flowchartContainer.scrollLeft;
+                    const endY = nRect.top - containerRect.top + nRect.height / 2 + flowchartContainer.scrollTop;
+                    
+                    const midX = startX + (endX - startX) / 2;
+
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', `M ${startX} ${startY} C ${midX} ${startY}, ${midX} ${endY}, ${endX} ${endY}`);
+                    path.setAttribute('stroke', '#94a3b8');
+                    path.setAttribute('stroke-width', '2');
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('marker-end', 'url(#arrow)');
+                    connectorSvg.appendChild(path);
+
+                    if(node.branch) {
+                        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        label.setAttribute('x', midX - 15);
+                        label.setAttribute('y', startY + (endY-startY)/2 + 5);
+                        label.setAttribute('fill', '#475569');
+                        label.setAttribute('font-size', '12px');
+                        label.setAttribute('font-weight', '500');
+                        label.textContent = node.branch;
+                        connectorSvg.appendChild(label);
+                    }
+                }
+            });
+
+            if (!document.getElementById('arrow')) {
+                const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+                defs.innerHTML = `
+                    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5"
+                        markerWidth="6" markerHeight="6"
+                        orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8" />
+                    </marker>
+                `;
+                connectorSvg.appendChild(defs);
+            }
         }
-        hideDetailsPanel();
-    });
-
-    document.getElementById('delete-node-btn').addEventListener('click', () => {
-        const nodeId = nodeIdInput.value;
-        if (nodeId) {
-            editor.removeNodeId(`node-${nodeId}`);
-            hideDetailsPanel();
+        
+        function updateContainerSize() {
+            let maxX = 0;
+            let maxY = 0;
+            nodes.forEach(node => {
+                if (node.x > maxX) maxX = node.x;
+                if (node.y > maxY) maxY = node.y;
+            });
+            const containerWidth = maxX + 300;
+            const containerHeight = maxY + 200;
+            nodesContainer.style.width = `${containerWidth}px`;
+            nodesContainer.style.height = `${containerHeight}px`;
+            connectorSvg.setAttribute('width', containerWidth);
+            connectorSvg.setAttribute('height', containerHeight);
         }
-    });
-    
-    // Import/Export functionality
-    document.getElementById('export-btn').addEventListener('click', () => {
-        const data = JSON.stringify(editor.export(), null, 2);
-        const blob = new Blob([data], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'claims-flow.json';
-        a.click();
-        URL.revokeObjectURL(url);
-    });
 
-    document.getElementById('import-file').addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (file) {
+        function renderEditor() {
+            const node = nodes.find(n => n.id === selectedNodeId);
+            if (!node) {
+                nodeEditor.innerHTML = `
+                    <div class="text-center p-8 h-full flex flex-col items-center justify-center bg-slate-50 rounded-lg">
+                        <i data-lucide="mouse-pointer-2" class="w-12 h-12 text-slate-400 mb-4"></i>
+                        <h3 class="text-lg font-semibold text-slate-700">Select a Step</h3>
+                        <p class="text-sm text-slate-500 mt-1">Click on a step in the flowchart to see its details and make edits.</p>
+                        <p class="text-sm text-slate-500 mt-4">Or, use the button below to add a new step to the process.</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            if (!node.details) {
+                node.details = {};
+            }
+
+            const isQuestion = node.type === 'question';
+
+            nodeEditor.innerHTML = `
+                <div class="space-y-6">
+                    <div>
+                        <label for="node-title" class="block text-sm font-medium text-slate-700">Title</label>
+                        <input type="text" id="node-title" value="${node.title}" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
+                     <div>
+                        <label for="node-type" class="block text-sm font-medium text-slate-700">Type</label>
+                        <select id="node-type" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" ${node.type === 'start' || node.type === 'end' ? 'disabled' : ''}>
+                            <option value="section" ${node.type === 'section' ? 'selected' : ''}>Section / Page</option>
+                            <option value="question" ${node.type === 'question' ? 'selected' : ''}>Question</option>
+                            <option value="condition" ${node.type === 'condition' ? 'selected' : ''}>Condition</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="node-parent" class="block text-sm font-medium text-slate-700">Connected From</label>
+                        <select id="node-parent" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" ${node.type === 'start' ? 'disabled' : ''}>
+                            ${nodes.filter(n => n.id !== node.id && n.type !== 'end').map(p => `<option value="${p.id}" ${node.parentId === p.id ? 'selected' : ''}>${p.title}</option>`).join('')}
+                        </select>
+                    </div>
+                     ${renderConditionalBranchSelector(node)}
+                    <div>
+                        <label for="node-description" class="block text-sm font-medium text-slate-700">Short Description</label>
+                        <textarea id="node-description" rows="3" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">${node.details.description || ''}</textarea>
+                    </div>
+                   
+                    ${isQuestion ? `
+                        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-4">
+                             <h4 class="text-md font-semibold text-slate-800 border-b pb-2 mb-4">Question Details</h4>
+                            <div>
+                                <label for="node-field-type" class="block text-sm font-medium text-slate-700">Field Type</label>
+                                <select id="node-field-type" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    <option ${node.details.fieldType === 'text' ? 'selected' : ''}>text</option>
+                                    <option ${node.details.fieldType === 'email' ? 'selected' : ''}>email</option>
+                                    <option ${node.details.fieldType === 'date' ? 'selected' : ''}>date</option>
+                                    <option ${node.details.fieldType === 'number' ? 'selected' : ''}>number</option>
+                                    <option ${node.details.fieldType === 'radio' ? 'selected' : ''}>radio</option>
+                                    <option ${node.details.fieldType === 'select' ? 'selected' : ''}>select</option>
+                                    <option ${node.details.fieldType === 'file' ? 'selected' : ''}>file</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="node-values" class="block text-sm font-medium text-slate-700">Accepted Values (comma-separated)</label>
+                                <input type="text" id="node-values" value="${node.details.values || ''}" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                             <div>
+                                <label for="node-model-path" class="block text-sm font-medium text-slate-700">Model Property Path</label>
+                                <input type="text" id="node-model-path" value="${node.details.modelPropertyPath || ''}" placeholder="e.g. data.claimNumber" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="node-mandatory" type="checkbox" ${node.details.mandatory ? 'checked' : ''} class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-slate-300 rounded">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="node-mandatory" class="font-medium text-slate-700">Mandatory</label>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="node-visible" type="checkbox" ${node.details.visible ? 'checked' : ''} class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-slate-300 rounded">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="node-visible" class="font-medium text-slate-700">Visible</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="flex items-center justify-between pt-6 border-t border-slate-200">
+                         <button id="save-node-btn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-sm hover:bg-indigo-700 flex items-center gap-2">
+                            <i data-lucide="save" class="w-4 h-4"></i> Save Changes
+                        </button>
+                        ${node.type !== 'start' && node.type !== 'end' ? `<button id="delete-node-btn" class="text-red-600 hover:text-red-800 font-semibold py-2 px-4 rounded-lg hover:bg-red-50 flex items-center gap-2">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i> Delete
+                        </button>` : ''}
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+            addEditorEventListeners();
+        }
+        
+        function renderConditionalBranchSelector(node) {
+            const parent = nodes.find(p => p.id === node.parentId);
+            if (!parent || parent.type !== 'condition') {
+                return '';
+            }
+            return `
+                 <div>
+                    <label for="node-branch" class="block text-sm font-medium text-slate-700">Condition Branch</label>
+                    <select id="node-branch" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <option value="Yes" ${node.branch === 'Yes' ? 'selected' : ''}>Yes</option>
+                        <option value="No" ${node.branch === 'No' ? 'selected' : ''}>No</option>
+                    </select>
+                </div>
+            `;
+        }
+        
+        function addEditorEventListeners() {
+            const saveBtn = document.getElementById('save-node-btn');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', saveNode);
+            }
+
+            const deleteBtn = document.getElementById('delete-node-btn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', deleteNode);
+            }
+            
+            const typeSelector = document.getElementById('node-type');
+            if(typeSelector){
+                typeSelector.addEventListener('change', () => {
+                   const node = nodes.find(n => n.id === selectedNodeId);
+                   if (!node.details) node.details = {};
+                   node.type = typeSelector.value;
+                   if(node.type !== 'question') {
+                       node.details = { description: node.details.description }; // Keep description
+                   } else {
+                       node.details = { ...node.details, fieldType: 'text', values: '', mandatory: true, visible: true, modelPropertyPath: '' };
+                   }
+                   renderEditor();
+                });
+            }
+        }
+        
+        function saveNode() {
+            const node = nodes.find(n => n.id === selectedNodeId);
+            if (!node) return;
+            
+            if (!node.details) {
+                node.details = {};
+            }
+
+            node.title = document.getElementById('node-title').value;
+            node.type = document.getElementById('node-type') ? document.getElementById('node-type').value : node.type;
+            const parentEl = document.getElementById('node-parent');
+            if (parentEl) node.parentId = parseInt(parentEl.value);
+
+            const branchEl = document.getElementById('node-branch');
+            if(branchEl) node.branch = branchEl.value;
+            
+            node.details.description = document.getElementById('node-description').value;
+
+            if (node.type === 'question') {
+                node.details.fieldType = document.getElementById('node-field-type').value;
+                node.details.values = document.getElementById('node-values').value;
+                node.details.mandatory = document.getElementById('node-mandatory').checked;
+                node.details.visible = document.getElementById('node-visible').checked;
+                node.details.modelPropertyPath = document.getElementById('node-model-path').value;
+            }
+
+            renderFlowchart();
+        }
+
+        function deleteNode() {
+            if (confirm('Are you sure you want to delete this step and all subsequent steps?')) {
+                let toDelete = [selectedNodeId];
+                let i = 0;
+                while(i < toDelete.length) {
+                    const currentId = toDelete[i];
+                    const children = nodes.filter(n => n.parentId === currentId).map(n => n.id);
+                    toDelete.push(...children);
+                    i++;
+                }
+                
+                nodes = nodes.filter(n => !toDelete.includes(n.id));
+                selectedNodeId = null;
+                renderFlowchart();
+                renderEditor();
+            }
+        }
+
+        addNodeBtn.addEventListener('click', () => {
+            const parentId = selectedNodeId || 1;
+            const parentNode = nodes.find(n => n.id === parentId);
+            
+            const newNode = {
+                id: nextId++,
+                type: 'question',
+                title: 'New Question',
+                parentId: parentId,
+                x: parentNode ? parentNode.x + 200 : 250,
+                y: parentNode ? parentNode.y : 50,
+                details: {
+                    description: '',
+                    fieldType: 'text',
+                    values: '',
+                    mandatory: true,
+                    visible: true,
+                    modelPropertyPath: ''
+                }
+            };
+            nodes.push(newNode);
+            selectedNodeId = newNode.id;
+            renderFlowchart();
+            renderEditor();
+        });
+        
+        // --- Import / Export Logic ---
+        importBtn.addEventListener('click', () => importFileInput.click());
+        importFileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
-                    const data = JSON.parse(e.target.result);
-                    editor.import(data);
+                    const importedNodes = JSON.parse(e.target.result);
+                    if (Array.isArray(importedNodes)) {
+                        nodes = importedNodes;
+                        nextId = Math.max(...nodes.map(n => n.id)) + 1;
+                        selectedNodeId = null;
+                        renderFlowchart();
+                        renderEditor();
+                    } else {
+                        alert('Invalid format. JSON file must contain an array of nodes.');
+                    }
                 } catch (error) {
-                    console.error("Error parsing JSON file:", error);
-                    alert("Invalid JSON file.");
+                    alert('Error parsing JSON file.');
+                    console.error("Import error:", error);
                 }
             };
             reader.readAsText(file);
-            event.target.value = ''; // Reset file input
+            importFileInput.value = ''; // Reset input
+        });
+
+        exportFlowBtn.addEventListener('click', () => {
+            const dataStr = JSON.stringify(nodes, null, 4);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const title = flowchartTitle.textContent.trim().toLowerCase().replace(/\s+/g, '-') || 'flowchart';
+            a.download = `${title}.json`;
+            a.href = url;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        exportFieldsBtn.addEventListener('click', () => {
+            const questions = nodes.filter(n => n.type === 'question');
+
+            const generateFieldKey = (title) => {
+                return title.toLowerCase()
+                    .replace(/\s+/g, '_') // Replace spaces with underscores
+                    .replace(/[^\w-]/g, ''); // Remove all non-word chars except underscore
+            }
+            
+            const mapFieldType = (type) => {
+                const mapping = {
+                    'text': 'FORM_FIELD_TYPE_TEXT',
+                    'email': 'FORM_FIELD_TYPE_TEXT', // Often just a text field with validation
+                    'date': 'FORM_FIELD_TYPE_DATE',
+                    'number': 'FORM_FIELD_TYPE_NUMBER',
+                    'radio': 'FORM_FIELD_TYPE_SELECT',
+                    'select': 'FORM_FIELD_TYPE_SELECT',
+                    'file': 'FORM_FIELD_TYPE_FILE_UPLOAD',
+                };
+                return mapping[type] || 'FORM_FIELD_TYPE_TEXT';
+            }
+
+            const exportedFields = questions.map(q => {
+                const fieldKey = generateFieldKey(q.title);
+                const field = {
+                    fieldLabelTranslationKey: `claim.form.field.${fieldKey}.label`,
+                    fieldDescriptionTranslationKey: `claim.form.field.${fieldKey}.description`,
+                    fieldKey: fieldKey,
+                    fieldType: mapFieldType(q.details.fieldType),
+                    modelPropertyPath: q.details.modelPropertyPath || `data.${fieldKey}`,
+                    visibleInPortal: q.details.visible,
+                    conditions: [], // Defaulting to empty as per example
+                    required: q.details.mandatory
+                };
+                
+                if ((q.details.fieldType === 'radio' || q.details.fieldType === 'select') && q.details.values) {
+                    field.fieldTypeOptions = q.details.values.split(',')
+                        .map(v => v.trim())
+                        .filter(v => v)
+                        .map(v => ({
+                            value: v,
+                            key: v.toLowerCase().replace(/\s+/g, '_')
+                        }));
+                }
+
+                return field;
+            });
+
+            const dataStr = JSON.stringify(exportedFields, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const title = flowchartTitle.textContent.trim().toLowerCase().replace(/\s+/g, '-') || 'flowchart';
+            a.download = `${title}-fields.json`;
+            a.href = url;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+        
+        // --- Gemini AI Logic ---
+        geminiGenerateBtn.addEventListener('click', () => {
+            geminiModal.classList.remove('hidden');
+            geminiStatus.innerHTML = '';
+            geminiPromptTextarea.value = '';
+        });
+        
+        closeGeminiModalBtn.addEventListener('click', () => {
+            geminiModal.classList.add('hidden');
+        });
+
+        geminiExecuteBtn.addEventListener('click', async () => {
+            const userText = geminiPromptTextarea.value;
+            if (userText.trim().length < 20) {
+                geminiStatus.innerHTML = `<p class="text-red-600 font-medium">Please provide a more detailed description of the claims process.</p>`;
+                return;
+            }
+
+            geminiStatus.innerHTML = '<div class="flex justify-center items-center h-full"><div class="loader"></div><p class="ml-4 text-slate-600">AI is building your flowchart...</p></div>';
+            geminiExecuteBtn.disabled = true;
+
+            const prompt = `
+                You are an expert business analyst specializing in insurance claims forms.
+                Your task is to convert a natural language description of a claims process into a structured JSON object that represents a flowchart.
+                The user wants to visualize this process.
+
+                Analyze the following description:
+                ---
+                ${userText}
+                ---
+
+                Generate a JSON array of "node" objects based on this description. Follow these rules STRICTLY:
+                1. The entire output MUST be a single valid JSON array.
+                2. Each object in the array represents a step (a "node") in the flowchart.
+                3. IDs MUST be unique, sequential integers starting from 1.
+                4. The 'parentId' property is crucial for creating the flowchart connections. It must be the ID of the preceding step.
+                5. The very first node MUST be of type 'start' and its 'parentId' should be 0.
+                6. The final nodes in any path should be of type 'end'.
+                7. Use 'section' for grouping related questions (like pages or sections of a form).
+                8. Use 'question' for actual form fields the user needs to fill out.
+                9. Use 'condition' to represent a decision point, usually following a yes/no question. The steps following a condition must have a 'branch' property set to either "Yes" or "No".
+                10. For 'question' nodes, try to infer the 'fieldType' (e.g., 'date', 'text', 'file', 'radio'). If a question has specific options (like Yes/No), use 'radio' and put the options in the 'values' field, separated by commas.
+                11. All other 'details' properties for questions (mandatory, visible, modelPropertyPath) can be set to default values (true, true, "") if not specified in the text.
+                12. Only include properties that are relevant. For example, a 'start' node only needs id, type, title, and parentId. A node that is not a child of a condition should not have a 'branch' property. For 'start', 'end' and 'condition' nodes, a 'details' property is not necessary unless there is a description.
+
+                Produce ONLY the JSON array as your response. Do not include any explanatory text, markdown formatting, or anything else outside of the JSON array.
+            `;
+
+            try {
+                const generatedNodes = await callGeminiForGeneration(prompt);
+
+                if (!Array.isArray(generatedNodes) || generatedNodes.length === 0) {
+                    throw new Error("Generated data is not a valid array.");
+                }
+
+                nodes = generatedNodes.map(n => ({
+                    ...n,
+                    parentId: n.parentId === 0 ? null : n.parentId // Convert parentId 0 to null for the start node
+                }));
+                nextId = Math.max(...nodes.map(n => n.id)) + 1;
+                selectedNodeId = null;
+                renderFlowchart();
+                renderEditor();
+                geminiModal.classList.add('hidden');
+
+            } catch (error) {
+                console.error("Gemini generation failed:", error);
+                geminiStatus.innerHTML = `
+                    <div class="text-red-600">
+                        <h4 class="font-bold">Error</h4>
+                        <p>Failed to generate the flowchart. Please try again with a clearer description.</p>
+                    </div>
+                `;
+            } finally {
+                geminiExecuteBtn.disabled = false;
+            }
+        });
+
+        async function callGeminiForGeneration(prompt) {
+            const apiKey = "xxxxx";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "ARRAY",
+                        items: {
+                            type: "OBJECT",
+                            properties: {
+                                "id": { "type": "NUMBER" },
+                                "type": { "type": "STRING" },
+                                "title": { "type": "STRING" },
+                                "parentId": { "type": "NUMBER" },
+                                "branch": { "type": "STRING" },
+                                "details": {
+                                    "type": "OBJECT",
+                                    properties: {
+                                        "description": { "type": "STRING" },
+                                        "fieldType": { "type": "STRING" },
+                                        "values": { "type": "STRING" },
+                                        "mandatory": { "type": "BOOLEAN" },
+                                        "visible": { "type": "BOOLEAN" },
+                                        "modelPropertyPath": { "type": "STRING" }
+                                    }
+                                }
+                            },
+                            required: ["id", "type", "title", "parentId"]
+                        }
+                    }
+                }
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(`API request failed with status ${response.status}: ${errorBody}`);
+            }
+
+            const result = await response.json();
+            const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+            
+            if (!jsonText) {
+                throw new Error("No JSON content in API response.");
+            }
+            return JSON.parse(jsonText);
         }
-    });
 
-
-    // --- Drag and Drop functionality ---
-    let positionX = 0;
-    let positionY = 0;
-
-    window.drag = function(ev) {
-        ev.dataTransfer.setData("node-type", ev.target.getAttribute('data-node-type'));
-    }
-
-    const drop = (ev) => {
-        ev.preventDefault();
-        const nodeType = ev.dataTransfer.getData("node-type");
-        positionX = ev.clientX - (container.getBoundingClientRect().left);
-        positionY = ev.clientY - (container.getBoundingClientRect().top);
-
-        switch (nodeType) {
-            case 'page':
-                editor.addNode('page', 0, 1, positionX, positionY, 'page', { title: 'New Page', description: 'Describe this page or section.' }, 'pageNode', false);
-                break;
-            case 'question':
-                editor.addNode('question', 1, 2, positionX, positionY, 'question', { title: 'New Question?', description: 'A short description of the question.', fieldType: 'Text', acceptedValues: '', isMandatory: true, isVisible: true }, 'questionNode', false);
-                break;
-            case 'condition':
-                editor.addNode('condition', 1, 2, positionX, positionY, 'condition', { title: 'New Condition', description: 'e.g. Amount > 500' }, 'conditionNode', false);
-                break;
+        // Sidebar toggle logic
+        openSidebarBtn.addEventListener('click', () => sidebar.classList.remove('closed'));
+        closeSidebarBtn.addEventListener('click', () => sidebar.classList.add('closed'));
+        
+        // Setup for mobile
+        function setupMobileView() {
+            if (window.innerWidth < 1024) {
+                sidebar.classList.add('closed');
+            } else {
+                 sidebar.classList.remove('closed');
+            }
         }
-    }
 
-    const allowDrop = (ev) => {
-        ev.preventDefault();
-    }
+        // Initial render
+        window.addEventListener('load', () => {
+            renderFlowchart();
+            renderEditor();
+            setupMobileView();
+            lucide.createIcons(); // Ensure all icons are rendered on load
+        });
+        
+        window.addEventListener('resize', setupMobileView);
 
-
-    container.addEventListener('drop', drop);
-    container.addEventListener('dragover', allowDrop);
-
-</script>
+    </script>
 </body>
 </html>
+
