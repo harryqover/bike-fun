@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terdelt Solar Community Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Tailwind gray-50 */
+        }
+        .kpi-card {
+            background: white;
+            border-radius: 1.5rem; /* rounded-3xl */
+            padding: 2rem; /* p-8 */
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.1);
+        }
+        .modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .btn-primary {
+            background-color: #2563eb; /* blue-600 */
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem; /* rounded-xl */
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8; /* blue-700 */
+        }
+        .btn-secondary {
+            background-color: #e5e7eb; /* gray-200 */
+            color: #1f2937; /* gray-800 */
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem; /* rounded-xl */
+            transition: background-color 0.3s;
+        }
+        .btn-secondary:hover {
+             background-color: #d1d5db; /* gray-300 */
+        }
+        /* Spinner Animation */
+        .loader {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1.018a7.002 7.002 0 015.65 5.65H17a1 1 0 110 2h-1.018a7.002 7.002 0 01-5.65 5.65V17a1 1 0 11-2 0v-1.018A7.002 7.002 0 014.35 10.332H3a1 1 0 110-2h1.018a7.002 7.002 0 015.65-5.65V3a1 1 0 011-1zM4 10a6 6 0 1112 0 6 6 0 01-12 0z" clip-rule="evenodd" />
+                    <path d="M10 4.5a.5.5 0 00-1 0V6a.5.5 0 001 0V4.5zM10 14a.5.5 0 00-1 0v1.5a.5.5 0 001 0V14zM15.5 10a.5.5 0 000-1H14a.5.5 0 000 1h1.5zM6 10a.5.5 0 000-1H4.5a.5.5 0 000 1H6z" />
+                    <path fill-rule="evenodd" d="M12.828 7.172a.5.5 0 00-.707 0L10 9.293 7.879 7.172a.5.5 0 00-.707.707L9.293 10l-2.121 2.121a.5.5 0 00.707.707L10 10.707l2.121 2.121a.5.5 0 00.707-.707L10.707 10l2.121-2.121a.5.5 0 000-.707z" clip-rule="evenodd" />
+                </svg>
+                <h1 class="text-3xl font-bold tracking-tight text-gray-900">Terdelt Solar Community</h1>
+            </div>
+            <button id="addStationBtn" class="btn-primary hidden sm:block">
+                + Add Your Station
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div id="loadingState" class="text-center py-20">
+                <div class="loader mx-auto"></div>
+                <p class="mt-4 text-lg text-gray-600 font-medium">Fetching live solar data...</p>
+            </div>
+
+            <div id="errorState" class="hidden text-center py-20 bg-red-50 rounded-3xl">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="mt-4 text-lg text-red-700 font-semibold">Could not load community data.</p>
+                <p class="text-gray-600 mt-1">Please try again later. The backend might be busy.</p>
+            </div>
+            
+            <div id="mainContent" class="hidden">
+                <!-- Data Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <!-- North Area Card -->
+                    <div class="kpi-card">
+                        <div>
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h2 class="text-2xl font-bold text-gray-900">North Area</h2>
+                                    <p class="text-base text-gray-500" id="northStations">0 Stations</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-3xl font-bold text-gray-800" id="northEnergy">0.0 <span class="text-lg">kWh</span></p>
+                                    <p class="text-sm font-medium text-gray-500 h-5" id="northCompare">vs yesterday</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-base text-gray-500">Live Generation</p>
+                            <p class="text-7xl font-black text-blue-600" id="northPower">0.0</p>
+                            <p class="text-2xl font-bold text-gray-800 -mt-2">kW</p>
+                        </div>
+                    </div>
+
+                    <!-- South Area Card -->
+                     <div class="kpi-card">
+                        <div>
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h2 class="text-2xl font-bold text-gray-900">South Area</h2>
+                                    <p class="text-base text-gray-500" id="southStations">0 Stations</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-3xl font-bold text-gray-800" id="southEnergy">0.0 <span class="text-lg">kWh</span></p>
+                                    <p class="text-sm font-medium text-gray-500 h-5" id="southCompare">vs yesterday</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-base text-gray-500">Live Generation</p>
+                            <p class="text-7xl font-black text-yellow-500" id="southPower">0.0</p>
+                            <p class="text-2xl font-bold text-gray-800 -mt-2">kW</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <div class="mt-12 bg-white rounded-3xl p-4 sm:p-6 shadow-sm">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Today's Live Production (kW)</h3>
+                    <div class="h-96">
+                        <canvas id="powerChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Last Updated -->
+                <div class="text-center text-gray-500 mt-8">
+                    <p>Last updated: <span id="lastUpdated" class="font-semibold">never</span></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Action Button for Mobile -->
+    <button id="addStationBtnMobile" class="sm:hidden fixed bottom-6 right-6 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+    </button>
+
+
+    <!-- Add Station Modal -->
+    <div id="addStationModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 opacity-0 pointer-events-none">
+        <div class="bg-white rounded-3xl shadow-xl w-full max-w-md p-8 transform scale-95 transition-transform duration-300">
+            <div class="flex justify-between items-start">
+                 <h2 class="text-2xl font-bold text-gray-900 mb-4">Join the Community</h2>
+                 <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 text-3xl leading-none">&times;</button>
+            </div>
+           
+            <div id="modal-content-form">
+                <p class="text-gray-600 mb-6">Enter your FusionSolar Kiosk ID to add your solar production data to the community dashboard.</p>
+                
+                <form id="stationForm">
+                    <div>
+                        <label for="kioskId" class="block text-sm font-medium text-gray-700">Station Kiosk ID</label>
+                        <input type="text" id="kioskId" name="kioskId" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., 36avffMzMhIPQgec2dAy49uu4KwFymu2" required>
+                        <p class="mt-2 text-xs text-gray-500">Find this in your FusionSolar App sharing settings.</p>
+                    </div>
+
+                    <div class="mt-6">
+                        <label class="block text-sm font-medium text-gray-700">Community Area</label>
+                        <div class="mt-2 grid grid-cols-2 gap-3">
+                            <label class="border rounded-xl p-4 flex items-center space-x-3 has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500 cursor-pointer">
+                                <input type="radio" name="area" value="North" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" required>
+                                <span class="font-medium text-gray-800">North Area</span>
+                            </label>
+                            <label class="border rounded-xl p-4 flex items-center space-x-3 has-[:checked]:bg-yellow-50 has-[:checked]:border-yellow-500 cursor-pointer">
+                                <input type="radio" name="area" value="South" class="h-4 w-4 text-yellow-600 border-gray-300 focus:ring-yellow-500">
+                                <span class="font-medium text-gray-800">South Area</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-end space-x-3">
+                        <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                        <button type="submit" class="btn-primary" id="submitBtn">Add Station</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="modal-content-loading" class="hidden text-center py-12">
+                <div class="loader mx-auto"></div>
+                <p class="mt-4 text-lg text-gray-600 font-medium">Adding your station...</p>
+            </div>
+
+             <div id="modal-content-success" class="hidden text-center py-12">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 class="mt-4 text-2xl font-bold text-gray-800">Welcome!</h3>
+                <p class="mt-2 text-gray-600">Your station has been added. Thank you for contributing!</p>
+                <button class="btn-primary mt-6" id="finishBtn">Done</button>
+             </div>
+
+             <div id="modal-content-error" class="hidden text-center py-12">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 class="mt-4 text-2xl font-bold text-gray-800">Oh no!</h3>
+                <p class="mt-2 text-gray-600" id="submissionErrorMsg">Something went wrong. Please check your Kiosk ID and try again.</p>
+                <button class="btn-secondary mt-6" id="tryAgainBtn">Try Again</button>
+             </div>
+
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbycuBT_TJFgJYbwDtpUkO226vAgFY3ktimorRpo1ByIOlhFRPaHXZyqBJE5-HGIov0x/exec";
+
+        // Page elements
+        const loadingState = document.getElementById('loadingState');
+        const errorState = document.getElementById('errorState');
+        const mainContent = document.getElementById('mainContent');
+        const lastUpdatedEl = document.getElementById('lastUpdated');
+        
+        // North Area elements
+        const northPowerEl = document.getElementById('northPower');
+        const northStationsEl = document.getElementById('northStations');
+        const northEnergyEl = document.getElementById('northEnergy');
+        const northCompareEl = document.getElementById('northCompare');
+
+        // South Area elements
+        const southPowerEl = document.getElementById('southPower');
+        const southStationsEl = document.getElementById('southStations');
+        const southEnergyEl = document.getElementById('southEnergy');
+        const southCompareEl = document.getElementById('southCompare');
+
+        // Modal elements
+        const modal = document.getElementById('addStationModal');
+        const addStationBtns = [document.getElementById('addStationBtn'), document.getElementById('addStationBtnMobile')];
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const stationForm = document.getElementById('stationForm');
+        const modalForm = document.getElementById('modal-content-form');
+        const modalLoading = document.getElementById('modal-content-loading');
+        const modalSuccess = document.getElementById('modal-content-success');
+        const modalError = document.getElementById('modal-content-error');
+        const submissionErrorMsg = document.getElementById('submissionErrorMsg');
+        const finishBtn = document.getElementById('finishBtn');
+        const tryAgainBtn = document.getElementById('tryAgainBtn');
+        
+        // --- Modal Logic ---
+        function openModal() {
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.remove('scale-95');
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('pointer-events-none');
+                showModalContent('form');
+            }, 300);
+        }
+
+        function showModalContent(state) { // 'form', 'loading', 'success', 'error'
+            modalForm.classList.add('hidden');
+            modalLoading.classList.add('hidden');
+            modalSuccess.classList.add('hidden');
+            modalError.classList.add('hidden');
+            if (state === 'form') modalForm.classList.remove('hidden');
+            if (state === 'loading') modalLoading.classList.remove('hidden');
+            if (state === 'success') modalSuccess.classList.remove('hidden');
+            if (state === 'error') modalError.classList.remove('hidden');
+        }
+
+        addStationBtns.forEach(btn => btn.addEventListener('click', openModal));
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+        finishBtn.addEventListener('click', closeModal);
+        tryAgainBtn.addEventListener('click', () => showModalContent('form'));
+        
+        // --- Data Fetching Logic ---
+        async function fetchDashboardData() {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getData`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    updateUI(result.data);
+                    loadingState.classList.add('hidden');
+                    errorState.classList.add('hidden');
+                    mainContent.classList.remove('hidden');
+                } else {
+                    throw new Error(result.message || 'Failed to fetch data');
+                }
+            } catch (error) {
+                console.error("Error fetching dashboard data:", error);
+                loadingState.classList.add('hidden');
+                errorState.classList.remove('hidden');
+                mainContent.classList.add('hidden');
+            }
+        }
+
+        function updateUI(data) {
+            // North Card
+            const northData = data.north;
+            northPowerEl.textContent = northData.power.toFixed(2);
+            northStationsEl.textContent = `${northData.stationCount} Station${northData.stationCount === 1 ? '' : 's'}`;
+            northEnergyEl.innerHTML = `${northData.dailyEnergy.toFixed(2)} <span class="text-lg">kWh</span>`;
+            updateCompareText(northCompareEl, northData.dailyEnergy, northData.yesterdayEnergy);
+
+            // South Card
+            const southData = data.south;
+            southPowerEl.textContent = southData.power.toFixed(2);
+            southStationsEl.textContent = `${southData.stationCount} Station${southData.stationCount === 1 ? '' : 's'}`;
+            southEnergyEl.innerHTML = `${southData.dailyEnergy.toFixed(2)} <span class="text-lg">kWh</span>`;
+            updateCompareText(southCompareEl, southData.dailyEnergy, southData.yesterdayEnergy);
+
+            // Last Updated
+            const northDate = northData.lastUpdate ? new Date(northData.lastUpdate) : new Date(0);
+            const southDate = southData.lastUpdate ? new Date(southData.lastUpdate) : new Date(0);
+            const mostRecentDate = northDate > southDate ? northDate : southDate;
+            lastUpdatedEl.textContent = mostRecentDate.getTime() > 0 ? mostRecentDate.toLocaleString() : 'Not available';
+        }
+        
+        function updateCompareText(element, today, yesterday) {
+            if (yesterday > 0.01 && today > 0.01) {
+                const percentChange = ((today - yesterday) / yesterday) * 100;
+                const directionIcon = percentChange >= 0 ? '▲' : '▼';
+                const colorClass = percentChange >= 0 ? 'text-green-600' : 'text-red-600';
+                element.innerHTML = `<span class="${colorClass}">${directionIcon} ${Math.abs(percentChange).toFixed(0)}%</span> vs yesterday`;
+            } else {
+                element.textContent = 'vs yesterday';
+            }
+        }
+        
+        // --- Form Submission ---
+        stationForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showModalContent('loading');
+            const formData = new FormData(stationForm);
+            const url = `${SCRIPT_URL}?action=addStation&kioskId=${encodeURIComponent(formData.get('kioskId').trim())}&area=${encodeURIComponent(formData.get('area'))}`;
+
+            try {
+                const response = await fetch(url);
+                const result = await response.json();
+                if (result.status === 'success') {
+                    showModalContent('success');
+                    stationForm.reset();
+                    fetchDashboardData(); // Refresh data after adding
+                } else {
+                    throw new Error(result.message || 'An unknown error occurred.');
+                }
+            } catch (error) {
+                submissionErrorMsg.textContent = error.message;
+                showModalContent('error');
+            }
+        });
+
+        // --- Chart Logic ---
+        let powerChart = null;
+        async function fetchChartData() {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getChartData`);
+                if (!response.ok) throw new Error(`Chart HTTP error! status: ${response.status}`);
+                const result = await response.json();
+                if (result.status === 'success') {
+                    renderChart(result.data);
+                }
+            } catch (error) {
+                console.error("Error fetching chart data:", error);
+            }
+        }
+
+        function renderChart(data) {
+            const ctx = document.getElementById('powerChart').getContext('2d');
+            if (powerChart) {
+                powerChart.destroy();
+            }
+            powerChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'South Area',
+                        data: data.southData,
+                        borderColor: 'rgba(234, 179, 8, 0.8)',
+                        backgroundColor: 'rgba(234, 179, 8, 0.3)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'North Area',
+                        data: data.northData,
+                        borderColor: 'rgba(59, 130, 246, 0.8)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.3)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stacked: true,
+                            title: { display: true, text: 'Power (kW)' }
+                        },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: { tooltip: { mode: 'index', intersect: false } },
+                    interaction: { mode: 'index', intersect: false },
+                    pointRadius: 0
+                }
+            });
+        }
+
+        // --- Initial Load & Refresh Intervals ---
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchDashboardData();
+            fetchChartData();
+            setInterval(fetchDashboardData, 60 * 1000); // Refresh KPIs every 1 minute
+            setInterval(fetchChartData, 5 * 60 * 1000); // Refresh chart every 5 minutes
+        });
+    </script>
+</body>
+</html>
+
