@@ -187,7 +187,7 @@
 
                 <!-- Chart -->
                 <div class="mt-12 bg-white rounded-3xl p-4 sm:p-6 shadow-sm">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Bilan Énergétique du Jour (kW)</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Bilan Énergétique (kW)</h3>
                     <div class="flex items-center gap-2 -mt-2 mb-4">
                         <p class="text-sm text-gray-500">Production nette après déduction de la consommation de base.</p>
                         <div class="relative group">
@@ -228,7 +228,7 @@
     <!-- Modals -->
     <!-- Add Station Modal -->
     <div id="addStationModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 opacity-0 pointer-events-none">
-        <div class="bg-white rounded-3xl shadow-xl w-full max-w-md p-8 transform scale-95 transition-transform duration-300">
+        <div class="bg-white rounded-3xl shadow-xl w-full max-w-md p-8 transform scale-95 transition-transform duration-300 overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-start">
                  <h2 class="text-2xl font-bold text-gray-900 mb-4">Partager votre production</h2>
                  <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 text-3xl leading-none">&times;</button>
@@ -243,16 +243,51 @@
                         <input type="text" id="kioskId" name="kioskId" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="ex: 36avffMzMhIPQgec2dAy49uu4KwFymu2" required>
                     </div>
 
-                    <div class="mt-4">
-                        <label for="baseConsumption" class="block text-sm font-medium text-gray-700">Consommation de base (veille)</label>
-                        <div class="relative mt-1">
-                             <input type="number" id="baseConsumption" name="baseConsumption" class="block w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="111" required>
-                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                 <span class="text-gray-500 sm:text-sm">W</span>
-                             </div>
+                     <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="kwp" class="block text-sm font-medium text-gray-700">Puissance Crête</label>
+                            <div class="relative mt-1">
+                                <input type="number" step="0.1" id="kwp" name="kwp" class="block w-full px-4 py-3 pr-14 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="4" required>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">kWp</span>
+                                </div>
+                            </div>
                         </div>
-                        <p class="mt-2 text-xs text-gray-500">Estimation de votre consommation minimale continue (appareils en veille, etc.).</p>
+                        <div>
+                           <label for="baseConsumption" class="block text-sm font-medium text-gray-700">Consommation base</label>
+                            <div class="relative mt-1">
+                                 <input type="number" id="baseConsumption" name="baseConsumption" class="block w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="111" required>
+                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                     <span class="text-gray-500 sm:text-sm">W</span>
+                                 </div>
+                            </div>
+                        </div>
                     </div>
+                     <p class="mt-2 text-xs text-gray-500">La consommation de base est votre consommation minimale continue (appareils en veille, etc.).</p>
+
+
+                    <div class="mt-4 grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="tilt" class="block text-sm font-medium text-gray-700">Inclinaison (Tilt)</label>
+                             <div class="relative mt-1">
+                                <input type="number" id="tilt" name="tilt" class="block w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="35" required>
+                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                     <span class="text-gray-500 sm:text-sm">°</span>
+                                 </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="azimuth" class="block text-sm font-medium text-gray-700">Orientation (Azimuth)</label>
+                             <div class="relative mt-1">
+                                <input type="number" id="azimuth" name="azimuth" class="block w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="130" required>
+                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                     <span class="text-gray-500 sm:text-sm">°</span>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                     <p class="mt-2 text-xs text-gray-500">Azimuth: 0°=Nord, 180°=Sud.</p>
+
 
                     <div class="mt-6">
                         <label class="block text-sm font-medium text-gray-700">Zone de la communauté</label>
@@ -376,8 +411,15 @@
             params.append('kioskId', formData.get('kioskId').trim());
             params.append('area', formData.get('area'));
             params.append('baseConsumption', formData.get('baseConsumption'));
+            params.append('kwp', formData.get('kwp'));
+            params.append('tilt', formData.get('tilt'));
+            params.append('azimuth', formData.get('azimuth'));
 
             try {
+                // Basic validation
+                if (!formData.get('kioskId') || !formData.get('area')) {
+                    throw new Error("Kiosk ID et Zone sont requis.");
+                }
                 const response = await fetch(SCRIPT_URL, { method: 'POST', body: params });
                 const result = await response.json();
 
@@ -386,7 +428,7 @@
                     stationForm.reset();
                     closeModal(addStationModal);
                     fetchDashboardData();
-                    fetchChartData(); // Refresh chart data
+                    fetchChartData(); 
                 } else {
                     throw new Error(result.message || 'Une erreur inconnue est survenue.');
                 }
@@ -399,16 +441,118 @@
         let powerChart = null;
         let fullChartData = null;
 
-        function renderChart(dayData) {
+        // Plugin to draw a "now" line on the chart
+        const nowLinePlugin = {
+            id: 'nowLine',
+            afterDraw: (chart) => {
+                if (!chart.options.plugins.nowLine || !chart.options.plugins.nowLine.enabled) {
+                    return;
+                }
+
+                const ctx = chart.ctx;
+                const xAxis = chart.scales.x;
+                const yAxis = chart.scales.y;
+                const now = new Date();
+                const currentTimeLabel = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+                const labels = xAxis.ticks.map(t => t.label);
+                let nowX = -1;
+
+                // Find the position by interpolating between two labels
+                for (let i = 0; i < labels.length - 1; i++) {
+                    const label1 = labels[i];
+                    const label2 = labels[i+1];
+                    if (currentTimeLabel >= label1 && currentTimeLabel <= label2) {
+                        const x1 = xAxis.getPixelForTick(i);
+                        const x2 = xAxis.getPixelForTick(i+1);
+                        
+                        const time1 = parseInt(label1.split(':')[0]) * 60 + parseInt(label1.split(':')[1]);
+                        const time2 = parseInt(label2.split(':')[0]) * 60 + parseInt(label2.split(':')[1]);
+                        const timeNow = now.getHours() * 60 + now.getMinutes();
+
+                        if (time2 > time1) {
+                            const percentage = (timeNow - time1) / (time2 - time1);
+                            nowX = x1 + (x2 - x1) * percentage;
+                        }
+                        break;
+                    }
+                }
+                
+                if (nowX !== -1) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(nowX, yAxis.top);
+                    ctx.lineTo(nowX, yAxis.bottom);
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)'; // Red-500
+                    ctx.setLineDash([6, 6]);
+                    ctx.stroke();
+
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = 'rgba(239, 68, 68, 0.8)';
+                    ctx.font = '600 12px Inter';
+                    ctx.fillText('Maintenant', nowX, yAxis.top + 15);
+                    ctx.restore();
+                }
+            }
+        };
+        Chart.register(nowLinePlugin);
+
+
+        function renderChart(dayData, isToday = false) {
             const ctx = document.getElementById('powerChart').getContext('2d');
             if (!dayData) return;
-            const { labels, northNet, southNet } = dayData;
+            const { labels, northNet, southNet, forecastNet } = dayData;
 
             const datasets = [
-                { label: 'Zone Sud (Partage)', data: southNet.map(v => v > 0 ? v : 0), borderColor: 'rgba(234, 179, 8, 0.8)', backgroundColor: 'rgba(234, 179, 8, 0.3)', fill: 'origin', tension: 0.4, order: 1 },
-                { label: 'Zone Nord (Partage)', data: northNet.map(v => v > 0 ? v : 0), borderColor: 'rgba(59, 130, 246, 0.8)', backgroundColor: 'rgba(59, 130, 246, 0.3)', fill: 'origin', tension: 0.4, order: 2 },
-                { label: 'Consommation Réseau', data: southNet.map((v, i) => v < 0 ? v + (northNet[i] || 0) : (northNet[i] < 0 ? northNet[i] : 0)), borderColor: 'rgba(239, 68, 68, 0.8)', backgroundColor: 'rgba(239, 68, 68, 0.3)', fill: 'origin', tension: 0.4, order: 3 }
+                { 
+                    label: 'Zone Sud (Partage)', 
+                    data: southNet.map(v => (v !== null && v > 0) ? v : null),
+                    borderColor: 'rgba(234, 179, 8, 0.8)', 
+                    backgroundColor: 'rgba(234, 179, 8, 0.3)', 
+                    fill: 'origin', 
+                    tension: 0.4, 
+                    stack: 'partage'
+                },
+                { 
+                    label: 'Zone Nord (Partage)', 
+                    data: northNet.map(v => (v !== null && v > 0) ? v : null),
+                    borderColor: 'rgba(59, 130, 246, 0.8)', 
+                    backgroundColor: 'rgba(59, 130, 246, 0.3)', 
+                    fill: 'origin', 
+                    tension: 0.4, 
+                    stack: 'partage'
+                },
+                { 
+                    label: 'Consommation Réseau', 
+                    data: labels.map((_, i) => {
+                        const southVal = southNet[i];
+                        const northVal = northNet[i];
+                        let consumption = 0;
+                        if (typeof southVal === 'number' && southVal < 0) consumption += southVal;
+                        if (typeof northVal === 'number' && northVal < 0) consumption += northVal;
+                        return consumption < 0 ? consumption : null;
+                    }),
+                    borderColor: 'rgba(239, 68, 68, 0.8)', 
+                    backgroundColor: 'rgba(239, 68, 68, 0.3)', 
+                    fill: 'origin', 
+                    tension: 0.4,
+                }
             ];
+
+            // Add forecast if available
+            if(forecastNet && forecastNet.some(v => v !== null)) {
+                datasets.push({
+                    label: 'Prévision Nette',
+                    data: forecastNet,
+                    borderColor: 'rgba(22, 163, 74, 0.7)',
+                    backgroundColor: 'transparent',
+                    borderDash: [5, 5],
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 0,
+                });
+            }
             
             if (powerChart) powerChart.destroy();
 
@@ -417,10 +561,21 @@
                 data: { labels: labels, datasets: datasets },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    scales: { y: { stacked: true, title: { display: true, text: 'Puissance Nette (kW)' } }, x: { grid: { display: false } } },
-                    plugins: { tooltip: { mode: 'index', intersect: false } },
+                    scales: { 
+                        y: { 
+                            stacked: true, 
+                            title: { display: true, text: 'Puissance Nette (kW)' } 
+                        }, 
+                        x: { 
+                            grid: { display: false } 
+                        } 
+                    },
+                    plugins: { 
+                        tooltip: { mode: 'index', intersect: false },
+                        nowLine: { enabled: isToday }
+                    },
                     interaction: { mode: 'index', intersect: false },
-                    pointRadius: 0
+                    spanGaps: true
                 }
             });
         }
@@ -433,12 +588,12 @@
             });
             
             chartDateEl.textContent = fullChartData[dayKey].dateLabel;
-            renderChart(fullChartData[dayKey]);
+            renderChart(fullChartData[dayKey], dayKey === 'today');
         }
         
         function setupDaySelector() {
             if (!fullChartData) return;
-            daySelectorContainer.innerHTML = ''; // Clear existing buttons
+            daySelectorContainer.innerHTML = ''; 
             const dayOrder = ['dayBefore', 'yesterday', 'today'];
 
             dayOrder.forEach(key => {
