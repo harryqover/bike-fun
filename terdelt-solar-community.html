@@ -537,6 +537,7 @@
                     backgroundColor: 'rgba(239, 68, 68, 0.3)', 
                     fill: 'origin', 
                     tension: 0.4,
+                    stack: 'consommation' // Different stack
                 }
             ];
 
@@ -562,8 +563,7 @@
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     scales: { 
-                        y: { 
-                            stacked: true, 
+                        y: {  
                             title: { display: true, text: 'Puissance Nette (kW)' } 
                         }, 
                         x: { 
@@ -594,7 +594,7 @@
         function setupDaySelector() {
             if (!fullChartData) return;
             daySelectorContainer.innerHTML = ''; 
-            const dayOrder = ['dayBefore', 'yesterday', 'today'];
+            const dayOrder = ['dayBefore', 'yesterday', 'today', 'tomorrow'];
 
             dayOrder.forEach(key => {
                 if (fullChartData[key] && fullChartData[key].labels.length > 0) {
@@ -606,7 +606,14 @@
                     daySelectorContainer.appendChild(btn);
                 }
             });
-            displayChartForDay('today');
+            // Default to today, but if no data, try tomorrow
+            if(fullChartData.today && fullChartData.today.labels.length > 0){
+                 displayChartForDay('today');
+            } else if (fullChartData.tomorrow && fullChartData.tomorrow.labels.length > 0) {
+                 displayChartForDay('tomorrow');
+            } else {
+                 displayChartForDay('yesterday');
+            }
         }
 
         // --- Modal Logic ---
