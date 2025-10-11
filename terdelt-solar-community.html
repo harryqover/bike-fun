@@ -1,4 +1,4 @@
-<!-- https://gemini.google.com/app/5281ddbecc264399-->
+<!-- https://gemini.google.com/app/5281ddbecc264399 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -134,10 +134,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <p class="text-base text-gray-500">Production Actuelle</p>
+                        <div class="flex-grow flex flex-col justify-center">
+                            <p class="text-base text-gray-500">Bilan Actuel (Net)</p>
                             <p class="text-7xl font-black text-blue-600" id="northPower">0.0</p>
                             <p class="text-2xl font-bold text-gray-800 -mt-2">kW</p>
+                        </div>
+                        <div class="mt-2 pt-2 border-t border-gray-100">
+                            <p class="text-sm text-gray-500">Production Solaire: <span id="northGrossPower" class="font-bold text-gray-700">0.0</span> kW</p>
                         </div>
                     </div>
 
@@ -155,17 +158,32 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <p class="text-base text-gray-500">Production Actuelle</p>
+                        <div class="flex-grow flex flex-col justify-center">
+                            <p class="text-base text-gray-500">Bilan Actuel (Net)</p>
                             <p class="text-7xl font-black text-yellow-500" id="southPower">0.0</p>
                             <p class="text-2xl font-bold text-gray-800 -mt-2">kW</p>
+                        </div>
+                        <div class="mt-2 pt-2 border-t border-gray-100">
+                             <p class="text-sm text-gray-500">Production Solaire: <span id="southGrossPower" class="font-bold text-gray-700">0.0</span> kW</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Chart -->
                 <div class="mt-12 bg-white rounded-3xl p-4 sm:p-6 shadow-sm">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Production du jour en direct (kW)</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Bilan Énergétique du Jour (kW)</h3>
+                    <div class="flex items-center gap-2 -mt-4 mb-4">
+                        <p class="text-sm text-gray-500">Production solaire nette après déduction de la consommation de base.</p>
+                        <div class="relative group">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 cursor-pointer" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 bg-gray-800 text-white text-xs text-center rounded-lg py-2 px-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
+                                La 'Consommation Réseau' est une estimation théorique, calculée lorsque la production solaire est inférieure à la somme des consommations de base des participants.
+                                <svg class="absolute text-gray-800 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255" xml:space="preserve"><polygon class="fill-current" points="0,0 127.5,127.5 255,0"/></svg>
+                            </div>
+                        </div>
+                    </div>
                     <div class="h-96">
                         <canvas id="powerChart"></canvas>
                     </div>
@@ -185,8 +203,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
     </button>
-
-
+    
+    <!-- Modals -->
     <!-- Add Station Modal -->
     <div id="addStationModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 opacity-0 pointer-events-none">
         <div class="bg-white rounded-3xl shadow-xl w-full max-w-md p-8 transform scale-95 transition-transform duration-300">
@@ -196,13 +214,23 @@
             </div>
            
             <div id="modal-content-form">
-                <p class="text-gray-600 mb-6">Entrez l'ID Kiosk de votre installation FusionSolar pour ajouter vos données de production au tableau de bord.</p>
+                <p class="text-gray-600 mb-6">Entrez les informations de votre installation pour l'ajouter au tableau de bord.</p>
                 
                 <form id="stationForm">
                     <div>
                         <label for="kioskId" class="block text-sm font-medium text-gray-700">ID Kiosk de la station</label>
                         <input type="text" id="kioskId" name="kioskId" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="ex: 36avffMzMhIPQgec2dAy49uu4KwFymu2" required>
-                        <p class="mt-2 text-xs text-gray-500">Trouvez cet ID dans les paramètres de partage de votre app FusionSolar.</p>
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="baseConsumption" class="block text-sm font-medium text-gray-700">Consommation de base (veille)</label>
+                        <div class="relative mt-1">
+                             <input type="number" id="baseConsumption" name="baseConsumption" class="block w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="111" required>
+                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                 <span class="text-gray-500 sm:text-sm">W</span>
+                             </div>
+                        </div>
+                        <p class="mt-2 text-xs text-gray-500">Estimation de votre consommation minimale continue (appareils en veille, etc.).</p>
                     </div>
 
                     <div class="mt-6">
@@ -225,21 +253,19 @@
                     </div>
                 </form>
             </div>
-
-            <!-- ... other modal states (loading, success, error) are the same ... -->
+             <!-- ... other modal states (loading, success, error) would go here ... -->
         </div>
     </div>
-
-    <!-- Become a Member Modal -->
+    
+    <!-- Become a Member Modal (Unchanged) -->
     <div id="membershipModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 opacity-0 pointer-events-none">
         <div class="bg-white rounded-3xl shadow-xl w-full max-w-2xl p-8 transform scale-95 transition-transform duration-300 overflow-y-auto max-h-screen">
+            <!-- Content is the same as previous version -->
             <div class="flex justify-between items-start">
                  <h2 class="text-3xl font-bold text-gray-900 mb-2">Rejoignez la Communauté et Économisez !</h2>
                  <button id="closeMembershipModalBtn" class="text-gray-400 hover:text-gray-600 text-3xl leading-none">&times;</button>
             </div>
             <p class="text-gray-600 mb-6">Partagez et consommez une énergie locale, durable et moins chère.</p>
-
-            <!-- Benefits Grid -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center mb-8">
                 <div class="bg-gray-100 p-6 rounded-2xl">
                     <div class="text-emerald-500 text-4xl mb-2">💰</div>
@@ -257,9 +283,7 @@
                     <p class="text-sm text-gray-600">Un prix équitable pour les producteurs et les consommateurs.</p>
                 </div>
             </div>
-
-            <!-- Pricing Info -->
-             <div class="bg-blue-50 border border-blue-200 p-6 rounded-2xl mb-8">
+            <div class="bg-blue-50 border border-blue-200 p-6 rounded-2xl mb-8">
                 <h3 class="font-bold text-xl text-gray-800 mb-2">Prix d'échange de l'énergie</h3>
                  <div class="flex flex-col sm:flex-row justify-around gap-4">
                     <div class="text-center">
@@ -272,8 +296,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- How to Join -->
             <div>
                  <h3 class="font-bold text-2xl text-gray-800 mb-4">Comment nous rejoindre ? C'est simple et gratuit !</h3>
                  <div class="flex flex-col md:flex-row gap-6">
@@ -297,25 +319,26 @@
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbycuBT_TJFgJYbwDtpUkO226vAgFY3ktimorRpo1ByIOlhFRPaHXZyqBJE5-HGIov0x/exec";
 
-        // ... (all existing page element variables are the same) ...
+        // Page Elements
         const loadingState = document.getElementById('loadingState');
         const errorState = document.getElementById('errorState');
         const mainContent = document.getElementById('mainContent');
         const lastUpdatedEl = document.getElementById('lastUpdated');
         const northPowerEl = document.getElementById('northPower');
+        const northGrossPowerEl = document.getElementById('northGrossPower');
         const northStationsEl = document.getElementById('northStations');
         const northEnergyEl = document.getElementById('northEnergy');
         const northCompareEl = document.getElementById('northCompare');
         const southPowerEl = document.getElementById('southPower');
+        const southGrossPowerEl = document.getElementById('southGrossPower');
         const southStationsEl = document.getElementById('southStations');
         const southEnergyEl = document.getElementById('southEnergy');
         const southCompareEl = document.getElementById('southCompare');
-
-        // Modals
+        const stationForm = document.getElementById('stationForm');
+        
+        // Modals & Buttons
         const addStationModal = document.getElementById('addStationModal');
         const membershipModal = document.getElementById('membershipModal');
-
-        // Buttons
         const addStationBtns = [document.getElementById('addStationBtn'), document.getElementById('addStationBtnMobile')];
         const becomeMemberBtn = document.getElementById('becomeMemberBtn');
         const closeModalBtn = document.getElementById('closeModalBtn');
@@ -323,10 +346,110 @@
         const closeMembershipModalBtn = document.getElementById('closeMembershipModalBtn');
         const okMembershipBtn = document.getElementById('okMembershipBtn');
 
-        // Forms and states
-        const stationForm = document.getElementById('stationForm');
-        // ... (rest of the form variables are the same)
+        // --- Form Submission ---
+        stationForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(stationForm);
+            const params = new URLSearchParams();
+            params.append('action', 'addStation');
+            params.append('kioskId', formData.get('kioskId').trim());
+            params.append('area', formData.get('area'));
+            params.append('baseConsumption', formData.get('baseConsumption'));
 
+            try {
+                const response = await fetch(SCRIPT_URL, { method: 'POST', body: params });
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    alert('Station ajoutée avec succès!');
+                    stationForm.reset();
+                    closeModal(addStationModal);
+                    fetchDashboardData();
+                } else {
+                    throw new Error(result.message || 'Une erreur inconnue est survenue.');
+                }
+            } catch (error) {
+                alert(`Erreur: ${error.message}`);
+            }
+        });
+
+        // --- Chart Logic ---
+        let powerChart = null;
+
+        function renderChart(data) {
+            const ctx = document.getElementById('powerChart').getContext('2d');
+            const { labels, northNet, southNet } = data;
+
+            const datasets = [
+                {
+                    label: 'Zone Sud (Partage)',
+                    data: southNet.map(v => v > 0 ? v : 0),
+                    borderColor: 'rgba(234, 179, 8, 0.8)',
+                    backgroundColor: 'rgba(234, 179, 8, 0.3)',
+                    fill: 'origin',
+                    tension: 0.4,
+                    order: 1
+                },
+                 {
+                    label: 'Zone Nord (Partage)',
+                    data: northNet.map(v => v > 0 ? v : 0),
+                    borderColor: 'rgba(59, 130, 246, 0.8)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.3)',
+                    fill: 'origin',
+                    tension: 0.4,
+                    order: 2
+                },
+                {
+                    label: 'Consommation Réseau',
+                    data: southNet.map((v, i) => v < 0 ? v + northNet[i] : (northNet[i] < 0 ? northNet[i] : 0)),
+                    borderColor: 'rgba(239, 68, 68, 0.8)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.3)',
+                    fill: 'origin',
+                    tension: 0.4,
+                    order: 3
+                }
+            ];
+            
+            if (powerChart) {
+                powerChart.destroy();
+            }
+
+            powerChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: labels, datasets: datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            stacked: true,
+                            title: { display: true, text: 'Puissance Nette (kW)' }
+                        },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y.toFixed(2) + ' kW';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    interaction: { mode: 'index', intersect: false },
+                    pointRadius: 0
+                }
+            });
+        }
         
         // --- Modal Logic ---
         function openModal(modalElement) {
@@ -339,21 +462,17 @@
             modalElement.querySelector('div').classList.add('scale-95');
             setTimeout(() => {
                 modalElement.classList.add('pointer-events-none');
-                // Could reset forms here if needed
             }, 300);
         }
         
-        // --- Event Listeners ---
         addStationBtns.forEach(btn => btn.addEventListener('click', () => openModal(addStationModal)));
         becomeMemberBtn.addEventListener('click', () => openModal(membershipModal));
-
         closeModalBtn.addEventListener('click', () => closeModal(addStationModal));
         cancelBtn.addEventListener('click', () => closeModal(addStationModal));
-        
         closeMembershipModalBtn.addEventListener('click', () => closeModal(membershipModal));
         okMembershipBtn.addEventListener('click', () => closeModal(membershipModal));
 
-        // ... (The rest of the script remains the same) ...
+        // --- Data Fetching & UI Update ---
         async function fetchDashboardData() {
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=getData`);
@@ -377,27 +496,26 @@
         }
 
         function updateUI(data) {
-            // North Card
             const northData = data.north;
-            northPowerEl.textContent = northData.power.toFixed(2);
+            northPowerEl.textContent = (northData.netPower).toFixed(2);
+            northGrossPowerEl.textContent = (northData.grossPower).toFixed(2);
             northStationsEl.textContent = `${northData.stationCount} Station${northData.stationCount === 1 ? '' : 's'}`;
             northEnergyEl.innerHTML = `${northData.dailyEnergy.toFixed(2)} <span class="text-lg">kWh</span>`;
             updateCompareText(northCompareEl, northData.dailyEnergy, northData.yesterdayEnergy);
 
-            // South Card
             const southData = data.south;
-            southPowerEl.textContent = southData.power.toFixed(2);
+            southPowerEl.textContent = (southData.netPower).toFixed(2);
+            southGrossPowerEl.textContent = (southData.grossPower).toFixed(2);
             southStationsEl.textContent = `${southData.stationCount} Station${southData.stationCount === 1 ? '' : 's'}`;
             southEnergyEl.innerHTML = `${southData.dailyEnergy.toFixed(2)} <span class="text-lg">kWh</span>`;
             updateCompareText(southCompareEl, southData.dailyEnergy, southData.yesterdayEnergy);
-
-            // Last Updated
+            
             const northDate = northData.lastUpdate ? new Date(northData.lastUpdate) : new Date(0);
             const southDate = southData.lastUpdate ? new Date(southData.lastUpdate) : new Date(0);
             const mostRecentDate = northDate > southDate ? northDate : southDate;
             lastUpdatedEl.textContent = mostRecentDate.getTime() > 0 ? mostRecentDate.toLocaleString('fr-BE') : 'Non disponible';
         }
-        
+
         function updateCompareText(element, today, yesterday) {
             if (yesterday > 0.01 && today > 0.01) {
                 const percentChange = ((today - yesterday) / yesterday) * 100;
@@ -408,32 +526,7 @@
                 element.textContent = 'par rapport à hier';
             }
         }
-        
-        stationForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            // showModalContent('loading'); // This needs to be adapted for multiple modals if we add states here
-            const formData = new FormData(stationForm);
-            const url = `${SCRIPT_URL}?action=addStation&kioskId=${encodeURIComponent(formData.get('kioskId').trim())}&area=${encodeURIComponent(formData.get('area'))}`;
 
-            try {
-                const response = await fetch(url);
-                const result = await response.json();
-                if (result.status === 'success') {
-                    // showModalContent('success');
-                    alert('Station ajoutée avec succès!');
-                    stationForm.reset();
-                    closeModal(addStationModal);
-                    fetchDashboardData(); // Refresh data after adding
-                } else {
-                    throw new Error(result.message || 'An unknown error occurred.');
-                }
-            } catch (error) {
-                alert(`Erreur: ${error.message}`);
-                // showModalContent('error');
-            }
-        });
-
-        let powerChart = null;
         async function fetchChartData() {
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=getChartData`);
@@ -447,55 +540,13 @@
             }
         }
 
-        function renderChart(data) {
-            const ctx = document.getElementById('powerChart').getContext('2d');
-            if (powerChart) {
-                powerChart.destroy();
-            }
-            powerChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data.labels,
-                    datasets: [{
-                        label: 'Zone Sud',
-                        data: data.southData,
-                        borderColor: 'rgba(234, 179, 8, 0.8)',
-                        backgroundColor: 'rgba(234, 179, 8, 0.3)',
-                        fill: true,
-                        tension: 0.4
-                    }, {
-                        label: 'Zone Nord',
-                        data: data.northData,
-                        borderColor: 'rgba(59, 130, 246, 0.8)',
-                        backgroundColor: 'rgba(59, 130, 246, 0.3)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            stacked: true,
-                            title: { display: true, text: 'Puissance (kW)' }
-                        },
-                        x: { grid: { display: false } }
-                    },
-                    plugins: { tooltip: { mode: 'index', intersect: false } },
-                    interaction: { mode: 'index', intersect: false },
-                    pointRadius: 0
-                }
-            });
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             fetchDashboardData();
             fetchChartData();
-            setInterval(fetchDashboardData, 60 * 1000); // Refresh KPIs every 1 minute
-            setInterval(fetchChartData, 5 * 60 * 1000); // Refresh chart every 5 minutes
+            setInterval(fetchDashboardData, 60 * 1000);
+            setInterval(fetchChartData, 5 * 60 * 1000);
         });
+
     </script>
 </body>
 </html>
