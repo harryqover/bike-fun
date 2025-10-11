@@ -1,4 +1,3 @@
-<!-- https://gemini.google.com/app/5281ddbecc264399 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -73,6 +72,23 @@
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
+        }
+        .day-selector-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 0.75rem; /* rounded-xl */
+            font-weight: 500;
+            color: #374151; /* gray-700 */
+            background-color: white;
+            transition: all 0.2s ease-in-out;
+        }
+        .day-selector-btn:hover {
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        .day-selector-btn.active {
+            background-color: #2563eb; /* blue-600 */
+            color: white;
+            border-color: #2563eb; /* blue-600 */
         }
 
         @keyframes spin {
@@ -171,9 +187,9 @@
 
                 <!-- Chart -->
                 <div class="mt-12 bg-white rounded-3xl p-4 sm:p-6 shadow-sm">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Bilan Énergétique du Jour (kW)</h3>
-                    <div class="flex items-center gap-2 -mt-4 mb-4">
-                        <p class="text-sm text-gray-500">Production solaire nette après déduction de la consommation de base.</p>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Bilan Énergétique du Jour (kW)</h3>
+                    <div class="flex items-center gap-2 -mt-2 mb-4">
+                        <p class="text-sm text-gray-500">Production nette après déduction de la consommation de base.</p>
                         <div class="relative group">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 cursor-pointer" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
@@ -184,6 +200,11 @@
                             </div>
                         </div>
                     </div>
+                     <!-- Day Selector -->
+                    <div id="daySelectorContainer" class="flex justify-center items-center space-x-2 mb-2">
+                        <!-- Buttons will be injected here by JS -->
+                    </div>
+                    <p id="chartDate" class="text-center text-gray-600 font-semibold mb-2 h-6"></p>
                     <div class="h-96">
                         <canvas id="powerChart"></canvas>
                     </div>
@@ -253,14 +274,12 @@
                     </div>
                 </form>
             </div>
-             <!-- ... other modal states (loading, success, error) would go here ... -->
         </div>
     </div>
     
-    <!-- Become a Member Modal (Unchanged) -->
+    <!-- Become a Member Modal -->
     <div id="membershipModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 opacity-0 pointer-events-none">
         <div class="bg-white rounded-3xl shadow-xl w-full max-w-2xl p-8 transform scale-95 transition-transform duration-300 overflow-y-auto max-h-screen">
-            <!-- Content is the same as previous version -->
             <div class="flex justify-between items-start">
                  <h2 class="text-3xl font-bold text-gray-900 mb-2">Rejoignez la Communauté et Économisez !</h2>
                  <button id="closeMembershipModalBtn" class="text-gray-400 hover:text-gray-600 text-3xl leading-none">&times;</button>
@@ -335,6 +354,8 @@
         const southEnergyEl = document.getElementById('southEnergy');
         const southCompareEl = document.getElementById('southCompare');
         const stationForm = document.getElementById('stationForm');
+        const chartDateEl = document.getElementById('chartDate');
+        const daySelectorContainer = document.getElementById('daySelectorContainer');
         
         // Modals & Buttons
         const addStationModal = document.getElementById('addStationModal');
@@ -365,6 +386,7 @@
                     stationForm.reset();
                     closeModal(addStationModal);
                     fetchDashboardData();
+                    fetchChartData(); // Refresh chart data
                 } else {
                     throw new Error(result.message || 'Une erreur inconnue est survenue.');
                 }
@@ -375,82 +397,63 @@
 
         // --- Chart Logic ---
         let powerChart = null;
+        let fullChartData = null;
 
-        function renderChart(data) {
+        function renderChart(dayData) {
             const ctx = document.getElementById('powerChart').getContext('2d');
-            const { labels, northNet, southNet } = data;
+            if (!dayData) return;
+            const { labels, northNet, southNet } = dayData;
 
             const datasets = [
-                {
-                    label: 'Zone Sud (Partage)',
-                    data: southNet.map(v => v > 0 ? v : 0),
-                    borderColor: 'rgba(234, 179, 8, 0.8)',
-                    backgroundColor: 'rgba(234, 179, 8, 0.3)',
-                    fill: 'origin',
-                    tension: 0.4,
-                    order: 1
-                },
-                 {
-                    label: 'Zone Nord (Partage)',
-                    data: northNet.map(v => v > 0 ? v : 0),
-                    borderColor: 'rgba(59, 130, 246, 0.8)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.3)',
-                    fill: 'origin',
-                    tension: 0.4,
-                    order: 2
-                },
-                {
-                    label: 'Consommation Réseau',
-                    data: southNet.map((v, i) => v < 0 ? v + northNet[i] : (northNet[i] < 0 ? northNet[i] : 0)),
-                    borderColor: 'rgba(239, 68, 68, 0.8)',
-                    backgroundColor: 'rgba(239, 68, 68, 0.3)',
-                    fill: 'origin',
-                    tension: 0.4,
-                    order: 3
-                }
+                { label: 'Zone Sud (Partage)', data: southNet.map(v => v > 0 ? v : 0), borderColor: 'rgba(234, 179, 8, 0.8)', backgroundColor: 'rgba(234, 179, 8, 0.3)', fill: 'origin', tension: 0.4, order: 1 },
+                { label: 'Zone Nord (Partage)', data: northNet.map(v => v > 0 ? v : 0), borderColor: 'rgba(59, 130, 246, 0.8)', backgroundColor: 'rgba(59, 130, 246, 0.3)', fill: 'origin', tension: 0.4, order: 2 },
+                { label: 'Consommation Réseau', data: southNet.map((v, i) => v < 0 ? v + (northNet[i] || 0) : (northNet[i] < 0 ? northNet[i] : 0)), borderColor: 'rgba(239, 68, 68, 0.8)', backgroundColor: 'rgba(239, 68, 68, 0.3)', fill: 'origin', tension: 0.4, order: 3 }
             ];
             
-            if (powerChart) {
-                powerChart.destroy();
-            }
+            if (powerChart) powerChart.destroy();
 
             powerChart = new Chart(ctx, {
                 type: 'line',
                 data: { labels: labels, datasets: datasets },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            stacked: true,
-                            title: { display: true, text: 'Puissance Nette (kW)' }
-                        },
-                        x: { grid: { display: false } }
-                    },
-                    plugins: {
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        label += context.parsed.y.toFixed(2) + ' kW';
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    },
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { stacked: true, title: { display: true, text: 'Puissance Nette (kW)' } }, x: { grid: { display: false } } },
+                    plugins: { tooltip: { mode: 'index', intersect: false } },
                     interaction: { mode: 'index', intersect: false },
                     pointRadius: 0
                 }
             });
         }
         
+        function displayChartForDay(dayKey) {
+            if (!fullChartData || !fullChartData[dayKey]) return;
+            
+            document.querySelectorAll('.day-selector-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.day === dayKey);
+            });
+            
+            chartDateEl.textContent = fullChartData[dayKey].dateLabel;
+            renderChart(fullChartData[dayKey]);
+        }
+        
+        function setupDaySelector() {
+            if (!fullChartData) return;
+            daySelectorContainer.innerHTML = ''; // Clear existing buttons
+            const dayOrder = ['dayBefore', 'yesterday', 'today'];
+
+            dayOrder.forEach(key => {
+                if (fullChartData[key] && fullChartData[key].labels.length > 0) {
+                    const btn = document.createElement('button');
+                    btn.className = 'day-selector-btn';
+                    btn.dataset.day = key;
+                    btn.textContent = fullChartData[key].buttonLabel;
+                    btn.addEventListener('click', () => displayChartForDay(key));
+                    daySelectorContainer.appendChild(btn);
+                }
+            });
+            displayChartForDay('today');
+        }
+
         // --- Modal Logic ---
         function openModal(modalElement) {
             modalElement.classList.remove('opacity-0', 'pointer-events-none');
@@ -460,9 +463,7 @@
         function closeModal(modalElement) {
             modalElement.classList.add('opacity-0');
             modalElement.querySelector('div').classList.add('scale-95');
-            setTimeout(() => {
-                modalElement.classList.add('pointer-events-none');
-            }, 300);
+            setTimeout(() => { modalElement.classList.add('pointer-events-none'); }, 300);
         }
         
         addStationBtns.forEach(btn => btn.addEventListener('click', () => openModal(addStationModal)));
@@ -533,7 +534,8 @@
                 if (!response.ok) throw new Error(`Chart HTTP error! status: ${response.status}`);
                 const result = await response.json();
                 if (result.status === 'success') {
-                    renderChart(result.data);
+                    fullChartData = result.data;
+                    setupDaySelector();
                 }
             } catch (error) {
                 console.error("Error fetching chart data:", error);
