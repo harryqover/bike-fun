@@ -64,10 +64,9 @@
         .btn-tertiary:hover {
             background-color: #059669; /* emerald-600 */
         }
-        /* Spinner Animation */
         .loader {
-            border: 4px solid #f3f3f3; /* Light grey */
-            border-top: 4px solid #3498db; /* Blue */
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -75,21 +74,23 @@
         }
         .day-selector-btn {
             padding: 0.5rem 1rem;
-            border: 1px solid #d1d5db; /* gray-300 */
-            border-radius: 0.75rem; /* rounded-xl */
+            border: 1px solid #d1d5db;
+            border-radius: 0.75rem;
             font-weight: 500;
-            color: #374151; /* gray-700 */
+            color: #374151;
             background-color: white;
             transition: all 0.2s ease-in-out;
         }
         .day-selector-btn:hover {
-            background-color: #f3f4f6; /* gray-100 */
+            background-color: #f3f4f6;
         }
         .day-selector-btn.active {
-            background-color: #2563eb; /* blue-600 */
+            background-color: #2563eb;
             color: white;
-            border-color: #2563eb; /* blue-600 */
+            border-color: #2563eb;
         }
+        #briefing p { margin-bottom: 0.75rem; }
+        #briefing strong { color: #1e40af; } /* blue-800 */
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -120,6 +121,15 @@
     <!-- Main Content -->
     <main>
         <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <!-- Gemini Briefing Section -->
+            <div id="briefingContainer" class="hidden bg-blue-50 border border-blue-200 rounded-3xl p-6 mb-8 text-blue-900 text-base leading-relaxed">
+                <div id="briefingLoader" class="flex items-center gap-3">
+                    <div class="loader !w-6 !h-6 !border-2 !border-t-blue-500"></div>
+                    <span>Génération du bulletin énergétique du jour...</span>
+                </div>
+                <div id="briefing" class="prose"></div>
+            </div>
+
             <div id="loadingState" class="text-center py-20">
                 <div class="loader mx-auto"></div>
                 <p class="mt-4 text-lg text-gray-600 font-medium">Chargement des données en direct...</p>
@@ -134,24 +144,6 @@
             </div>
             
             <div id="mainContent" class="hidden">
-                <!-- Gemini Daily Briefing -->
-                <div id="gemini-briefing-card" class="mb-8 p-6 bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-blue-200 rounded-3xl shadow-lg transition-all duration-500 opacity-0 transform -translate-y-4">
-                    <div class="flex items-start space-x-4">
-                        <div class="flex-shrink-0">
-                            <span class="inline-flex items-center justify-center h-12 w-12 rounded-full bg-blue-600 text-white shadow-md">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364-.707-.707M6.343 6.343l-.707-.707m12.728 0-.707.707M6.343 17.657l-.707.707M16 8a4 4 0 0 0-8 0m4 8a4.95 4.95 0 0 0 4.95-4.95A4.95 4.95 0 0 0 12 8.05a4.95 4.95 0 0 0-4.95 4.95A4.95 4.95 0 0 0 12 18Z"/></svg>
-                            </span>
-                        </div>
-                        <div class="flex-1">
-                            <h2 class="text-xl font-bold text-gray-800">Conseil Énergétique du Jour</h2>
-                            <div id="gemini-briefing-content" class="mt-2 text-gray-700 prose prose-blue">
-                                <p class="animate-pulse bg-gray-200 rounded-md h-4 w-3/4"></p>
-                                <p class="animate-pulse bg-gray-200 rounded-md h-4 w-1/2 mt-2"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Data Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                     <!-- North Area Card -->
@@ -219,9 +211,7 @@
                         </div>
                     </div>
                      <!-- Day Selector -->
-                    <div id="daySelectorContainer" class="flex justify-center items-center space-x-2 mb-2">
-                        <!-- Buttons will be injected here by JS -->
-                    </div>
+                    <div id="daySelectorContainer" class="flex justify-center items-center space-x-2 mb-2"></div>
                     <p id="chartDate" class="text-center text-gray-600 font-semibold mb-2 h-6"></p>
                     <div class="h-96">
                         <canvas id="powerChart"></canvas>
@@ -229,8 +219,9 @@
                 </div>
 
                 <!-- Last Updated -->
-                <div class="text-center text-gray-500 mt-8">
+                <div class="text-center text-gray-500 mt-8 flex items-center justify-center gap-2">
                     <p>Dernière mise à jour: <span id="lastUpdated" class="font-semibold">jamais</span></p>
+                    <div id="updateIndicator" class="hidden w-2.5 h-2.5 bg-blue-500 rounded-full animate-ping"></div>
                 </div>
             </div>
         </div>
@@ -244,98 +235,78 @@
     </button>
     
     <!-- Modals -->
-    <!-- Add Station Modal -->
     <div id="addStationModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 opacity-0 pointer-events-none">
         <div class="bg-white rounded-3xl shadow-xl w-full max-w-md p-8 transform scale-95 transition-transform duration-300 overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-start">
                  <h2 class="text-2xl font-bold text-gray-900 mb-4">Partager votre production</h2>
                  <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 text-3xl leading-none">&times;</button>
             </div>
-           
-            <div id="modal-content-form">
+            <form id="stationForm">
                 <p class="text-gray-600 mb-6">Entrez les informations de votre installation pour l'ajouter au tableau de bord.</p>
-                
-                <form id="stationForm">
+                <div>
+                    <label for="kioskId" class="block text-sm font-medium text-gray-700">ID Kiosk de la station</label>
+                    <input type="text" id="kioskId" name="kioskId" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="ex: 36avffMzMhIPQgec2dAy49uu4KwFymu2" required>
+                </div>
+                <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label for="kioskId" class="block text-sm font-medium text-gray-700">ID Kiosk de la station</label>
-                        <input type="text" id="kioskId" name="kioskId" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="ex: 36avffMzMhIPQgec2dAy49uu4KwFymu2" required>
+                        <label for="kwp" class="block text-sm font-medium text-gray-700">Puissance Crête</label>
+                        <div class="relative mt-1">
+                            <input type="number" step="0.1" id="kwp" name="kwp" class="block w-full px-4 py-3 pr-14 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="4" required>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"><span class="text-gray-500 sm:text-sm">kWp</span></div>
+                        </div>
                     </div>
-
-                     <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="kwp" class="block text-sm font-medium text-gray-700">Puissance Crête</label>
+                    <div>
+                        <label for="baseConsumption" class="block text-sm font-medium text-gray-700">Consommation base</label>
+                        <div class="relative mt-1">
+                                <input type="number" id="baseConsumption" name="baseConsumption" class="block w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="111" required>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"><span class="text-gray-500 sm:text-sm">W</span></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-2 text-xs text-gray-500">Votre consommation minimale continue (appareils en veille, etc.).</p>
+                <div class="mt-4 grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="tilt" class="block text-sm font-medium text-gray-700">Inclinaison (Tilt)</label>
                             <div class="relative mt-1">
-                                <input type="number" step="0.1" id="kwp" name="kwp" class="block w-full px-4 py-3 pr-14 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="4" required>
-                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 sm:text-sm">kWp</span>
-                                </div>
-                            </div>
+                            <input type="number" id="tilt" name="tilt" class="block w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="35" required>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"><span class="text-gray-500 sm:text-sm">°</span></div>
                         </div>
-                        <div>
-                           <label for="baseConsumption" class="block text-sm font-medium text-gray-700">Consommation base</label>
+                    </div>
+                    <div>
+                        <label for="azimuth" class="block text-sm font-medium text-gray-700">Orientation (Azimuth)</label>
                             <div class="relative mt-1">
-                                 <input type="number" id="baseConsumption" name="baseConsumption" class="block w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="111" required>
-                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                     <span class="text-gray-500 sm:text-sm">W</span>
-                                 </div>
-                            </div>
+                            <input type="number" id="azimuth" name="azimuth" class="block w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="130" required>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"><span class="text-gray-500 sm:text-sm">°</span></div>
                         </div>
                     </div>
-                     <p class="mt-2 text-xs text-gray-500">La consommation de base est votre consommation minimale continue (appareils en veille, etc.).</p>
-
-
-                    <div class="mt-4 grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="tilt" class="block text-sm font-medium text-gray-700">Inclinaison (Tilt)</label>
-                             <div class="relative mt-1">
-                                <input type="number" id="tilt" name="tilt" class="block w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="35" required>
-                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                     <span class="text-gray-500 sm:text-sm">°</span>
-                                 </div>
-                            </div>
-                        </div>
-                        <div>
-                            <label for="azimuth" class="block text-sm font-medium text-gray-700">Orientation (Azimuth)</label>
-                             <div class="relative mt-1">
-                                <input type="number" id="azimuth" name="azimuth" class="block w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="130" required>
-                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                     <span class="text-gray-500 sm:text-sm">°</span>
-                                 </div>
-                            </div>
-                        </div>
+                </div>
+                <p class="mt-2 text-xs text-gray-500">Azimuth: 0°=Nord, 180°=Sud.</p>
+                <div class="mt-6">
+                    <label class="block text-sm font-medium text-gray-700">Zone de la communauté</label>
+                    <div class="mt-2 grid grid-cols-2 gap-3">
+                        <label class="border rounded-xl p-4 flex items-center space-x-3 has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500 cursor-pointer">
+                            <input type="radio" name="area" value="North" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" required>
+                            <span class="font-medium text-gray-800">Zone Nord</span>
+                        </label>
+                        <label class="border rounded-xl p-4 flex items-center space-x-3 has-[:checked]:bg-yellow-50 has-[:checked]:border-yellow-500 cursor-pointer">
+                            <input type="radio" name="area" value="South" class="h-4 w-4 text-yellow-600 border-gray-300 focus:ring-yellow-500">
+                            <span class="font-medium text-gray-800">Zone Sud</span>
+                        </label>
                     </div>
-                     <p class="mt-2 text-xs text-gray-500">Azimuth: 0°=Nord, 180°=Sud.</p>
-
-
-                    <div class="mt-6">
-                        <label class="block text-sm font-medium text-gray-700">Zone de la communauté</label>
-                        <div class="mt-2 grid grid-cols-2 gap-3">
-                            <label class="border rounded-xl p-4 flex items-center space-x-3 has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500 cursor-pointer">
-                                <input type="radio" name="area" value="North" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" required>
-                                <span class="font-medium text-gray-800">Zone Nord</span>
-                            </label>
-                            <label class="border rounded-xl p-4 flex items-center space-x-3 has-[:checked]:bg-yellow-50 has-[:checked]:border-yellow-500 cursor-pointer">
-                                <input type="radio" name="area" value="South" class="h-4 w-4 text-yellow-600 border-gray-300 focus:ring-yellow-500">
-                                <span class="font-medium text-gray-800">Zone Sud</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="mt-8 flex justify-end space-x-3">
-                        <button type="button" class="btn-secondary" id="cancelBtn">Annuler</button>
-                        <button type="submit" class="btn-primary" id="submitBtn">Ajouter la Station</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="mt-8 flex justify-end space-x-3">
+                    <button type="button" class="btn-secondary" id="cancelBtn">Annuler</button>
+                    <button type="submit" class="btn-primary" id="submitBtn">Ajouter la Station</button>
+                </div>
+            </form>
         </div>
     </div>
     
-    <!-- Become a Member Modal -->
     <div id="membershipModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 opacity-0 pointer-events-none">
         <div class="bg-white rounded-3xl shadow-xl w-full max-w-2xl p-8 transform scale-95 transition-transform duration-300 overflow-y-auto max-h-screen">
             <div class="flex justify-between items-start">
-                 <h2 class="text-3xl font-bold text-gray-900 mb-2">Rejoignez la Communauté et Économisez !</h2>
-                 <button id="closeMembershipModalBtn" class="text-gray-400 hover:text-gray-600 text-3xl leading-none">&times;</button>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Rejoignez la Communauté et Économisez !</h2>
+                <button id="closeMembershipModalBtn" class="text-gray-400 hover:text-gray-600 text-3xl leading-none">&times;</button>
             </div>
             <p class="text-gray-600 mb-6">Partagez et consommez une énergie locale, durable et moins chère.</p>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center mb-8">
@@ -345,43 +316,43 @@
                     <p class="text-sm text-gray-600">d'économie moyenne estimée par utilisateur.</p>
                 </div>
                 <div class="bg-gray-100 p-6 rounded-2xl">
-                     <div class="text-emerald-500 text-4xl mb-2">📉</div>
+                    <div class="text-emerald-500 text-4xl mb-2">📉</div>
                     <h3 class="font-bold text-lg text-gray-800">50% de réduction</h3>
                     <p class="text-sm text-gray-600">sur les coûts de distribution de l'énergie partagée.</p>
                 </div>
                 <div class="bg-gray-100 p-6 rounded-2xl">
-                     <div class="text-emerald-500 text-4xl mb-2">🤝</div>
+                    <div class="text-emerald-500 text-4xl mb-2">🤝</div>
                     <h3 class="font-bold text-lg text-gray-800">Tarif Juste & Local</h3>
                     <p class="text-sm text-gray-600">Un prix équitable pour les producteurs et les consommateurs.</p>
                 </div>
             </div>
             <div class="bg-blue-50 border border-blue-200 p-6 rounded-2xl mb-8">
                 <h3 class="font-bold text-xl text-gray-800 mb-2">Prix d'échange de l'énergie</h3>
-                 <div class="flex flex-col sm:flex-row justify-around gap-4">
+                <div class="flex flex-col sm:flex-row justify-around gap-4">
                     <div class="text-center">
                         <p class="text-3xl font-bold text-blue-600">5,53 <span class="text-lg">€ct/kWh</span></p>
                         <p class="text-gray-600">Payé aux **producteurs**</p>
                     </div>
-                     <div class="text-center">
+                    <div class="text-center">
                         <p class="text-3xl font-bold text-blue-600">6,51 <span class="text-lg">€ct/kWh</span></p>
                         <p class="text-gray-600">Payé par les **consommateurs**</p>
                     </div>
                 </div>
             </div>
             <div>
-                 <h3 class="font-bold text-2xl text-gray-800 mb-4">Comment nous rejoindre ? C'est simple et gratuit !</h3>
-                 <div class="flex flex-col md:flex-row gap-6">
+                <h3 class="font-bold text-2xl text-gray-800 mb-4">Comment nous rejoindre ? C'est simple et gratuit !</h3>
+                <div class="flex flex-col md:flex-row gap-6">
                     <div class="flex-1 border-l-4 border-emerald-500 pl-4">
                         <p class="font-bold text-lg">Étape 1 : Le compteur digital</p>
                         <p class="text-gray-600">Faites la demande (gratuite) pour un compteur digital auprès de <a href="https://www.sibelga.be/fr/raccordements-compteurs/demander-un-compteur-communicant" target="_blank" class="text-blue-600 font-semibold underline">Sibelga</a>. C'est indispensable pour le partage d'énergie.</p>
                     </div>
-                     <div class="flex-1 border-l-4 border-emerald-500 pl-4">
+                    <div class="flex-1 border-l-4 border-emerald-500 pl-4">
                         <p class="font-bold text-lg">Étape 2 : Devenez membre</p>
                         <p class="text-gray-600">Envoyez un email à <a href="mailto:communautedenergieterdelt@gmail.com" class="text-blue-600 font-semibold underline">communautedenergieterdelt@gmail.com</a> en communiquant votre numéro EAN (présent sur votre facture d'énergie).</p>
                     </div>
-                 </div>
+                </div>
             </div>
-             <div class="mt-8 text-right">
+            <div class="mt-8 text-right">
                 <button type="button" class="btn-secondary" id="okMembershipBtn">Fermer</button>
             </div>
         </div>
@@ -396,6 +367,7 @@
         const errorState = document.getElementById('errorState');
         const mainContent = document.getElementById('mainContent');
         const lastUpdatedEl = document.getElementById('lastUpdated');
+        const updateIndicator = document.getElementById('updateIndicator');
         const northPowerEl = document.getElementById('northPower');
         const northGrossPowerEl = document.getElementById('northGrossPower');
         const northStationsEl = document.getElementById('northStations');
@@ -409,8 +381,9 @@
         const stationForm = document.getElementById('stationForm');
         const chartDateEl = document.getElementById('chartDate');
         const daySelectorContainer = document.getElementById('daySelectorContainer');
-        const geminiCard = document.getElementById('gemini-briefing-card');
-        const geminiContent = document.getElementById('gemini-briefing-content');
+        const briefingContainer = document.getElementById('briefingContainer');
+        const briefingLoader = document.getElementById('briefingLoader');
+        const briefingEl = document.getElementById('briefing');
         
         // Modals & Buttons
         const addStationModal = document.getElementById('addStationModal');
@@ -421,6 +394,33 @@
         const cancelBtn = document.getElementById('cancelBtn');
         const closeMembershipModalBtn = document.getElementById('closeMembershipModalBtn');
         const okMembershipBtn = document.getElementById('okMembershipBtn');
+
+        // --- Caching Logic ---
+        function saveDataToCache(key, data) {
+            try {
+                const cacheItem = { timestamp: new Date().getTime(), data: data };
+                localStorage.setItem(key, JSON.stringify(cacheItem));
+            } catch (e) {
+                console.error("Error saving to localStorage", e);
+            }
+        }
+
+        function loadDataFromCache(key, maxAgeMinutes = 5) {
+            const cachedItem = localStorage.getItem(key);
+            if (!cachedItem) return null;
+            try {
+                const { timestamp, data } = JSON.parse(cachedItem);
+                const age = (new Date().getTime() - timestamp) / 1000 / 60;
+                if (age > maxAgeMinutes) {
+                    localStorage.removeItem(key);
+                    return null;
+                }
+                return data;
+            } catch (e) {
+                console.error("Error reading from localStorage", e);
+                return null;
+            }
+        }
 
         // --- Form Submission ---
         stationForm.addEventListener('submit', async (e) => {
@@ -436,19 +436,19 @@
             params.append('azimuth', formData.get('azimuth'));
 
             try {
-                // Basic validation
-                if (!formData.get('kioskId') || !formData.get('area')) {
-                    throw new Error("Kiosk ID et Zone sont requis.");
-                }
+                if (!formData.get('kioskId') || !formData.get('area')) throw new Error("Kiosk ID et Zone sont requis.");
                 const response = await fetch(SCRIPT_URL, { method: 'POST', body: params });
                 const result = await response.json();
-
                 if (result.status === 'success') {
                     alert('Station ajoutée avec succès!');
                     stationForm.reset();
                     closeModal(addStationModal);
+                    localStorage.removeItem('dashboardCache');
+                    localStorage.removeItem('chartCache');
+                    localStorage.removeItem('briefingCache');
                     fetchDashboardData();
-                    fetchChartData(); 
+                    fetchChartData();
+                    fetchBriefing(); 
                 } else {
                     throw new Error(result.message || 'Une erreur inconnue est survenue.');
                 }
@@ -460,36 +460,27 @@
         // --- Chart Logic ---
         let powerChart = null;
         let fullChartData = null;
-
-        // Plugin to draw a "now" line on the chart
         const nowLinePlugin = {
             id: 'nowLine',
             afterDraw: (chart) => {
-                if (!chart.options.plugins.nowLine || !chart.options.plugins.nowLine.enabled) {
-                    return;
-                }
-
+                if (!chart.options.plugins.nowLine.enabled) return;
                 const ctx = chart.ctx;
                 const xAxis = chart.scales.x;
                 const yAxis = chart.scales.y;
                 const now = new Date();
                 const currentTimeLabel = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-
                 const labels = xAxis.ticks.map(t => t.label);
                 let nowX = -1;
 
-                // Find the position by interpolating between two labels
                 for (let i = 0; i < labels.length - 1; i++) {
                     const label1 = labels[i];
                     const label2 = labels[i+1];
                     if (currentTimeLabel >= label1 && currentTimeLabel <= label2) {
                         const x1 = xAxis.getPixelForTick(i);
                         const x2 = xAxis.getPixelForTick(i+1);
-                        
                         const time1 = parseInt(label1.split(':')[0]) * 60 + parseInt(label1.split(':')[1]);
                         const time2 = parseInt(label2.split(':')[0]) * 60 + parseInt(label2.split(':')[1]);
                         const timeNow = now.getHours() * 60 + now.getMinutes();
-
                         if (time2 > time1) {
                             const percentage = (timeNow - time1) / (time2 - time1);
                             nowX = x1 + (x2 - x1) * percentage;
@@ -504,10 +495,9 @@
                     ctx.moveTo(nowX, yAxis.top);
                     ctx.lineTo(nowX, yAxis.bottom);
                     ctx.lineWidth = 2;
-                    ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)'; // Red-500
+                    ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
                     ctx.setLineDash([6, 6]);
                     ctx.stroke();
-
                     ctx.textAlign = 'center';
                     ctx.fillStyle = 'rgba(239, 68, 68, 0.8)';
                     ctx.font = '600 12px Inter';
@@ -518,61 +508,26 @@
         };
         Chart.register(nowLinePlugin);
 
-
         function renderChart(dayData, isToday = false) {
             const ctx = document.getElementById('powerChart').getContext('2d');
             if (!dayData) return;
             const { labels, northNet, southNet, forecastNet } = dayData;
 
             const datasets = [
-                { 
-                    label: 'Zone Sud (Partage)', 
-                    data: southNet.map(v => (v !== null && v > 0) ? v : null),
-                    borderColor: 'rgba(234, 179, 8, 0.8)', 
-                    backgroundColor: 'rgba(234, 179, 8, 0.3)', 
-                    fill: 'origin', 
-                    tension: 0.4, 
-                    stack: 'partage'
-                },
-                { 
-                    label: 'Zone Nord (Partage)', 
-                    data: northNet.map(v => (v !== null && v > 0) ? v : null),
-                    borderColor: 'rgba(59, 130, 246, 0.8)', 
-                    backgroundColor: 'rgba(59, 130, 246, 0.3)', 
-                    fill: 'origin', 
-                    tension: 0.4, 
-                    stack: 'partage'
-                },
-                { 
-                    label: 'Consommation Réseau', 
-                    data: labels.map((_, i) => {
-                        const southVal = southNet[i];
-                        const northVal = northNet[i];
-                        let consumption = 0;
-                        if (typeof southVal === 'number' && southVal < 0) consumption += southVal;
-                        if (typeof northVal === 'number' && northVal < 0) consumption += northVal;
-                        return consumption < 0 ? consumption : null;
-                    }),
-                    borderColor: 'rgba(239, 68, 68, 0.8)', 
-                    backgroundColor: 'rgba(239, 68, 68, 0.3)', 
-                    fill: 'origin', 
-                    tension: 0.4,
-                    stack: 'consommation' // Different stack
-                }
+                { label: 'Zone Sud (Partage)', data: southNet.map(v => (v !== null && v > 0) ? v : null), borderColor: 'rgba(234, 179, 8, 0.8)', backgroundColor: 'rgba(234, 179, 8, 0.3)', fill: 'origin', tension: 0.4, stack: 'partage' },
+                { label: 'Zone Nord (Partage)', data: northNet.map(v => (v !== null && v > 0) ? v : null), borderColor: 'rgba(59, 130, 246, 0.8)', backgroundColor: 'rgba(59, 130, 246, 0.3)', fill: 'origin', tension: 0.4, stack: 'partage' },
+                { label: 'Consommation Réseau', data: labels.map((_, i) => {
+                    const southVal = southNet[i];
+                    const northVal = northNet[i];
+                    let consumption = 0;
+                    if (typeof southVal === 'number' && southVal < 0) consumption += southVal;
+                    if (typeof northVal === 'number' && northVal < 0) consumption += northVal;
+                    return consumption < 0 ? consumption : null;
+                }), borderColor: 'rgba(239, 68, 68, 0.8)', backgroundColor: 'rgba(239, 68, 68, 0.3)', fill: 'origin', tension: 0.4, stack: 'consommation' }
             ];
 
-            // Add forecast if available
             if(forecastNet && forecastNet.some(v => v !== null)) {
-                datasets.push({
-                    label: 'Prévision Nette',
-                    data: forecastNet,
-                    borderColor: 'rgba(22, 163, 74, 0.7)',
-                    backgroundColor: 'transparent',
-                    borderDash: [5, 5],
-                    fill: false,
-                    tension: 0.4,
-                    pointRadius: 0,
-                });
+                datasets.push({ label: 'Prévision Nette', data: forecastNet, borderColor: 'rgba(22, 163, 74, 0.7)', backgroundColor: 'transparent', borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 0 });
             }
             
             if (powerChart) powerChart.destroy();
@@ -582,18 +537,8 @@
                 data: { labels: labels, datasets: datasets },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    scales: { 
-                        y: {  
-                            title: { display: true, text: 'Puissance Nette (kW)' } 
-                        }, 
-                        x: { 
-                            grid: { display: false } 
-                        } 
-                    },
-                    plugins: { 
-                        tooltip: { mode: 'index', intersect: false },
-                        nowLine: { enabled: isToday }
-                    },
+                    scales: { y: { title: { display: true, text: 'Puissance Nette (kW)' } }, x: { grid: { display: false } } },
+                    plugins: { tooltip: { mode: 'index', intersect: false }, nowLine: { enabled: isToday } },
                     interaction: { mode: 'index', intersect: false },
                     spanGaps: true
                 }
@@ -602,11 +547,7 @@
         
         function displayChartForDay(dayKey) {
             if (!fullChartData || !fullChartData[dayKey]) return;
-            
-            document.querySelectorAll('.day-selector-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.day === dayKey);
-            });
-            
+            document.querySelectorAll('.day-selector-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.day === dayKey));
             chartDateEl.textContent = fullChartData[dayKey].dateLabel;
             renderChart(fullChartData[dayKey], dayKey === 'today');
         }
@@ -626,28 +567,12 @@
                     daySelectorContainer.appendChild(btn);
                 }
             });
-            // Default to today, but if no data, try tomorrow
-            if(fullChartData.today && fullChartData.today.labels.length > 0){
-                 displayChartForDay('today');
-            } else if (fullChartData.tomorrow && fullChartData.tomorrow.labels.length > 0) {
-                 displayChartForDay('tomorrow');
-            } else {
-                 displayChartForDay('yesterday');
-            }
+            displayChartForDay('today');
         }
 
         // --- Modal Logic ---
-        function openModal(modalElement) {
-            modalElement.classList.remove('opacity-0', 'pointer-events-none');
-            modalElement.querySelector('div').classList.remove('scale-95');
-        }
-
-        function closeModal(modalElement) {
-            modalElement.classList.add('opacity-0');
-            modalElement.querySelector('div').classList.add('scale-95');
-            setTimeout(() => { modalElement.classList.add('pointer-events-none'); }, 300);
-        }
-        
+        function openModal(modal) { modal.classList.remove('opacity-0', 'pointer-events-none'); modal.querySelector('div').classList.remove('scale-95'); }
+        function closeModal(modal) { modal.classList.add('opacity-0'); modal.querySelector('div').classList.add('scale-95'); setTimeout(() => modal.classList.add('pointer-events-none'), 300); }
         addStationBtns.forEach(btn => btn.addEventListener('click', () => openModal(addStationModal)));
         becomeMemberBtn.addEventListener('click', () => openModal(membershipModal));
         closeModalBtn.addEventListener('click', () => closeModal(addStationModal));
@@ -656,25 +581,29 @@
         okMembershipBtn.addEventListener('click', () => closeModal(membershipModal));
 
         // --- Data Fetching & UI Update ---
-        async function fetchDashboardData() {
+        async function fetchDashboardData(isBackgroundUpdate = false) {
+            if (isBackgroundUpdate) updateIndicator.classList.remove('hidden');
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=getData`);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const result = await response.json();
-                
                 if (result.status === 'success') {
+                    saveDataToCache('dashboardCache', result.data);
                     updateUI(result.data);
-                    loadingState.classList.add('hidden');
-                    errorState.classList.add('hidden');
-                    mainContent.classList.remove('hidden');
-                } else {
-                    throw new Error(result.message || 'Failed to fetch data');
-                }
+                    if (!isBackgroundUpdate) {
+                        loadingState.classList.add('hidden');
+                        mainContent.classList.remove('hidden');
+                    }
+                } else { throw new Error(result.message || 'Failed to fetch data'); }
             } catch (error) {
                 console.error("Error fetching dashboard data:", error);
-                loadingState.classList.add('hidden');
-                errorState.classList.remove('hidden');
-                mainContent.classList.add('hidden');
+                if (!loadDataFromCache('dashboardCache')) {
+                    loadingState.classList.add('hidden');
+                    errorState.classList.remove('hidden');
+                    mainContent.classList.add('hidden');
+                }
+            } finally {
+                if (isBackgroundUpdate) updateIndicator.classList.add('hidden');
             }
         }
 
@@ -693,9 +622,7 @@
             southEnergyEl.innerHTML = `${southData.dailyEnergy.toFixed(2)} <span class="text-lg">kWh</span>`;
             updateCompareText(southCompareEl, southData.dailyEnergy, southData.yesterdayEnergy);
             
-            const northDate = northData.lastUpdate ? new Date(northData.lastUpdate) : new Date(0);
-            const southDate = southData.lastUpdate ? new Date(southData.lastUpdate) : new Date(0);
-            const mostRecentDate = northDate > southDate ? northDate : southDate;
+            const mostRecentDate = new Date(Math.max(new Date(northData.lastUpdate || 0), new Date(southData.lastUpdate || 0)));
             lastUpdatedEl.textContent = mostRecentDate.getTime() > 0 ? mostRecentDate.toLocaleString('fr-BE') : 'Non disponible';
         }
 
@@ -704,51 +631,82 @@
                 const percentChange = ((today - yesterday) / yesterday) * 100;
                 const directionIcon = percentChange >= 0 ? '▲' : '▼';
                 const colorClass = percentChange >= 0 ? 'text-green-600' : 'text-red-600';
-                element.innerHTML = `<span class="${colorClass}">${directionIcon} ${Math.abs(percentChange).toFixed(0)}%</span> vs yesterday`;
-            } else {
-                element.textContent = 'par rapport à hier';
-            }
+                element.innerHTML = `<span class="${colorClass}">${directionIcon} ${Math.abs(percentChange).toFixed(0)}%</span> vs hier`;
+            } else { element.textContent = 'par rapport à hier'; }
         }
 
-        async function fetchChartData() {
+        async function fetchChartData(isBackgroundUpdate = false) {
+             if (isBackgroundUpdate) updateIndicator.classList.remove('hidden');
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=getChartData`);
                 if (!response.ok) throw new Error(`Chart HTTP error! status: ${response.status}`);
                 const result = await response.json();
                 if (result.status === 'success') {
+                    saveDataToCache('chartCache', result.data);
                     fullChartData = result.data;
                     setupDaySelector();
                 }
-            } catch (error) {
+            } catch (error) { 
                 console.error("Error fetching chart data:", error);
+            } finally {
+                 if (isBackgroundUpdate) updateIndicator.classList.add('hidden');
             }
         }
         
-        async function fetchGeminiBriefing() {
-            try {
+        async function fetchBriefing() {
+            briefingContainer.classList.remove('hidden');
+            const cached = loadDataFromCache('briefingCache', 120);
+            if (cached) {
+                briefingEl.innerHTML = cached;
+                briefingLoader.classList.add('hidden');
+                return;
+            }
+             try {
                 const response = await fetch(`${SCRIPT_URL}?action=getBriefing`);
-                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const result = await response.json();
-                if(result.status === 'success' && result.briefing) {
-                    geminiContent.innerHTML = result.briefing;
-                    geminiCard.classList.remove('opacity-0', '-translate-y-4');
+                if (result.status === 'success' && result.briefing) {
+                    saveDataToCache('briefingCache', result.briefing);
+                    briefingEl.innerHTML = result.briefing;
                 } else {
-                   geminiCard.classList.add('hidden');
+                    briefingEl.textContent = "Le bulletin énergétique pour aujourd'hui n'est pas encore disponible.";
                 }
-            } catch (error) {
-                console.error("Error fetching Gemini briefing:", error);
-                geminiCard.classList.add('hidden');
+            } catch(e) {
+                briefingEl.textContent = "Impossible de charger le bulletin énergétique.";
+            } finally {
+                briefingLoader.classList.add('hidden');
             }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            fetchDashboardData();
-            fetchChartData();
-            fetchGeminiBriefing();
-            setInterval(fetchDashboardData, 60 * 1000);
-            setInterval(fetchChartData, 5 * 60 * 1000);
-        });
+            fetchBriefing();
+            
+            const cachedDashboard = loadDataFromCache('dashboardCache');
+            const cachedChart = loadDataFromCache('chartCache');
+            
+            let isInitialLoadWithCache = false;
+            if (cachedDashboard) {
+                updateUI(cachedDashboard);
+                isInitialLoadWithCache = true;
+            }
+            if (cachedChart) {
+                fullChartData = cachedChart;
+                setupDaySelector();
+                isInitialLoadWithCache = true;
+            }
 
+            if(isInitialLoadWithCache) {
+                loadingState.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                fetchDashboardData(true);
+                fetchChartData(true);
+            } else {
+                fetchDashboardData(false);
+                fetchChartData(false);
+            }
+
+            setInterval(() => fetchDashboardData(true), 60 * 1000);
+            setInterval(() => fetchChartData(true), 5 * 60 * 1000);
+        });
     </script>
 </body>
 </html>
