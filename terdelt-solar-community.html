@@ -134,6 +134,24 @@
             </div>
             
             <div id="mainContent" class="hidden">
+                <!-- Gemini Daily Briefing -->
+                <div id="gemini-briefing-card" class="mb-8 p-6 bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-blue-200 rounded-3xl shadow-lg transition-all duration-500 opacity-0 transform -translate-y-4">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0">
+                            <span class="inline-flex items-center justify-center h-12 w-12 rounded-full bg-blue-600 text-white shadow-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364-.707-.707M6.343 6.343l-.707-.707m12.728 0-.707.707M6.343 17.657l-.707.707M16 8a4 4 0 0 0-8 0m4 8a4.95 4.95 0 0 0 4.95-4.95A4.95 4.95 0 0 0 12 8.05a4.95 4.95 0 0 0-4.95 4.95A4.95 4.95 0 0 0 12 18Z"/></svg>
+                            </span>
+                        </div>
+                        <div class="flex-1">
+                            <h2 class="text-xl font-bold text-gray-800">Conseil Énergétique du Jour</h2>
+                            <div id="gemini-briefing-content" class="mt-2 text-gray-700 prose prose-blue">
+                                <p class="animate-pulse bg-gray-200 rounded-md h-4 w-3/4"></p>
+                                <p class="animate-pulse bg-gray-200 rounded-md h-4 w-1/2 mt-2"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Data Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                     <!-- North Area Card -->
@@ -391,6 +409,8 @@
         const stationForm = document.getElementById('stationForm');
         const chartDateEl = document.getElementById('chartDate');
         const daySelectorContainer = document.getElementById('daySelectorContainer');
+        const geminiCard = document.getElementById('gemini-briefing-card');
+        const geminiContent = document.getElementById('gemini-briefing-content');
         
         // Modals & Buttons
         const addStationModal = document.getElementById('addStationModal');
@@ -703,10 +723,28 @@
                 console.error("Error fetching chart data:", error);
             }
         }
+        
+        async function fetchGeminiBriefing() {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getBriefing`);
+                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const result = await response.json();
+                if(result.status === 'success' && result.briefing) {
+                    geminiContent.innerHTML = result.briefing;
+                    geminiCard.classList.remove('opacity-0', '-translate-y-4');
+                } else {
+                   geminiCard.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error("Error fetching Gemini briefing:", error);
+                geminiCard.classList.add('hidden');
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             fetchDashboardData();
             fetchChartData();
+            fetchGeminiBriefing();
             setInterval(fetchDashboardData, 60 * 1000);
             setInterval(fetchChartData, 5 * 60 * 1000);
         });
