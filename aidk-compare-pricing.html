@@ -151,47 +151,6 @@
             }
             return extracted;
         }
-
-        function generateHistoricalData(latestVersionData) {
-            const history = [latestVersionData];
-            let currentVersion = latestVersionData;
-            const fullTermRatio = (currentVersion.premium.fullTerm?.cip || 0) / (currentVersion.premium.contract?.cip || 1);
-
-            for (let i = currentVersion.version - 1; i > 0; i--) {
-                const prevVersion = JSON.parse(JSON.stringify(currentVersion));
-                prevVersion.version = i;
-                const simulatedDeltaCIP = (currentVersion.premium.delta?.cip || 0) * (Math.random() * 0.4 + 0.8);
-                if(prevVersion.premium.delta) prevVersion.premium.delta.cip = simulatedDeltaCIP;
-                
-                if(prevVersion.premium.contract) prevVersion.premium.contract.cip = (currentVersion.premium.contract?.cip || 0) - (currentVersion.premium.delta?.cip || 0);
-                if(prevVersion.premium.fullTerm) prevVersion.premium.fullTerm.cip = prevVersion.premium.contract.cip * fullTermRatio;
-
-                const prevDate = new Date(currentVersion._effectivePeriod.startDate);
-                prevDate.setMonth(prevDate.getMonth() - (3 + Math.floor(Math.random() * 2)));
-                prevVersion._effectivePeriod.startDate = prevDate.toISOString().split('T')[0];
-
-                for (const key in prevVersion.package.coverages) {
-                    const coverage = prevVersion.package.coverages[key];
-                    const currentCoverage = currentVersion.package.coverages[key];
-                    const proportion = (currentCoverage.premium.delta?.cip || 0) / ((currentVersion.premium.delta?.cip || 1));
-                    
-                    if(coverage.premium.delta) coverage.premium.delta.cip = simulatedDeltaCIP * proportion;
-                    if(coverage.premium.contract) coverage.premium.contract.cip = (currentCoverage.premium.contract?.cip || 0) - (currentCoverage.premium.delta?.cip || 0);
-                    
-                    const coverageRatio = (currentCoverage.premium.fullTerm?.cip || 0) / (currentCoverage.premium.contract?.cip || 1);
-                    if(coverage.premium.fullTerm) coverage.premium.fullTerm.cip = coverage.premium.contract.cip * coverageRatio;
-
-                    const taxRatio = (currentCoverage.premium.contract?.taxes?.ipt || 0) / (currentCoverage.premium.contract?.cip || 1);
-                    if(coverage.premium.contract?.taxes) coverage.premium.contract.taxes.ipt = coverage.premium.contract.cip * taxRatio;
-                }
-                history.unshift(prevVersion);
-                currentVersion = prevVersion;
-            }
-            if (history.length > 0 && history[0].premium.delta) {
-                history[0].premium.delta.cip = history[0].premium.contract.cip;
-            }
-            return history;
-        }
         
         function renderTimeline(pricingType = 'contract') {
              const container = document.getElementById('timeline-container'); container.innerHTML = ''; const otherPricingType = pricingType === 'contract' ? 'fullTerm' : 'contract'; const otherPricingLabel = pricingType === 'contract' ? 'Full Term' : 'Contract Term'; policyHistory.slice().reverse().forEach(version => { const isFirstVersion = version.version === 1; const delta = version.premium.delta?.cip || 0; const changeType = isFirstVersion ? 'initial' : (delta >= 0 ? 'increase' : 'decrease'); const card = document.createElement('div'); card.className = 'timeline-item relative flex items-start space-x-6 pb-8'; let breakdownHtml = ''; for (const key in version.package.coverages) { const coverage = version.package.coverages[key]; const coverageDelta = coverage.premium.delta?.cip || 0; const coverageChangeType = isFirstVersion ? 'initial' : (coverageDelta >= 0 ? 'increase' : 'decrease'); breakdownHtml += `<div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0"><span class="text-gray-600">${key}</span><div class="text-right"><span class="font-medium">${formatCurrency(coverage.premium[pricingType]?.cip, version.currency)}</span><span class="block text-xs ${coverageChangeType === 'increase' ? 'text-red-500' : 'text-green-500'}">${coverageDelta >= 0 ? '+' : '-'}${formatCurrency(Math.abs(coverageDelta), version.currency)}</span></div></div>`; } card.innerHTML = `<div class="flex-shrink-0"><div class="h-14 w-14 flex items-center justify-center rounded-full bg-white border-2 ${changeType === 'increase' ? 'border-red-500' : 'border-blue-500'}"><i class="fa-solid ${changeType === 'increase' ? 'fa-arrow-trend-up text-red-500' : 'fa-file-invoice-dollar text-blue-500'} text-xl"></i></div></div><div class="flex-1 min-w-0"><div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"><div class="p-4 md:p-5 border-b border-gray-200"><div class="flex justify-between items-start"><div><h2 class="text-lg font-bold text-gray-800">Version ${version.version}</h2><p class="text-sm text-gray-500">Effective from: ${new Date(version._effectivePeriod.startDate).toLocaleDateString('en-GB')}</p></div><div class="text-right"><p class="text-2xl font-bold">${formatCurrency(version.premium[pricingType]?.cip, version.currency)}</p><p class="text-sm font-semibold ${changeType === 'increase' ? 'text-red-600' : 'text-green-600'}">${changeType === 'initial' ? 'Initial premium' : (delta >= 0 ? `+${formatCurrency(delta, version.currency)}` : `-${formatCurrency(Math.abs(delta), version.currency)}`)}</p><p class="text-xs text-gray-400 mt-1">${otherPricingLabel}: ${formatCurrency(version.premium[otherPricingType]?.cip, version.currency)}</p></div></div></div><div class="p-4 md:p-5 bg-gray-50/50"><h3 class="text-sm font-semibold mb-2 text-gray-700">Premium Breakdown</h3><div class="space-y-1">${breakdownHtml}</div></div></div></div>`; container.appendChild(card); });
@@ -261,6 +220,9 @@
             if (policyHistory.length > 1) {
                 v1Select.value = policyHistory[policyHistory.length - 2].version;
                 v2Select.value = policyHistory[policyHistory.length - 1].version;
+            } else if (policyHistory.length === 1) {
+                v1Select.value = policyHistory[0].version;
+                v2Select.value = policyHistory[0].version;
             }
             v1Select.addEventListener('change', renderComparisonView);
             v2Select.addEventListener('change', renderComparisonView);
@@ -302,7 +264,13 @@
             reader.onload = (e) => {
                 try {
                     const data = JSON.parse(e.target.result);
-                    initializeApp(data);
+                    // Check if data is an array (new format) or an object (old format)
+                    if (Array.isArray(data)) {
+                        initializeApp(data);
+                    } else {
+                        // Handle old single-version format by wrapping it in an array
+                        initializeApp([data]);
+                    }
                 } catch (error) {
                     alert('Error parsing JSON file. Please check the file format.');
                     console.error("JSON Parse Error:", error);
@@ -311,9 +279,18 @@
             reader.readAsText(file);
         }
 
-        function initializeApp(data) {
-            const latestVersionData = extractRelevantData(data);
-            policyHistory = generateHistoricalData(latestVersionData);
+        function initializeApp(versionsData) {
+            if (!versionsData || versionsData.length === 0) {
+                alert('JSON data is empty or invalid.');
+                return;
+            }
+            // Sort by version ascending
+            versionsData.sort((a, b) => a.version - b.version);
+            
+            policyHistory = versionsData.map(v => extractRelevantData(v));
+            
+            // Use the latest version for header details
+            const latestVersionData = policyHistory[policyHistory.length - 1];
 
             renderHeaderDetails(latestVersionData);
             document.getElementById('main-content').classList.remove('hidden');
