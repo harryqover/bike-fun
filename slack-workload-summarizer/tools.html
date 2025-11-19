@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Available Tools</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Additional styles specific to the tools page if needed, 
+       but trying to reuse style.css as much as possible */
+        .tools-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .tool-card {
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .tool-card h3 {
+            margin-top: 0;
+            color: var(--primary-color, #4a6fa5);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <header>
+            <div class="header-top">
+                <h1>Available <span>Tools</span></h1>
+            </div>
+            <p>Select a tool to launch.</p>
+        </header>
+
+        <main>
+            <div class="tools-list">
+                <a href="index.html" class="card glass tool-card">
+                    <h3>Slack Workload Summarizer</h3>
+                    <p>Create your "End of Year" plan in seconds.</p>
+                </a>
+                <!-- Future tools can be added here -->
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
