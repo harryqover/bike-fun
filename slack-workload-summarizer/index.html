@@ -76,8 +76,23 @@
           <h3>Holidays</h3>
           <p class="hint">Add dates to automatically exclude them from the count.</p>
           <div class="add-holiday-form">
-            <input type="date" id="holiday-date-input">
-            <button id="add-holiday-btn">Add</button>
+            <div class="date-inputs">
+              <div class="input-group">
+                <label for="holiday-date-input">From</label>
+                <input type="date" id="holiday-date-input">
+              </div>
+              <div class="input-group">
+                <label for="holiday-end-date-input">To (Optional)</label>
+                <input type="date" id="holiday-end-date-input">
+              </div>
+            </div>
+            <div class="holiday-options">
+              <label class="checkbox-label">
+                <input type="checkbox" id="holiday-half-day">
+                Half Day (0.5)
+              </label>
+              <button id="add-holiday-btn">Add</button>
+            </div>
           </div>
           <ul id="holiday-list">
             <!-- Holidays will be listed here -->

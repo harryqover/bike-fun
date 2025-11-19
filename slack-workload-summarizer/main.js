@@ -11,7 +11,7 @@ const appState = {
     daysRemaining: 0,
     tasks: []
   },
-  holidays: [], // Array of date strings 'YYYY-MM-DD'
+  holidays: {}, // Object: { 'YYYY-MM-DD': number (1 or 0.5) }
   manualDaysOverride: {
     current: false,
     next: false
@@ -72,10 +72,10 @@ function calculateDaysRemaining(startDate, endDate) {
     const isWeekend = (dayOfWeek === 6) || (dayOfWeek === 0);
     // Adjust date string to local timezone for holiday check to avoid timezone issues
     const dateString = curDate.toLocaleDateString('en-CA'); // YYYY-MM-DD
-    const isHoliday = appState.holidays.includes(dateString);
+    const holidayDeduction = appState.holidays[dateString] || 0;
 
-    if (!isWeekend && !isHoliday) {
-      count++;
+    if (!isWeekend) {
+      count += Math.max(0, 1 - holidayDeduction);
     }
     curDate.setDate(curDate.getDate() + 1);
   }
@@ -93,7 +93,16 @@ function loadFromLocalStorage() {
     // Merge saved tasks and holidays, but keep dynamic month names
     appState.currentMonth.tasks = parsed.currentMonth.tasks || [];
     appState.nextMonth.tasks = parsed.nextMonth.tasks || [];
-    appState.holidays = parsed.holidays || [];
+
+    // Migration: Convert array to object if needed
+    if (Array.isArray(parsed.holidays)) {
+      appState.holidays = {};
+      parsed.holidays.forEach(date => {
+        appState.holidays[date] = 1;
+      });
+    } else {
+      appState.holidays = parsed.holidays || {};
+    }
 
     // Only restore days remaining if it was manually overridden
     if (parsed.manualDaysOverride?.current) {
@@ -125,7 +134,16 @@ function loadFromURL() {
       // Apply parsed state
       appState.currentMonth.tasks = parsed.currentMonth.tasks || [];
       appState.nextMonth.tasks = parsed.nextMonth.tasks || [];
-      appState.holidays = parsed.holidays || [];
+
+      // Migration for URL state too
+      if (Array.isArray(parsed.holidays)) {
+        appState.holidays = {};
+        parsed.holidays.forEach(date => {
+          appState.holidays[date] = 1;
+        });
+      } else {
+        appState.holidays = parsed.holidays || {};
+      }
 
       if (parsed.manualDaysOverride?.current) {
         appState.currentMonth.daysRemaining = parsed.currentMonth.daysRemaining;
@@ -232,15 +250,20 @@ function updatePreview() {
 function renderHolidays() {
   const list = document.getElementById('holiday-list');
   list.innerHTML = '';
-  appState.holidays.sort().forEach((date, index) => {
+
+  const sortedDates = Object.keys(appState.holidays).sort();
+
+  sortedDates.forEach((date) => {
+    const value = appState.holidays[date];
     const li = document.createElement('li');
     li.className = 'holiday-item';
     li.innerHTML = `
-      <span>${date}</span>
-      <button class="remove-btn" data-index="${index}">×</button>
+      <span>${date} ${value === 0.5 ? '<small>(Half)</small>' : ''}</span>
+      <button class="remove-btn" data-date="${date}">×</button>
     `;
-    li.querySelector('.remove-btn').addEventListener('click', () => {
-      appState.holidays.splice(index, 1);
+    li.querySelector('.remove-btn').addEventListener('click', (e) => {
+      const dateToDelete = e.target.dataset.date;
+      delete appState.holidays[dateToDelete];
       renderHolidays();
       recalculateDays();
       saveState();
@@ -329,13 +352,31 @@ function setupEventListeners() {
 
   // Add Holiday
   document.getElementById('add-holiday-btn').addEventListener('click', () => {
-    const input = document.getElementById('holiday-date-input');
-    if (input.value && !appState.holidays.includes(input.value)) {
-      appState.holidays.push(input.value);
+    const startInput = document.getElementById('holiday-date-input');
+    const endInput = document.getElementById('holiday-end-date-input');
+    const halfDayInput = document.getElementById('holiday-half-day');
+
+    if (startInput.value) {
+      const startDate = new Date(startInput.value);
+      const endDate = endInput.value ? new Date(endInput.value) : new Date(startInput.value);
+      const value = halfDayInput.checked ? 0.5 : 1;
+
+      // Loop through dates
+      const cur = new Date(startDate);
+      while (cur <= endDate) {
+        const dateString = cur.toISOString().split('T')[0];
+        appState.holidays[dateString] = value;
+        cur.setDate(cur.getDate() + 1);
+      }
+
       renderHolidays();
       recalculateDays();
       saveState();
-      input.value = '';
+
+      // Reset form
+      startInput.value = '';
+      endInput.value = '';
+      halfDayInput.checked = false;
     }
   });
 }
