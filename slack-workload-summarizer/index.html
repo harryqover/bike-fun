@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slack Workload Summarizer</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div id="app">
+    <header>
+      <div class="header-top">
+        <h1>Workload Summarizer <span>for Slack</span></h1>
+        <div class="header-actions">
+          <button id="settings-btn" class="icon-btn" aria-label="Settings">⚙️</button>
+        </div>
+      </div>
+      <p>Create your "End of Year" plan in seconds.</p>
+    </header>
+
+    <main>
+      <div class="card glass">
+        <div class="month-section" id="current-month-section">
+          <div class="section-header">
+            <h2 id="current-month-title">November</h2>
+            <div class="days-container">
+              <input type="number" id="current-month-days" class="days-input" min="0">
+              <span class="days-label">working days left</span>
+            </div>
+          </div>
+          <div class="task-list" id="current-month-tasks">
+            <!-- Tasks will be added here -->
+          </div>
+          <button class="add-task-btn" data-month="current">+ Add Task</button>
+        </div>
+
+        <div class="month-section" id="next-month-section">
+          <div class="section-header">
+            <h2 id="next-month-title">December</h2>
+            <div class="days-container">
+              <input type="number" id="next-month-days" class="days-input" min="0">
+              <span class="days-label">working days left</span>
+            </div>
+          </div>
+          <div class="task-list" id="next-month-tasks">
+            <!-- Tasks will be added here -->
+          </div>
+          <button class="add-task-btn" data-month="next">+ Add Task</button>
+        </div>
+      </div>
+
+      <div class="preview-section glass">
+        <h3>Preview</h3>
+        <pre id="slack-preview"></pre>
+        <div class="action-buttons">
+          <button id="copy-btn" class="primary-btn">Copy to Clipboard ✨</button>
+          <button id="share-btn" class="secondary-btn">Share 🔗</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden">
+      <div class="modal-content glass">
+        <div class="modal-header">
+          <h2>Settings</h2>
+          <button id="close-modal-btn" class="close-btn">×</button>
+        </div>
+        <div class="modal-body">
+          <h3>Holidays</h3>
+          <p class="hint">Add dates to automatically exclude them from the count.</p>
+          <div class="add-holiday-form">
+            <input type="date" id="holiday-date-input">
+            <button id="add-holiday-btn">Add</button>
+          </div>
+          <ul id="holiday-list">
+            <!-- Holidays will be listed here -->
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/main.js"></script>
+</body>
+
+</html>
