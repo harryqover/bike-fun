@@ -176,6 +176,10 @@ function renderHeader() {
 function createTaskElement(task, month, index) {
   const div = document.createElement('div');
   div.className = 'task-item';
+  div.draggable = true;
+  div.dataset.index = index;
+  div.dataset.month = month;
+
   div.innerHTML = `
     <input type="text" class="task-duration" placeholder="3 days" value="${task.duration}" data-field="duration">
     <input type="text" class="task-desc" placeholder="Task description" value="${task.description}" data-field="description">
@@ -198,6 +202,51 @@ function createTaskElement(task, month, index) {
     renderTasks(month);
     updatePreview();
     saveState();
+  });
+
+  // Drag and Drop handlers
+  div.addEventListener('dragstart', (e) => {
+    div.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', div.innerHTML);
+  });
+
+  div.addEventListener('dragend', (e) => {
+    div.classList.remove('dragging');
+  });
+
+  div.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+
+    const draggingItem = document.querySelector('.dragging');
+    if (draggingItem && draggingItem !== div && draggingItem.dataset.month === month) {
+      div.classList.add('drag-over');
+    }
+  });
+
+  div.addEventListener('dragleave', (e) => {
+    div.classList.remove('drag-over');
+  });
+
+  div.addEventListener('drop', (e) => {
+    e.preventDefault();
+    div.classList.remove('drag-over');
+
+    const draggingItem = document.querySelector('.dragging');
+    if (draggingItem && draggingItem !== div && draggingItem.dataset.month === month) {
+      const fromIndex = parseInt(draggingItem.dataset.index);
+      const toIndex = parseInt(div.dataset.index);
+
+      // Reorder the tasks array
+      const tasks = appState[`${month}Month`].tasks;
+      const [movedTask] = tasks.splice(fromIndex, 1);
+      tasks.splice(toIndex, 0, movedTask);
+
+      renderTasks(month);
+      updatePreview();
+      saveState();
+    }
   });
 
   return div;
@@ -232,7 +281,7 @@ function generateSlackText() {
   text += `\n`;
 
   // Next Month
-  text += `*${appState.nextMonth.daysRemaining} days before in ${appState.nextMonth.name} before* 🎅 🌕\n`;
+  text += `*${appState.nextMonth.daysRemaining} days in ${appState.nextMonth.name}* 🎅 🌕\n`;
   appState.nextMonth.tasks.forEach(task => {
     const duration = task.duration ? `${task.duration}: ` : '';
     const emoji = task.emoji ? ` ${task.emoji}` : '';

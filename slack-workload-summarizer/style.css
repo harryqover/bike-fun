@@ -160,6 +160,19 @@ header p {
   gap: 0.5rem;
   align-items: center;
   animation: fadeIn 0.3s ease-out;
+  cursor: move;
+  transition: opacity 0.2s, background 0.2s;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.task-item.dragging {
+  opacity: 0.5;
+}
+
+.task-item.drag-over {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.5);
 }
 
 @keyframes fadeIn {
