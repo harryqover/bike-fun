@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header>
+    <h1>🏠 Home Monitoring Dashboard</h1>
+  </header>
+
+  <div class="container">
+    <!-- AI Message Section -->
+    <div id="ai-message" class="ai-message" style="display: none;">
+      <!-- AI message will be injected here -->
+    </div>
+
+    <!-- Alarms Section -->
+    <div id="alarms-container" class="alarms-container" style="display: none;">
+      <!-- Alarm cards will be injected here -->
+    </div>
+
+    <!-- Zone Cards Grid -->
+    <main id="dashboard" class="grid-container">
+      <!-- Cards will be injected here -->
+    </main>
+
+    <!-- Temperature Chart -->
+    <div id="chart-container" class="chart-container" style="display: none;">
+      <h2>📊 Temperature History</h2>
+      <div class="chart-wrapper">
+        <canvas id="temperatureChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
