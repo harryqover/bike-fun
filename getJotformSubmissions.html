@@ -3,175 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jotform Payload Retriever</title>
+    <title>Jotform Payload Editor</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
 
     <style>
         body { font-family: 'Inter', sans-serif; }
-        /* Smooth fade in for content */
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        /* Ensure the editor container has a fixed height relative to viewport */
+        #monaco-container {
+            height: 100%;
+            width: 100%;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col items-center py-10 px-4">
+<body class="bg-slate-50 text-slate-800 h-screen flex flex-col overflow-hidden">
 
-    <div class="w-full max-w-4xl space-y-6">
-        
-        <div class="text-center space-y-2 mb-8">
-            <h1 class="text-3xl font-bold tracking-tight text-slate-900">Jotform Payload Retriever</h1>
-            <p class="text-slate-500">Inspect submission data via Google Script Proxy</p>
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center shrink-0 z-10 shadow-sm">
+        <div class="flex items-center gap-4">
+            <h1 class="text-lg font-bold text-slate-900 tracking-tight">Jotform Payload Inspector</h1>
+            
+            <div class="h-6 w-px bg-slate-200 mx-2"></div>
+            
+            <button onclick="toggleSettings()" class="text-xs font-medium text-slate-600 hover:text-indigo-600 flex items-center gap-1 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                Config
+            </button>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex justify-between items-center">
-                <h2 class="font-semibold text-slate-700 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                    Settings
-                </h2>
-                <button id="toggleSettings" class="text-sm text-indigo-600 hover:text-indigo-800">Hide/Show</button>
+        <div class="flex gap-2">
+            <button onclick="fetchData()" id="fetchBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded shadow-sm transition-all flex items-center gap-2">
+                <span>Fetch Payload</span>
+                <div id="loader" class="hidden h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            </button>
+        </div>
+    </header>
+
+    <div id="settingsPanel" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-50 hidden flex items-start justify-center pt-20">
+        <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-lg p-6 transform transition-all scale-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold text-slate-800">Connection Settings</h3>
+                <button onclick="toggleSettings()" class="text-slate-400 hover:text-slate-600">✕</button>
             </div>
             
-            <div id="settingsPanel" class="p-6 grid gap-5 md:grid-cols-2">
-                <div class="col-span-2 md:col-span-2">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Google Script Web App URL</label>
-                    <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec" 
-                        class="w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border transition-colors">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">GAS Web App URL</label>
+                    <input type="url" id="scriptUrl" class="w-full rounded border-slate-300 bg-slate-50 text-sm p-2 focus:ring-2 focus:ring-indigo-500 outline-none border">
                 </div>
-                <div class="col-span-2 md:col-span-2">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Jotform Submission ID</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="submissionId" placeholder="e.g. 5839201923..." 
-                            class="flex-1 rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border transition-colors">
-                        <button onclick="fetchData()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md font-medium shadow-sm transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" id="fetchBtn">
-                            <span id="btnText">Retrieve Payload</span>
-                            <svg id="btnSpinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        </button>
-                    </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Submission ID</label>
+                    <input type="text" id="submissionId" class="w-full rounded border-slate-300 bg-slate-50 text-sm p-2 focus:ring-2 focus:ring-indigo-500 outline-none border">
+                </div>
+                <div class="pt-2">
+                    <button onclick="saveAndClose()" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2 rounded text-sm font-medium">Save & Close</button>
                 </div>
             </div>
         </div>
-
-        <div id="toast" class="hidden fixed bottom-5 right-5 px-4 py-3 rounded shadow-lg text-white text-sm transition-opacity duration-300"></div>
-
-        <div id="resultContainer" class="hidden fade-in">
-            <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden relative">
-                <div class="bg-slate-800 text-slate-200 px-4 py-2 text-xs font-mono flex justify-between items-center">
-                    <span>JSON Response</span>
-                    <button onclick="copyToClipboard()" class="hover:text-white transition-colors flex items-center gap-1 group">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                        <span class="group-hover:underline">Copy</span>
-                    </button>
-                </div>
-                <pre class="m-0 p-0 overflow-auto max-h-[600px]"><code id="jsonOutput" class="language-json text-sm"></code></pre>
-            </div>
-        </div>
-
     </div>
 
+    <main class="flex-1 relative bg-white">
+        <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
+            <svg class="w-12 h-12 mb-3 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+            <p>Ready to fetch data</p>
+        </div>
+
+        <div id="monaco-container" class="hidden"></div>
+    </main>
+    
+    <footer class="bg-indigo-600 text-white text-xs py-1 px-4 flex justify-between shrink-0">
+        <div class="flex gap-4">
+            <span id="statusMsg">Ready</span>
+        </div>
+        <div class="flex gap-4 opacity-80">
+            <span>JSON</span>
+            <span>UTF-8</span>
+            <span>Read Only</span>
+        </div>
+    </footer>
+
+    <div id="toast" class="fixed bottom-10 right-5 px-4 py-2 rounded bg-slate-800 text-white text-sm shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none z-50"></div>
+
     <script>
-        // --- Logic ---
+        // --- State ---
+        let editor; // Holds the Monaco Editor instance
+
+        // --- DOM Elements ---
         const els = {
             scriptUrl: document.getElementById('scriptUrl'),
             submissionId: document.getElementById('submissionId'),
-            fetchBtn: document.getElementById('fetchBtn'),
-            btnText: document.getElementById('btnText'),
-            btnSpinner: document.getElementById('btnSpinner'),
-            resultContainer: document.getElementById('resultContainer'),
-            jsonOutput: document.getElementById('jsonOutput'),
-            toast: document.getElementById('toast'),
             settingsPanel: document.getElementById('settingsPanel'),
-            toggleSettings: document.getElementById('toggleSettings')
+            fetchBtn: document.getElementById('fetchBtn'),
+            loader: document.getElementById('loader'),
+            container: document.getElementById('monaco-container'),
+            emptyState: document.getElementById('emptyState'),
+            statusMsg: document.getElementById('statusMsg'),
+            toast: document.getElementById('toast')
         };
 
-        // 1. Load Settings from LocalStorage
+        // --- Init ---
         window.addEventListener('DOMContentLoaded', () => {
+            // Load configs
             els.scriptUrl.value = localStorage.getItem('gas_url') || '';
             els.submissionId.value = localStorage.getItem('jotform_sub_id') || '';
+            
+            // If empty, show settings
+            if(!els.scriptUrl.value) toggleSettings();
+
+            // Initialize Monaco
+            require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
+            
+            require(['vs/editor/editor.main'], function() {
+                editor = monaco.editor.create(els.container, {
+                    value: "{\n\t/* Click 'Fetch Payload' to load data */\n}",
+                    language: 'json',
+                    theme: 'vs-light', // Use 'vs-dark' for dark mode
+                    readOnly: true,
+                    automaticLayout: true,
+                    minimap: { enabled: true },
+                    scrollBeyondLastLine: false,
+                    fontSize: 13,
+                    fontFamily: "'Menlo', 'Monaco', 'Courier New', monospace",
+                    renderLineHighlight: 'all',
+                });
+            });
         });
 
-        // 2. Settings Toggle
-        els.toggleSettings.addEventListener('click', () => {
+        // --- Logic ---
+        function toggleSettings() {
             els.settingsPanel.classList.toggle('hidden');
-        });
+        }
 
-        // 3. Fetch Data
+        function saveAndClose() {
+            localStorage.setItem('gas_url', els.scriptUrl.value);
+            localStorage.setItem('jotform_sub_id', els.submissionId.value);
+            toggleSettings();
+            showToast('Settings saved');
+        }
+
         async function fetchData() {
             const url = els.scriptUrl.value.trim();
             const id = els.submissionId.value.trim();
 
             if (!url || !id) {
-                showToast('Please fill in both the Script URL and Submission ID', 'error');
-                return;
+                toggleSettings();
+                return showToast('Please configure settings');
             }
 
-            // Save for next time
-            localStorage.setItem('gas_url', url);
-            localStorage.setItem('jotform_sub_id', id);
-
             setLoading(true);
-            els.resultContainer.classList.add('hidden');
+            els.emptyState.classList.add('hidden');
+            els.container.classList.remove('hidden');
 
             try {
-                // Construct URL
-                const endpoint = `${url}?submissionId=${id}`;
+                els.statusMsg.textContent = `Fetching ID: ${id}...`;
                 
-                const response = await fetch(endpoint);
+                const response = await fetch(`${url}?submissionId=${id}`);
                 const data = await response.json();
 
-                if (data.error) {
-                    throw new Error(data.message || data.error);
+                if (data.error) throw new Error(data.message || data.error);
+
+                // Update Editor Content
+                if (editor) {
+                    const jsonString = JSON.stringify(data, null, 2);
+                    editor.setValue(jsonString);
+                    
+                    // Trigger "Fold All" to make it look clean initially (optional)
+                    // editor.trigger('fold', 'editor.foldAll'); 
+                    
+                    // Or Format it perfectly
+                    editor.getAction('editor.action.formatDocument').run();
                 }
 
-                // Render Success
-                els.jsonOutput.textContent = JSON.stringify(data, null, 2);
-                Prism.highlightElement(els.jsonOutput); // Apply syntax highlighting
-                els.resultContainer.classList.remove('hidden');
-                showToast('Payload retrieved successfully', 'success');
+                els.statusMsg.textContent = `Loaded successfully (${(new Blob([JSON.stringify(data)]).size / 1024).toFixed(2)} KB)`;
+                showToast('Payload Loaded');
 
             } catch (err) {
-                showToast(err.message, 'error');
+                els.statusMsg.textContent = 'Error';
+                showToast(err.message);
                 console.error(err);
+                if(editor) editor.setValue(`// Error: \n${err.message}`);
             } finally {
                 setLoading(false);
             }
         }
 
-        // 4. Utilities
+        // --- Utilities ---
         function setLoading(isLoading) {
             els.fetchBtn.disabled = isLoading;
-            if (isLoading) {
-                els.btnText.classList.add('hidden');
-                els.btnSpinner.classList.remove('hidden');
-            } else {
-                els.btnText.classList.remove('hidden');
-                els.btnSpinner.classList.add('hidden');
-            }
+            els.loader.style.display = isLoading ? 'block' : 'none';
         }
 
-        function showToast(message, type) {
-            els.toast.textContent = message;
-            els.toast.className = `fixed bottom-5 right-5 px-6 py-3 rounded-lg shadow-xl text-white text-sm font-medium transition-all duration-300 transform translate-y-0 z-50 ${type === 'error' ? 'bg-red-500' : 'bg-emerald-500'}`;
-            
-            setTimeout(() => {
-                els.toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => els.toast.classList.add('hidden'), 300);
-            }, 3000);
-            
-            els.toast.classList.remove('hidden', 'opacity-0', 'translate-y-2');
-        }
-
-        function copyToClipboard() {
-            const text = els.jsonOutput.textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('JSON copied to clipboard!', 'success');
-            });
+        function showToast(msg) {
+            els.toast.textContent = msg;
+            els.toast.style.opacity = '1';
+            setTimeout(() => els.toast.style.opacity = '0', 3000);
         }
     </script>
 </body>
