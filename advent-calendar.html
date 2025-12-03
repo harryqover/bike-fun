@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qover Config Advent Calendar</title>
+    
+    <!-- 1. Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. Load React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- 3. Load Babel for JSX support -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Custom Styles for Scrollbars -->
+    <style>
+        body {
+            background-color: #0f172a; /* Slate 900 */
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b; 
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- ICONS (Inline SVGs to avoid external dependencies) ---
+        const IconBase = ({ children, className }) => (
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="24" height="24" viewBox="0 0 24 24" 
+                fill="none" stroke="currentColor" strokeWidth="2" 
+                strokeLinecap="round" strokeLinejoin="round" 
+                className={className}
+            >
+                {children}
+            </svg>
+        );
+
+        const Terminal = ({ className }) => (
+            <IconBase className={className}>
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+            </IconBase>
+        );
+
+        const Gift = ({ className }) => (
+            <IconBase className={className}>
+                <polyline points="20 12 20 22 4 22 4 12"></polyline>
+                <rect x="2" y="7" width="20" height="5"></rect>
+                <line x1="12" y1="22" x2="12" y2="7"></line>
+                <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+                <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+            </IconBase>
+        );
+
+        const Lock = ({ className }) => (
+            <IconBase className={className}>
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </IconBase>
+        );
+
+        const CheckCircle = ({ className }) => (
+            <IconBase className={className}>
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </IconBase>
+        );
+
+        const XCircle = ({ className }) => (
+            <IconBase className={className}>
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+            </IconBase>
+        );
+
+        const CodeIcon = ({ className }) => (
+            <IconBase className={className}>
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+            </IconBase>
+        );
+
+        const Snowflake = ({ className }) => (
+            <IconBase className={className}>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <line x1="12" y1="2" x2="12" y2="22"></line>
+                <path d="M20 20l-4-4"></path>
+                <path d="M4 4l4 4"></path>
+                <path d="M4 20l4-4"></path>
+                <path d="M20 4l-4 4"></path>
+            </IconBase>
+        );
+
+        const Copy = ({ className }) => (
+            <IconBase className={className}>
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </IconBase>
+        );
+
+        const Info = ({ className }) => (
+            <IconBase className={className}>
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </IconBase>
+        );
+
+
+        // --- CONFIGURATION DATA ---
+        // EDIT THIS SECTION TO CHANGE RIDDLES
+        const RIDDLES = [
+            {
+                day: 1,
+                title: "The Root of All Coverage",
+                story: "We're setting up a new Bike product. We need to extract the policy ID to generate the certificate number.",
+                json: {
+                "policyId": "POL-123456789",
+                "product": "bike-v2",
+                "status": "active"
+                },
+                question: "What is the JSONata expression to get the policyId?",
+                acceptableAnswers: ["policyId", "$.policyId", "`policyId`"],
+                hint: "It's the simplest path."
+            },
+            {
+                day: 2,
+                title: "Filtering the Risk",
+                story: "The underwriting rules changed. We only care about drivers under 25 for the surcharge calculation.",
+                json: {
+                "drivers": [
+                    { "name": "Alice", "age": 29 },
+                    { "name": "Bob", "age": 22 },
+                    { "name": "Charlie", "age": 24 }
+                ]
+                },
+                question: "Write an expression to filter drivers where age < 25.",
+                acceptableAnswers: ["drivers[age < 25]", "drivers[age<25]", "$.drivers[age < 25]"],
+                hint: "Use the filter operator [ ]"
+            },
+            {
+                day: 3,
+                title: "Summing Premiums",
+                story: "Finance needs the total net premium for the receipt generation.",
+                json: {
+                "coverages": [
+                    { "code": "RC", "premium": 120.50 },
+                    { "code": "THEFT", "premium": 45.00 },
+                    { "code": "ASSISTANCE", "premium": 15.00 }
+                ]
+                },
+                question: "Calculate the sum of all premiums.",
+                acceptableAnswers: ["$sum(coverages.premium)", "$sum(coverages.premium)", "180.5", "180.50"],
+                hint: "The $sum function is your friend."
+            },
+            {
+                day: 4,
+                title: "The Missing Beneficiary",
+                story: "Sometimes data is messy. We need to handle null values in the config gracefully.",
+                json: {
+                "beneficiary": null,
+                "policyHolder": { "name": "Qover Employee" }
+                },
+                question: "Return beneficiary name, OR default to 'Estate' if null.",
+                acceptableAnswers: ["beneficiary ? beneficiary : 'Estate'", "$exists(beneficiary) ? beneficiary : 'Estate'", "'Estate'"],
+                hint: "Use the ternary operator ? :"
+            },
+            {
+                day: 5,
+                title: "Date Transformation",
+                story: "The insurer legacy system requires dates in YYYY/MM/DD format, but we store ISO.",
+                json: {
+                "effectiveDate": "2023-12-05T00:00:00Z"
+                },
+                question: "Extract just the year from the string.",
+                acceptableAnswers: ["$substring(effectiveDate, 0, 4)", "2023"],
+                hint: "$substring or $split"
+            }
+        ];
+
+        // Generate placeholder days for 6-24
+        for (let i = 6; i <= 24; i++) {
+            RIDDLES.push({
+                day: i,
+                title: `Configuration Challenge #${i}`,
+                story: "A complex integration awaits...",
+                json: { "challenge": "locked" },
+                question: "Placeholder for future riddles.",
+                acceptableAnswers: ["test"],
+                hint: "Wait until the day comes!"
+            });
+        }
+
+
+        // --- MAIN APP COMPONENT ---
+        const App = () => {
+            const [currentDate, setCurrentDate] = useState(new Date());
+            const [completedDays, setCompletedDays] = useState([]);
+            const [selectedDay, setSelectedDay] = useState(null);
+            const [userAnswer, setUserAnswer] = useState("");
+            const [feedback, setFeedback] = useState("neutral"); // neutral, success, error
+            const [showHint, setShowHint] = useState(false);
+
+            // Load progress
+            useEffect(() => {
+                const saved = localStorage.getItem('qoverAdventProgress');
+                if (saved) {
+                    setCompletedDays(JSON.parse(saved));
+                }
+            }, []);
+
+            // Save progress
+            useEffect(() => {
+                localStorage.setItem('qoverAdventProgress', JSON.stringify(completedDays));
+            }, [completedDays]);
+
+            // Helper to check lock status
+            const isDoorLocked = (day) => {
+                const currentMonth = currentDate.getMonth(); // 0-11, 11 is December
+                const currentDay = currentDate.getDate();
+                
+                // Logic:
+                // If it's NOT December (and not yet January of next year), lock everything.
+                if (currentMonth < 11) return true; 
+                
+                // If it is Dec, check day
+                if (currentMonth === 11) {
+                    return day > currentDay;
+                }
+                
+                // If Jan (month 0) or later, everything is unlocked
+                return false;
+            };
+
+            const handleDayClick = (dayData) => {
+                if (isDoorLocked(dayData.day)) {
+                    alert("This door is locked until the right date!");
+                    return;
+                }
+
+                setSelectedDay(dayData);
+                setUserAnswer("");
+                setFeedback("neutral");
+                setShowHint(false);
+            };
+
+            const checkAnswer = () => {
+                if (!selectedDay) return;
+                
+                const normalizedInput = userAnswer.trim();
+                const isCorrect = selectedDay.acceptableAnswers.some(ans => 
+                    ans.toLowerCase() === normalizedInput.toLowerCase()
+                );
+
+                if (isCorrect) {
+                    setFeedback("success");
+                    if (!completedDays.includes(selectedDay.day)) {
+                        setCompletedDays([...completedDays, selectedDay.day]);
+                    }
+                } else {
+                    setFeedback("error");
+                }
+            };
+
+            const copyJSON = () => {
+                if(navigator.clipboard) {
+                    navigator.clipboard.writeText(JSON.stringify(selectedDay.json, null, 2));
+                } else {
+                    alert("Clipboard not supported in this context");
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-slate-900 text-slate-100 font-sans selection:bg-teal-500 selection:text-white pb-20">
+                    
+                    {/* BACKGROUND ELEMENTS */}
+                    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+                        <div className="absolute top-0 left-1/4 w-96 h-96 bg-teal-600/20 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl"></div>
+                    </div>
+
+                    {/* HEADER */}
+                    <header className="relative z-10 pt-12 pb-8 px-6 text-center">
+                        <div className="inline-flex items-center gap-3 mb-4">
+                            <Terminal className="w-8 h-8 text-teal-400" />
+                            <h1 className="text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">
+                                Qover Config Advent
+                            </h1>
+                        </div>
+                        <p className="text-slate-400 max-w-lg mx-auto">
+                            24 Days of JSONata, Coverage Logic, and Integration Riddles.
+                            <br />Crack the config code to save Christmas.
+                        </p>
+                        <div className="mt-6 flex justify-center gap-4 text-sm font-medium">
+                            <div className="px-4 py-2 rounded-full bg-slate-800 border border-slate-700 text-teal-400">
+                                Progress: {completedDays.length} / 24
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* GRID */}
+                    <main className="relative z-10 container mx-auto px-4 max-w-5xl">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                            {RIDDLES.map((riddle) => {
+                                const isCompleted = completedDays.includes(riddle.day);
+                                const isLocked = isDoorLocked(riddle.day);
+                                
+                                return (
+                                    <button
+                                        key={riddle.day}
+                                        onClick={() => handleDayClick(riddle)}
+                                        disabled={isLocked}
+                                        className={`
+                                            group relative h-32 rounded-xl border transition-all duration-300 flex flex-col items-center justify-center gap-2
+                                            ${isCompleted 
+                                                ? 'bg-teal-900/40 border-teal-500/50 text-teal-300' 
+                                                : isLocked 
+                                                ? 'bg-slate-800/50 border-slate-700 text-slate-500 cursor-not-allowed' 
+                                                : 'bg-slate-800 border-slate-600 hover:border-teal-400 hover:shadow-lg hover:shadow-teal-500/20 hover:-translate-y-1 text-white'}
+                                        `}
+                                    >
+                                        <span className={`text-2xl font-bold ${isCompleted ? 'line-through opacity-50' : ''}`}>
+                                            {riddle.day}
+                                        </span>
+                                        
+                                        {isCompleted ? (
+                                            <CheckCircle className="w-6 h-6 text-teal-400 animate-pulse" />
+                                        ) : isLocked ? (
+                                            <Lock className="w-5 h-5 opacity-50" />
+                                        ) : (
+                                            <Gift className="w-6 h-6 group-hover:text-teal-400 transition-colors" />
+                                        )}
+
+                                        {!isLocked && (
+                                            <Snowflake className="absolute top-2 right-2 w-3 h-3 text-white/20 group-hover:animate-spin" />
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </main>
+
+                    {/* MODAL */}
+                    {selectedDay && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+                            <div className="bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                                
+                                <div className="bg-slate-800/50 p-6 flex justify-between items-start border-b border-slate-700">
+                                    <div>
+                                        <span className="text-teal-400 text-sm font-bold tracking-wider uppercase">
+                                            Day {selectedDay.day} Challenge
+                                        </span>
+                                        <h2 className="text-2xl font-bold text-white mt-1">{selectedDay.title}</h2>
+                                    </div>
+                                    <button 
+                                        onClick={() => setSelectedDay(null)}
+                                        className="text-slate-400 hover:text-white transition-colors"
+                                    >
+                                        <XCircle className="w-8 h-8" />
+                                    </button>
+                                </div>
+
+                                <div className="p-6 overflow-y-auto max-h-[70vh]">
+                                    <p className="text-slate-300 mb-6 italic border-l-4 border-teal-500 pl-4">
+                                        "{selectedDay.story}"
+                                    </p>
+
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs font-mono text-slate-500">config.json</span>
+                                                <button onClick={copyJSON} className="text-xs text-teal-400 hover:text-teal-300 flex items-center gap-1">
+                                                    <Copy className="w-3 h-3" /> Copy
+                                                </button>
+                                            </div>
+                                            <div className="bg-slate-950 rounded-lg p-4 font-mono text-sm text-blue-300 overflow-x-auto border border-slate-800">
+                                                <pre>{JSON.stringify(selectedDay.json, null, 2)}</pre>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col gap-4">
+                                            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                                                <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
+                                                    <CodeIcon className="w-4 h-4 text-teal-400" /> Mission
+                                                </h3>
+                                                <p className="text-sm text-slate-300">{selectedDay.question}</p>
+                                            </div>
+
+                                            <div className="space-y-2 mt-auto">
+                                                <label className="text-xs uppercase text-slate-500 font-bold">Your Expression / Result</label>
+                                                <div className="relative">
+                                                    <input 
+                                                        type="text" 
+                                                        value={userAnswer}
+                                                        onChange={(e) => {
+                                                            setUserAnswer(e.target.value);
+                                                            setFeedback("neutral");
+                                                        }}
+                                                        placeholder="e.g. $.policyId"
+                                                        className={`
+                                                            w-full bg-slate-950 border rounded-lg px-4 py-3 font-mono text-white focus:outline-none focus:ring-2 transition-all
+                                                            ${feedback === 'error' ? 'border-red-500 focus:ring-red-500/50' : 
+                                                            feedback === 'success' ? 'border-green-500 focus:ring-green-500/50' : 
+                                                            'border-slate-700 focus:ring-teal-500/50'}
+                                                        `}
+                                                        onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
+                                                    />
+                                                    {feedback === 'success' && <CheckCircle className="absolute right-3 top-3 text-green-500 w-5 h-5" />}
+                                                </div>
+
+                                                {feedback === 'error' && (
+                                                    <div className="text-red-400 text-sm flex items-center gap-2 animate-pulse">
+                                                        <XCircle className="w-4 h-4" />
+                                                        Incorrect expression or value.
+                                                    </div>
+                                                )}
+
+                                                {feedback === 'success' && (
+                                                    <div className="text-green-400 text-sm flex items-center gap-2">
+                                                        <CheckCircle className="w-4 h-4" />
+                                                        Correct! Configuration deployed.
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="flex gap-2 mt-2">
+                                                <button 
+                                                    onClick={checkAnswer}
+                                                    className="flex-1 bg-teal-600 hover:bg-teal-500 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-lg shadow-teal-900/20"
+                                                >
+                                                    Deploy Logic
+                                                </button>
+                                            </div>
+
+                                            {feedback === 'error' && (
+                                                <button 
+                                                    onClick={() => setShowHint(true)}
+                                                    className="text-xs text-center text-slate-500 hover:text-slate-300 mt-2 flex items-center justify-center gap-1"
+                                                >
+                                                    <Info className="w-3 h-3" /> Need a hint?
+                                                </button>
+                                            )}
+                                            
+                                            {showHint && (
+                                                <div className="text-xs bg-yellow-900/20 text-yellow-200 p-2 rounded border border-yellow-900/50">
+                                                    Hint: {selectedDay.hint}
+                                                </div>
+                                            )}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* FOOTER */}
+                    <footer className="fixed bottom-0 w-full bg-slate-900 border-t border-slate-800 p-4">
+                        <div className="container mx-auto flex justify-center text-xs text-slate-500">
+                            <div>
+                                Built for <span className="font-bold text-slate-300">Qover</span> Team Integration
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
