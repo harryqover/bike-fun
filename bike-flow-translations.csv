@@ -1,0 +1,84 @@
+key_name,en,fr,nl,de,comment
+bf.coverage.title,Coverage Selection,Sélection de la couverture,Dekkingsselectie,Deckungsauswahl,Section title for coverage selection
+bf.coverage.assistance.label,Include roadside assistance,Inclure l'assistance routière,Inclusief pechhulp,Pannenhilfe einschließen,Checkbox label for assistance coverage
+bf.coverage.theft.deductible.label,Theft deductible,Franchise vol,Eigen risico diefstal,Diebstahl Selbstbehalt,Label for theft deductible selection
+bf.coverage.theft.deductible.none,No deductible,Pas de franchise,Geen eigen risico,Kein Selbstbehalt,Option for no deductible
+bf.coverage.theft.deductible.10pc,10% deductible,Franchise de 10%,10% eigen risico,10% Selbstbehalt,Option for 10% deductible
+bf.coverage.damage.deductible.label,Damage deductible,Franchise dommages,Eigen risico schade,Schaden Selbstbehalt,Label for damage deductible selection
+bf.coverage.damage.deductible.10pc,10% deductible,Franchise de 10%,10% eigen risico,10% Selbstbehalt,10% deductible option for damage
+bf.coverage.damage.deductible.35fix,€35 fixed,35€ fixe,€35 vast,35€ fest,€35 fixed deductible option
+bf.coverage.damage.deductible.75fix,€75 fixed,75€ fixe,€75 vast,75€ fest,€75 fixed deductible option
+bf.coverage.package.label,Select your package,Sélectionnez votre formule,Selecteer uw pakket,Wählen Sie Ihr Paket,Label for package selection
+bf.coverage.package.theft,Theft only,Vol uniquement,Alleen diefstal,Nur Diebstahl,Package with theft coverage only
+bf.coverage.package.damage,Damage only,Dommages uniquement,Alleen schade,Nur Schaden,Package with damage coverage only
+bf.coverage.package.comprehensive,Theft + Damage + Assistance,Vol + Dommages + Assistance,Diefstal + Schade + Pechhulp,Diebstahl + Schaden + Pannenhilfe,Comprehensive package with all coverages
+bf.bike.title,About Your Bike,À propos de votre vélo,Over uw fiets,Über Ihr Fahrrad,Section title for bike information
+bf.bike.make.label,Bike make,Marque du vélo,Fietsmerk,Fahrradmarke,Label for bike make/brand
+bf.bike.make.placeholder,e.g. Canyon,p.ex. Canyon,bijv. Canyon,z.B. Canyon,Placeholder for bike make
+bf.bike.model.label,Bike model,Modèle du vélo,Fietsmodel,Fahrradmodell,Label for bike model
+bf.bike.model.placeholder,e.g. Spectral,p.ex. Spectral,bijv. Spectral,z.B. Spectral,Placeholder for bike model
+bf.bike.serialNumber.label,Frame/Serial number,Numéro de série/cadre,Frame-/serienummer,Rahmen-/Seriennummer,Label for serial number
+bf.bike.serialNumber.placeholder,Enter serial number,Entrez le numéro de série,Voer serienummer in,Seriennummer eingeben,Placeholder for serial number
+bf.bike.value.label,Bike value (including accessories),Valeur du vélo (accessoires inclus),Fietswaarde (inclusief accessoires),Fahrradwert (inkl. Zubehör),Label for bike value
+bf.bike.value.placeholder,Enter value in EUR,Entrez la valeur en EUR,Voer waarde in EUR in,Wert in EUR eingeben,Placeholder for bike value
+bf.bike.value.min,Minimum value is €250,Valeur minimale : 250€,Minimale waarde is €250,Mindestwert beträgt 250€,Validation message for minimum value
+bf.bike.value.max,Maximum value is €10000,Valeur maximale : 10 000€,Maximale waarde is €10.000,Höchstwert beträgt 10.000€,Validation message for maximum value
+bf.bike.purchaseDate.label,Purchase date,Date d'achat,Aankoopdatum,Kaufdatum,Label for purchase date
+bf.bike.newBike.label,Is this a new bike?,S'agit-il d'un vélo neuf ?,Is dit een nieuwe fiets?,Ist dies ein neues Fahrrad?,Label for new/used bike question
+bf.bike.newBike.yes,Yes - New,Oui - Neuf,Ja - Nieuw,Ja - Neu,Option for new bike
+bf.bike.newBike.no,No - Second-hand,Non - D'occasion,Nee - Tweedehands,Nein - Gebraucht,Option for second-hand bike
+bf.bike.type.label,Bike type,Type de vélo,Fietstype,Fahrradtyp,Label for bike type selection
+bf.bike.type.regular,Regular bike,Vélo classique,Gewone fiets,Normales Fahrrad,Regular non-electric bike
+bf.bike.type.regular_ebike,Regular e-bike,Vélo électrique classique,Gewone e-bike,Normales E-Bike,Regular electric bike
+bf.bike.type.mountain,Mountain bike,VTT,Mountainbike,Mountainbike,Mountain bike
+bf.bike.type.mountain_ebike,Mountain e-bike,VTT électrique,Elektrische mountainbike,Elektrisches Mountainbike,Electric mountain bike
+bf.bike.type.race,Race bike,Vélo de course,Racefiets,Rennrad,Race/road bike
+bf.bike.type.race_ebike,Race e-bike,Vélo de course électrique,Elektrische racefiets,Elektrisches Rennrad,Electric race bike
+bf.bike.type.cargo,Cargo bike,Vélo cargo,Bakfiets,Lastenrad,Cargo bike
+bf.bike.type.cargo_ebike,Cargo e-bike,Vélo cargo électrique,Elektrische bakfiets,Elektrisches Lastenrad,Electric cargo bike
+bf.bike.antiTheft.label,Anti-theft measure,Mesure antivol,Anti-diefstal maatregel,Diebstahlschutz,Label for anti-theft measure
+bf.bike.antiTheft.none,None,Aucune,Geen,Keine,No anti-theft measure
+bf.bike.antiTheft.gps,GPS tracking device,Traceur GPS,GPS-tracker,GPS-Tracker,GPS anti-theft device
+bf.bike.depreciation.label,Apply standard depreciation?,Appliquer la dépréciation standard ?,Standaard afschrijving toepassen?,Standard-Abschreibung anwenden?,Label for depreciation option
+bf.bike.depreciation.info,"If yes, 1.5% monthly depreciation after 13 months. If no, no depreciation for 5 years.","Si oui, dépréciation mensuelle de 1,5% après 13 mois. Si non, pas de dépréciation pendant 5 ans.","Zo ja, 1,5% maandelijkse afschrijving na 13 maanden. Zo nee, geen afschrijving gedurende 5 jaar.","Bei Ja, 1,5% monatliche Abschreibung nach 13 Monaten. Bei Nein, keine Abschreibung für 5 Jahre.",Explanation of depreciation
+bf.policyholder.title,Policyholder Details,Informations du souscripteur,Polishouder gegevens,Versicherungsnehmer Angaben,Section title for policyholder information
+bf.policyholder.entity.personal,Personal,Particulier,Particulier,Privat,Personal/individual entity type
+bf.policyholder.entity.company,Company,Entreprise,Bedrijf,Firma,Company entity type
+bf.policyholder.firstName.label,First name,Prénom,Voornaam,Vorname,Label for first name
+bf.policyholder.firstName.placeholder,John,Jean,Jan,Hans,Placeholder for first name
+bf.policyholder.lastName.label,Last name,Nom,Achternaam,Nachname,Label for last name
+bf.policyholder.lastName.placeholder,Doe,Dupont,Janssen,Schmidt,Placeholder for last name
+bf.policyholder.birthdate.label,Date of birth,Date de naissance,Geboortedatum,Geburtsdatum,Label for birthdate
+bf.policyholder.birthdate.optional,Optional for companies,Optionnel pour les entreprises,Optioneel voor bedrijven,Optional für Firmen,Note that birthdate is optional for companies
+bf.policyholder.email.label,Email address,Adresse e-mail,E-mailadres,E-Mail-Adresse,Label for email
+bf.policyholder.email.placeholder,john.doe@example.com,jean.dupont@exemple.fr,jan.janssen@voorbeeld.nl,hans.schmidt@beispiel.de,Placeholder for email
+bf.policyholder.phone.label,Phone number,Numéro de téléphone,Telefoonnummer,Telefonnummer,Label for phone
+bf.policyholder.phone.placeholder,+32 123 456789,+33 1 23 45 67 89,+31 20 123 4567,+49 30 12345678,Placeholder for phone
+bf.policyholder.company.name.label,Company name,Nom de l'entreprise,Bedrijfsnaam,Firmenname,Label for company name
+bf.policyholder.company.name.placeholder,Company Ltd,Entreprise SARL,Bedrijf BV,Firma GmbH,Placeholder for company name
+bf.policyholder.company.vat.label,VAT number (optional),Numéro TVA (optionnel),BTW-nummer (optioneel),USt-IdNr. (optional),Label for VAT number
+bf.policyholder.company.vat.placeholder,BE0123456789,FR12345678901,NL123456789B01,DE123456789,Placeholder for VAT number
+bf.policyholder.address.street.label,Street and number,Rue et numéro,Straat en nummer,Straße und Hausnummer,Label for street address
+bf.policyholder.address.street.placeholder,Main Street 123,Rue principale 123,Hoofdstraat 123,Hauptstraße 123,Placeholder for street
+bf.policyholder.address.zip.label,Postal code,Code postal,Postcode,Postleitzahl,Label for postal code
+bf.policyholder.address.zip.placeholder,1000,75001,1012,10115,Placeholder for postal code
+bf.policyholder.address.city.label,City,Ville,Stad,Stadt,Label for city
+bf.policyholder.address.city.placeholder,Brussels,Paris,Amsterdam,Berlin,Placeholder for city
+bf.policyholder.address.country.label,Country,Pays,Land,Land,Label for country
+bf.startDate.title,Insurance Start Date,Date de début de l'assurance,Startdatum verzekering,Versicherungsbeginn,Section title for start date
+bf.startDate.label,Start date,Date de début,Startdatum,Startdatum,Label for start date
+bf.startDate.setNow,I want to set a start date now,Je veux définir une date de début maintenant,Ik wil nu een startdatum instellen,Ich möchte jetzt ein Startdatum festlegen,Checkbox to set start date
+bf.terms.title,Terms and Conditions,Conditions générales,Algemene voorwaarden,Allgemeine Geschäftsbedingungen,Section title for legal terms
+bf.terms.acceptance.label,I confirm that I have read and accept the agreement on electronic communication,Je confirme avoir lu et accepté l'accord sur la communication électronique,Ik bevestig dat ik de overeenkomst over elektronische communicatie heb gelezen en geaccepteerd,Ich bestätige dass ich die Vereinbarung über die elektronische Kommunikation gelesen und akzeptiert habe,Terms acceptance checkbox
+bf.terms.important.label,I agree to receive information from Qover by email including PDF attachments,J'accepte de recevoir des informations de Qover par e-mail y compris des pièces jointes PDF,Ik ga akkoord met het ontvangen van informatie van Qover per e-mail inclusief PDF-bijlagen,Ich bin damit einverstanden Informationen von Qover per E-Mail einschließlich PDF-Anhängen zu erhalten,Information consent checkbox
+bf.terms.eligibility.label,I confirm that I have read and accepted the General Terms and Conditions and IPID,Je confirme avoir lu et accepté les Conditions Générales et le DIPA,Ik bevestig dat ik de Algemene Voorwaarden en het IPID heb gelezen en geaccepteerd,Ich bestätige dass ich die Allgemeinen Geschäftsbedingungen und das IPID gelesen und akzeptiert habe,Eligibility confirmation checkbox
+bf.terms.privacy.label,I have read the Privacy Policy and understand how my personal data will be processed,J'ai lu la Politique de confidentialité et je comprends comment mes données personnelles seront traitées,Ik heb het Privacybeleid gelezen en begrijp hoe mijn persoonlijke gegevens worden verwerkt,Ich habe die Datenschutzerklärung gelesen und verstehe wie meine persönlichen Daten verarbeitet werden,Privacy policy acknowledgment
+bf.button.submit,Continue to Payment,Continuer vers le paiement,Verder naar betaling,Weiter zur Zahlung,Submit button text
+bf.button.confirm,Confirm,Confirmer,Bevestigen,Bestätigen,Confirm button text
+bf.loading.title,Calculating price...,Calcul du prix...,Prijs berekenen...,Preis wird berechnet...,Loading overlay title
+bf.loading.message,Your price is being calculated. Please wait.,Votre prix est en cours de calcul. Veuillez patienter.,Uw prijs wordt berekend. Even geduld.,Ihr Preis wird berechnet. Bitte warten.,Loading overlay message
+bf.error.required,Please fill in all required fields,Veuillez remplir tous les champs obligatoires,Vul alle verplichte velden in,Bitte füllen Sie alle Pflichtfelder aus,Error message for required fields
+bf.error.email.invalid,Please enter a valid email address,Veuillez entrer une adresse e-mail valide,Voer een geldig e-mailadres in,Bitte geben Sie eine gültige E-Mail-Adresse ein,Error message for invalid email
+bf.error.generic,An error occurred. Please try again.,Une erreur s'est produite. Veuillez réessayer.,Er is een fout opgetreden. Probeer het opnieuw.,Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.,Generic error message
+bf.price.placeholder,Price will be calculated,Le prix sera calculé,Prijs wordt berekend,Preis wird berechnet,Pricing placeholder text
+bf.price.label,Total premium,Prime totale,Totale premie,Gesamtprämie,Label for total price

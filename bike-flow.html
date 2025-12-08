@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bike Insurance Quote</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        h2:hover {
+            color: #007bff;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-content {
+            padding: 20px 0;
+            display: none;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .field,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e2e2;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .field:focus,
+        select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            border: 2px solid #e2e2e2;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .radio-group label:hover {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+
+        .radio-group input[type="radio"],
+        .radio-group input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .radio-group label input:checked {
+            accent-color: #007bff;
+        }
+
+        .radio-group label:has(input:checked) {
+            border-color: #007bff;
+            background-color: #e7f3ff;
+        }
+
+        .toggle-icon {
+            cursor: pointer;
+            border: 2px solid #36493d;
+            border-radius: 4px;
+            padding: 10px 30px;
+            color: #36493d;
+            background-color: white;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+
+        .toggle-icon:hover {
+            background-color: #36493d;
+            color: white;
+        }
+
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .w-checkbox {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .w-checkbox-input {
+            margin-right: 10px;
+            margin-top: 4px;
+            min-width: 18px;
+            min-height: 18px;
+        }
+
+        .w-form-label {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .w-form-label a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .w-form-label a:hover {
+            text-decoration: underline;
+        }
+
+        .legal-block {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #007bff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .spinner p {
+            margin: 10px 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal-body {
+            margin-top: 20px;
+        }
+
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success {
+            color: #155724;
+            background-color: #d4edda;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .warning {
+            color: #856404;
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #ffeaa7;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+
+        .price-display {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .price-amount {
+            font-size: 36px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .policyholder-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (max-width: 768px) {
+            .policyholder-columns {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .radio-group {
+                flex-direction: column;
+            }
+
+            .radio-group label {
+                min-width: 100%;
+            }
+        }
+
+        #companyFields {
+            margin-bottom: 20px;
+        }
+
+        #startDateContainer {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="spinner">
+            <p data-trans="bf.loading.title">Calculating price...</p>
+            <p data-trans="bf.loading.message">Your price is being calculated. Please wait.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Bike Insurance Quote</h1>
+
+        <form id="quoteForm" novalidate>
+
+            <!-- Coverage Selection Section -->
+            <div class="section">
+                <h2 class="collapsible" data-step="coverage-selection">
+                    <span data-trans="bf.coverage.title">Coverage Selection</span>
+                </h2>
+                <div class="section-content active">
+
+                    <!-- Package Selection -->
+                    <label data-trans="bf.coverage.package.label">Select your package</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="package" value="theft" class="radio-circle" required />
+                            <span data-trans="bf.coverage.package.theft">Theft only</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="package" value="damage" class="radio-circle" required />
+                            <span data-trans="bf.coverage.package.damage">Damage only</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="package" value="comprehensive" class="radio-circle" required />
+                            <span data-trans="bf.coverage.package.comprehensive">Theft + Damage + Assistance</span>
+                        </label>
+                    </div>
+
+                    <!-- Assistance Coverage -->
+                    <label class="w-checkbox">
+                        <input type="checkbox" id="includeAssistance" name="includeAssistance" class="w-checkbox-input">
+                        <span class="w-form-label" data-trans="bf.coverage.assistance.label">Include roadside
+                            assistance</span>
+                    </label>
+
+                    <!-- Theft Deductible -->
+                    <label data-trans="bf.coverage.theft.deductible.label">Theft deductible</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="theftDeductibleType" value="THEFT_DEDUCTIBLE_NO_DEDUCTIBLE"
+                                class="radio-circle" required checked />
+                            <span data-trans="bf.coverage.theft.deductible.none">No deductible</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="theftDeductibleType" value="THEFT_DEDUCTIBLE_STANDARD_10PC"
+                                class="radio-circle" required />
+                            <span data-trans="bf.coverage.theft.deductible.10pc">10% deductible</span>
+                        </label>
+                    </div>
+
+                    <!-- Damage Deductible -->
+                    <label data-trans="bf.coverage.damage.deductible.label">Damage deductible</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="damageDeductibleType" value="DAMAGE_DEDUCTIBLE_STANDARD_35_FIX"
+                                class="radio-circle" required checked />
+                            <span data-trans="bf.coverage.damage.deductible.35fix">€35 fixed</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="damageDeductibleType" value="DAMAGE_DEDUCTIBLE_STANDARD_10PC"
+                                class="radio-circle" required />
+                            <span data-trans="bf.coverage.damage.deductible.10pc">10% deductible</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="damageDeductibleType" value="DAMAGE_DEDUCTIBLE_ENGLISH_75_FIX"
+                                class="radio-circle" required />
+                            <span data-trans="bf.coverage.damage.deductible.75fix">€75 fixed</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="damageDeductibleType" value="DAMAGE_DEDUCTIBLE_ENGLISH_10PC"
+                                class="radio-circle" required />
+                            <span data-trans="bf.coverage.damage.deductible.10pc">10% deductible (EN)</span>
+                        </label>
+                    </div>
+
+                    <span class="toggle-icon" data-trans="bf.button.confirm">Confirm</span>
+                </div>
+            </div>
+
+            <!-- Bike Information Section -->
+            <div class="section">
+                <h2 class="collapsible" data-step="bike-info">
+                    <span data-trans="bf.bike.title">About Your Bike</span>
+                </h2>
+                <div class="section-content">
+
+                    <label data-trans="bf.bike.make.label">Bike make</label>
+                    <input class="field" type="text" name="make" required
+                        data-trans-placeholder="bf.bike.make.placeholder" autocomplete="off" />
+
+                    <label data-trans="bf.bike.model.label">Bike model</label>
+                    <input class="field" type="text" name="model" required
+                        data-trans-placeholder="bf.bike.model.placeholder" autocomplete="off" />
+
+                    <label data-trans="bf.bike.serialNumber.label">Frame/Serial number</label>
+                    <input class="field" type="text" name="serialNumber"
+                        data-trans-placeholder="bf.bike.serialNumber.placeholder" autocomplete="off" />
+
+                    <label data-trans="bf.bike.value.label">Bike value (including accessories)</label>
+                    <input class="field" type="number" name="bikeValue" required min="250" max="10000"
+                        data-trans-placeholder="bf.bike.value.placeholder" />
+                    <p class="info-text">
+                        <span data-trans="bf.bike.value.min">Minimum value is €250</span> -
+                        <span data-trans="bf.bike.value.max">Maximum value is €10,000</span>
+                    </p>
+
+                    <label data-trans="bf.bike.purchaseDate.label">Purchase date</label>
+                    <input class="field" type="date" name="bikePurchaseDate" required autocomplete="off" />
+
+                    <label data-trans="bf.bike.newBike.label">Is this a new bike?</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="newBike" value="true" class="radio-circle" required />
+                            <span data-trans="bf.bike.newBike.yes">Yes - New</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="newBike" value="false" class="radio-circle" required />
+                            <span data-trans="bf.bike.newBike.no">No - Second-hand</span>
+                        </label>
+                    </div>
+
+                    <label data-trans="bf.bike.type.label">Bike type</label>
+                    <select class="field" name="bikeType" required>
+                        <option value="">Select bike type</option>
+                        <option value="TYPE_REGULAR_BIKE" data-trans="bf.bike.type.regular">Regular bike</option>
+                        <option value="TYPE_REGULAR_EBIKE" data-trans="bf.bike.type.regular_ebike">Regular e-bike
+                        </option>
+                        <option value="TYPE_MOUNTAIN_BIKE" data-trans="bf.bike.type.mountain">Mountain bike</option>
+                        <option value="TYPE_MOUNTAIN_EBIKE" data-trans="bf.bike.type.mountain_ebike">Mountain e-bike
+                        </option>
+                        <option value="TYPE_RACE_BIKE" data-trans="bf.bike.type.race">Race bike</option>
+                        <option value="TYPE_RACE_EBIKE" data-trans="bf.bike.type.race_ebike">Race e-bike</option>
+                        <option value="TYPE_CARGO_BIKE" data-trans="bf.bike.type.cargo">Cargo bike</option>
+                        <option value="TYPE_CARGO_EBIKE" data-trans="bf.bike.type.cargo_ebike">Cargo e-bike</option>
+                    </select>
+
+                    <label data-trans="bf.bike.antiTheft.label">Anti-theft measure</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="antiTheftMeasure" value="ANTI_THEFT_MEASURE_NONE"
+                                class="radio-circle" required checked />
+                            <span data-trans="bf.bike.antiTheft.none">None</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="antiTheftMeasure" value="ANTI_THEFT_MEASURE_GPS_ANTITHEFT"
+                                class="radio-circle" required />
+                            <span data-trans="bf.bike.antiTheft.gps">GPS tracking device</span>
+                        </label>
+                    </div>
+
+                    <label data-trans="bf.bike.depreciation.label">Apply standard depreciation?</label>
+                    <p class="info-text" data-trans="bf.bike.depreciation.info">If yes, 1.5% monthly depreciation after
+                        13 months. If no, no depreciation for 5 years.</p>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="applyDepreciation" value="true" class="radio-circle" required
+                                checked />
+                            <span>Yes</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="applyDepreciation" value="false" class="radio-circle" required />
+                            <span>No</span>
+                        </label>
+                    </div>
+
+                    <span class="toggle-icon" data-trans="bf.button.confirm">Confirm</span>
+                </div>
+            </div>
+
+            <!-- Policyholder Details Section -->
+            <div class="section">
+                <h2 class="collapsible" data-step="policyholder-details">
+                    <span data-trans="bf.policyholder.title">Policyholder Details</span>
+                </h2>
+                <div class="section-content">
+
+                    <!-- Entity Type -->
+                    <div class="radio-group">
+                        <label>
+                            <input class="radio-circle" type="radio" name="isCompany" value="no" checked required />
+                            <span data-trans="bf.policyholder.entity.personal">Personal</span>
+                        </label>
+                        <label>
+                            <input class="radio-circle" type="radio" name="isCompany" value="yes" required />
+                            <span data-trans="bf.policyholder.entity.company">Company</span>
+                        </label>
+                    </div>
+
+                    <!-- Company Fields Container -->
+                    <div id="companyFields" class="policyholder-columns" style="display: none;">
+                        <div class="column">
+                            <label data-trans="bf.policyholder.company.name.label">Company name</label>
+                            <input class="field" type="text" name="companyName"
+                                data-trans-placeholder="bf.policyholder.company.name.placeholder"
+                                autocomplete="organization" />
+                        </div>
+                        <div class="column">
+                            <label data-trans="bf.policyholder.company.vat.label">VAT number (optional)</label>
+                            <input class="field" type="text" name="companyVat"
+                                data-trans-placeholder="bf.policyholder.company.vat.placeholder" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <!-- Personal Details -->
+                    <div class="policyholder-columns">
+                        <div class="column">
+                            <label data-trans="bf.policyholder.firstName.label">First name</label>
+                            <input class="field" type="text" name="firstName" required
+                                data-trans-placeholder="bf.policyholder.firstName.placeholder"
+                                autocomplete="given-name" />
+                        </div>
+                        <div class="column">
+                            <label data-trans="bf.policyholder.lastName.label">Last name</label>
+                            <input class="field" type="text" name="lastName" required
+                                data-trans-placeholder="bf.policyholder.lastName.placeholder"
+                                autocomplete="family-name" />
+                        </div>
+                    </div>
+
+                    <label data-trans="bf.policyholder.birthdate.label">Date of birth</label>
+                    <span class="info-text" data-trans="bf.policyholder.birthdate.optional">Optional for
+                        companies</span>
+                    <input class="field" type="date" name="birthdate" id="birthdate" autocomplete="bday" />
+
+                    <label data-trans="bf.policyholder.email.label">Email address</label>
+                    <input class="field" type="email" name="email" inputmode="email" required
+                        data-trans-placeholder="bf.policyholder.email.placeholder" autocomplete="email" />
+
+                    <label data-trans="bf.policyholder.phone.label">Phone number</label>
+                    <input class="field" type="tel" name="phone" inputmode="tel" required
+                        data-trans-placeholder="bf.policyholder.phone.placeholder" autocomplete="tel" />
+
+                    <label data-trans="bf.policyholder.address.street.label">Street and number</label>
+                    <input class="field" type="text" name="street" required
+                        data-trans-placeholder="bf.policyholder.address.street.placeholder"
+                        autocomplete="street-address" />
+
+                    <div class="policyholder-columns">
+                        <div class="column">
+                            <label data-trans="bf.policyholder.address.zip.label">Postal code</label>
+                            <input class="field" type="text" name="zip" required
+                                data-trans-placeholder="bf.policyholder.address.zip.placeholder" inputmode="numeric"
+                                autocomplete="postal-code" />
+                        </div>
+                        <div class="column">
+                            <label data-trans="bf.policyholder.address.city.label">City</label>
+                            <input class="field" type="text" name="city" required
+                                data-trans-placeholder="bf.policyholder.address.city.placeholder"
+                                autocomplete="address-level2" />
+                        </div>
+                    </div>
+
+                    <label data-trans="bf.policyholder.address.country.label">Country</label>
+                    <input class="field" type="text" name="country" id="countryField" required readonly />
+
+                    <span class="toggle-icon" data-trans="bf.button.confirm">Confirm</span>
+                </div>
+            </div>
+
+            <!-- Insurance Start Date Section -->
+            <div class="section">
+                <h2 class="collapsible" data-step="insurance-start">
+                    <span data-trans="bf.startDate.title">Insurance Start Date</span>
+                </h2>
+                <div class="section-content">
+                    <label class="w-checkbox">
+                        <input class="w-checkbox-input" type="checkbox" id="setStartDateNow" checked />
+                        <span class="w-form-label" data-trans="bf.startDate.setNow">I want to set a start date
+                            now</span>
+                    </label>
+                    <div id="startDateContainer">
+                        <label data-trans="bf.startDate.label">Start date</label>
+                        <input type="date" name="startDate" required autocomplete="off" class="field" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Display -->
+            <div class="price-display">
+                <div data-trans="bf.price.label">Total premium</div>
+                <div class="price-amount" id="priceValue" data-trans="bf.price.placeholder">Price will be calculated
+                </div>
+            </div>
+
+            <!-- Legal Block -->
+            <div class="legal-block">
+                <label class="w-checkbox">
+                    <input type="checkbox" id="acceptance" name="acceptance" class="w-checkbox-input" required>
+                    <span class="w-form-label" data-trans="bf.terms.acceptance.label">
+                        I confirm that I have read and accept the agreement on electronic communication
+                    </span>
+                </label>
+
+                <label class="w-checkbox">
+                    <input type="checkbox" id="important" name="important" class="w-checkbox-input" required>
+                    <span class="w-form-label" data-trans="bf.terms.important.label">
+                        I agree to receive information from Qover by email including PDF attachments
+                    </span>
+                </label>
+
+                <label class="w-checkbox">
+                    <input type="checkbox" id="eligibility" name="eligibility" class="w-checkbox-input" required>
+                    <span class="w-form-label" data-trans="bf.terms.eligibility.label">
+                        I confirm that I have read and accepted the General Terms and Conditions and IPID
+                    </span>
+                </label>
+
+                <label class="w-checkbox">
+                    <input type="checkbox" id="privacy" name="privacy" class="w-checkbox-input" required>
+                    <span class="w-form-label" data-trans="bf.terms.privacy.label">
+                        I have read the Privacy Policy and understand how my personal data will be processed
+                    </span>
+                </label>
+
+                <button type="submit" id="submitButton" class="button" data-trans="bf.button.submit">Continue to
+                    Payment</button>
+                <div id="message"></div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal for displaying errors -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body">
+                <!-- Error messages will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://harryqover.github.io/bike-fun/bike-flow.js"></script>
+</body>
+
+</html>
