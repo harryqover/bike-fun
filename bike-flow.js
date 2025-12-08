@@ -127,7 +127,7 @@ $(document).ready(function () {
     $("#countryField").val(country);
 
     // Focus event for required fields
-    $("#quoteForm").on("focus", "[required]", function () {
+    $("#bikeQuoteForm").on("focus", "[required]", function () {
         $(this).css("border", "1px solid #E2E2E2");
     });
 
@@ -258,7 +258,7 @@ $(".close").on("click", function () {
 });
 
 // Form submission
-$("#quoteForm").on("submit", function (e) {
+$("#bikeQuoteForm").on("submit", function (e) {
     e.preventDefault();
     console.log('Form submission started');
 
@@ -271,7 +271,7 @@ $("#quoteForm").on("submit", function (e) {
 
     // Validate required fields
     let hasError = false;
-    $("#quoteForm [required]").each(function () {
+    $("#bikeQuoteForm [required]").each(function () {
         const $field = $(this);
 
         // Skip hidden fields
