@@ -83,7 +83,8 @@ function removeEmpty(obj) {
 function translateAll(locale) {
     let xhrLocales = new XMLHttpRequest();
     let content = "";
-    const translationUrl = `https://api.prd.qover.io/i18n/v1/projects/webflow-bike-flow/${locale}.json?refresh=001`;
+    const [language] = locale.split('-'); // Extract language only
+    const translationUrl = `https://api.prd.qover.io/i18n/v1/projects/webflow-bike-flow/${language}.json?refresh=001`;
 
     xhrLocales.open("get", translationUrl, true);
     xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
