@@ -416,7 +416,9 @@ function submitFinalQuote() {
             theftDeductibleType: deductibles.theft,
             damageDeductibleType: deductibles.damage,
             includeAssistance: true,
-            serialNumber: formData.get("serialNumber")
+            serialNumber: formData.get("serialNumber"),
+            make: formData.get("make"),
+            model: formData.get("model")
         }
     };
 
@@ -454,23 +456,33 @@ function submitFinalQuote() {
 
                     window.location.href = redirectUrl;
                 }
-                // Check for Validation Error (Status 400 inside payload)
-                else if (response.payload.status === 400 || response.payload.name === "ValidationError") {
+                // Check for Validation Error (Status 400 or _validationErrors array)
+                else if (response.payload.status === 400 || response.payload.name === "ValidationError" || (response.payload._validationErrors && response.payload._validationErrors.length > 0)) {
                     $("#loadingOverlay").hide();
 
                     let errorHtml = '<h4 class="error-title">Please check the following fields:</h4><ul class="error-list">';
 
-                    if (response.payload.details && Array.isArray(response.payload.details)) {
+                    // Handle _validationErrors (New format)
+                    if (response.payload._validationErrors && response.payload._validationErrors.length > 0) {
+                        response.payload._validationErrors.forEach(err => {
+                            // Format: subject.make -> Make
+                            let fieldName = err.field || "Invalid field";
+                            const cleanField = fieldName.split('.').pop()
+                                .replace(/([A-Z])/g, ' $1')
+                                .replace(/^./, str => str.toUpperCase());
+
+                            errorHtml += `<li>${cleanField}: ${err.code || "Required"}</li>`;
+                        });
+                    }
+                    // Handle details (Old format fallback)
+                    else if (response.payload.details && Array.isArray(response.payload.details)) {
                         response.payload.details.forEach(err => {
-                            // Try to make field name readable (e.g. data.policyholder.vatNumber -> VAT Number)
                             let fieldName = err.message || "Invalid field";
-                            // Extract field if available
                             if (err.fields && err.fields.length > 0) {
                                 const rawField = err.fields[0];
                                 const cleanField = rawField.split('.').pop()
-                                    .replace(/([A-Z])/g, ' $1') // Add space before caps
-                                    .replace(/^./, str => str.toUpperCase()); // Capitalize first letter
-
+                                    .replace(/([A-Z])/g, ' $1')
+                                    .replace(/^./, str => str.toUpperCase());
                                 fieldName = `${cleanField}: ${err.message}`;
                             }
                             errorHtml += `<li>${fieldName}</li>`;
@@ -483,18 +495,23 @@ function submitFinalQuote() {
                     $("#errorModal .modal-body").html(errorHtml);
                     $("#errorModal").show();
                 }
-                // Other API errors
-                else {
-                    $("#loadingOverlay").hide();
-                    $("#errorModal .modal-body").html('<p class="error">An unexpected error occurred. Please try again.</p>');
-                    $("#errorModal").show();
-                }
-            } else {
-                $("#loadingOverlay").hide();
-                $("#errorModal .modal-body").html('<p class="error">Error creating quote. Please try again.</p>');
+                errorHtml += '</ul>';
+
+                $("#errorModal .modal-body").html(errorHtml);
                 $("#errorModal").show();
             }
-        },
+            // Other API errors
+            else {
+                $("#loadingOverlay").hide();
+                $("#errorModal .modal-body").html('<p class="error">An unexpected error occurred. Please try again.</p>');
+                $("#errorModal").show();
+            }
+        } else {
+            $("#loadingOverlay").hide();
+            $("#errorModal .modal-body").html('<p class="error">Error creating quote. Please try again.</p>');
+            $("#errorModal").show();
+        }
+    },
         error: function () {
             $("#loadingOverlay").hide();
             $("#errorModal .modal-body").html('<p class="error">Connection error. Please try again.</p>');
