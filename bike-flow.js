@@ -406,102 +406,101 @@ function submitFinalQuote() {
                 country: country
             }
         },
-    },
         subject: {
             bikeValue: parseInt($("#bikeValueInput").val()),
             bikePurchaseDate: formData.get("bikePurchaseDate"),
             newBike: formData.get("newBike") === "true",
-                bikeType: $("#bikeTypeInput").val(),
-                    antiTheftMeasure: $("#antiTheftInput").val(),
-                        applyDepreciation: false, // Hardcoded
-                            theftDeductibleType: deductibles.theft,
-                                damageDeductibleType: deductibles.damage,
-                                    includeAssistance: true,
-                                        serialNumber: formData.get("serialNumber")
-}
+            bikeType: $("#bikeTypeInput").val(),
+            antiTheftMeasure: $("#antiTheftInput").val(),
+            applyDepreciation: false, // Hardcoded
+            theftDeductibleType: deductibles.theft,
+            damageDeductibleType: deductibles.damage,
+            includeAssistance: true,
+            serialNumber: formData.get("serialNumber")
+        }
     };
 
-// Add company fields if applicable
-if (formData.get("isCompany") === "yes") {
-    payload.policyholder.companyName = formData.get("companyName");
-    payload.policyholder.vatIn = formData.get("companyVat");
-}
+    // Add company fields if applicable
+    if (formData.get("isCompany") === "yes") {
+        payload.policyholder.companyName = formData.get("companyName");
+        payload.policyholder.vatIn = formData.get("companyVat");
+    }
 
-// Send to API
-$.ajax({
-    url: scriptUrl,
-    method: "POST",
-    dataType: "json",
-    data: JSON.stringify({
-        payload: payload,
-        action: "createQuote",
-        domain: "webflow.io"
-    }),
-    success: function (response) {
-        if (response.status === "success" && response.payload) {
-            // Check for success with payment link
-            if (response.payload.payment) {
-                // Redirect logic
-                const sandboxAppIds = {
-                    'BE': 'p2x4mkg2a5iekldgfao8p9jd',
-                    'DE': 'bvy4vhb4lbuib5oqw65st8cf',
-                    'FR': 'va92wpwvvzcpv66o73arkm5u',
-                    'NL': 'te0fl6v564tgh57tle6tq69k'
-                };
-                const appId = isSandbox ? sandboxAppIds[country] : "bike_production_" + country.toLowerCase();
-                const redirectUrl = isSandbox
-                    ? `https://appqoverme-ui.sbx.qover.io/payout/pay?locale=${locale}&id=${response.payload.id}&appId=${appId}`
-                    : `https://app.qover.com/payout/pay?locale=${locale}&id=${response.payload.id}&appId=${appId}`;
+    // Send to API
+    $.ajax({
+        url: scriptUrl,
+        method: "POST",
+        dataType: "json",
+        data: JSON.stringify({
+            payload: payload,
+            action: "createQuote",
+            domain: "webflow.io"
+        }),
+        success: function (response) {
+            if (response.status === "success" && response.payload) {
+                // Check for success with payment link
+                if (response.payload.payment) {
+                    // Redirect logic
+                    const sandboxAppIds = {
+                        'BE': 'p2x4mkg2a5iekldgfao8p9jd',
+                        'DE': 'bvy4vhb4lbuib5oqw65st8cf',
+                        'FR': 'va92wpwvvzcpv66o73arkm5u',
+                        'NL': 'te0fl6v564tgh57tle6tq69k'
+                    };
+                    const appId = isSandbox ? sandboxAppIds[country] : "bike_production_" + country.toLowerCase();
+                    const redirectUrl = isSandbox
+                        ? `https://appqoverme-ui.sbx.qover.io/payout/pay?locale=${locale}&id=${response.payload.id}&appId=${appId}`
+                        : `https://app.qover.com/payout/pay?locale=${locale}&id=${response.payload.id}&appId=${appId}`;
 
-                window.location.href = redirectUrl;
-            }
-            // Check for Validation Error (Status 400 inside payload)
-            else if (response.payload.status === 400 || response.payload.name === "ValidationError") {
-                $("#loadingOverlay").hide();
-
-                let errorHtml = '<h4 class="error-title">Please check the following fields:</h4><ul class="error-list">';
-
-                if (response.payload.details && Array.isArray(response.payload.details)) {
-                    response.payload.details.forEach(err => {
-                        // Try to make field name readable (e.g. data.policyholder.vatNumber -> VAT Number)
-                        let fieldName = err.message || "Invalid field";
-                        // Extract field if available
-                        if (err.fields && err.fields.length > 0) {
-                            const rawField = err.fields[0];
-                            const cleanField = rawField.split('.').pop()
-                                .replace(/([A-Z])/g, ' $1') // Add space before caps
-                                .replace(/^./, str => str.toUpperCase()); // Capitalize first letter
-
-                            fieldName = `${cleanField}: ${err.message}`;
-                        }
-                        errorHtml += `<li>${fieldName}</li>`;
-                    });
-                } else {
-                    errorHtml += `<li>${response.payload.message || "Validation failed"}</li>`;
+                    window.location.href = redirectUrl;
                 }
-                errorHtml += '</ul>';
+                // Check for Validation Error (Status 400 inside payload)
+                else if (response.payload.status === 400 || response.payload.name === "ValidationError") {
+                    $("#loadingOverlay").hide();
 
-                $("#errorModal .modal-body").html(errorHtml);
-                $("#errorModal").show();
-            }
-            // Other API errors
-            else {
+                    let errorHtml = '<h4 class="error-title">Please check the following fields:</h4><ul class="error-list">';
+
+                    if (response.payload.details && Array.isArray(response.payload.details)) {
+                        response.payload.details.forEach(err => {
+                            // Try to make field name readable (e.g. data.policyholder.vatNumber -> VAT Number)
+                            let fieldName = err.message || "Invalid field";
+                            // Extract field if available
+                            if (err.fields && err.fields.length > 0) {
+                                const rawField = err.fields[0];
+                                const cleanField = rawField.split('.').pop()
+                                    .replace(/([A-Z])/g, ' $1') // Add space before caps
+                                    .replace(/^./, str => str.toUpperCase()); // Capitalize first letter
+
+                                fieldName = `${cleanField}: ${err.message}`;
+                            }
+                            errorHtml += `<li>${fieldName}</li>`;
+                        });
+                    } else {
+                        errorHtml += `<li>${response.payload.message || "Validation failed"}</li>`;
+                    }
+                    errorHtml += '</ul>';
+
+                    $("#errorModal .modal-body").html(errorHtml);
+                    $("#errorModal").show();
+                }
+                // Other API errors
+                else {
+                    $("#loadingOverlay").hide();
+                    $("#errorModal .modal-body").html('<p class="error">An unexpected error occurred. Please try again.</p>');
+                    $("#errorModal").show();
+                }
+            } else {
                 $("#loadingOverlay").hide();
-                $("#errorModal .modal-body").html('<p class="error">An unexpected error occurred. Please try again.</p>');
+                $("#errorModal .modal-body").html('<p class="error">Error creating quote. Please try again.</p>');
                 $("#errorModal").show();
             }
-        } else {
+        },
+        error: function () {
             $("#loadingOverlay").hide();
-            $("#errorModal .modal-body").html('<p class="error">Error creating quote. Please try again.</p>');
+            $("#errorModal .modal-body").html('<p class="error">Connection error. Please try again.</p>');
             $("#errorModal").show();
         }
-    },
-    error: function () {
-        $("#loadingOverlay").hide();
-        $("#errorModal .modal-body").html('<p class="error">Connection error. Please try again.</p>');
-        $("#errorModal").show();
-    }
-});
+    });
 }
 
 // Translation logic (simplified for brevity, keep existing if possible or ensure it works)
