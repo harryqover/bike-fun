@@ -495,23 +495,19 @@ function submitFinalQuote() {
                     $("#errorModal .modal-body").html(errorHtml);
                     $("#errorModal").show();
                 }
-                errorHtml += '</ul>';
 
-                $("#errorModal .modal-body").html(errorHtml);
-                $("#errorModal").show();
-            }
-            // Other API errors
-            else {
+                // Other API errors
+                else {
+                    $("#loadingOverlay").hide();
+                    $("#errorModal .modal-body").html('<p class="error">An unexpected error occurred. Please try again.</p>');
+                    $("#errorModal").show();
+                }
+            } else {
                 $("#loadingOverlay").hide();
-                $("#errorModal .modal-body").html('<p class="error">An unexpected error occurred. Please try again.</p>');
+                $("#errorModal .modal-body").html('<p class="error">Error creating quote. Please try again.</p>');
                 $("#errorModal").show();
             }
-        } else {
-            $("#loadingOverlay").hide();
-            $("#errorModal .modal-body").html('<p class="error">Error creating quote. Please try again.</p>');
-            $("#errorModal").show();
-        }
-    },
+        },
         error: function () {
             $("#loadingOverlay").hide();
             $("#errorModal .modal-body").html('<p class="error">Connection error. Please try again.</p>');
