@@ -141,36 +141,38 @@ async function calculatePrices() {
     // Prepare common payload data
     const deductibles = getDeductibles(country);
 
-    // We need 3 calls: Theft, Damage, Comprehensive
-    const packages = ['theft', 'damage', 'comprehensive'];
-
     try {
-        const promises = packages.map(pkg => fetchPriceForPackage(pkg, bikeType, bikeValue, antiTheft, zip, deductibles));
-        const results = await Promise.all(promises);
+        // OPTIMIZATION: Single API call to get all prices
+        // We request 'comprehensive' which usually triggers calculation for all variants
+        const allPrices = await fetchAllPrices(bikeType, bikeValue, antiTheft, zip, deductibles);
 
-        // Update UI
-        updatePriceCard('theft', results[0]);
-        updatePriceCard('damage', results[1]);
-        updatePriceCard('comprehensive', results[2]);
+        if (allPrices) {
+            // Update UI with extracted prices
+            updatePriceCard('theft', allPrices.theft);
+            updatePriceCard('damage', allPrices.damage);
+            updatePriceCard('comprehensive', allPrices.comprehensive);
 
-        // Complete loading animation
-        clearInterval(progressInterval);
-        clearInterval(msgInterval);
-        $("#progressBar").css("width", "100%");
-        $("#loaderMessage").text("Done!");
+            // Complete loading animation
+            clearInterval(progressInterval);
+            clearInterval(msgInterval);
+            $("#progressBar").css("width", "100%");
+            $("#loaderMessage").text("Done!");
 
-        // Short delay to show 100%
-        setTimeout(() => {
-            $("#loadingOverlay").fadeOut(300);
+            // Short delay to show 100%
+            setTimeout(() => {
+                $("#loadingOverlay").fadeOut(300);
 
-            // Show pricing section
-            $("#pricingSection").slideDown();
+                // Show pricing section
+                $("#pricingSection").slideDown();
 
-            // Scroll to pricing
-            $('html, body').animate({
-                scrollTop: $("#pricingSection").offset().top - 20
+                // Scroll to pricing
+                $('html, body').animate({
+                    scrollTop: $("#pricingSection").offset().top - 20
+                }, 500);
             }, 500);
-        }, 500);
+        } else {
+            throw new Error("No prices returned");
+        }
 
     } catch (error) {
         console.error("Pricing error:", error);
@@ -181,23 +183,9 @@ async function calculatePrices() {
     }
 }
 
-function fetchPriceForPackage(packageType, bikeType, bikeValue, antiTheft, zip, deductibles) {
+function fetchAllPrices(bikeType, bikeValue, antiTheft, zip, deductibles) {
     return new Promise((resolve, reject) => {
-        // Construct payload
-        let coverages = {};
-
-        if (packageType === 'theft') {
-            coverages.theft = "default";
-            coverages.assistance = "default"; // Always included in cards per screenshot
-        } else if (packageType === 'damage') {
-            coverages.damage = "default";
-            coverages.assistance = "default";
-        } else if (packageType === 'comprehensive') {
-            coverages.theft = "default";
-            coverages.damage = "default";
-            coverages.assistance = "default";
-        }
-
+        // Construct payload for 'comprehensive' to trigger full calculation
         const payload = {
             action: "createQuote",
             domain: "webflow.io",
@@ -206,12 +194,16 @@ function fetchPriceForPackage(packageType, bikeType, bikeValue, antiTheft, zip, 
             country: country,
             language: language,
             package: {
-                name: getVariantName(packageType),
-                coverages: coverages
+                name: "VARIANT_THEFT_DAMAGE_ASSISTANCE", // Requesting full package
+                coverages: {
+                    theft: "default",
+                    damage: "default",
+                    assistance: "default"
+                }
             },
             policyholder: {
                 entityType: "ENTITY_TYPE_PERSON",
-                firstName: "Pricing", // Dummy data
+                firstName: "Pricing",
                 lastName: "Check",
                 email: "pricing@example.com",
                 address: {
@@ -224,11 +216,11 @@ function fetchPriceForPackage(packageType, bikeType, bikeValue, antiTheft, zip, 
             },
             subject: {
                 bikeValue: parseInt(bikeValue),
-                bikePurchaseDate: new Date().toISOString().split('T')[0], // Assume new today
-                newBike: true, // Assume new
+                bikePurchaseDate: new Date().toISOString().split('T')[0],
+                newBike: true,
                 bikeType: bikeType,
                 antiTheftMeasure: antiTheft,
-                applyDepreciation: false, // Hardcoded false
+                applyDepreciation: false,
                 theftDeductibleType: deductibles.theft,
                 damageDeductibleType: deductibles.damage,
                 includeAssistance: true,
@@ -244,27 +236,18 @@ function fetchPriceForPackage(packageType, bikeType, bikeValue, antiTheft, zip, 
             data: JSON.stringify({ payload: payload }),
             success: function (response) {
                 if (response.status === "success" && response.payload && response.payload.packages) {
-                    // Find the package we requested
-                    const pkgName = getVariantName(packageType);
-                    const pkgData = response.payload.packages[pkgName];
+                    const packages = response.payload.packages;
 
-                    if (pkgData && pkgData.coverages) {
-                        let totalPremium = 0;
-                        // Sum up CIP from each coverage
-                        Object.values(pkgData.coverages).forEach(coverage => {
-                            // Coverage structure can be nested, e.g. coverage.theft.variants.default.premium.cip
-                            // But based on user snippet: coverage -> variants -> default -> premium -> cip
-                            if (coverage.variants && coverage.variants.default && coverage.variants.default.premium) {
-                                totalPremium += coverage.variants.default.premium.cip;
-                            }
-                        });
-                        resolve(totalPremium);
-                    } else {
-                        console.error("Package data not found for " + pkgName, response);
-                        resolve(null);
-                    }
+                    // Extract prices for each variant
+                    const prices = {
+                        theft: getPriceFromPackage(packages, "VARIANT_THEFT_ASSISTANCE"),
+                        damage: getPriceFromPackage(packages, "VARIANT_DAMAGE_ASSISTANCE"),
+                        comprehensive: getPriceFromPackage(packages, "VARIANT_THEFT_DAMAGE_ASSISTANCE")
+                    };
+
+                    resolve(prices);
                 } else {
-                    console.error("API Error for " + packageType, response);
+                    console.error("API Error", response);
                     resolve(null);
                 }
             },
@@ -273,6 +256,20 @@ function fetchPriceForPackage(packageType, bikeType, bikeValue, antiTheft, zip, 
             }
         });
     });
+}
+
+function getPriceFromPackage(packages, variantName) {
+    const pkgData = packages[variantName];
+    if (pkgData && pkgData.coverages) {
+        let totalPremium = 0;
+        Object.values(pkgData.coverages).forEach(coverage => {
+            if (coverage.variants && coverage.variants.default && coverage.variants.default.premium) {
+                totalPremium += coverage.variants.default.premium.cip;
+            }
+        });
+        return totalPremium;
+    }
+    return null;
 }
 
 function getVariantName(type) {
