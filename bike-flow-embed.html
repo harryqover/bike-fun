@@ -2,11 +2,15 @@
 <!-- Pricing Cards Layout -->
 
 <!-- Loading Overlay -->
+<!-- Smart Loading Overlay -->
 <div id="loadingOverlay">
-    <div class="loading-spinner"></div>
-    <div class="spinner">
-        <p data-trans="bf.loading.title">Calculating price...</p>
-        <p data-trans="bf.loading.message">Your price is being calculated. Please wait.</p>
+    <div class="loader-content">
+        <div class="spinner-ring"></div>
+        <h3 class="loader-title" data-trans="bf.loading.title">Analyzing your profile...</h3>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <p class="loader-message" id="loaderMessage">Gathering bike data...</p>
     </div>
 </div>
 

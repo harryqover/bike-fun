@@ -103,7 +103,40 @@ async function calculatePrices() {
     }
 
     $("#topBarMessage").empty();
-    $("#loadingOverlay").css("display", "flex"); // Flex to center
+
+    // --- SMART LOADER START ---
+    $("#loadingOverlay").css("display", "flex");
+
+    // Reset loader state
+    $("#progressBar").css("width", "0%");
+    $("#loaderMessage").text("Gathering bike data...");
+
+    // Start fake progress animation (up to 90% over 8 seconds)
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        if (progress < 90) {
+            progress += Math.random() * 5; // Random increment
+            if (progress > 90) progress = 90;
+            $("#progressBar").css("width", progress + "%");
+        }
+    }, 500);
+
+    // Cycle messages
+    const messages = [
+        "Analyzing bike profile...",
+        "Checking theft risk for " + zip + "...",
+        "Calculating best rates...",
+        "Applying discounts...",
+        "Finalizing your quote..."
+    ];
+    let msgIndex = 0;
+    const msgInterval = setInterval(() => {
+        if (msgIndex < messages.length) {
+            $("#loaderMessage").text(messages[msgIndex]);
+            msgIndex++;
+        }
+    }, 1500);
+    // --- SMART LOADER END ---
 
     // Prepare common payload data
     const deductibles = getDeductibles(country);
@@ -120,19 +153,31 @@ async function calculatePrices() {
         updatePriceCard('damage', results[1]);
         updatePriceCard('comprehensive', results[2]);
 
-        // Show pricing section
-        $("#pricingSection").slideDown();
+        // Complete loading animation
+        clearInterval(progressInterval);
+        clearInterval(msgInterval);
+        $("#progressBar").css("width", "100%");
+        $("#loaderMessage").text("Done!");
 
-        // Scroll to pricing
-        $('html, body').animate({
-            scrollTop: $("#pricingSection").offset().top - 20
+        // Short delay to show 100%
+        setTimeout(() => {
+            $("#loadingOverlay").fadeOut(300);
+
+            // Show pricing section
+            $("#pricingSection").slideDown();
+
+            // Scroll to pricing
+            $('html, body').animate({
+                scrollTop: $("#pricingSection").offset().top - 20
+            }, 500);
         }, 500);
 
     } catch (error) {
         console.error("Pricing error:", error);
-        $("#topBarMessage").html('<p class="error">Could not calculate prices. Please try again.</p>');
-    } finally {
+        clearInterval(progressInterval);
+        clearInterval(msgInterval);
         $("#loadingOverlay").hide();
+        $("#topBarMessage").html('<p class="error">Could not calculate prices. Please try again.</p>');
     }
 }
 
