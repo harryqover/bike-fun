@@ -1,32 +1,42 @@
-/* Bike Insurance Flow - Optimized for Webflow Embedding */
-/* Based on reference design: https://bike-a5adfd.webflow.io/flow-be-en */
+/* Bike Insurance Flow - Updated CSS for Webflow - Fixed Layout */
+/* Version: 2.0 - Matches reference design better */
 
-/* Import Inter font if not already loaded in Webflow */
+/* Import Inter font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* Reset and base styles */
+/* Base form styles */
+#bikeQuoteForm {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    position: relative;
+}
+
 #bikeQuoteForm * {
     box-sizing: border-box;
 }
 
-#bikeQuoteForm {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    line-height: 1.6;
-    color: #333;
+/* Section structure - IMPORTANT: Fix overlap issue */
+#bikeQuoteForm .section {
+    margin-bottom: 0;
+    padding-bottom: 30px;
+    clear: both;
+    /* Prevent float issues */
+    position: relative;
 }
 
 /* Section headers */
 #bikeQuoteForm h2 {
-    font-size: 24px;
-    margin-top: 30px;
-    margin-bottom: 20px;
+    font-size: 22px;
+    margin-top: 0;
+    margin-bottom: 0;
     color: #333;
     font-weight: 600;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 15px;
+    padding: 20px 0 15px 0;
     border-bottom: 2px solid #e0e0e0;
     transition: color 0.3s;
 }
@@ -35,27 +45,28 @@
     color: #36493d;
 }
 
-/* Section content */
-#bikeQuoteForm .section {
-    margin-bottom: 30px;
-}
-
+/* Section content - Hidden by default, shown when active */
 #bikeQuoteForm .section-content {
-    padding: 20px 0;
+    padding: 25px 0 10px 0;
     display: none;
+    clear: both;
+    position: relative;
+    overflow: visible;
 }
 
 #bikeQuoteForm .section-content.active {
     display: block;
 }
 
-/* Form labels */
+/* Labels */
 #bikeQuoteForm label {
     display: block;
     margin-bottom: 8px;
+    margin-top: 0;
     font-weight: 500;
     color: #333;
     font-size: 14px;
+    line-height: 1.4;
 }
 
 /* Input fields and selects */
@@ -64,12 +75,14 @@
     width: 100%;
     padding: 12px 15px;
     margin-bottom: 20px;
+    margin-top: 0;
     border: 1px solid #e2e2e2;
     border-radius: 6px;
     font-size: 16px;
     font-family: 'Inter', sans-serif;
     transition: border-color 0.3s, box-shadow 0.3s;
     background-color: white;
+    display: block;
 }
 
 #bikeQuoteForm .field:focus,
@@ -81,25 +94,26 @@
 
 /* Radio button groups */
 #bikeQuoteForm .radio-group {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    margin-top: 0;
 }
 
 #bikeQuoteForm .radio-group label {
     display: flex;
     align-items: center;
-    padding: 12px 18px;
+    justify-content: flex-start;
+    padding: 14px 18px;
     border: 1.5px solid #e2e2e2;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.3s;
-    flex: 1;
-    min-width: 140px;
     background-color: white;
     font-weight: 400;
     margin-bottom: 0;
+    min-height: 52px;
 }
 
 #bikeQuoteForm .radio-group label:hover {
@@ -110,14 +124,22 @@
 #bikeQuoteForm .radio-group input[type="radio"],
 #bikeQuoteForm .radio-group input[type="checkbox"] {
     margin-right: 10px;
+    margin-top: 0;
+    margin-bottom: 0;
     accent-color: #36493d;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 #bikeQuoteForm .radio-group label:has(input:checked) {
     border-color: #36493d;
     background-color: #e8f5e9;
     font-weight: 500;
+}
+
+/* Spacing fix for label text in radio groups */
+#bikeQuoteForm .radio-group label span {
+    line-height: 1.4;
 }
 
 /* Confirm/Toggle buttons */
@@ -130,9 +152,11 @@
     background-color: white;
     font-weight: 600;
     display: inline-block;
-    margin-top: 15px;
+    margin-top: 20px;
+    margin-bottom: 10px;
     transition: all 0.3s;
     font-size: 16px;
+    text-align: center;
 }
 
 #bikeQuoteForm .toggle-icon:hover {
@@ -143,9 +167,10 @@
 }
 
 /* Submit button */
-#bikeQuoteForm .button {
-    background-color: #36493d;
-    color: white;
+#bikeQuoteForm .button,
+#bikeQuoteForm button[type="submit"] {
+    background-color: #36493d !important;
+    color: white !important;
     padding: 16px 30px;
     border: none;
     border-radius: 6px;
@@ -156,16 +181,19 @@
     margin-top: 20px;
     transition: all 0.3s;
     font-family: 'Inter', sans-serif;
+    display: block;
 }
 
-#bikeQuoteForm .button:hover {
-    background-color: #2a3a2f;
+#bikeQuoteForm .button:hover,
+#bikeQuoteForm button[type="submit"]:hover {
+    background-color: #2a3a2f !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(54, 73, 61, 0.3);
 }
 
-#bikeQuoteForm .button:disabled {
-    background-color: #ccc;
+#bikeQuoteForm .button:disabled,
+#bikeQuoteForm button[type="submit"]:disabled {
+    background-color: #ccc !important;
     cursor: not-allowed;
     transform: none;
 }
@@ -175,15 +203,18 @@
     display: flex;
     align-items: flex-start;
     margin-bottom: 15px;
+    margin-top: 0;
 }
 
 #bikeQuoteForm .w-checkbox-input {
     margin-right: 10px;
     margin-top: 4px;
+    margin-bottom: 0;
     min-width: 18px;
     min-height: 18px;
     accent-color: #36493d;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 #bikeQuoteForm .w-form-label {
@@ -191,6 +222,7 @@
     font-size: 14px;
     line-height: 1.5;
     font-weight: 400;
+    margin-bottom: 0;
 }
 
 #bikeQuoteForm .w-form-label a {
@@ -207,6 +239,7 @@
     margin-top: 40px;
     padding-top: 30px;
     border-top: 2px solid #e0e0e0;
+    clear: both;
 }
 
 /* Price display */
@@ -217,6 +250,7 @@
     margin: 25px 0;
     text-align: center;
     border: 2px solid #c8e6c9;
+    clear: both;
 }
 
 #bikeQuoteForm .price-display>div:first-child {
@@ -249,11 +283,20 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
+    margin-bottom: 0;
 }
 
 #bikeQuoteForm .column {
     display: flex;
     flex-direction: column;
+}
+
+#bikeQuoteForm .column label {
+    margin-bottom: 8px;
+}
+
+#bikeQuoteForm .column .field {
+    margin-bottom: 20px;
 }
 
 /* Company fields */
@@ -348,9 +391,15 @@
 .modal-body {
     margin-top: 20px;
     font-family: 'Inter', sans-serif;
+    clear: both;
 }
 
 /* Messages */
+#bikeQuoteForm #message {
+    clear: both;
+    margin-top: 15px;
+}
+
 #bikeQuoteForm .error {
     color: #dc3545;
     background-color: #f8d7da;
@@ -385,11 +434,7 @@
     }
 
     #bikeQuoteForm .radio-group {
-        flex-direction: column;
-    }
-
-    #bikeQuoteForm .radio-group label {
-        min-width: 100%;
+        grid-template-columns: 1fr;
     }
 
     #bikeQuoteForm h2 {
@@ -406,15 +451,38 @@
     }
 }
 
-/* Focus visible for accessibility */
+@media (min-width: 480px) and (max-width: 768px) {
+    #bikeQuoteForm .radio-group {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Accessibility improvements */
 #bikeQuoteForm *:focus-visible {
     outline: 2px solid #36493d;
     outline-offset: 2px;
 }
 
-/* Improve checkbox/radio focus */
 #bikeQuoteForm input[type="checkbox"]:focus,
 #bikeQuoteForm input[type="radio"]:focus {
     outline: 2px solid #36493d;
     outline-offset: 2px;
+}
+
+/* Additional fixes for form spacing */
+#bikeQuoteForm input[type="number"]::-webkit-inner-spin-button,
+#bikeQuoteForm input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#bikeQuoteForm input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Ensure no floating issues */
+#bikeQuoteForm::after {
+    content: "";
+    display: table;
+    clear: both;
 }

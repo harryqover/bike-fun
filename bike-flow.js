@@ -499,13 +499,33 @@ $("#bikeQuoteForm").on("submit", function (e) {
             if (response.payload && response.payload.payment && response.payload.payment.id) {
                 console.log("Redirecting to payment page");
 
+                // Country-specific app IDs
+                const sandboxAppIds = {
+                    'BE': 'p2x4mkg2a5iekldgfao8p9jd',
+                    'DE': 'bvy4vhb4lbuib5oqw65st8cf',
+                    'FR': 'va92wpwvvzcpv66o73arkm5u',
+                    'NL': 'te0fl6v564tgh57tle6tq69k'
+                };
+
+                const productionAppIds = {
+                    'BE': 'bike_production_be',  // TODO: Replace with actual production app IDs
+                    'DE': 'bike_production_de',
+                    'FR': 'bike_production_fr',
+                    'NL': 'bike_production_nl'
+                };
+
+                // Get app ID based on country and environment
+                const appId = isSandbox ? sandboxAppIds[country] : productionAppIds[country];
+
                 // Build redirect URL based on environment
                 let redirectUrl = "";
                 if (isSandbox) {
-                    redirectUrl = `https://appqoverme-ui.sbx.qover.io/payout/pay?locale=${locale}&id=${response.payload.id}&appId=bike_sandbox_app_id`;
+                    redirectUrl = `https://appqoverme-ui.sbx.qover.io/payout/pay?locale=${locale}&id=${response.payload.id}&appId=${appId}`;
                 } else {
-                    redirectUrl = `https://app.qover.com/payout/pay?locale=${locale}&id=${response.payload.id}&appId=bike_production_app_id`;
+                    redirectUrl = `https://app.qover.com/payout/pay?locale=${locale}&id=${response.payload.id}&appId=${appId}`;
                 }
+
+                console.log("Redirect URL:", redirectUrl);
 
                 // Track success
                 if (typeof dataLayer !== 'undefined') {
