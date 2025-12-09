@@ -46,6 +46,20 @@ function initUrlParams() {
     if (urlParams.has('zip')) {
         $("#zipInput").val(urlParams.get('zip'));
     }
+
+    // Auto-load prices if all required parameters are present
+    const bikeType = $("#bikeTypeInput").val();
+    const bikeValue = $("#bikeValueInput").val();
+    const antiTheft = $("#antiTheftInput").val();
+    const zip = $("#zipInput").val();
+
+    if (bikeType && bikeValue && antiTheft && zip) {
+        console.log("All URL params present - auto-loading prices...");
+        // Small delay to ensure DOM is ready
+        setTimeout(function () {
+            calculatePrices();
+        }, 100);
+    }
 }
 
 function initLocale() {
