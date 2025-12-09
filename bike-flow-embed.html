@@ -3,14 +3,14 @@
 
 <!-- Loading Overlay -->
 <!-- Smart Loading Overlay -->
-<div id="loadingOverlay">
+<div id="loadingOverlay" role="alert" aria-live="polite" aria-busy="true">
     <div class="loader-content">
-        <div class="spinner-ring"></div>
+        <div class="spinner-ring" role="status" aria-label="Loading"></div>
         <h3 class="loader-title" data-trans="bf.loading.title">Analyzing your profile...</h3>
-        <div class="progress-container">
+        <div class="progress-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
             <div class="progress-bar" id="progressBar"></div>
         </div>
-        <p class="loader-message" id="loaderMessage">Gathering bike data...</p>
+        <p class="loader-message" id="loaderMessage" aria-live="polite">Gathering bike data...</p>
     </div>
 </div>
 
@@ -21,7 +21,7 @@
         <div class="top-bar-grid">
             <!-- Bike Type -->
             <div class="top-input-group">
-                <label data-trans="bf.bike.type.label">Bike type</label>
+                <label for="bikeTypeInput" data-trans="bf.bike.type.label">Bike type</label>
                 <select class="field compact" name="bikeType" id="bikeTypeInput" required>
                     <option value="">Select</option>
                     <option value="TYPE_REGULAR_BIKE" data-trans="bf.bike.type.regular">Regular bike</option>
@@ -38,14 +38,14 @@
 
             <!-- Bike Value -->
             <div class="top-input-group">
-                <label data-trans="bf.bike.value.label">Bike value</label>
+                <label for="bikeValueInput" data-trans="bf.bike.value.label">Bike value</label>
                 <input class="field compact" type="number" name="bikeValue" id="bikeValueInput" required min="250"
                     max="10000" placeholder="€" />
             </div>
 
             <!-- Anti-Theft -->
             <div class="top-input-group">
-                <label data-trans="bf.bike.antiTheft.label">Anti-theft</label>
+                <label for="antiTheftInput" data-trans="bf.bike.antiTheft.label">Anti-theft</label>
                 <select class="field compact" name="antiTheftMeasure" id="antiTheftInput" required>
                     <option value="ANTI_THEFT_MEASURE_NONE" data-trans="bf.bike.antiTheft.none">None</option>
                     <option value="ANTI_THEFT_MEASURE_GPS_ANTITHEFT" data-trans="bf.bike.antiTheft.gps">GPS Tracker
@@ -55,8 +55,9 @@
 
             <!-- Postal Code -->
             <div class="top-input-group">
-                <label data-trans="bf.policyholder.address.zip.label">Postal code</label>
-                <input class="field compact" type="text" name="zip" id="zipInput" required placeholder="1000" />
+                <label for="zipInput" data-trans="bf.policyholder.address.zip.label">Postal code</label>
+                <input class="field compact" type="text" name="zip" id="zipInput" required autocomplete="postal-code"
+                    placeholder="1000" />
             </div>
 
             <!-- See Price Button -->
@@ -69,7 +70,7 @@
         </div>
 
         <!-- Validation Message for Top Bar -->
-        <div id="topBarMessage"></div>
+        <div id="topBarMessage" role="alert" aria-live="assertive"></div>
     </div>
 
     <!-- PRICING CARDS SECTION (Hidden initially) -->
@@ -78,7 +79,8 @@
 
         <div class="pricing-cards-container">
             <!-- Card 1: Theft -->
-            <div class="pricing-card" data-package="theft">
+            <div class="pricing-card" data-package="theft" tabindex="0" role="button" aria-pressed="false"
+                onclick="selectPackage('theft')" onkeypress="if(event.key==='Enter')selectPackage('theft')">
                 <div class="card-header">
                     <h3 data-trans="bf.coverage.package.theft">THEFT + ASSISTANCE</h3>
                 </div>
@@ -90,11 +92,13 @@
                     <div class="feature check"><span data-trans="bf.coverage.assistance">Assistance 24/7</span></div>
                     <div class="feature cross"><span data-trans="bf.coverage.damage">Material damage</span></div>
                 </div>
-                <button type="button" class="button select-btn" onclick="selectPackage('theft')">Select</button>
+                <button type="button" class="button select-btn"
+                    aria-label="Select Theft + Assistance package">Select</button>
             </div>
 
             <!-- Card 2: Damage -->
-            <div class="pricing-card" data-package="damage">
+            <div class="pricing-card" data-package="damage" tabindex="0" role="button" aria-pressed="false"
+                onclick="selectPackage('damage')" onkeypress="if(event.key==='Enter')selectPackage('damage')">
                 <div class="card-header">
                     <h3 data-trans="bf.coverage.package.damage">DAMAGE + ASSISTANCE</h3>
                 </div>
@@ -106,11 +110,14 @@
                     <div class="feature check"><span data-trans="bf.coverage.assistance">Assistance 24/7</span></div>
                     <div class="feature check"><span data-trans="bf.coverage.damage">Material damage</span></div>
                 </div>
-                <button type="button" class="button select-btn" onclick="selectPackage('damage')">Select</button>
+                <button type="button" class="button select-btn"
+                    aria-label="Select Damage + Assistance package">Select</button>
             </div>
 
             <!-- Card 3: Omnium (Comprehensive) -->
-            <div class="pricing-card featured" data-package="comprehensive">
+            <div class="pricing-card featured" data-package="comprehensive" tabindex="0" role="button"
+                aria-pressed="false" onclick="selectPackage('comprehensive')"
+                onkeypress="if(event.key==='Enter')selectPackage('comprehensive')">
                 <div class="badge">Best Value</div>
                 <div class="card-header">
                     <h3 data-trans="bf.coverage.package.comprehensive">OMNIUM</h3>
@@ -123,7 +130,8 @@
                     <div class="feature check"><span data-trans="bf.coverage.assistance">Assistance 24/7</span></div>
                     <div class="feature check"><span data-trans="bf.coverage.damage">Material damage</span></div>
                 </div>
-                <button type="button" class="button select-btn" onclick="selectPackage('comprehensive')">Select</button>
+                <button type="button" class="button select-btn"
+                    aria-label="Select Omnium comprehensive package">Select</button>
             </div>
         </div>
     </div>
@@ -149,29 +157,33 @@
                     <div class="section-content">
                         <div class="policyholder-columns">
                             <div class="column">
-                                <label data-trans="bf.bike.make.label">Bike make</label>
-                                <input class="field" type="text" name="make" required
+                                <label for="makeInput" data-trans="bf.bike.make.label">Bike make</label>
+                                <input class="field" type="text" name="make" id="makeInput" required
                                     data-trans-placeholder="bf.bike.make.placeholder" />
                             </div>
                             <div class="column">
-                                <label data-trans="bf.bike.model.label">Bike model</label>
-                                <input class="field" type="text" name="model" required
+                                <label for="modelInput" data-trans="bf.bike.model.label">Bike model</label>
+                                <input class="field" type="text" name="model" id="modelInput" required
                                     data-trans-placeholder="bf.bike.model.placeholder" />
                             </div>
                         </div>
 
-                        <label data-trans="bf.bike.serialNumber.label">Frame/Serial number</label>
-                        <input class="field" type="text" name="serialNumber"
+                        <label for="serialNumberInput" data-trans="bf.bike.serialNumber.label">Frame/Serial
+                            number</label>
+                        <input class="field" type="text" name="serialNumber" id="serialNumberInput"
                             data-trans-placeholder="bf.bike.serialNumber.placeholder" />
 
                         <div class="policyholder-columns">
                             <div class="column">
-                                <label data-trans="bf.bike.purchaseDate.label">Purchase date</label>
-                                <input class="field" type="date" name="bikePurchaseDate" required />
+                                <label for="bikePurchaseDateInput" data-trans="bf.bike.purchaseDate.label">Purchase
+                                    date</label>
+                                <input class="field" type="date" name="bikePurchaseDate" id="bikePurchaseDateInput"
+                                    required />
                             </div>
                             <div class="column">
-                                <label data-trans="bf.bike.newBike.label">Is this a new bike?</label>
-                                <select class="field" name="newBike" required>
+                                <label for="newBikeInput" data-trans="bf.bike.newBike.label">Is this a new bike?</label>
+                                <select class="field" name="newBike" id="newBikeInput" required>
+                                    <option value="" data-trans="bf.select.placeholder">Select</option>
                                     <option value="true" data-trans="bf.bike.newBike.yes">Yes - New</option>
                                     <option value="false" data-trans="bf.bike.newBike.no">No - Second-hand</option>
                                 </select>
@@ -199,13 +211,15 @@
                         <!-- Company Fields -->
                         <div id="companyFields" class="policyholder-columns" style="display: none;">
                             <div class="column">
-                                <label data-trans="bf.policyholder.company.name.label">Company name</label>
-                                <input class="field" type="text" name="companyName"
+                                <label for="companyNameInput" data-trans="bf.policyholder.company.name.label">Company
+                                    name</label>
+                                <input class="field" type="text" name="companyName" id="companyNameInput"
                                     data-trans-placeholder="bf.policyholder.company.name.placeholder" />
                             </div>
                             <div class="column">
-                                <label data-trans="bf.policyholder.company.vat.label">VAT number</label>
-                                <input class="field" type="text" name="companyVat"
+                                <label for="companyVatInput" data-trans="bf.policyholder.company.vat.label">VAT
+                                    number</label>
+                                <input class="field" type="text" name="companyVat" id="companyVatInput"
                                     data-trans-placeholder="bf.policyholder.company.vat.placeholder" />
                             </div>
                         </div>
@@ -213,42 +227,48 @@
                         <!-- Personal Details -->
                         <div class="policyholder-columns">
                             <div class="column">
-                                <label data-trans="bf.policyholder.firstName.label">First name</label>
-                                <input class="field" type="text" name="firstName" required
+                                <label for="firstNameInput" data-trans="bf.policyholder.firstName.label">First
+                                    name</label>
+                                <input class="field" type="text" name="firstName" id="firstNameInput" required
+                                    autocomplete="given-name"
                                     data-trans-placeholder="bf.policyholder.firstName.placeholder" />
                             </div>
                             <div class="column">
-                                <label data-trans="bf.policyholder.lastName.label">Last name</label>
-                                <input class="field" type="text" name="lastName" required
+                                <label for="lastNameInput" data-trans="bf.policyholder.lastName.label">Last name</label>
+                                <input class="field" type="text" name="lastName" id="lastNameInput" required
+                                    autocomplete="family-name"
                                     data-trans-placeholder="bf.policyholder.lastName.placeholder" />
                             </div>
                         </div>
 
                         <div class="policyholder-columns">
                             <div class="column">
-                                <label data-trans="bf.policyholder.email.label">Email</label>
-                                <input class="field" type="email" name="email" required
-                                    data-trans-placeholder="bf.policyholder.email.placeholder" />
+                                <label for="emailInput" data-trans="bf.policyholder.email.label">Email</label>
+                                <input class="field" type="email" name="email" id="emailInput" required
+                                    autocomplete="email" data-trans-placeholder="bf.policyholder.email.placeholder" />
                             </div>
                             <div class="column">
-                                <label data-trans="bf.policyholder.phone.label">Phone</label>
-                                <input class="field" type="tel" name="phone" required
+                                <label for="phoneInput" data-trans="bf.policyholder.phone.label">Phone</label>
+                                <input class="field" type="tel" name="phone" id="phoneInput" required autocomplete="tel"
                                     data-trans-placeholder="bf.policyholder.phone.placeholder" />
                             </div>
                         </div>
 
-                        <label data-trans="bf.policyholder.birthdate.label">Date of birth</label>
-                        <input class="field" type="date" name="birthdate" />
+                        <label for="birthdateInput" data-trans="bf.policyholder.birthdate.label">Date of birth</label>
+                        <input class="field" type="date" name="birthdate" id="birthdateInput" autocomplete="bday" />
 
                         <!-- Address -->
-                        <label data-trans="bf.policyholder.address.street.label">Street and number</label>
-                        <input class="field" type="text" name="street" required
+                        <label for="streetInput" data-trans="bf.policyholder.address.street.label">Street and
+                            number</label>
+                        <input class="field" type="text" name="street" id="streetInput" required
+                            autocomplete="street-address"
                             data-trans-placeholder="bf.policyholder.address.street.placeholder" />
 
                         <div class="policyholder-columns">
                             <div class="column">
-                                <label data-trans="bf.policyholder.address.city.label">City</label>
-                                <input class="field" type="text" name="city" required
+                                <label for="cityInput" data-trans="bf.policyholder.address.city.label">City</label>
+                                <input class="field" type="text" name="city" id="cityInput" required
+                                    autocomplete="address-level2"
                                     data-trans-placeholder="bf.policyholder.address.city.placeholder" />
                             </div>
                             <!-- Zip is already in top bar, but we need it in payload. We'll use the top bar value. -->
@@ -294,7 +314,7 @@
 
                         <button type="submit" id="submitButton" class="button" data-trans="bf.button.submit">Continue to
                             Payment</button>
-                        <div id="message"></div>
+                        <div id="message" role="alert" aria-live="assertive"></div>
                     </div>
                 </div>
                 <!-- End of Form Column -->
@@ -322,12 +342,12 @@
                     <h3 data-trans="bf.sidebar.help.title">Need help with your contract?</h3>
                     <p data-trans="bf.sidebar.help.hours">Monday to Friday, 9 am to 4 pm.</p>
                     <div class="help-contact">
-                        <span class="icon">📞</span>
-                        <span>02 588 97 16</span>
+                        <span class="icon" aria-hidden="true">📞</span>
+                        <a href="tel:+3225889716">02 588 97 16</a>
                     </div>
                     <div class="help-contact">
-                        <span class="icon">💬</span>
-                        <span data-trans="bf.sidebar.help.chat">Chat</span>
+                        <span class="icon" aria-hidden="true">💬</span>
+                        <a href="#" data-trans="bf.sidebar.help.chat">Chat</a>
                     </div>
                 </div>
 
@@ -343,10 +363,11 @@
 </form>
 
 <!-- Modal for errors -->
-<div id="errorModal" class="modal">
+<div id="errorModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="errorModalTitle">
     <div class="modal-content">
-        <span class="close">&times;</span>
-        <div class="modal-body"></div>
+        <h2 id="errorModalTitle" class="visually-hidden">Error</h2>
+        <button class="close" aria-label="Close error dialog">&times;</button>
+        <div class="modal-body" role="alert"></div>
     </div>
 </div>
 
