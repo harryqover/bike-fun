@@ -213,9 +213,8 @@ async function calculatePrices() {
 function fetchAllPrices(bikeType, bikeValue, antiTheft, zip, deductibles) {
     return new Promise((resolve, reject) => {
         // Construct payload for 'comprehensive' to trigger full calculation
+        // Construct payload for 'comprehensive' to trigger full calculation
         const payload = {
-            action: "createQuote",
-            domain: "webflow.io",
             productConfigurationId: productConfigurationId,
             partnerId: partnerId,
             country: country,
@@ -260,7 +259,11 @@ function fetchAllPrices(bikeType, bikeValue, antiTheft, zip, deductibles) {
             url: scriptUrl,
             method: "POST",
             dataType: "json",
-            data: JSON.stringify({ payload: payload }),
+            data: JSON.stringify({
+                payload: payload,
+                action: "createQuote",
+                domain: "webflow.io"
+            }),
             success: function (response) {
                 if (response.status === "success" && response.payload && response.payload.packages) {
                     const packages = response.payload.packages;
@@ -364,8 +367,6 @@ function submitFinalQuote() {
     }
 
     const payload = {
-        action: "createQuote",
-        domain: "webflow.io",
         productConfigurationId: productConfigurationId,
         partnerId: partnerId,
         country: country,
@@ -411,7 +412,11 @@ function submitFinalQuote() {
         url: scriptUrl,
         method: "POST",
         dataType: "json",
-        data: JSON.stringify({ payload: payload }),
+        data: JSON.stringify({
+            payload: payload,
+            action: "createQuote",
+            domain: "webflow.io"
+        }),
         success: function (response) {
             if (response.status === "success" && response.payload && response.payload.payment) {
                 // Redirect logic
