@@ -179,6 +179,21 @@ async function calculatePrices() {
             updatePriceCard('damage', allPrices.damage);
             updatePriceCard('comprehensive', allPrices.comprehensive);
 
+            // SORTING LOGIC: Sort cards by price ascending
+            const cards = [
+                { type: 'theft', price: allPrices.theft || 0 },
+                { type: 'damage', price: allPrices.damage || 0 },
+                { type: 'comprehensive', price: allPrices.comprehensive || 0 }
+            ];
+
+            cards.sort((a, b) => a.price - b.price);
+
+            const container = $(".pricing-cards-container");
+            cards.forEach(card => {
+                const cardEl = $(`.pricing-card[data-package="${card.type}"]`);
+                container.append(cardEl); // Re-appending moves it to the end
+            });
+
             // Complete loading animation
             clearInterval(progressInterval);
             clearInterval(msgInterval);
