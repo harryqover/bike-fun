@@ -308,7 +308,6 @@ function fetchAllPrices(bikeType, bikeValue, antiTheft, zip, deductibles) {
                 if (response.status === "success" && response.payload && response.payload.packages) {
                     // Store full response for documents
                     currentQuoteResponse = response.payload;
-                    console.log('[fetchAllPrices] Quote response stored, documents:', currentQuoteResponse.documents);
 
                     const packages = response.payload.packages;
 
@@ -382,7 +381,6 @@ window.selectPackage = function (type) {
     updateSidebarSummary(type);
 
     // Update Legal Documents from API response
-    console.log('[selectPackage] About to call updateLegalDocuments, currentQuoteResponse:', currentQuoteResponse ? 'exists' : 'NULL');
     updateLegalDocuments();
 
     // Show details section
@@ -429,25 +427,15 @@ function updateSidebarSummary(packageType) {
 
 // Helper to update legal documents from quote response
 function updateLegalDocuments() {
-    console.log('[updateLegalDocuments] Function called');
-
     const container = $("#legalDocumentsList");
-    console.log('[updateLegalDocuments] Container found:', container.length > 0);
-
     if (!container.length) {
-        console.warn('[updateLegalDocuments] Container #legalDocumentsList NOT FOUND in DOM');
         return;
     }
 
     // Clear existing links
     container.empty();
-    console.log('[updateLegalDocuments] Container cleared');
-
-    console.log('[updateLegalDocuments] currentQuoteResponse:', currentQuoteResponse);
-    console.log('[updateLegalDocuments] documents:', currentQuoteResponse?.documents);
 
     if (!currentQuoteResponse || !currentQuoteResponse.documents) {
-        console.warn('[updateLegalDocuments] No documents in quote response, showing fallback');
         // Fallback if no documents
         container.html('<p><a href="#" data-trans="bf.sidebar.legal.termsLink">Terms and conditions</a></p>');
         return;
@@ -474,23 +462,17 @@ function updateLegalDocuments() {
         ? 'https://appqoverme-ui.sbx.qover.io/modules/dam/assets/'
         : 'https://app.qover.com/modules/dam/assets/';
 
-    console.log('[updateLegalDocuments] isSandbox:', isSandbox, 'baseUrl:', baseUrl);
-
     // Iterate through documents and create links
     const documents = currentQuoteResponse.documents;
     const docKeys = Object.keys(documents);
-    console.log('[updateLegalDocuments] Document keys:', docKeys);
 
     docKeys.forEach(docKey => {
         const doc = documents[docKey];
-        console.log('[updateLegalDocuments] Processing doc:', docKey, doc);
 
         if (doc && doc.assetId) {
             const url = baseUrl + doc.assetId + '/content';
             const label = documentLabels[docKey] || docKey.replace(/-/g, ' ');
             const transKey = documentTransKeys[docKey] || '';
-
-            console.log('[updateLegalDocuments] Creating link:', { docKey, url, label, transKey });
 
             const link = $('<p>').append(
                 $('<a>')
@@ -503,8 +485,6 @@ function updateLegalDocuments() {
             container.append(link);
         }
     });
-
-    console.log('[updateLegalDocuments] DONE - Added', docKeys.length, 'document links');
 }
 
 // --- FINAL SUBMISSION ---
