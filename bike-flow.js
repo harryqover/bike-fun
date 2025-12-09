@@ -19,7 +19,34 @@ $(document).ready(function () {
 
     // Set initial country field
     $("#countryField").val(country);
+
+    // Pre-fill from URL
+    initUrlParams();
 });
+
+function initUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Bike Type
+    if (urlParams.has('bikeType')) {
+        $("#bikeTypeInput").val(urlParams.get('bikeType'));
+    }
+
+    // Bike Value
+    if (urlParams.has('bikeValue')) {
+        $("#bikeValueInput").val(urlParams.get('bikeValue'));
+    }
+
+    // Anti-theft
+    if (urlParams.has('antiTheftMeasure')) {
+        $("#antiTheftInput").val(urlParams.get('antiTheftMeasure'));
+    }
+
+    // Zip Code
+    if (urlParams.has('zip')) {
+        $("#zipInput").val(urlParams.get('zip'));
+    }
+}
 
 function initLocale() {
     const urlParams = new URLSearchParams(window.location.search);
