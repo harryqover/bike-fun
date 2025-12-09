@@ -1,7 +1,7 @@
 console.log("Bike Flow v1.0 - 20251208");
 
 // Partner ID for bike insurance
-const partnerId = "61efb5e53932fd57c95292fc";
+const partnerId = "5e78aea105bffd763b2b0a48";
 
 // Product configuration ID
 const productConfigurationId = "bike";
