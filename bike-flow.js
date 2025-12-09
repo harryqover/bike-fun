@@ -10,6 +10,7 @@ let locale = "en-BE";
 let country = "BE";
 let language = "en";
 let isSandbox = true;
+let currentQuoteResponse = null; // Store full quote response for documents
 
 // Initialize
 $(document).ready(function () {
@@ -305,6 +306,9 @@ function fetchAllPrices(bikeType, bikeValue, antiTheft, zip, deductibles) {
             }),
             success: function (response) {
                 if (response.status === "success" && response.payload && response.payload.packages) {
+                    // Store full response for documents
+                    currentQuoteResponse = response.payload;
+
                     const packages = response.payload.packages;
 
                     // Extract prices for each variant
@@ -376,6 +380,9 @@ window.selectPackage = function (type) {
     // Update Sidebar Summary
     updateSidebarSummary(type);
 
+    // Update Legal Documents from API response
+    updateLegalDocuments();
+
     // Show details section
     $("#detailsSection").slideDown();
 
@@ -416,6 +423,65 @@ function updateSidebarSummary(packageType) {
         coverageList.append('<li>24/7 assistance</li>');
         coverageList.append('<li>Cover against damage</li>');
     }
+}
+
+// Helper to update legal documents from quote response
+function updateLegalDocuments() {
+    const container = $("#legalDocumentsList");
+    if (!container.length) return;
+
+    // Clear existing links
+    container.empty();
+
+    if (!currentQuoteResponse || !currentQuoteResponse.documents) {
+        // Fallback if no documents
+        container.html('<p><a href="#" data-trans="bf.sidebar.legal.termsLink">Terms and conditions</a></p>');
+        return;
+    }
+
+    // Document name mappings for display
+    const documentLabels = {
+        'terms-and-conditions': 'Terms and conditions',
+        'ipid': 'Product Information Document (IPID)',
+        'privacy-policy': 'Privacy Policy',
+        'pre-contractual-info': 'Pre-contractual Information'
+    };
+
+    // Translation key mappings
+    const documentTransKeys = {
+        'terms-and-conditions': 'bf.sidebar.legal.termsLink',
+        'ipid': 'bf.sidebar.legal.ipidLink',
+        'privacy-policy': 'bf.sidebar.legal.privacyLink',
+        'pre-contractual-info': 'bf.sidebar.legal.preContractLink'
+    };
+
+    // Build base URL based on environment
+    const baseUrl = isSandbox
+        ? 'https://appqoverme-ui.sbx.qover.io/modules/dam/assets/'
+        : 'https://app.qover.com/modules/dam/assets/';
+
+    // Iterate through documents and create links
+    const documents = currentQuoteResponse.documents;
+    Object.keys(documents).forEach(docKey => {
+        const doc = documents[docKey];
+        if (doc && doc.assetId) {
+            const url = baseUrl + doc.assetId + '/content';
+            const label = documentLabels[docKey] || docKey.replace(/-/g, ' ');
+            const transKey = documentTransKeys[docKey] || '';
+
+            const link = $('<p>').append(
+                $('<a>')
+                    .attr('href', url)
+                    .attr('target', '_blank')
+                    .attr('rel', 'noopener noreferrer')
+                    .attr('data-trans', transKey)
+                    .text(label)
+            );
+            container.append(link);
+        }
+    });
+
+    console.log('Legal documents updated from API:', Object.keys(documents));
 }
 
 // --- FINAL SUBMISSION ---

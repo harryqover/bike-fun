@@ -112,6 +112,10 @@ translations = [
     ("bf.sidebar.help.chat", "Chat", "Chat", "Chat", "Chat"),
     ("bf.sidebar.legal.title", "Legal information", "Informations légales", "Juridische informatie", "Rechtliche Informationen"),
     ("bf.sidebar.legal.termsLink", "Terms and conditions", "Conditions générales", "Algemene voorwaarden", "Allgemeine Geschäftsbedingungen"),
+    ("bf.sidebar.legal.ipidLink", "Product Information Document (IPID)", "Fiche d'information produit (IPID)", "Productinformatieblad (IPID)", "Produktinformationsblatt (IPID)"),
+    
+    # Select placeholder
+    ("bf.select.placeholder", "Select", "Sélectionner", "Selecteren", "Auswählen"),
 ]
 
 # Write translations
