@@ -112,6 +112,16 @@ function getDeductibles(countryCode) {
     }
 }
 
+function getTimeZone(countryCode) {
+    const tzMap = {
+        'BE': 'Europe/Brussels',
+        'FR': 'Europe/Paris',
+        'NL': 'Europe/Amsterdam',
+        'DE': 'Europe/Berlin'
+    };
+    return tzMap[countryCode] || 'Europe/Brussels';
+}
+
 async function calculatePrices() {
     // Validate Top Bar inputs
     const bikeType = $("#bikeTypeInput").val();
@@ -386,6 +396,13 @@ function submitFinalQuote() {
         partnerId: partnerId,
         country: country,
         language: language,
+        contractPeriod: {
+            startDate: formData.get("startDate"),
+            timeZone: getTimeZone(country)
+        },
+        metadata: {
+            terms: "acceptance,important,eligibility,general"
+        },
         renewal: { type: "RENEWAL_TYPE_OPT_IN" },
         package: {
             name: getVariantName(packageType),
