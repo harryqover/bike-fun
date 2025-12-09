@@ -137,12 +137,12 @@ $(document).ready(function () {
     const formattedToday = today.toISOString().split('T')[0];
     $("input[name='startDate']").val(formattedToday);
 
-    // Collapse all sections except the first one
-    $(".section").each(function (index) {
-        if (index !== 0) {
-            $(this).find(".section-content").removeClass("active");
-        }
-    });
+    // Collapse all sections except the first one - DISABLED FOR STATIC LAYOUT
+    // $(".section").each(function (index) {
+    //     if (index !== 0) {
+    //         $(this).find(".section-content").removeClass("active");
+    //     }
+    // });
 
     // Toggle company fields based on entity type
     $('input[name="isCompany"]').on('change', function () {
@@ -212,46 +212,46 @@ $(document).ready(function () {
     }
 });
 
-// Collapsible section functionality
-$(".collapsible").click(function () {
-    const $thisSectionContent = $(this).next(".section-content");
+// Collapsible section functionality - DISABLED FOR STATIC LAYOUT
+// $(".collapsible").click(function () {
+//     const $thisSectionContent = $(this).next(".section-content");
 
-    // Collapse all other sections
-    $(".section-content").not($thisSectionContent).removeClass("active");
+//     // Collapse all other sections
+//     $(".section-content").not($thisSectionContent).removeClass("active");
 
-    // Toggle clicked section
-    $thisSectionContent.toggleClass("active");
+//     // Toggle clicked section
+//     $thisSectionContent.toggleClass("active");
 
-    // Track event
-    const stepName = $(this).data("step");
-    console.log("User clicked on step:", stepName);
+//     // Track event
+//     const stepName = $(this).data("step");
+//     console.log("User clicked on step:", stepName);
 
-    if (typeof dataLayer !== 'undefined') {
-        dataLayer.push({
-            'event': 'generic',
-            'eventCategory': 'step',
-            'eventAction': 'click',
-            'eventLabel': stepName
-        });
-    }
-});
+//     if (typeof dataLayer !== 'undefined') {
+//         dataLayer.push({
+//             'event': 'generic',
+//             'eventCategory': 'step',
+//             'eventAction': 'click',
+//             'eventLabel': stepName
+//         });
+//     }
+// });
 
-// Toggle icon functionality (confirm and move to next section)
-$(".toggle-icon").click(function () {
-    const currentSection = $(this).closest(".section");
-    const nextSection = currentSection.next(".section");
-    const $thisSectionContent = $(this).parent();
+// Toggle icon functionality (confirm and move to next section) - DISABLED FOR STATIC LAYOUT
+// $(".toggle-icon").click(function () {
+//     const currentSection = $(this).closest(".section");
+//     const nextSection = currentSection.next(".section");
+//     const $thisSectionContent = $(this).parent();
 
-    // Hide current section
-    if ($thisSectionContent.hasClass("active")) {
-        $thisSectionContent.removeClass("active");
-    }
+//     // Hide current section
+//     if ($thisSectionContent.hasClass("active")) {
+//         $thisSectionContent.removeClass("active");
+//     }
 
-    // Show next section if it exists
-    if (nextSection.length) {
-        nextSection.find(".section-content").addClass("active");
-    }
-});
+//     // Show next section if it exists
+//     if (nextSection.length) {
+//         nextSection.find(".section-content").addClass("active");
+//     }
+// });
 
 // Modal close functionality
 $(".close").on("click", function () {

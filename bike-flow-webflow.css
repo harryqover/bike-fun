@@ -1,99 +1,82 @@
-/* Bike Insurance Flow - Updated CSS for Webflow - v3.0 */
-/* Focus: Readability, Contrast, and Design Matching */
+/* Bike Insurance Flow - Static Blue Design */
+/* Version: 4.0 - Static Layout + Blue Theme */
 
-/* Import Inter font with all weights */
+/* Import Inter font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* Reset & Base Styles */
+/* Color Variables */
+:root {
+    --primary-blue: #0057FF;
+    /* Vibrant Blue */
+    --primary-hover: #0046CC;
+    --light-blue-bg: #F0F7FF;
+    --border-color: #E2E8F0;
+    --text-dark: #1A202C;
+    --text-grey: #4A5568;
+}
+
+/* Base Styles */
 #bikeQuoteForm {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
-    color: #1a1a1a;
-    /* Darker for better contrast */
-    position: relative;
+    color: var(--text-dark);
     max-width: 100%;
     margin: 0 auto;
-    background-color: transparent;
 }
 
 #bikeQuoteForm * {
     box-sizing: border-box;
 }
 
-/* Section Structure */
+/* Section Structure - Static Layout */
 #bikeQuoteForm .section {
-    margin-bottom: 20px;
+    margin-bottom: 40px;
+    /* More spacing for static layout */
     background: #fff;
-    border-radius: 8px;
-    /* Optional: Add shadow or border if needed for separation */
-    /* box-shadow: 0 2px 8px rgba(0,0,0,0.05); */
     clear: both;
     position: relative;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 40px;
+}
+
+#bikeQuoteForm .section:last-child {
+    border-bottom: none;
 }
 
 /* Section Headers */
 #bikeQuoteForm h2 {
-    font-size: 20px;
-    margin: 0;
-    padding: 20px 0;
-    color: #1a1a1a;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e0e0e0;
-    transition: color 0.2s ease;
-}
-
-#bikeQuoteForm h2:hover {
-    color: #36493d;
-}
-
-#bikeQuoteForm h2::after {
-    content: '+';
-    /* Simple expand icon */
     font-size: 24px;
-    font-weight: 400;
-    color: #36493d;
+    margin: 0 0 20px 0;
+    color: var(--text-dark);
+    font-weight: 700;
+    cursor: default;
+    /* No pointer cursor */
+    pointer-events: none;
+    /* Not clickable */
 }
 
-#bikeQuoteForm .section-content.active+h2::after {
-    content: '-';
-}
-
-/* Section Content */
-#bikeQuoteForm .section-content {
-    padding: 25px 5px;
+/* Remove expand/collapse icons */
+#bikeQuoteForm h2::after {
     display: none;
+}
+
+/* Section Content - ALWAYS VISIBLE */
+#bikeQuoteForm .section-content {
+    display: block !important;
+    /* Force visible */
+    padding: 0;
     clear: both;
-}
-
-#bikeQuoteForm .section-content.active {
-    display: block;
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-5px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    opacity: 1 !important;
+    height: auto !important;
 }
 
 /* Labels */
 #bikeQuoteForm label {
     display: block;
     margin-bottom: 8px;
-    font-weight: 500;
-    color: #333;
+    font-weight: 600;
+    color: var(--text-dark);
     font-size: 14px;
-    letter-spacing: -0.01em;
 }
 
 /* Input Fields */
@@ -102,30 +85,23 @@
     width: 100%;
     padding: 14px 16px;
     margin-bottom: 24px;
-    border: 1px solid #d1d5db;
-    /* Neutral grey border */
-    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
     font-size: 16px;
     font-family: 'Inter', sans-serif;
-    color: #1a1a1a;
-    background-color: #ffffff;
-    /* Ensure white background */
+    color: var(--text-dark);
+    background-color: #fff;
     transition: all 0.2s ease;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 #bikeQuoteForm .field:focus,
 #bikeQuoteForm select:focus {
     outline: none;
-    border-color: #36493d;
-    box-shadow: 0 0 0 3px rgba(54, 73, 61, 0.15);
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(0, 87, 255, 0.1);
 }
 
-#bikeQuoteForm .field::placeholder {
-    color: #9ca3af;
-}
-
-/* Radio Button Groups (Grid Layout) */
+/* Radio Button Groups */
 #bikeQuoteForm .radio-group {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -137,87 +113,69 @@
     display: flex;
     align-items: center;
     padding: 16px;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     cursor: pointer;
     background-color: #fff;
     transition: all 0.2s ease;
     margin-bottom: 0;
     font-weight: 500;
-    color: #4b5563;
+    color: var(--text-grey);
 }
 
 #bikeQuoteForm .radio-group label:hover {
-    border-color: #36493d;
-    background-color: #f9fafb;
+    border-color: var(--primary-blue);
+    background-color: var(--light-blue-bg);
 }
 
 #bikeQuoteForm .radio-group label:has(input:checked) {
-    border-color: #36493d;
-    background-color: #f0fdf4;
-    /* Very light green */
-    color: #36493d;
-    box-shadow: 0 0 0 1px #36493d;
-    /* Thicker border effect */
+    border-color: var(--primary-blue);
+    background-color: var(--light-blue-bg);
+    color: var(--primary-blue);
+    box-shadow: 0 0 0 1px var(--primary-blue);
 }
 
 #bikeQuoteForm .radio-group input[type="radio"] {
     margin-right: 12px;
-    accent-color: #36493d;
+    accent-color: var(--primary-blue);
     width: 18px;
     height: 18px;
 }
 
-/* Buttons */
+/* Hide Toggle/Confirm Buttons (Not needed in static flow) */
 #bikeQuoteForm .toggle-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 24px;
-    background-color: #fff;
-    color: #36493d;
-    border: 2px solid #36493d;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 10px;
+    display: none !important;
 }
 
-#bikeQuoteForm .toggle-icon:hover {
-    background-color: #36493d;
-    color: #fff;
-    transform: translateY(-1px);
-}
-
+/* Submit Button */
 #bikeQuoteForm .button,
 #bikeQuoteForm button[type="submit"] {
     width: 100%;
-    padding: 16px;
-    background-color: #36493d !important;
+    padding: 18px;
+    background-color: var(--primary-blue) !important;
     color: #fff !important;
     border: none;
-    border-radius: 6px;
-    font-size: 16px;
+    border-radius: 8px;
+    font-size: 18px;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease;
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
 #bikeQuoteForm .button:hover,
 #bikeQuoteForm button[type="submit"]:hover {
-    background-color: #2a3a2f !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    background-color: var(--primary-hover) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 87, 255, 0.2);
 }
 
-/* Checkboxes (Legal) */
+/* Checkboxes */
 #bikeQuoteForm .w-checkbox {
     display: flex;
     align-items: flex-start;
     margin-bottom: 16px;
-    padding: 8px 0;
+    padding: 4px 0;
 }
 
 #bikeQuoteForm .w-checkbox-input {
@@ -225,46 +183,40 @@
     margin-right: 12px;
     width: 18px;
     height: 18px;
-    accent-color: #36493d;
+    accent-color: var(--primary-blue);
     border-radius: 4px;
-    border: 1px solid #d1d5db;
-}
-
-#bikeQuoteForm .w-form-label {
-    font-size: 13px;
-    color: #4b5563;
-    line-height: 1.5;
+    border: 1px solid var(--border-color);
 }
 
 #bikeQuoteForm .w-form-label a {
-    color: #36493d;
+    color: var(--primary-blue);
     text-decoration: underline;
     font-weight: 500;
 }
 
 /* Price Display */
 #bikeQuoteForm .price-display {
-    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-    border: 1px solid #bbf7d0;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #F0F7FF 0%, #E0F0FF 100%);
+    border: 1px solid #B3D7FF;
+    border-radius: 12px;
     padding: 30px;
     text-align: center;
-    margin: 30px 0;
+    margin: 40px 0;
 }
 
 #bikeQuoteForm .price-display>div:first-child {
-    font-size: 13px;
+    font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #166534;
-    font-weight: 600;
+    color: var(--primary-blue);
+    font-weight: 700;
     margin-bottom: 8px;
 }
 
 #bikeQuoteForm .price-amount {
-    font-size: 42px;
-    font-weight: 700;
-    color: #14532d;
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--primary-blue);
     letter-spacing: -1px;
 }
 
@@ -279,10 +231,6 @@
     #bikeQuoteForm .policyholder-columns {
         grid-template-columns: 1fr;
     }
-
-    #bikeQuoteForm .radio-group {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* Loading & Error States */
@@ -291,20 +239,17 @@
     backdrop-filter: blur(2px);
 }
 
-#bikeQuoteForm .error {
-    background-color: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #991b1b;
-    padding: 12px;
-    border-radius: 6px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
+#loadingOverlay .loading-spinner {
+    border-top-color: var(--primary-blue);
 }
 
-#bikeQuoteForm .error::before {
-    content: "⚠️";
-    margin-right: 8px;
+#bikeQuoteForm .error {
+    background-color: #FEF2F2;
+    border: 1px solid #FECACA;
+    color: #DC2626;
+    padding: 16px;
+    border-radius: 8px;
+    font-weight: 500;
 }
 
 /* Clearfix */
