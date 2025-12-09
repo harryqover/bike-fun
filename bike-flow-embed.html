@@ -139,155 +139,205 @@
         <input type="hidden" name="damageDeductibleType" id="damageDeductibleInput" />
         <input type="hidden" name="country" id="countryField" />
 
-        <!-- Bike Details (Remaining) -->
-        <div class="section">
-            <h2 data-trans="bf.bike.title">Complete your bike details</h2>
-            <div class="section-content">
-                <div class="policyholder-columns">
-                    <div class="column">
-                        <label data-trans="bf.bike.make.label">Bike make</label>
-                        <input class="field" type="text" name="make" required
-                            data-trans-placeholder="bf.bike.make.placeholder" />
-                    </div>
-                    <div class="column">
-                        <label data-trans="bf.bike.model.label">Bike model</label>
-                        <input class="field" type="text" name="model" required
-                            data-trans-placeholder="bf.bike.model.placeholder" />
+        <div class="details-layout">
+            <!-- Form Column (Left) -->
+            <div class="form-column">
+
+                <!-- Bike Details (Remaining) -->
+                <div class="section">
+                    <h2 data-trans="bf.bike.title">Complete your bike details</h2>
+                    <div class="section-content">
+                        <div class="policyholder-columns">
+                            <div class="column">
+                                <label data-trans="bf.bike.make.label">Bike make</label>
+                                <input class="field" type="text" name="make" required
+                                    data-trans-placeholder="bf.bike.make.placeholder" />
+                            </div>
+                            <div class="column">
+                                <label data-trans="bf.bike.model.label">Bike model</label>
+                                <input class="field" type="text" name="model" required
+                                    data-trans-placeholder="bf.bike.model.placeholder" />
+                            </div>
+                        </div>
+
+                        <label data-trans="bf.bike.serialNumber.label">Frame/Serial number</label>
+                        <input class="field" type="text" name="serialNumber"
+                            data-trans-placeholder="bf.bike.serialNumber.placeholder" />
+
+                        <div class="policyholder-columns">
+                            <div class="column">
+                                <label data-trans="bf.bike.purchaseDate.label">Purchase date</label>
+                                <input class="field" type="date" name="bikePurchaseDate" required />
+                            </div>
+                            <div class="column">
+                                <label data-trans="bf.bike.newBike.label">Is this a new bike?</label>
+                                <select class="field" name="newBike" required>
+                                    <option value="true" data-trans="bf.bike.newBike.yes">Yes - New</option>
+                                    <option value="false" data-trans="bf.bike.newBike.no">No - Second-hand</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <label data-trans="bf.bike.serialNumber.label">Frame/Serial number</label>
-                <input class="field" type="text" name="serialNumber"
-                    data-trans-placeholder="bf.bike.serialNumber.placeholder" />
+                <!-- Policyholder Details -->
+                <div class="section">
+                    <h2 data-trans="bf.policyholder.title">Policyholder Details</h2>
+                    <div class="section-content">
+                        <!-- Entity Type -->
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" name="isCompany" value="no" checked required />
+                                <span data-trans="bf.policyholder.entity.personal">Personal</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="isCompany" value="yes" required />
+                                <span data-trans="bf.policyholder.entity.company">Company</span>
+                            </label>
+                        </div>
 
-                <div class="policyholder-columns">
-                    <div class="column">
-                        <label data-trans="bf.bike.purchaseDate.label">Purchase date</label>
-                        <input class="field" type="date" name="bikePurchaseDate" required />
+                        <!-- Company Fields -->
+                        <div id="companyFields" class="policyholder-columns" style="display: none;">
+                            <div class="column">
+                                <label data-trans="bf.policyholder.company.name.label">Company name</label>
+                                <input class="field" type="text" name="companyName"
+                                    data-trans-placeholder="bf.policyholder.company.name.placeholder" />
+                            </div>
+                            <div class="column">
+                                <label data-trans="bf.policyholder.company.vat.label">VAT number</label>
+                                <input class="field" type="text" name="companyVat"
+                                    data-trans-placeholder="bf.policyholder.company.vat.placeholder" />
+                            </div>
+                        </div>
+
+                        <!-- Personal Details -->
+                        <div class="policyholder-columns">
+                            <div class="column">
+                                <label data-trans="bf.policyholder.firstName.label">First name</label>
+                                <input class="field" type="text" name="firstName" required
+                                    data-trans-placeholder="bf.policyholder.firstName.placeholder" />
+                            </div>
+                            <div class="column">
+                                <label data-trans="bf.policyholder.lastName.label">Last name</label>
+                                <input class="field" type="text" name="lastName" required
+                                    data-trans-placeholder="bf.policyholder.lastName.placeholder" />
+                            </div>
+                        </div>
+
+                        <div class="policyholder-columns">
+                            <div class="column">
+                                <label data-trans="bf.policyholder.email.label">Email</label>
+                                <input class="field" type="email" name="email" required
+                                    data-trans-placeholder="bf.policyholder.email.placeholder" />
+                            </div>
+                            <div class="column">
+                                <label data-trans="bf.policyholder.phone.label">Phone</label>
+                                <input class="field" type="tel" name="phone" required
+                                    data-trans-placeholder="bf.policyholder.phone.placeholder" />
+                            </div>
+                        </div>
+
+                        <label data-trans="bf.policyholder.birthdate.label">Date of birth</label>
+                        <input class="field" type="date" name="birthdate" />
+
+                        <!-- Address -->
+                        <label data-trans="bf.policyholder.address.street.label">Street and number</label>
+                        <input class="field" type="text" name="street" required
+                            data-trans-placeholder="bf.policyholder.address.street.placeholder" />
+
+                        <div class="policyholder-columns">
+                            <div class="column">
+                                <label data-trans="bf.policyholder.address.city.label">City</label>
+                                <input class="field" type="text" name="city" required
+                                    data-trans-placeholder="bf.policyholder.address.city.placeholder" />
+                            </div>
+                            <!-- Zip is already in top bar, but we need it in payload. We'll use the top bar value. -->
+                        </div>
                     </div>
-                    <div class="column">
-                        <label data-trans="bf.bike.newBike.label">Is this a new bike?</label>
-                        <select class="field" name="newBike" required>
-                            <option value="true" data-trans="bf.bike.newBike.yes">Yes - New</option>
-                            <option value="false" data-trans="bf.bike.newBike.no">No - Second-hand</option>
-                        </select>
+                </div>
+
+                <!-- Start Date & Legal -->
+                <div class="section">
+                    <h2 data-trans="bf.startDate.title">Start Date & Legal</h2>
+                    <div class="section-content">
+                        <label class="w-checkbox">
+                            <input class="w-checkbox-input" type="checkbox" id="setStartDateNow" checked />
+                            <span class="w-form-label" data-trans="bf.startDate.setNow">I want to set a start date
+                                now</span>
+                        </label>
+                        <div id="startDateContainer">
+                            <input type="date" name="startDate" required class="field" />
+                        </div>
+
+                        <div class="legal-block">
+                            <label class="w-checkbox">
+                                <input type="checkbox" name="acceptance" class="w-checkbox-input" required>
+                                <span class="w-form-label" data-trans="bf.terms.acceptance.label">Electronic
+                                    communication
+                                    agreement</span>
+                            </label>
+                            <label class="w-checkbox">
+                                <input type="checkbox" name="important" class="w-checkbox-input" required>
+                                <span class="w-form-label" data-trans="bf.terms.important.label">Receive info by
+                                    email</span>
+                            </label>
+                            <label class="w-checkbox">
+                                <input type="checkbox" name="eligibility" class="w-checkbox-input" required>
+                                <span class="w-form-label" data-trans="bf.terms.eligibility.label">Terms &
+                                    Conditions</span>
+                            </label>
+                            <label class="w-checkbox">
+                                <input type="checkbox" name="privacy" class="w-checkbox-input" required>
+                                <span class="w-form-label" data-trans="bf.terms.privacy.label">Privacy Policy</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" id="submitButton" class="button" data-trans="bf.button.submit">Continue to
+                            Payment</button>
+                        <div id="message"></div>
                     </div>
+                </div>
+                <!-- End of Form Column -->
+            </div>
+
+            <!-- Sidebar Column (Right) -->
+            <div class="sidebar-column">
+                <!-- Coverage Summary Card -->
+                <div class="sidebar-card" id="coverageSummary">
+                    <h3 data-trans="bf.sidebar.coverage.title">Your coverage</h3>
+                    <p id="summaryPackageName">
+                        <span id="summaryPackageLabel">Omnium plan</span>
+                        <span id="summaryPrice">€--</span>
+                    </p>
+                    <p id="summaryPriceVat" data-trans="bf.sidebar.coverage.vat">includes VAT</p>
+                    <ul id="summaryCoverages">
+                        <li data-trans="bf.coverage.theft">Cover against theft</li>
+                        <li data-trans="bf.coverage.assistance">24/7 assistance</li>
+                        <li data-trans="bf.coverage.damage">Cover against damage</li>
+                    </ul>
+                </div>
+
+                <!-- Need Help Card -->
+                <div class="sidebar-card">
+                    <h3 data-trans="bf.sidebar.help.title">Need help with your contract?</h3>
+                    <p data-trans="bf.sidebar.help.hours">Monday to Friday, 9 am to 4 pm.</p>
+                    <div class="help-contact">
+                        <span class="icon">📞</span>
+                        <span>02 588 97 16</span>
+                    </div>
+                    <div class="help-contact">
+                        <span class="icon">💬</span>
+                        <span data-trans="bf.sidebar.help.chat">Chat</span>
+                    </div>
+                </div>
+
+                <!-- Legal Information Card -->
+                <div class="sidebar-card">
+                    <h3 data-trans="bf.sidebar.legal.title">Legal information</h3>
+                    <p><a href="#" id="termsLink" data-trans="bf.sidebar.legal.termsLink">Terms and conditions</a></p>
                 </div>
             </div>
-        </div>
-
-        <!-- Policyholder Details -->
-        <div class="section">
-            <h2 data-trans="bf.policyholder.title">Policyholder Details</h2>
-            <div class="section-content">
-                <!-- Entity Type -->
-                <div class="radio-group">
-                    <label>
-                        <input type="radio" name="isCompany" value="no" checked required />
-                        <span data-trans="bf.policyholder.entity.personal">Personal</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="isCompany" value="yes" required />
-                        <span data-trans="bf.policyholder.entity.company">Company</span>
-                    </label>
-                </div>
-
-                <!-- Company Fields -->
-                <div id="companyFields" class="policyholder-columns" style="display: none;">
-                    <div class="column">
-                        <label data-trans="bf.policyholder.company.name.label">Company name</label>
-                        <input class="field" type="text" name="companyName"
-                            data-trans-placeholder="bf.policyholder.company.name.placeholder" />
-                    </div>
-                    <div class="column">
-                        <label data-trans="bf.policyholder.company.vat.label">VAT number</label>
-                        <input class="field" type="text" name="companyVat"
-                            data-trans-placeholder="bf.policyholder.company.vat.placeholder" />
-                    </div>
-                </div>
-
-                <!-- Personal Details -->
-                <div class="policyholder-columns">
-                    <div class="column">
-                        <label data-trans="bf.policyholder.firstName.label">First name</label>
-                        <input class="field" type="text" name="firstName" required
-                            data-trans-placeholder="bf.policyholder.firstName.placeholder" />
-                    </div>
-                    <div class="column">
-                        <label data-trans="bf.policyholder.lastName.label">Last name</label>
-                        <input class="field" type="text" name="lastName" required
-                            data-trans-placeholder="bf.policyholder.lastName.placeholder" />
-                    </div>
-                </div>
-
-                <div class="policyholder-columns">
-                    <div class="column">
-                        <label data-trans="bf.policyholder.email.label">Email</label>
-                        <input class="field" type="email" name="email" required
-                            data-trans-placeholder="bf.policyholder.email.placeholder" />
-                    </div>
-                    <div class="column">
-                        <label data-trans="bf.policyholder.phone.label">Phone</label>
-                        <input class="field" type="tel" name="phone" required
-                            data-trans-placeholder="bf.policyholder.phone.placeholder" />
-                    </div>
-                </div>
-
-                <label data-trans="bf.policyholder.birthdate.label">Date of birth</label>
-                <input class="field" type="date" name="birthdate" />
-
-                <!-- Address -->
-                <label data-trans="bf.policyholder.address.street.label">Street and number</label>
-                <input class="field" type="text" name="street" required
-                    data-trans-placeholder="bf.policyholder.address.street.placeholder" />
-
-                <div class="policyholder-columns">
-                    <div class="column">
-                        <label data-trans="bf.policyholder.address.city.label">City</label>
-                        <input class="field" type="text" name="city" required
-                            data-trans-placeholder="bf.policyholder.address.city.placeholder" />
-                    </div>
-                    <!-- Zip is already in top bar, but we need it in payload. We'll use the top bar value. -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Start Date & Legal -->
-        <div class="section">
-            <h2 data-trans="bf.startDate.title">Start Date & Legal</h2>
-            <div class="section-content">
-                <label class="w-checkbox">
-                    <input class="w-checkbox-input" type="checkbox" id="setStartDateNow" checked />
-                    <span class="w-form-label" data-trans="bf.startDate.setNow">I want to set a start date now</span>
-                </label>
-                <div id="startDateContainer">
-                    <input type="date" name="startDate" required class="field" />
-                </div>
-
-                <div class="legal-block">
-                    <label class="w-checkbox">
-                        <input type="checkbox" name="acceptance" class="w-checkbox-input" required>
-                        <span class="w-form-label" data-trans="bf.terms.acceptance.label">Electronic communication
-                            agreement</span>
-                    </label>
-                    <label class="w-checkbox">
-                        <input type="checkbox" name="important" class="w-checkbox-input" required>
-                        <span class="w-form-label" data-trans="bf.terms.important.label">Receive info by email</span>
-                    </label>
-                    <label class="w-checkbox">
-                        <input type="checkbox" name="eligibility" class="w-checkbox-input" required>
-                        <span class="w-form-label" data-trans="bf.terms.eligibility.label">Terms & Conditions</span>
-                    </label>
-                    <label class="w-checkbox">
-                        <input type="checkbox" name="privacy" class="w-checkbox-input" required>
-                        <span class="w-form-label" data-trans="bf.terms.privacy.label">Privacy Policy</span>
-                    </label>
-                </div>
-
-                <button type="submit" id="submitButton" class="button" data-trans="bf.button.submit">Continue to
-                    Payment</button>
-                <div id="message"></div>
-            </div>
+            <!-- End of details-layout -->
         </div>
     </div>
 </form>

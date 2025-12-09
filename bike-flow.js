@@ -359,6 +359,9 @@ window.selectPackage = function (type) {
     $(".pricing-card").removeClass("selected").css("border-color", "#E5E7EB");
     $(`.pricing-card[data-package="${type}"]`).addClass("selected").css("border-color", "#0057FF");
 
+    // Update Sidebar Summary
+    updateSidebarSummary(type);
+
     // Show details section
     $("#detailsSection").slideDown();
 
@@ -367,6 +370,39 @@ window.selectPackage = function (type) {
         scrollTop: $("#detailsSection").offset().top - 20
     }, 500);
 };
+
+// Helper to update sidebar summary
+function updateSidebarSummary(packageType) {
+    // Package name mapping
+    const packageNames = {
+        'theft': 'Theft + Assistance',
+        'damage': 'Damage + Assistance',
+        'comprehensive': 'Omnium (All-Inclusive)'
+    };
+
+    // Get price from the pricing card
+    const priceText = $(`#price-${packageType} .amount`).text();
+
+    // Update sidebar elements
+    $("#summaryPackageLabel").text(packageNames[packageType] || 'Selected Plan');
+    $("#summaryPrice").text(priceText ? `€${priceText.replace('€', '')}` : '€--');
+
+    // Update coverage list based on package
+    const coverageList = $("#summaryCoverages");
+    coverageList.empty();
+
+    if (packageType === 'theft') {
+        coverageList.append('<li>Cover against theft</li>');
+        coverageList.append('<li>24/7 assistance</li>');
+    } else if (packageType === 'damage') {
+        coverageList.append('<li>Cover against damage</li>');
+        coverageList.append('<li>24/7 assistance</li>');
+    } else {
+        coverageList.append('<li>Cover against theft</li>');
+        coverageList.append('<li>24/7 assistance</li>');
+        coverageList.append('<li>Cover against damage</li>');
+    }
+}
 
 // --- FINAL SUBMISSION ---
 
