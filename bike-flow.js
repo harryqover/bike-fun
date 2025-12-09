@@ -199,6 +199,8 @@ function fetchPriceForPackage(packageType, bikeType, bikeValue, antiTheft, zip, 
         }
 
         const payload = {
+            action: "createQuote",
+            domain: "webflow.io",
             productConfigurationId: productConfigurationId,
             partnerId: partnerId,
             country: country,
@@ -338,6 +340,8 @@ function submitFinalQuote() {
     }
 
     const payload = {
+        action: "createQuote",
+        domain: "webflow.io",
         productConfigurationId: productConfigurationId,
         partnerId: partnerId,
         country: country,
