@@ -196,11 +196,29 @@ function fetchPriceForPackage(packageType, bikeType, bikeValue, antiTheft, zip, 
             dataType: "json",
             data: JSON.stringify({ payload: payload }),
             success: function (response) {
-                if (response.status === "success" && response.payload && response.payload.price) {
-                    resolve(response.payload.price.totalPremium);
+                if (response.status === "success" && response.payload && response.payload.packages) {
+                    // Find the package we requested
+                    const pkgName = getVariantName(packageType);
+                    const pkgData = response.payload.packages[pkgName];
+
+                    if (pkgData && pkgData.coverages) {
+                        let totalPremium = 0;
+                        // Sum up CIP from each coverage
+                        Object.values(pkgData.coverages).forEach(coverage => {
+                            // Coverage structure can be nested, e.g. coverage.theft.variants.default.premium.cip
+                            // But based on user snippet: coverage -> variants -> default -> premium -> cip
+                            if (coverage.variants && coverage.variants.default && coverage.variants.default.premium) {
+                                totalPremium += coverage.variants.default.premium.cip;
+                            }
+                        });
+                        resolve(totalPremium);
+                    } else {
+                        console.error("Package data not found for " + pkgName, response);
+                        resolve(null);
+                    }
                 } else {
                     console.error("API Error for " + packageType, response);
-                    resolve(null); // Return null on error to handle gracefully
+                    resolve(null);
                 }
             },
             error: function (err) {
