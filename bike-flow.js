@@ -87,6 +87,7 @@ function translateAll(locale) {
     const translationUrl = `https://api.prd.qover.io/i18n/v1/projects/webflow-bike-flow/${language}.json?refresh=001`;
 
     xhrLocales.open("get", translationUrl, true);
+    xhrLocales.overrideMimeType("application/json; charset=UTF-8");
     xhrLocales.setRequestHeader("Cache-Control", "max-age=3600");
 
     xhrLocales.onreadystatechange = function () {
