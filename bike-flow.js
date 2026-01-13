@@ -1,4 +1,5 @@
 console.log("Bike Flow v5.0 - GAFAM Style - 20251209");
+console.log("UPDATE 20260113");
 
 // Configuration
 const partnerId = "5e78aea105bffd763b2b0a48";
