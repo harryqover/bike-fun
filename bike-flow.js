@@ -498,7 +498,6 @@ function submitFinalQuote() {
     const deductibles = getDeductibles(country);
 
     // Build final payload (similar to fetchPrice but with real data)
-    //damage-alone
     let coverages = {};
     if (packageType === 'theft') {
         coverages.theft = "default";
