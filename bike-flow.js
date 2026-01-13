@@ -298,7 +298,7 @@ function fetchAllPrices(bikeType, bikeValue, antiTheft, zip, deductibles) {
                 applyDepreciation: false,
                 theftDeductibleType: deductibles.theft,
                 damageDeductibleType: deductibles.damage,
-                includeAssistance: true,
+                //includeAssistance: true,
                 serialNumber: "PRICING123"
             }
         };
