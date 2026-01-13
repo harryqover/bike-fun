@@ -498,12 +498,13 @@ function submitFinalQuote() {
     const deductibles = getDeductibles(country);
 
     // Build final payload (similar to fetchPrice but with real data)
+    //damage-alone
     let coverages = {};
     if (packageType === 'theft') {
         coverages.theft = "default";
         coverages.assistance = "default";
     } else if (packageType === 'damage') {
-        coverages.damage = "default";
+        coverages["damage-alone"] = "default";
         coverages.assistance = "default";
     } else {
         coverages.theft = "default";
@@ -553,7 +554,7 @@ function submitFinalQuote() {
             applyDepreciation: false, // Hardcoded
             theftDeductibleType: deductibles.theft,
             damageDeductibleType: deductibles.damage,
-            includeAssistance: true,
+            //includeAssistance: true,
             //serialNumber: formData.get("serialNumber"),
             make: formData.get("make"),
             model: formData.get("model")
