@@ -13,6 +13,14 @@ let language = "en";
 let isSandbox = true;
 let currentQuoteResponse = null; // Store full quote response for documents
 
+// Metadata Configuration
+const metadataTermsConfig = {
+    "BE": ["acceptance", "important", "eligibility", "general"],
+    "FR": ["acceptance", "important", "eligibility", "general"],
+    "DE": ["acceptance", "important", "eligibility", "general"],
+    "NL": ["acceptance", "important", "eligibility", "general"]
+};
+
 // Initialize
 $(document).ready(function () {
     initLocale();
@@ -497,6 +505,11 @@ function submitFinalQuote() {
     const packageType = $("#selectedPackage").val();
     const deductibles = getDeductibles(country);
 
+    // DYNAMIC METADATA TERMS LOGIC
+    // Get terms for current country or fallback to a default list
+    const termsArray = metadataTermsConfig[country] || ["acceptance", "important", "eligibility", "general"];
+    const termsString = termsArray.join(",");
+
     // Build final payload (similar to fetchPrice but with real data)
     let coverages = {};
     if (packageType === 'theft') {
@@ -522,7 +535,7 @@ function submitFinalQuote() {
             timeZone: getTimeZone(country)
         },
         metadata: {
-            terms: "acceptance,important,eligibility,general"
+            terms: termsString
         },
         renewal: { type: "RENEWAL_TYPE_OPT_IN" },
         package: {
