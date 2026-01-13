@@ -509,6 +509,7 @@ function submitFinalQuote() {
         coverages.damage = "default";
         coverages.assistance = "default";
     }
+    const serialNumber = formData.get("serialNumber");
 
     const payload = {
         productConfigurationId: productConfigurationId,
@@ -552,11 +553,14 @@ function submitFinalQuote() {
             theftDeductibleType: deductibles.theft,
             damageDeductibleType: deductibles.damage,
             includeAssistance: true,
-            serialNumber: formData.get("serialNumber"),
+            //serialNumber: formData.get("serialNumber"),
             make: formData.get("make"),
             model: formData.get("model")
         }
     };
+    if (serialNumber && serialNumber.trim() !== "") {
+        payload.subject.serialNumber = serialNumber.trim();
+    }
 
     // Add company fields if applicable
     if (formData.get("isCompany") === "yes") {
