@@ -15,10 +15,10 @@ let currentQuoteResponse = null; // Store full quote response for documents
 
 // Metadata Configuration
 const metadataTermsConfig = {
-    "BE": ["acceptance", "important", "eligibility", "general"],
-    "FR": ["acceptance", "important", "eligibility", "general"],
-    "DE": ["acceptance", "important", "eligibility", "general"],
-    "NL": ["acceptance", "important", "eligibility", "general"]
+    "BE": ["acceptance","general"],
+    "FR": ["general", "termsOfService"],
+    "DE": ["general", "termsOfService"],
+    "NL": ["acceptance","privacyStatement","general"]
 };
 
 // Initialize
