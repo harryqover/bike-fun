@@ -537,7 +537,7 @@ function submitFinalQuote() {
         metadata: {
             terms: termsString
         },
-        renewal: { type: "RENEWAL_TYPE_OPT_IN" },
+        renewal: { type: "RENEWAL_TYPE_OPT_OUT" },
         package: {
             name: getVariantName(packageType),
             coverages: coverages
