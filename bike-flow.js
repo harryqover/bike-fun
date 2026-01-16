@@ -1,5 +1,5 @@
 console.log("Bike Flow v5.0 - GAFAM Style - 20251209");
-console.log("UPDATE 20260116 A");
+console.log("UPDATE 20260116 B");
 
 // Configuration
 const partnerId = "5e78aea105bffd763b2b0a48";
@@ -261,7 +261,19 @@ async function calculatePrices() {
 
 function fetchAllPrices(bikeType, bikeValue, antiTheft, zip, deductibles) {
     return new Promise((resolve, reject) => {
-        // Construct payload for 'comprehensive' to trigger full calculation
+        // --- START DATE LOGIC START ---
+        // 1. Calculate "Tomorrow" in YYYY-MM-DD format
+        const dateObj = new Date();
+        dateObj.setDate(dateObj.getDate() + 1);
+        const tomorrowString = dateObj.toISOString().split('T')[0];
+
+        // 2. Get current input value (using jQuery since formData is not defined in this scope)
+        const inputDate = $('input[name="startDate"]').val();
+
+        // 3. Use input if it exists, otherwise use tomorrow
+        const effectiveStartDate = inputDate ? inputDate : tomorrowString;
+        // --- START DATE LOGIC END ---
+
         // Construct payload for 'comprehensive' to trigger full calculation
         const payload = {
             productConfigurationId: productConfigurationId,
@@ -277,7 +289,8 @@ function fetchAllPrices(bikeType, bikeValue, antiTheft, zip, deductibles) {
                 }
             },
             contractPeriod: {
-                timeZone: "Europe/Brussels"
+                startDate: effectiveStartDate, 
+                timeZone: getTimeZone(country)
             },
             policyholder: {
                 entityType: "ENTITY_TYPE_PERSON",
