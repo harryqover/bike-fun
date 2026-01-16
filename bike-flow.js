@@ -125,6 +125,28 @@ function initListeners() {
     $(".close").click(function () {
         $("#errorModal").hide();
     });
+
+    // Real-time Zip Validation
+    $("#zipInput").on("blur", function() {
+        const val = $(this).val();
+        // Only validate if not empty (empty is handled by the "required" check)
+        if (val) {
+            const zipCheck = validateZipCode(val, country);
+            if (!zipCheck.isValid) {
+                $("#topBarMessage").html(`<p class="error">${zipCheck.error}</p>`);
+                $(this).addClass("input-error");
+            } else {
+                $("#topBarMessage").empty();
+                $(this).removeClass("input-error");
+            }
+        }
+    });
+    
+    // Clear error when user starts typing again
+    $("#zipInput").on("input", function() {
+        $(this).removeClass("input-error");
+        $("#topBarMessage").empty();
+    });
 }
 
 // --- PRICING LOGIC ---
@@ -171,6 +193,19 @@ async function calculatePrices() {
         $("#topBarMessage").html('<p class="error">Bike value must be between €250 and €10,000.</p>');
         return;
     }
+
+    // --- ZIP VALIDATION START ---
+    const zipCheck = validateZipCode(zip, country);
+    if (!zipCheck.isValid) {
+        $("#topBarMessage").html(`<p class="error">${zipCheck.error}</p>`);
+        // Highlight the input in red
+        $("#zipInput").addClass("input-error"); 
+        return;
+    } else {
+        // Clear error styling if valid
+        $("#zipInput").removeClass("input-error");
+    }
+    // --- ZIP VALIDATION END ---
 
     $("#topBarMessage").empty();
 
@@ -726,4 +761,39 @@ function translateAll(locale) {
         }
     };
     xhr.send();
+}
+
+function validateZipCode(zip, countryCode) {
+    // Trim whitespace
+    const cleanZip = zip ? zip.trim() : "";
+
+    const rules = {
+        'BE': { 
+            regex: /^\d{4}$/, 
+            error: "Belgian zip codes must be 4 digits (e.g. 1000)." 
+        },
+        'FR': { 
+            regex: /^\d{5}$/, 
+            error: "French zip codes must be 5 digits (e.g. 75008)." 
+        },
+        'DE': { 
+            regex: /^\d{5}$/, 
+            error: "German zip codes must be 5 digits (e.g. 10115)." 
+        },
+        'NL': { 
+            // Matches "1234AB" or "1234 AB" (case insensitive)
+            regex: /^[1-9]\d{3}\s?[a-zA-Z]{2}$/, 
+            error: "Dutch zip codes must be 4 digits and 2 letters (e.g. 1011 AB)." 
+        }
+    };
+
+    const rule = rules[countryCode];
+    
+    // If no rule exists for country, assume valid (or return true)
+    if (!rule) return { isValid: true };
+
+    return {
+        isValid: rule.regex.test(cleanZip),
+        error: rule.error
+    };
 }
