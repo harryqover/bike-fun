@@ -30,6 +30,15 @@ $(document).ready(function () {
     // Set initial country field
     $("#countryField").val(country);
 
+    if (country === "FR") {
+        $("#birthPlaceContainer").show(); // Show if FR
+        $('input[name="birthPlace"]').prop('required', true); // Make required if visible
+    } else {
+        $("#birthPlaceContainer").hide(); // Ensure hidden otherwise
+        $('input[name="birthPlace"]').prop('required', false); // Remove requirement
+        $('input[name="birthPlace"]').val(""); // Clear value just in case
+    }
+
     // Pre-fill from URL
     initUrlParams();
 });
@@ -595,6 +604,16 @@ function submitFinalQuote() {
     if (formData.get("isCompany") === "yes") {
         payload.policyholder.companyName = formData.get("companyName");
         payload.policyholder.vatIn = formData.get("companyVat");
+    }
+
+    // ---------------------------------------------------------
+    // NEW: Add subject.birthPlace if country is FR
+    // ---------------------------------------------------------
+    if (country === 'FR') {
+        const birthPlaceVal = formData.get("birthPlace");
+        if (birthPlaceVal) {
+            payload.subject.birthPlace = birthPlaceVal;
+        }
     }
 
     // Send to API
