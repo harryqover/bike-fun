@@ -147,6 +147,83 @@ function initListeners() {
         $(this).removeClass("input-error");
         $("#topBarMessage").empty();
     });
+
+    // --- PHONE FORMATTING START ---
+    const phoneInput = document.getElementById('phoneInput');
+    
+    // Map countries to dialing codes
+    const countryDialCodes = {
+        'BE': '+32',
+        'FR': '+33',
+        'NL': '+31',
+        'DE': '+49'
+    };
+
+    if (phoneInput) {
+        // 1. On Focus: Pre-fill country code if empty
+        phoneInput.addEventListener('focus', function (e) {
+            const prefix = countryDialCodes[country] || '';
+            const val = e.target.value;
+            if (!val || val === '+') {
+                e.target.value = prefix + ' ';
+            }
+        });
+
+        // 2. On Input: Enforce format
+        phoneInput.addEventListener('input', function (e) {
+            const prefix = countryDialCodes[country] || '+32';
+            let val = e.target.value;
+
+            // Strip everything that isn't a digit or a +
+            val = val.replace(/[^\d+]/g, '');
+
+            // If user deletes everything, reset to prefix
+            if (val.length < prefix.length) {
+                val = prefix;
+            }
+
+            // Ensure it starts with the correct prefix
+            if (!val.startsWith(prefix)) {
+                // If user typed "0470...", replace leading 0 with prefix
+                if (val.startsWith('0')) {
+                    val = prefix + val.substring(1);
+                } else if (!val.startsWith('+')) {
+                    val = prefix + val;
+                }
+            }
+
+            // --- VISUAL MASKING (Adding Spaces) ---
+            // Remove prefix temporarily to format the rest
+            let rawNumbers = val.substring(prefix.length);
+            let formattedNumber = prefix;
+
+            if (rawNumbers.length > 0) {
+                formattedNumber += ' ';
+                
+                // Logic: formatting blocks of 2 or 3 digits
+                // BE/FR style: +32 470 12 34 56
+                if (country === 'BE' || country === 'FR') {
+                     // First block of 3 digits (provider), then blocks of 2
+                    if (rawNumbers.length > 3) {
+                        formattedNumber += rawNumbers.substring(0, 3) + ' ';
+                        rawNumbers = rawNumbers.substring(3);
+                        
+                        // Add spaces every 2 digits for the rest
+                        formattedNumber += rawNumbers.match(/.{1,2}/g).join(' ');
+                    } else {
+                        formattedNumber += rawNumbers;
+                    }
+                } 
+                // Default/NL/DE style: Simple spacing
+                else {
+                     formattedNumber += rawNumbers.match(/.{1,3}/g).join(' ');
+                }
+            }
+
+            e.target.value = formattedNumber;
+        });
+    }
+    // --- PHONE FORMATTING END ---
 }
 
 // --- PRICING LOGIC ---
@@ -606,7 +683,7 @@ function submitFinalQuote() {
             firstName: formData.get("firstName"),
             lastName: formData.get("lastName"),
             email: formData.get("email"),
-            phone: formData.get("phone"),
+            phone: formData.get("phone").replace(/\s/g, ''),
             birthdate: formData.get("birthdate"),
             address: {
                 street: formData.get("street"),
