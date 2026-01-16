@@ -1,5 +1,5 @@
 console.log("Bike Flow v5.0 - GAFAM Style - 20251209");
-console.log("UPDATE 20260116 E start date min");
+console.log("UPDATE 20260116 F update terms checkboxes");
 
 // Configuration
 const partnerId = "5e78aea105bffd763b2b0a48";
@@ -71,7 +71,7 @@ $(document).ready(function () {
 
     // 4. RENDER LEGAL CHECKBOXES (New)
     renderLegalCheckboxes();
-    
+
     // Pre-fill from URL
     initUrlParams();
 });
