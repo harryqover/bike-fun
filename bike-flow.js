@@ -69,6 +69,9 @@ $(document).ready(function () {
     });
     // --- DATE RESTRICTION END ---
 
+    // 4. RENDER LEGAL CHECKBOXES (New)
+    renderLegalCheckboxes();
+    
     // Pre-fill from URL
     initUrlParams();
 });
@@ -903,4 +906,35 @@ function validateZipCode(zip, countryCode) {
         isValid: rule.regex.test(cleanZip),
         error: rule.error
     };
+}
+
+function renderLegalCheckboxes() {
+    const container = $("#legalContainer");
+    
+    // 1. Get terms for current country (fallback to empty array)
+    // defined in your global variable: metadataTermsConfig
+    const terms = metadataTermsConfig[country] || [];
+
+    // 2. Clear existing content
+    container.empty();
+
+    // 3. Generate Checkboxes
+    terms.forEach(term => {
+        // Construct the translation key: bf.terms.acceptanceBE
+        const transKey = `bf.terms.${term}${country}`;
+
+        const html = `
+        <label class="w-checkbox">
+            <input type="checkbox" name="${term}" class="w-checkbox-input" required>
+            <span class="w-form-label" data-trans="${transKey}">
+                Terms: ${term} (${country})
+            </span>
+        </label>
+        `;
+
+        container.append(html);
+    });
+    
+    // 4. Important: Re-run translation since we just added new elements
+    translateAll(locale);
 }
