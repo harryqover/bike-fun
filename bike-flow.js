@@ -1,5 +1,5 @@
 console.log("Bike Flow v5.0 - GAFAM Style - 20251209");
-console.log("UPDATE 20260113 removed includeAssistance x");
+console.log("UPDATE 20260116 A");
 
 // Configuration
 const partnerId = "5e78aea105bffd763b2b0a48";
@@ -276,6 +276,9 @@ function fetchAllPrices(bikeType, bikeValue, antiTheft, zip, deductibles) {
                     assistance: "default"
                 }
             },
+            contractPeriod: {
+                timeZone: "Europe/Brussels"
+            },
             policyholder: {
                 entityType: "ENTITY_TYPE_PERSON",
                 firstName: "Pricing",
@@ -298,7 +301,6 @@ function fetchAllPrices(bikeType, bikeValue, antiTheft, zip, deductibles) {
                 applyDepreciation: false,
                 theftDeductibleType: deductibles.theft,
                 damageDeductibleType: deductibles.damage,
-                //includeAssistance: true,
                 serialNumber: "PRICING123"
             }
         };
