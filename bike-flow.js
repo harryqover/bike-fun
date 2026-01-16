@@ -39,6 +39,36 @@ $(document).ready(function () {
         $('input[name="birthPlace"]').val(""); // Clear value just in case
     }
 
+    // --- DATE RESTRICTION START ---
+    // 1. Calculate "Tomorrow" in YYYY-MM-DD format
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    // Format to YYYY-MM-DD (ISO standard for date inputs)
+    const minDateStr = tomorrow.toISOString().split('T')[0];
+    
+    // 2. Apply restriction to the input
+    const $startDateInput = $('input[name="startDate"]');
+    
+    // Set the minimum allowed date
+    $startDateInput.attr('min', minDateStr);
+    
+    // 3. Set default value to tomorrow (Good UX)
+    // Only set if currently empty to avoid overwriting user changes if they go back
+    if (!$startDateInput.val()) {
+        $startDateInput.val(minDateStr);
+    }
+
+    // 4. Force check on change (prevents manual typing of bad dates)
+    $startDateInput.on('change', function() {
+        if (this.value < minDateStr) {
+            alert("The start date cannot be today or in the past.");
+            this.value = minDateStr; // Reset to tomorrow
+        }
+    });
+    // --- DATE RESTRICTION END ---
+
     // Pre-fill from URL
     initUrlParams();
 });
