@@ -341,7 +341,6 @@ async function calculatePrices() {
         "Analyzing bike profile...",
         "Checking theft risk for " + zip + "...",
         "Calculating best rates...",
-        "Applying discounts...",
         "Finalizing your quote..."
     ];
     let msgIndex = 0;
