@@ -26,6 +26,7 @@ const metadataTermsConfig = {
 $(document).ready(function () {
     initLocale();
     initListeners();
+    renderLegalMentions();
     translateAll(locale);
 
     // Set initial country field
@@ -1209,4 +1210,53 @@ function updateBikeConditionMessage() {
          $msgBox.append($pMain);
          $msgBox.slideDown();
     }
+}
+
+function renderLegalMentions() {
+    const $container = $("#legalMentions");
+    
+    // Safety check if element exists in HTML
+    if ($container.length === 0) return;
+
+    $container.empty(); // Clear existing list items
+
+    // Hardcoded defaults from your prompt (serves as fallback until JSON is updated)
+    const legalDefaults = {
+        "BE": [
+            "L'assurance est administrée par Qover S.A., un agent d'assurance non lié autorisé et réglementé par l'Autorité des services et marchés financiers (FSMA - BELGIQUE - numéro d'enregistrement 0650.939.878). Siège social : Rue du Commerce 31, 1000 Bruxelles, Belgique.",
+            "Nationale-Nederlanden Schadeverzekering Maatschappij SA, société de droit néerlandais, habilitée à assurer les risques belges, entreprise d’assurances inscrite en Belgique sous le numéro de code 2925 (BNB). Siège social : Prinses Beatrixlaan 35, 2595 AK ‘S-Gravenhage, Pays-Bas - Numéro de registre de commerce DNB 27023707, sous le contrôle de la Nederlandsche Bank. Nationale-Nederlanden Schadeverzekering Maatschappij SA est autorisée à fournir des services d'intermédiation en assurance en Belgique sur la base de la liberté de prestation de services.",
+            "L'assurance vélo est un produit d'assurance non-vie (branche 3). L'assistance est un produit d'assurance non-vie (branche 18).",
+            "Le présent contrat est conclu pour une durée d'un an. Il est renouvelé tacitement pour des périodes consécutives d'un an. Nous y mettrons fin après sept renouvellements tacites.",
+            "Le contrat d'assurance est soumis au droit belge."
+        ],
+        "FR": [
+            "La gestion du contrat d’assurance est réalisée par Qover S.A, un agent d'assurance non lié autorisé et réglementé par l'Autorité des services et marchés financiers (FSMA - BELGIQUE - numéro d'enregistrement 0650.939.878). Siège social : Rue du Commerce 31, 1000 Bruxelles, Belgique. Qover SA est autorisée à fournir des services d'intermédiation en assurance en France sur la base de la liberté de prestation de services.",
+            "Nationale-Nederlanden Schadeverzekering Maatschappij SA, société de droit néerlandais. Siège social : Prinses Beatrixlaan 35, 2595 AK ‘S-Gravenhage, Pays-Bas - Numéro de registre de commerce DNB 27023707, sous le contrôle de la Nederlandsche Bank. Nationale-Nederlanden Schadeverzekering Maatschappij SA est autorisée à fournir des services d'intermédiation en assurance en France sur la base de la liberté de prestation de services",
+            "L'assurance vélo est un produit d'assurance non-vie (branche 3). L'assistance est un produit d'assurance non-vie (branche 18).",
+            "Le présent contrat est conclu pour une durée d'un an. Il est renouvelé maximum sept fois par tacite reconduction pour des périodes consécutives d'un an.",
+            "Le contrat d'assurance est soumis au droit français."
+        ]
+        // Add NL/DE here if needed later
+    };
+
+    // Determine which list to use based on global 'country' variable
+    const contentList = legalDefaults[country] || [];
+
+    // Loop through and inject
+    contentList.forEach((text, index) => {
+        // Index is 0-based, your keys are 1-based (el1, el2)
+        const i = index + 1; 
+        const transKey = `bf.legalMentions.el${i}.${country}`;
+        
+        // Check if we already have a translation loaded in globalTranslations, otherwise use default
+        const finalText = globalTranslations[transKey] || text;
+
+        const $li = $('<li>', {
+            class: 'list-item-92',
+            'data-trans': transKey, // Hook for translateAll()
+            text: finalText
+        });
+
+        $container.append($li);
+    });
 }
