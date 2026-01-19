@@ -73,6 +73,11 @@
             return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
         };
 
+        const formatMonth = (date) => {
+            if (!date || isNaN(date.getTime())) return '-';
+            return date.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+        }
+
         const formatCurrency = (val) => {
             return new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' }).format(val);
         };
@@ -99,7 +104,7 @@
                             ipt: parseCurrency(row.ipt),
                             cip: parseCurrency(row.cip),
                             partner: row.partner,
-                            policyholder: row.policyholder, // Added policyholder
+                            policyholder: row.policyholder, 
                             type: row.type
                         })).filter(row => row.vin && row.cip > 0); // Basic validation
                         onDataLoaded(cleanData);
@@ -423,12 +428,50 @@
 
             // Calculate Stats
             const stats = useMemo(() => {
+                // 1. Total Financials (Selected Period)
                 const totalSpend = filteredData.reduce((acc, curr) => acc + curr.cip, 0);
                 const totalTax = filteredData.reduce((acc, curr) => acc + curr.ipt, 0);
-                const uniqueVehicles = new Set(filteredData.map(d => d.vin)).size;
-                const avgPerVehicle = uniqueVehicles ? totalSpend / uniqueVehicles : 0;
+
+                // 2. Group by Month for granular stats
+                const monthsMap = new Map(); // Key: "YYYY-MM", Value: Set of VINs
                 
-                return { totalSpend, totalTax, uniqueVehicles, avgPerVehicle };
+                filteredData.forEach(d => {
+                    if (!d.periodStart) return;
+                    const key = d.periodStart.toISOString().slice(0, 7); // YYYY-MM
+                    const label = formatMonth(d.periodStart); // Jan 2026
+                    
+                    if (!monthsMap.has(key)) {
+                        monthsMap.set(key, { vins: new Set(), spend: 0, label: label, date: d.periodStart });
+                    }
+                    const monthData = monthsMap.get(key);
+                    monthData.vins.add(d.vin);
+                    monthData.spend += d.cip;
+                });
+
+                // 3. Active Vehicles (Latest Month in Selection)
+                // Sort months descending to find the latest
+                const sortedMonths = Array.from(monthsMap.values()).sort((a, b) => b.date - a.date);
+                const latestMonth = sortedMonths[0];
+                const activeVehiclesLatest = latestMonth ? latestMonth.vins.size : 0;
+                const latestMonthLabel = latestMonth ? latestMonth.label : 'Period';
+
+                // 4. Avg Cost per Vehicle per Month
+                // Metric: Total Spend / Total Vehicle-Months
+                // This accounts for fluctuating fleet sizes.
+                let totalVehicleMonths = 0;
+                monthsMap.forEach(val => {
+                    totalVehicleMonths += val.vins.size;
+                });
+
+                const avgCostPerVehiclePerMonth = totalVehicleMonths ? totalSpend / totalVehicleMonths : 0;
+                
+                return { 
+                    totalSpend, 
+                    totalTax, 
+                    activeVehiclesLatest, 
+                    avgCostPerVehiclePerMonth,
+                    latestMonthLabel
+                };
             }, [filteredData]);
 
             // Chart Data: Monthly Spend & Vehicle Count
@@ -539,28 +582,28 @@
                         <StatCard 
                             title="Total Invoiced" 
                             value={formatCurrency(stats.totalSpend)} 
-                            subtext="Gross amount (CIP)"
+                            subtext="Selected Period (CIP)"
                             icon="credit-card" 
                             color="bg-blue-100 text-blue-600"
                         />
                         <StatCard 
                             title="Total Tax" 
                             value={formatCurrency(stats.totalTax)} 
-                            subtext="IPT Contribution"
-                            icon="percent" 
+                            subtext="Selected Period (IPT)"
+                            icon="coins" 
                             color="bg-red-100 text-red-600"
                         />
                         <StatCard 
                             title="Active Vehicles" 
-                            value={stats.uniqueVehicles} 
-                            subtext="Unique VINs in period"
+                            value={stats.activeVehiclesLatest} 
+                            subtext={`In ${stats.latestMonthLabel}`}
                             icon="truck" 
                             color="bg-emerald-100 text-emerald-600"
                         />
                         <StatCard 
-                            title="Avg Cost / Vehicle" 
-                            value={formatCurrency(stats.avgPerVehicle)} 
-                            subtext="Based on selection"
+                            title="Avg Cost / Vehicle / Month" 
+                            value={formatCurrency(stats.avgCostPerVehiclePerMonth)} 
+                            subtext="Based on selected range"
                             icon="bar-chart-3" 
                             color="bg-amber-100 text-amber-600"
                         />
@@ -680,7 +723,7 @@
                                 <span className="font-bold text-lg text-slate-800 tracking-tight">FleetAnalyzer</span>
                             </div>
                             <div className="text-sm text-slate-500">
-                                v1.3
+                                v1.4
                             </div>
                         </div>
                     </nav>
