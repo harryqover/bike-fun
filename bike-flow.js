@@ -12,13 +12,14 @@ let country = "BE";
 let language = "en";
 let isSandbox = true;
 let currentQuoteResponse = null; // Store full quote response for documents
+let globalTranslations = {};
 
 // Metadata Configuration
 const metadataTermsConfig = {
-    "BE": ["acceptance","general"],
-    "FR": ["general", "termsOfService"],
-    "DE": ["general", "termsOfService"],
-    "NL": ["acceptance","privacyStatement","general"]
+    "BE": ["remarketing","acceptance","general"],
+    "FR": ["remarketing","general", "termsOfService"],
+    "DE": ["remarketing","general", "termsOfService"],
+    "NL": ["remarketing","acceptance","privacyStatement","general"]
 };
 
 // Initialize
@@ -209,9 +210,20 @@ function initListeners() {
             if (inputDate < limitDate) {
                 // Too old
                 $input.addClass("input-error");
+                
+                // --- NEW CODE START ---
+                // 1. Define your key
+                const transKey = "bf.error.bikeTooOld"; 
+                
+                // 2. Get text from globalTranslations, or use default English
+                const errorText = globalTranslations[transKey] || "Bike is too old (max 8 years).";
+                
                 if ($errorMsg.length === 0) {
-                    $input.after('<span class="field-error-msg">Bike is too old (max 8 years).</span>');
+                    // 3. Inject with the translated text AND the data-trans attribute (for future refetches)
+                    $input.after(`<span class="field-error-msg" data-trans="${transKey}">${errorText}</span>`);
                 }
+                // --- NEW CODE END ---
+                
             } else {
                 // OK
                 $input.removeClass("input-error");
@@ -408,10 +420,10 @@ async function calculatePrices() {
 
     // Cycle messages
     const messages = [
-        "Analyzing bike profile...",
-        "Checking theft risk for " + zip + "...",
-        "Calculating best rates...",
-        "Finalizing your quote..."
+        globalTranslations['bf.loader.step1'] || "Analyzing bike profile...",
+        (globalTranslations['bf.loader.step2'] || "Checking theft risk for ") + zip + "...",
+        globalTranslations['bf.loader.step3'] || "Calculating best rates...",
+        globalTranslations['bf.loader.step4'] || "Finalizing your quote..."
     ];
     let msgIndex = 0;
     const msgInterval = setInterval(() => {
@@ -662,16 +674,20 @@ function updateSidebarSummary(packageType) {
     const coverageList = $("#summaryCoverages");
     coverageList.empty();
 
+    const txtTheft = globalTranslations['bf.coverage.theft'] || "Cover against theft";
+    const txtAssistance = globalTranslations['bf.coverage.assistance'] || "24/7 roadside assistance";
+    const txtDamage = globalTranslations['bf.coverage.damage'] || "Cover against material damage";
+
     if (packageType === 'theft') {
-        coverageList.append('<li>Cover against theft</li>');
-        coverageList.append('<li>24/7 assistance</li>');
+        coverageList.append(`<li>${txtTheft}</li>`);
+        coverageList.append(`<li>${txtAssistance}</li>`);
     } else if (packageType === 'damage') {
-        coverageList.append('<li>Cover against damage</li>');
-        coverageList.append('<li>24/7 assistance</li>');
+        coverageList.append(`<li>${txtDamage}</li>`);
+        coverageList.append(`<li>${txtAssistance}</li>`);
     } else {
-        coverageList.append('<li>Cover against theft</li>');
-        coverageList.append('<li>24/7 assistance</li>');
-        coverageList.append('<li>Cover against damage</li>');
+        coverageList.append(`<li>${txtTheft}</li>`);
+        coverageList.append(`<li>${txtAssistance}</li>`);
+        coverageList.append(`<li>${txtDamage}</li>`);
     }
 }
 
@@ -866,7 +882,8 @@ function submitFinalQuote() {
                 else if (response.payload.status === 400 || response.payload.name === "ValidationError" || (response.payload._validationErrors && response.payload._validationErrors.length > 0)) {
                     $("#loadingOverlay").hide();
 
-                    let errorHtml = '<h4 class="error-title">Please check the following fields:</h4><ul class="error-list">';
+                    const titleText = globalTranslations['bf.error.modalTitle'] || "Please check the following fields:";
+                    let errorHtml = `<h4 class="error-title">${titleText}</h4><ul class="error-list">`;
 
                     // Handle _validationErrors (New format)
                     if (response.payload._validationErrors && response.payload._validationErrors.length > 0) {
@@ -905,7 +922,8 @@ function submitFinalQuote() {
                 // Other API errors
                 else {
                     $("#loadingOverlay").hide();
-                    $("#errorModal .modal-body").html('<p class="error">An unexpected error occurred. Please try again.</p>');
+                    const errorMsg = globalTranslations['bf.error.generic'] || "An unexpected error occurred. Please try again.";
+                    $("#errorModal .modal-body").html(`<p class="error">${errorMsg}</p>`);
                     $("#errorModal").show();
                 }
             } else {
@@ -933,6 +951,8 @@ function translateAll(locale) {
     xhr.onload = function () {
         if (xhr.status >= 200 && xhr.status < 300) {
             const translations = JSON.parse(xhr.responseText);
+            globalTranslations = translations;
+
             $("[data-trans]").each(function () {
                 const key = $(this).data("trans");
                 if (translations[key]) $(this).text(translations[key]);
@@ -953,20 +973,19 @@ function validateZipCode(zip, countryCode) {
     const rules = {
         'BE': { 
             regex: /^\d{4}$/, 
-            error: "Belgian zip codes must be 4 digits (e.g. 1000)." 
+            error: globalTranslations['bf.error.zip.be'] || "Belgian zip codes must be 4 digits (e.g. 1000)." 
         },
         'FR': { 
             regex: /^\d{5}$/, 
-            error: "French zip codes must be 5 digits (e.g. 75008)." 
+            error: globalTranslations['bf.error.zip.fr'] || "French zip codes must be 5 digits (e.g. 75008)." 
         },
         'DE': { 
             regex: /^\d{5}$/, 
-            error: "German zip codes must be 5 digits (e.g. 10115)." 
+            error: globalTranslations['bf.error.zip.de'] || "German zip codes must be 5 digits (e.g. 10115)." 
         },
         'NL': { 
-            // Matches "1234AB" or "1234 AB" (case insensitive)
             regex: /^[1-9]\d{3}\s?[a-zA-Z]{2}$/, 
-            error: "Dutch zip codes must be 4 digits and 2 letters (e.g. 1011 AB)." 
+            error: globalTranslations['bf.error.zip.nl'] || "Dutch zip codes must be 4 digits and 2 letters (e.g. 1011 AB)." 
         }
     };
 
