@@ -1,5 +1,5 @@
 console.log("Bike Flow v5.0 - GAFAM Style - 20251209");
-console.log("UPDATE 20260119 a");
+console.log("UPDATE 20260119 b phone prefix");
 
 // Configuration
 const partnerId = "5e78aea105bffd763b2b0a48";
@@ -190,7 +190,7 @@ function initListeners() {
 
     // --- PHONE FORMATTING START ---
     const phoneInput = document.getElementById('phoneInput');
-    
+
     // Map countries to dialing codes
     const countryDialCodes = {
         'BE': '+32',
@@ -199,68 +199,93 @@ function initListeners() {
         'DE': '+49'
     };
 
+    // Create a list of allowed prefixes to check against
+    const allowedPrefixes = Object.values(countryDialCodes);
+
     if (phoneInput) {
-        // 1. On Focus: Pre-fill country code if empty
+        // 1. On Focus: Pre-fill current country code if completely empty
         phoneInput.addEventListener('focus', function (e) {
-            const prefix = countryDialCodes[country] || '';
+            const defaultPrefix = countryDialCodes[country] || '+32';
             const val = e.target.value;
-            if (!val || val === '+') {
-                e.target.value = prefix + ' ';
+            if (!val || val.trim() === '') {
+                e.target.value = defaultPrefix + ' ';
             }
         });
 
-        // 2. On Input: Enforce format
+        // 2. On Input: Smart Format
         phoneInput.addEventListener('input', function (e) {
-            const prefix = countryDialCodes[country] || '+32';
+            const defaultPrefix = countryDialCodes[country] || '+32';
             let val = e.target.value;
 
             // Strip everything that isn't a digit or a +
-            val = val.replace(/[^\d+]/g, '');
+            let cleanVal = val.replace(/[^\d+]/g, '');
 
-            // If user deletes everything, reset to prefix
-            if (val.length < prefix.length) {
-                val = prefix;
-            }
+            // DETECT PREFIX:
+            // Check if the number currently starts with ANY allowed prefix (+32, +31, etc.)
+            let activePrefix = defaultPrefix;
+            let foundInternationalParams = false;
 
-            // Ensure it starts with the correct prefix
-            if (!val.startsWith(prefix)) {
-                // If user typed "0470...", replace leading 0 with prefix
-                if (val.startsWith('0')) {
-                    val = prefix + val.substring(1);
-                } else if (!val.startsWith('+')) {
-                    val = prefix + val;
+            // Sort prefixes by length desc to match +352 (Lux) before +33 if you add it later
+            const sortedPrefixes = allowedPrefixes.sort((a, b) => b.length - a.length);
+
+            for (const p of sortedPrefixes) {
+                if (cleanVal.startsWith(p)) {
+                    activePrefix = p;
+                    foundInternationalParams = true;
+                    break;
                 }
             }
 
+            // LOGIC:
+            // If user explicitly types '0' (local format), swap it for the PAGE default prefix
+            if (cleanVal.startsWith('0')) {
+                 cleanVal = defaultPrefix + cleanVal.substring(1);
+                 activePrefix = defaultPrefix;
+            }
+            // If user clears the input or it doesn't start with +, force the default prefix
+            // UNLESS they are in the middle of typing a '+' (to allow them to type +3...)
+            else if (!cleanVal.startsWith('+')) {
+                 cleanVal = defaultPrefix + cleanVal;
+                 activePrefix = defaultPrefix;
+            }
+            // If they are typing a +, we let them type until it matches a valid prefix
+            // If it matches nothing known yet, we assume they are still typing the prefix.
+            
             // --- VISUAL MASKING (Adding Spaces) ---
-            // Remove prefix temporarily to format the rest
-            let rawNumbers = val.substring(prefix.length);
-            let formattedNumber = prefix;
-
-            if (rawNumbers.length > 0) {
-                formattedNumber += ' ';
+            
+            // Only format if we have a valid prefix structure
+            if (cleanVal.length >= activePrefix.length) {
                 
-                // Logic: formatting blocks of 2 or 3 digits
-                // BE/FR style: +32 470 12 34 56
-                if (country === 'BE' || country === 'FR') {
-                     // First block of 3 digits (provider), then blocks of 2
-                    if (rawNumbers.length > 3) {
-                        formattedNumber += rawNumbers.substring(0, 3) + ' ';
-                        rawNumbers = rawNumbers.substring(3);
-                        
-                        // Add spaces every 2 digits for the rest
-                        formattedNumber += rawNumbers.match(/.{1,2}/g).join(' ');
-                    } else {
-                        formattedNumber += rawNumbers;
-                    }
-                } 
-                // Default/NL/DE style: Simple spacing
-                else {
-                     formattedNumber += rawNumbers.match(/.{1,3}/g).join(' ');
-                }
-            }
+                let rawNumbers = cleanVal.substring(activePrefix.length);
+                let formattedNumber = activePrefix;
 
-            e.target.value = formattedNumber;
+                if (rawNumbers.length > 0) {
+                    formattedNumber += ' ';
+                    
+                    // Determine spacing style based on the ACTIVE prefix (not just the page country)
+                    // BE (+32) and FR (+33) uses: +32 470 12 34 56 (3 digits provider, then 2s)
+                    const isBeFrStyle = activePrefix === '+32' || activePrefix === '+33';
+
+                    if (isBeFrStyle) {
+                        if (rawNumbers.length > 3) {
+                            formattedNumber += rawNumbers.substring(0, 3) + ' ';
+                            rawNumbers = rawNumbers.substring(3);
+                            // Add spaces every 2 digits
+                            formattedNumber += rawNumbers.match(/.{1,2}/g).join(' ');
+                        } else {
+                            formattedNumber += rawNumbers;
+                        }
+                    } 
+                    // NL (+31) and DE (+49) usually group by spaces more simply
+                    else {
+                         formattedNumber += rawNumbers.match(/.{1,3}/g).join(' ');
+                    }
+                }
+                e.target.value = formattedNumber;
+            } else {
+                // If they are just typing "+", let it be
+                e.target.value = cleanVal;
+            }
         });
     }
     // --- PHONE FORMATTING END ---
