@@ -145,6 +145,10 @@ function initListeners() {
         calculatePrices();
     });
 
+    $('#newBikeInput').on('change', function() {
+        updateBikeConditionMessage();
+    });
+
     // Final Submit
     $("#bikeQuoteForm").on("submit", function (e) {
         e.preventDefault();
@@ -234,6 +238,7 @@ function initListeners() {
              $input.removeClass("input-error");
              $errorMsg.remove();
         }
+        updateBikeConditionMessage();
         checkFormCompletion();
     });
 
@@ -1058,6 +1063,12 @@ function fetchQuoteAndPrefill(quoteId) {
                     if (data.subject.bikeType) $("#bikeTypeInput").val(data.subject.bikeType);
                     if (data.subject.bikeValue) $("#bikeValueInput").val(data.subject.bikeValue);
                     if (data.subject.antiTheftMeasure) $("#antiTheftInput").val(data.subject.antiTheftMeasure);
+
+                    if (data.subject.newBike !== undefined) {
+                        $("#newBikeInput").val(data.subject.newBike.toString());
+                        // Update message manually after prefill
+                        updateBikeConditionMessage();
+                    }
                 }
 
                 // 3. Prefill Policyholder / Address
@@ -1146,5 +1157,56 @@ function checkFormCompletion() {
         submitBtn.prop("disabled", false).removeClass("disabled-state");
     } else {
         submitBtn.prop("disabled", true).addClass("disabled-state");
+    }
+}
+
+function updateBikeConditionMessage() {
+    const val = $('#newBikeInput').val();
+    const purchaseDateVal = $('input[name="bikePurchaseDate"]').val();
+    const $msgBox = $('#invoiceWarningMessage');
+    
+    // Translation Keys
+    const keyNew = 'bf.invoice.new';
+    const keyUsed = 'bf.invoice.secondHand';
+    const keyPhotos = 'bf.invoice.photoRequirement';
+
+    // Default Text (Fallback)
+    const defaultNew = "In the event of a claim, we will ask you to send us the purchase invoice and proof of payment for your bike with the date mentioned above. Please keep it in a safe place.";
+    const defaultUsed = "In the event of a claim, we will ask you to send us the purchase invoice and proof of payment for your bike with the date mentioned above. Please keep it in a safe place.";
+    const defaultPhotos = "In the case of bike is over 30 days old, we will ask you to send us recent photos of your bike after the purchase of the insurance.";
+
+    // Resolve text using globalTranslations if available, otherwise default
+    const textNew = globalTranslations[keyNew] || defaultNew;
+    const textUsed = globalTranslations[keyUsed] || defaultUsed;
+    const textPhotos = globalTranslations[keyPhotos] || defaultPhotos;
+
+    $msgBox.empty().hide();
+
+    if (val === "true") {
+         // Create paragraphs for granular translation updating
+         const $pMain = $('<p>').attr('data-trans', keyNew).text(textNew);
+         $msgBox.append($pMain);
+
+         // Check date condition for "New" bikes
+         if (purchaseDateVal) {
+             const oneDay = 24 * 60 * 60 * 1000; 
+             const today = new Date();
+             const pDate = new Date(purchaseDateVal);
+             const diffDays = Math.round((today - pDate) / oneDay);
+
+             if (diffDays > 30) {
+                 const $pPhotos = $('<p>').attr('data-trans', keyPhotos)
+                                          .text(textPhotos)
+                                          .css('margin-top', '8px')
+                                          .css('font-weight', '500');
+                 $msgBox.append($pPhotos);
+             }
+         }
+         $msgBox.slideDown();
+
+    } else if (val === "false") {
+         const $pMain = $('<p>').attr('data-trans', keyUsed).text(textUsed);
+         $msgBox.append($pMain);
+         $msgBox.slideDown();
     }
 }
