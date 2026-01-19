@@ -1247,9 +1247,11 @@ function renderLegalMentions() {
         // Index is 0-based, your keys are 1-based (el1, el2)
         const i = index + 1; 
         const transKey = `bf.legalMentions.el${i}.${country}`;
+        console.log("transkey: ", transKey);
         
         // Check if we already have a translation loaded in globalTranslations, otherwise use default
         const finalText = globalTranslations[transKey] || text;
+        console.log("finalText: ", finalText);
 
         const $li = $('<li>', {
             class: 'list-item-92',
