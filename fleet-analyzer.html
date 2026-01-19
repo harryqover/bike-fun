@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleet Invoice Manager</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- PapaParse for CSV -->
+    <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom scrollbar for table */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        // --- Utility Functions ---
+
+        const parseCurrency = (val) => {
+            if (!val) return 0;
+            if (typeof val === 'number') return val;
+            return parseFloat(val.replace(/[^\d.-]/g, '')) || 0;
+        };
+
+        const parseDate = (dateStr) => {
+            if (!dateStr) return null;
+            // Handle "DD/MM/YYYY HH:mm:ss" or "DD/MM/YYYY"
+            try {
+                const parts = dateStr.split(' ')[0].split('/'); // Get just the date part
+                if (parts.length === 3) {
+                    // Month is 0-indexed in JS Date
+                    return new Date(parts[2], parts[1] - 1, parts[0]);
+                }
+            } catch (e) {
+                console.error("Date parse error", e);
+            }
+            return new Date(dateStr); // Fallback
+        };
+
+        const formatDate = (date) => {
+            if (!date || isNaN(date.getTime())) return '-';
+            return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        };
+
+        const formatCurrency = (val) => {
+            return new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' }).format(val);
+        };
+
+        // --- Components ---
+
+        const FileUpload = ({ onDataLoaded }) => {
+            const handleFileUpload = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                Papa.parse(file, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: (results) => {
+                        const cleanData = results.data.map((row, index) => ({
+                            id: index,
+                            vin: row.vin,
+                            policyNumber: row.policy_number,
+                            invoiceDate: parseDate(row.InvoiceDate),
+                            periodStart: parseDate(row.InvoicedPeriodStart),
+                            periodEnd: parseDate(row.InvoicedPeriodEnd),
+                            gip: parseCurrency(row.gip),
+                            ipt: parseCurrency(row.ipt),
+                            cip: parseCurrency(row.cip),
+                            partner: row.partner,
+                            policyholder: row.policyholder, // Added policyholder
+                            type: row.type
+                        })).filter(row => row.vin && row.cip > 0); // Basic validation
+                        onDataLoaded(cleanData);
+                    }
+                });
+            };
+
+            return (
+                <div className="flex flex-col items-center justify-center min-h-[60vh] p-8">
+                    <div className="bg-white p-10 rounded-2xl shadow-xl border border-slate-100 max-w-lg w-full text-center">
+                        <div className="bg-blue-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i data-lucide="upload-cloud" className="w-10 h-10 text-blue-600"></i>
+                        </div>
+                        <h2 className="text-2xl font-bold text-slate-800 mb-2">Upload Fleet Invoice</h2>
+                        <p className="text-slate-500 mb-8">Upload your CSV file to generate an interactive dashboard and detailed breakdown.</p>
+                        
+                        <label className="block w-full">
+                            <input type="file" accept=".csv" onChange={handleFileUpload} className="hidden" />
+                            <span className="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition duration-200">
+                                Select CSV File
+                            </span>
+                        </label>
+                        <p className="text-xs text-slate-400 mt-4">Supported format: Standard Fleet CSV with headers (vin, gip, cip, policyholder, etc.)</p>
+                    </div>
+                </div>
+            );
+        };
+
+        const MultiSelect = ({ options, selected, onChange, label = "Items" }) => {
+            const [isOpen, setIsOpen] = useState(false);
+            const containerRef = useRef(null);
+
+            useEffect(() => {
+                const handleClickOutside = (event) => {
+                    if (containerRef.current && !containerRef.current.contains(event.target)) {
+                        setIsOpen(false);
+                    }
+                };
+                document.addEventListener('mousedown', handleClickOutside);
+                return () => document.removeEventListener('mousedown', handleClickOutside);
+            }, []);
+
+            const toggleOption = (option) => {
+                const newSelected = selected.includes(option)
+                    ? selected.filter(item => item !== option)
+                    : [...selected, option];
+                onChange(newSelected);
+            };
+
+            const toggleAll = () => {
+                if (selected.length === options.length) {
+                    onChange([]);
+                } else {
+                    onChange([...options]);
+                }
+            };
+
+            const buttonText = selected.length === 0 
+                ? `Select ${label}...` 
+                : selected.length === options.length 
+                    ? `All ${label}` 
+                    : `${selected.length} ${label} Selected`;
+
+            return (
+                <div className="relative w-full md:w-64" ref={containerRef}>
+                    <button
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="w-full px-4 py-2 text-left bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition flex justify-between items-center shadow-sm"
+                    >
+                        <span className="truncate block text-slate-700 font-medium text-sm">
+                            {buttonText}
+                        </span>
+                        <i data-lucide="chevron-down" className="w-4 h-4 text-slate-400"></i>
+                    </button>
+                    
+                    {isOpen && (
+                        <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                            <div 
+                                className="px-4 py-2 hover:bg-slate-50 cursor-pointer border-b border-slate-100 text-sm font-semibold text-blue-600"
+                                onClick={toggleAll}
+                            >
+                                {selected.length === options.length ? 'Deselect All' : 'Select All'}
+                            </div>
+                            {options.map(option => (
+                                <div 
+                                    key={option} 
+                                    className="px-4 py-2 hover:bg-slate-50 cursor-pointer flex items-center gap-3"
+                                    onClick={() => toggleOption(option)}
+                                >
+                                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition ${selected.includes(option) ? 'bg-blue-600 border-blue-600' : 'border-slate-300 bg-white'}`}>
+                                        {selected.includes(option) && <i data-lucide="check" className="w-3 h-3 text-white"></i>}
+                                    </div>
+                                    <span className="text-sm text-slate-700">{option}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const StatCard = ({ title, value, subtext, icon, color }) => (
+            <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm flex items-start justify-between">
+                <div>
+                    <p className="text-sm font-medium text-slate-500 mb-1">{title}</p>
+                    <h3 className="text-2xl font-bold text-slate-900">{value}</h3>
+                    {subtext && <p className="text-xs text-slate-400 mt-1">{subtext}</p>}
+                </div>
+                <div className={`p-3 rounded-lg ${color}`}>
+                    <i data-lucide={icon} className="w-5 h-5 opacity-80"></i>
+                </div>
+            </div>
+        );
+
+        const ChartComponent = ({ type, data, options, title }) => {
+            const chartRef = useRef(null);
+            const canvasRef = useRef(null);
+
+            useEffect(() => {
+                if (canvasRef.current) {
+                    if (chartRef.current) {
+                        chartRef.current.destroy();
+                    }
+                    
+                    const ctx = canvasRef.current.getContext('2d');
+                    chartRef.current = new Chart(ctx, {
+                        type,
+                        data,
+                        options: {
+                            ...options,
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        usePointStyle: true,
+                                        boxWidth: 8,
+                                        padding: 20
+                                    }
+                                },
+                                tooltip: options.plugins?.tooltip || {}
+                            },
+                            scales: options.scales || {}
+                        }
+                    });
+                }
+                return () => {
+                    if (chartRef.current) chartRef.current.destroy();
+                };
+            }, [data, type, options]);
+
+            return (
+                <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm h-96 flex flex-col">
+                    <h4 className="text-sm font-semibold text-slate-700 mb-4">{title}</h4>
+                    <div className="flex-grow relative">
+                        <canvas ref={canvasRef}></canvas>
+                    </div>
+                </div>
+            );
+        };
+
+        const DataTable = ({ data }) => {
+            const [sortConfig, setSortConfig] = useState({ key: 'periodStart', direction: 'desc' });
+            const [currentPage, setCurrentPage] = useState(1);
+            const rowsPerPage = 10;
+
+            const sortedData = useMemo(() => {
+                let sortableItems = [...data];
+                if (sortConfig.key !== null) {
+                    sortableItems.sort((a, b) => {
+                        let aVal = a[sortConfig.key];
+                        let bVal = b[sortConfig.key];
+                        
+                        if (aVal < bVal) return sortConfig.direction === 'ascending' ? -1 : 1;
+                        if (aVal > bVal) return sortConfig.direction === 'ascending' ? 1 : -1;
+                        return 0;
+                    });
+                }
+                return sortableItems;
+            }, [data, sortConfig]);
+
+            const pageCount = Math.ceil(sortedData.length / rowsPerPage);
+            const currentData = sortedData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+
+            const requestSort = (key) => {
+                let direction = 'ascending';
+                if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+                    direction = 'descending';
+                }
+                setSortConfig({ key, direction });
+            };
+
+            const getSortIcon = (name) => {
+                if (sortConfig.key !== name) return <i data-lucide="chevrons-up-down" className="w-4 h-4 inline ml-1 opacity-30"></i>;
+                return sortConfig.direction === 'ascending' 
+                    ? <i data-lucide="chevron-up" className="w-4 h-4 inline ml-1 text-blue-600"></i>
+                    : <i data-lucide="chevron-down" className="w-4 h-4 inline ml-1 text-blue-600"></i>;
+            };
+
+            return (
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm text-left">
+                            <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
+                                <tr>
+                                    <th onClick={() => requestSort('policyholder')} className="px-6 py-4 cursor-pointer hover:bg-slate-100 transition">Policyholder {getSortIcon('policyholder')}</th>
+                                    <th onClick={() => requestSort('vin')} className="px-6 py-4 cursor-pointer hover:bg-slate-100 transition">VIN {getSortIcon('vin')}</th>
+                                    <th onClick={() => requestSort('policyNumber')} className="px-6 py-4 cursor-pointer hover:bg-slate-100 transition">Policy {getSortIcon('policyNumber')}</th>
+                                    <th onClick={() => requestSort('periodStart')} className="px-6 py-4 cursor-pointer hover:bg-slate-100 transition">Period Start {getSortIcon('periodStart')}</th>
+                                    <th onClick={() => requestSort('periodEnd')} className="px-6 py-4 cursor-pointer hover:bg-slate-100 transition">Period End {getSortIcon('periodEnd')}</th>
+                                    <th onClick={() => requestSort('gip')} className="px-6 py-4 text-right cursor-pointer hover:bg-slate-100 transition">Net (GIP) {getSortIcon('gip')}</th>
+                                    <th onClick={() => requestSort('ipt')} className="px-6 py-4 text-right cursor-pointer hover:bg-slate-100 transition">Tax (IPT) {getSortIcon('ipt')}</th>
+                                    <th onClick={() => requestSort('cip')} className="px-6 py-4 text-right cursor-pointer hover:bg-slate-100 transition">Total (CIP) {getSortIcon('cip')}</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {currentData.map((row) => (
+                                    <tr key={row.id} className="hover:bg-slate-50 transition">
+                                        <td className="px-6 py-4 text-slate-600">{row.policyholder}</td>
+                                        <td className="px-6 py-4 font-medium text-slate-700">{row.vin}</td>
+                                        <td className="px-6 py-4 text-slate-600">{row.policyNumber}</td>
+                                        <td className="px-6 py-4 text-slate-600">{formatDate(row.periodStart)}</td>
+                                        <td className="px-6 py-4 text-slate-600">{formatDate(row.periodEnd)}</td>
+                                        <td className="px-6 py-4 text-right font-mono text-slate-600">{formatCurrency(row.gip)}</td>
+                                        <td className="px-6 py-4 text-right font-mono text-slate-600">{formatCurrency(row.ipt)}</td>
+                                        <td className="px-6 py-4 text-right font-mono font-bold text-slate-800">{formatCurrency(row.cip)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    {/* Pagination */}
+                    <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
+                        <span className="text-slate-500 text-sm">
+                            Showing {((currentPage - 1) * rowsPerPage) + 1} to {Math.min(currentPage * rowsPerPage, sortedData.length)} of {sortedData.length} entries
+                        </span>
+                        <div className="flex gap-2">
+                            <button 
+                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                className="px-3 py-1 border border-slate-200 rounded hover:bg-slate-50 disabled:opacity-50 text-sm"
+                            >
+                                Previous
+                            </button>
+                            <button 
+                                onClick={() => setCurrentPage(p => Math.min(pageCount, p + 1))}
+                                disabled={currentPage === pageCount}
+                                className="px-3 py-1 border border-slate-200 rounded hover:bg-slate-50 disabled:opacity-50 text-sm"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const Dashboard = ({ data, onReset }) => {
+            const [filterSearch, setFilterSearch] = useState('');
+            const [filterMonths, setFilterMonths] = useState([]);
+            const [filterPolicyholders, setFilterPolicyholders] = useState([]);
+
+            // --- Aggregations & Logic ---
+
+            // Get unique months for filter dropdown
+            const availableMonths = useMemo(() => {
+                const monthsMap = new Map();
+                data.forEach(d => {
+                    if (d.periodStart) {
+                        const label = d.periodStart.toLocaleString('default', { month: 'long', year: 'numeric' });
+                        if (!monthsMap.has(label)) {
+                            monthsMap.set(label, d.periodStart);
+                        }
+                    }
+                });
+                // Sort chronologically (Oldest to Newest) using the stored date object
+                return Array.from(monthsMap.keys()).sort((a, b) => monthsMap.get(a) - monthsMap.get(b));
+            }, [data]);
+
+            // Get unique policyholders (was partners)
+            const availablePolicyholders = useMemo(() => {
+                const holders = new Set();
+                data.forEach(d => {
+                    if (d.policyholder) {
+                        holders.add(d.policyholder);
+                    }
+                });
+                return Array.from(holders).sort();
+            }, [data]);
+
+            // Initialize filters with all options on load
+            useEffect(() => {
+                if (availableMonths.length > 0 && filterMonths.length === 0) {
+                    setFilterMonths(availableMonths);
+                }
+                if (availablePolicyholders.length > 0 && filterPolicyholders.length === 0) {
+                    setFilterPolicyholders(availablePolicyholders);
+                }
+            }, [availableMonths, availablePolicyholders]);
+
+            // Filter logic
+            const filteredData = useMemo(() => {
+                return data.filter(item => {
+                    const matchesSearch = 
+                        item.vin.toLowerCase().includes(filterSearch.toLowerCase()) || 
+                        item.policyNumber.toLowerCase().includes(filterSearch.toLowerCase());
+                    
+                    // Check if month is in selected list
+                    const itemMonth = item.periodStart ? 
+                        item.periodStart.toLocaleString('default', { month: 'long', year: 'numeric' }) : '';
+                    const matchesMonth = filterMonths.includes(itemMonth);
+
+                    // Check Policyholder (was Partner)
+                    const matchesPolicyholder = filterPolicyholders.includes(item.policyholder);
+
+                    return matchesSearch && matchesMonth && matchesPolicyholder;
+                });
+            }, [data, filterSearch, filterMonths, filterPolicyholders]);
+
+            // Calculate Stats
+            const stats = useMemo(() => {
+                const totalSpend = filteredData.reduce((acc, curr) => acc + curr.cip, 0);
+                const totalTax = filteredData.reduce((acc, curr) => acc + curr.ipt, 0);
+                const uniqueVehicles = new Set(filteredData.map(d => d.vin)).size;
+                const avgPerVehicle = uniqueVehicles ? totalSpend / uniqueVehicles : 0;
+                
+                return { totalSpend, totalTax, uniqueVehicles, avgPerVehicle };
+            }, [filteredData]);
+
+            // Chart Data: Monthly Spend & Vehicle Count
+            const monthlyChartData = useMemo(() => {
+                const grouped = {};
+                const now = new Date();
+
+                filteredData.forEach(d => {
+                    if(!d.periodStart) return;
+                    const key = d.periodStart.toLocaleString('default', { month: 'short', year: '2-digit' });
+                    
+                    if (!grouped[key]) {
+                        grouped[key] = { 
+                            cip: 0, 
+                            vins: new Set(),
+                            date: d.periodStart 
+                        };
+                    }
+                    grouped[key].cip += d.cip;
+                    grouped[key].vins.add(d.vin);
+                });
+                
+                // Sort by actual date
+                const sortedKeys = Object.keys(grouped).sort((a, b) => grouped[a].date - grouped[b].date);
+
+                const labels = sortedKeys;
+                const costData = sortedKeys.map(k => grouped[k].cip);
+                const countData = sortedKeys.map(k => grouped[k].vins.size);
+
+                // Future Coloring
+                const backgroundColors = sortedKeys.map(k => {
+                    const date = grouped[k].date;
+                    // Start of month is in future relative to now?
+                    const isFuture = date > now; 
+                    return isFuture ? '#94a3b8' : '#3b82f6'; // Slate-400 (Future) vs Blue-500
+                });
+
+                return {
+                    labels,
+                    datasets: [
+                        {
+                            type: 'bar',
+                            label: 'Total Invoiced (CIP)',
+                            data: costData,
+                            backgroundColor: backgroundColors,
+                            borderRadius: 4,
+                            order: 2,
+                            yAxisID: 'y'
+                        },
+                        {
+                            type: 'line',
+                            label: 'Vehicles',
+                            data: countData,
+                            borderColor: '#10b981', // Emerald 500
+                            backgroundColor: '#10b981',
+                            borderWidth: 2,
+                            pointRadius: 4,
+                            tension: 0.1,
+                            order: 1,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                };
+            }, [filteredData]);
+
+            // Chart Data: Cost Breakdown
+            const breakdownChartData = useMemo(() => {
+                const totalGip = filteredData.reduce((acc, curr) => acc + curr.gip, 0);
+                const totalTax = filteredData.reduce((acc, curr) => acc + curr.ipt, 0);
+                
+                return {
+                    labels: ['Net Premium (GIP)', 'Taxes (IPT)'],
+                    datasets: [{
+                        data: [totalGip, totalTax],
+                        backgroundColor: ['#64748b', '#ef4444'],
+                        borderWidth: 0
+                    }]
+                };
+            }, [filteredData]);
+
+
+            return (
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
+                    {/* Header */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                        <div>
+                            <h1 className="text-2xl font-bold text-slate-900">Fleet Invoice Dashboard</h1>
+                            <p className="text-slate-500">Overview of vehicle costs and premiums</p>
+                        </div>
+                        <div className="flex gap-2">
+                             <button 
+                                onClick={onReset}
+                                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition"
+                            >
+                                <i data-lucide="upload" className="w-4 h-4"></i> Upload New
+                            </button>
+                            <button 
+                                onClick={() => window.print()}
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-sm"
+                            >
+                                <i data-lucide="printer" className="w-4 h-4"></i> Print Report
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <StatCard 
+                            title="Total Invoiced" 
+                            value={formatCurrency(stats.totalSpend)} 
+                            subtext="Gross amount (CIP)"
+                            icon="credit-card" 
+                            color="bg-blue-100 text-blue-600"
+                        />
+                        <StatCard 
+                            title="Total Tax" 
+                            value={formatCurrency(stats.totalTax)} 
+                            subtext="IPT Contribution"
+                            icon="percent" 
+                            color="bg-red-100 text-red-600"
+                        />
+                        <StatCard 
+                            title="Active Vehicles" 
+                            value={stats.uniqueVehicles} 
+                            subtext="Unique VINs in period"
+                            icon="truck" 
+                            color="bg-emerald-100 text-emerald-600"
+                        />
+                        <StatCard 
+                            title="Avg Cost / Vehicle" 
+                            value={formatCurrency(stats.avgPerVehicle)} 
+                            subtext="Based on selection"
+                            icon="bar-chart-3" 
+                            color="bg-amber-100 text-amber-600"
+                        />
+                    </div>
+
+                    {/* Filters */}
+                    <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-col md:flex-row gap-4 items-center z-10 relative">
+                        <div className="flex-1 w-full relative">
+                            <i data-lucide="search" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                            <input 
+                                type="text" 
+                                placeholder="Search by VIN or Policy Number..." 
+                                className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                                value={filterSearch}
+                                onChange={(e) => setFilterSearch(e.target.value)}
+                            />
+                        </div>
+                        <div className="w-full md:w-auto flex flex-col md:flex-row gap-4">
+                            <MultiSelect 
+                                label="Policyholder"
+                                options={availablePolicyholders}
+                                selected={filterPolicyholders}
+                                onChange={setFilterPolicyholders}
+                            />
+                            <MultiSelect 
+                                label="Periods"
+                                options={availableMonths}
+                                selected={filterMonths}
+                                onChange={setFilterMonths}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Charts Section */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                        <div className="lg:col-span-2">
+                            <ChartComponent 
+                                type="bar" 
+                                title="Monthly Overview (Cost & Volume)" 
+                                data={monthlyChartData} 
+                                options={{
+                                    scales: {
+                                        y: { 
+                                            beginAtZero: true, 
+                                            type: 'linear',
+                                            position: 'left',
+                                            grid: { borderDash: [2, 4], color: '#f1f5f9' },
+                                            title: { display: true, text: 'Amount (€)' }
+                                        },
+                                        y1: {
+                                            beginAtZero: true,
+                                            type: 'linear',
+                                            position: 'right',
+                                            grid: { display: false },
+                                            title: { display: true, text: 'Vehicles' }
+                                        },
+                                        x: { grid: { display: false } }
+                                    },
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function(context) {
+                                                    let label = context.dataset.label || '';
+                                                    if (label) {
+                                                        label += ': ';
+                                                    }
+                                                    if (context.dataset.yAxisID === 'y') {
+                                                        label += formatCurrency(context.raw);
+                                                    } else {
+                                                        label += context.raw;
+                                                    }
+                                                    return label;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <ChartComponent 
+                                type="doughnut" 
+                                title="Cost Breakdown" 
+                                data={breakdownChartData} 
+                                options={{ cutout: '70%' }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Data Table */}
+                    <div>
+                        <h3 className="text-lg font-bold text-slate-800 mb-4">Invoice Details</h3>
+                        <DataTable data={filteredData} />
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [data, setData] = useState(null);
+
+            useEffect(() => {
+                // Initialize icons
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }); // Run on every render to catch new icons
+
+            return (
+                <div className="min-h-screen">
+                    <nav className="bg-white border-b border-slate-200 px-6 py-4">
+                        <div className="max-w-7xl mx-auto flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="bg-blue-600 text-white p-1.5 rounded-lg">
+                                    <i data-lucide="file-bar-chart-2" className="w-5 h-5"></i>
+                                </div>
+                                <span className="font-bold text-lg text-slate-800 tracking-tight">FleetAnalyzer</span>
+                            </div>
+                            <div className="text-sm text-slate-500">
+                                v1.3
+                            </div>
+                        </div>
+                    </nav>
+
+                    {!data ? (
+                        <FileUpload onDataLoaded={setData} />
+                    ) : (
+                        <Dashboard data={data} onReset={() => setData(null)} />
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
