@@ -159,11 +159,17 @@ function initListeners() {
             $('#companyFields').slideUp();
             $('input[name="companyName"]').prop('required', false);
         }
+        checkFormCompletion();
     });
 
     // Close modal
     $(".close").click(function () {
         $("#errorModal").hide();
+    });
+
+    // Validations triggers for Button State
+    $('#bikeQuoteForm input, #bikeQuoteForm select, #bikeQuoteForm textarea').on('input change blur', function() {
+        checkFormCompletion();
     });
 
     // Real-time Zip Validation
@@ -180,12 +186,43 @@ function initListeners() {
                 $(this).removeClass("input-error");
             }
         }
+        checkFormCompletion();
     });
     
     // Clear error when user starts typing again
     $("#zipInput").on("input", function() {
         $(this).removeClass("input-error");
         $("#topBarMessage").empty();
+    });
+
+    $('input[name="bikePurchaseDate"]').on('change blur', function() {
+        const val = $(this).val();
+        const $input = $(this);
+        const $errorMsg = $input.next('.field-error-msg');
+
+        if (val) {
+            const inputDate = new Date(val);
+            const today = new Date();
+            // Calculate date 8 years ago
+            const limitDate = new Date(today.getFullYear() - 8, today.getMonth(), today.getDate());
+
+            if (inputDate < limitDate) {
+                // Too old
+                $input.addClass("input-error");
+                if ($errorMsg.length === 0) {
+                    $input.after('<span class="field-error-msg">Bike is too old (max 8 years).</span>');
+                }
+            } else {
+                // OK
+                $input.removeClass("input-error");
+                $errorMsg.remove();
+            }
+        } else {
+             // Clear if empty (let required handle it)
+             $input.removeClass("input-error");
+             $errorMsg.remove();
+        }
+        checkFormCompletion();
     });
 
     // --- PHONE FORMATTING START ---
@@ -286,6 +323,7 @@ function initListeners() {
                 // If they are just typing "+", let it be
                 e.target.value = cleanVal;
             }
+            checkFormCompletion();
         });
     }
     // --- PHONE FORMATTING END ---
@@ -601,6 +639,7 @@ window.selectPackage = function (type) {
     $('html, body').animate({
         scrollTop: $("#detailsSection").offset().top - 20
     }, 500);
+    checkFormCompletion();
 };
 
 // Helper to update sidebar summary
@@ -1047,7 +1086,7 @@ function fetchQuoteAndPrefill(quoteId) {
 
                         selectPackage(shortName);
                     }
-
+                    checkFormCompletion();
                     $("#loadingOverlay").fadeOut(300);
                 }, 500);
 
@@ -1062,4 +1101,31 @@ function fetchQuoteAndPrefill(quoteId) {
             $("#loadingOverlay").hide();
         }
     });
+}
+
+function checkFormCompletion() {
+    const form = document.getElementById("bikeQuoteForm");
+    const submitBtn = $("#submitButton");
+    
+    // 1. Standard HTML5 Validity (Checks 'required', 'type=email', etc.)
+    const isHtmlValid = form.checkValidity();
+
+    // 2. Custom Validations
+    const packageSelected = $("#selectedPackage").val() !== "";
+    const hasZipError = $("#zipInput").hasClass("input-error");
+    const hasBikeAgeError = $('input[name="bikePurchaseDate"]').hasClass("input-error");
+    
+    // 3. Terms Checkboxes (Manual check in case checkValidity misses custom ones)
+    // Note: 'form.checkValidity()' usually covers 'required' checkboxes, but we double check
+    let allTermsChecked = true;
+    $('#legalContainer input[type="checkbox"]').each(function() {
+         if(!$(this).is(':checked')) allTermsChecked = false;
+    });
+
+    // 4. Combine Logic
+    if (isHtmlValid && packageSelected && !hasZipError && !hasBikeAgeError && allTermsChecked) {
+        submitBtn.prop("disabled", false).removeClass("disabled-state");
+    } else {
+        submitBtn.prop("disabled", true).addClass("disabled-state");
+    }
 }
