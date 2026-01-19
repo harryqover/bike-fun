@@ -1,5 +1,5 @@
 console.log("Bike Flow v5.0 - GAFAM Style - 20251209");
-console.log("UPDATE 20260116 F update terms checkboxes");
+console.log("UPDATE 20260119 a");
 
 // Configuration
 const partnerId = "5e78aea105bffd763b2b0a48";
@@ -78,6 +78,13 @@ $(document).ready(function () {
 
 function initUrlParams() {
     const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.has('id')) {
+        const idFromUrl = urlParams.get('id');
+        console.log(`Found ID in URL: ${idFromUrl}. Fetching quote...`);
+        fetchQuoteAndPrefill(idFromUrl);
+        return; // Stop standard param loading if ID is present to avoid conflicts
+    }
 
     // Bike Type
     if (urlParams.has('bikeType')) {
@@ -486,6 +493,8 @@ function fetchAllPrices(bikeType, bikeValue, antiTheft, zip, deductibles) {
                     // Store full response for documents
                     currentQuoteResponse = response.payload;
 
+                    console.log("Calculated Quote ID:", response.payload.id);
+
                     const packages = response.payload.packages;
 
                     // Extract prices for each variant
@@ -773,6 +782,7 @@ function submitFinalQuote() {
         success: function (response) {
             if (response.status === "success" && response.payload) {
                 // Check for success with payment link
+                console.log("Final Quote ID:", response.payload.id);
                 if (response.payload.payment) {
                     // Redirect logic
                     const sandboxAppIds = {
@@ -936,4 +946,95 @@ function renderLegalCheckboxes() {
     
     // 4. Important: Re-run translation since we just added new elements
     translateAll(locale);
+}
+
+function fetchQuoteAndPrefill(quoteId) {
+    // Show loader
+    $("#loadingOverlay").css("display", "flex");
+    $("#loaderMessage").text("Retrieving your quote...");
+
+    $.ajax({
+        url: scriptUrl,
+        method: "POST",
+        dataType: "json",
+        data: JSON.stringify({
+            action: "getQuote",
+            payload: {
+                id: quoteId
+            }
+        }),
+        success: function(response) {
+            if (response.status === "success" && response.payload) {
+                const data = response.payload;
+
+                // 1. Log the ID as requested
+                console.log("Retrieved Quote ID:", data.id);
+
+                // 2. Prefill Top Bar Inputs (Subject)
+                if (data.subject) {
+                    if (data.subject.bikeType) $("#bikeTypeInput").val(data.subject.bikeType);
+                    if (data.subject.bikeValue) $("#bikeValueInput").val(data.subject.bikeValue);
+                    if (data.subject.antiTheftMeasure) $("#antiTheftInput").val(data.subject.antiTheftMeasure);
+                }
+
+                // 3. Prefill Policyholder / Address
+                if (data.policyholder) {
+                    // Entity Type
+                    if (data.policyholder.entityType === 'ENTITY_TYPE_COMPANY') {
+                        $('input[name="isCompany"][value="yes"]').prop('checked', true).trigger('change');
+                        $('input[name="companyName"]').val(data.policyholder.companyName || "");
+                        $('input[name="companyVat"]').val(data.policyholder.vatIn || "");
+                    } else {
+                        $('input[name="isCompany"][value="no"]').prop('checked', true).trigger('change');
+                    }
+
+                    $('input[name="firstName"]').val(data.policyholder.firstName || "");
+                    $('input[name="lastName"]').val(data.policyholder.lastName || "");
+                    $('input[name="email"]').val(data.policyholder.email || "");
+                    $('input[name="phone"]').val(data.policyholder.phone || "");
+                    $('input[name="birthdate"]').val(data.policyholder.birthdate || "");
+
+                    if (data.policyholder.address) {
+                        $('input[name="street"]').val(data.policyholder.address.street || "");
+                        $('input[name="city"]').val(data.policyholder.address.city || "");
+                        // Also set the zip in the top bar
+                        if (data.policyholder.address.zip) {
+                            $("#zipInput").val(data.policyholder.address.zip);
+                        }
+                    }
+                }
+
+                // 4. Prefill specific FR field
+                if (country === "FR" && data.subject && data.subject.birthPlace) {
+                    $('input[name="birthPlace"]').val(data.subject.birthPlace);
+                }
+
+                // 5. Calculate Prices based on the filled data
+                // We use a timeout to ensure inputs are DOM-updated before calculation reads them
+                setTimeout(async () => {
+                    await calculatePrices(); // Use await since we made calculatePrices async
+
+                    // 6. Select the package based on response
+                    if (data.package && data.package.name) {
+                        let shortName = 'comprehensive'; // default
+                        if (data.package.name === "VARIANT_THEFT_ASSISTANCE") shortName = 'theft';
+                        if (data.package.name === "VARIANT_DAMAGE_ASSISTANCE") shortName = 'damage';
+
+                        selectPackage(shortName);
+                    }
+
+                    $("#loadingOverlay").fadeOut(300);
+                }, 500);
+
+            } else {
+                console.error("Failed to get quote", response);
+                $("#loadingOverlay").hide();
+                alert("Could not retrieve quote.");
+            }
+        },
+        error: function(err) {
+            console.error("API Error", err);
+            $("#loadingOverlay").hide();
+        }
+    });
 }
