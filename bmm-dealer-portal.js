@@ -27,1024 +27,4139 @@ console.log("domain ", domain);
 // VEHICLE MODEL DATA
 const modelData = [
   {
-      "make": "BMW",
-      "model": "I5",
-      "modelExt": "I5 M60 4DR 2025MY"
+    "make": "MINI",
+    "model": "ACEMAN",
+    "modelExt": "ACEMAN SPORT SE 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I5",
-      "modelExt": "I5 EDRIVE40 M SPORT 4DR 2025MY"
+    "make": "MINI",
+    "model": "ACEMAN",
+    "modelExt": "ACEMAN SPORT E 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I5",
-      "modelExt": "I5 EDRIVE40 M SPORT PRO 4DR 2025MY"
+    "make": "MINI",
+    "model": "ACEMAN",
+    "modelExt": "ACEMAN EXCLUSIVE SE 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I5",
-      "modelExt": "I5 EDRIVE40 SPORT EDITION 4DR 2025MY"
+    "make": "MINI",
+    "model": "ACEMAN",
+    "modelExt": "ACEMAN EXCLUSIVE E 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I5",
-      "modelExt": "I5 EDRIVE40 SPORT EDITION 5DR 2025MY"
+    "make": "MINI",
+    "model": "ACEMAN",
+    "modelExt": "ACEMAN CLASSIC SE 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I5",
-      "modelExt": "I5 EDRIVE40 M SPORT PRO 5DR 2025MY"
+    "make": "MINI",
+    "model": "ACEMAN",
+    "modelExt": "ACEMAN CLASSIC E 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I5",
-      "modelExt": "I5 EDRIVE40 M SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "ACEMAN",
+    "modelExt": "ACEMAN JCW 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "I5",
-      "modelExt": "I5 M60 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER CLASSIC S AUTO 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I7",
-      "modelExt": "I7 XDRIVE60 M SPORT 4DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER CLASSIC C AUTO 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I7",
-      "modelExt": "I7 XDRIVE60 EXCELLENCE 4DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER CLASSIC C AUTO 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I7",
-      "modelExt": "I7 EDRIVE50 EXCELLENCE 4DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER CLASSIC S AUTO 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I7",
-      "modelExt": "I7 EDRIVE50 M SPORT 4DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER SPORT S AUTO 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I7",
-      "modelExt": "I7 M70 XDRIVE 4DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER SPORT S AUTO 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I4",
-      "modelExt": "I4 EDRIVE40 SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER SPORT C AUTO 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I4",
-      "modelExt": "I4 EDRIVE40 M SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER EXCLUSIVE S AUTO 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I4",
-      "modelExt": "I4 M50 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER EXCLUSIVE C AUTO 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I4",
-      "modelExt": "I4 EDRIVE35 M SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER EXCLUSIVE C AUTO 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "I4",
-      "modelExt": "I4 EDRIVE35 SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER EXCLUSIVE S AUTO 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "IX",
-      "modelExt": "IX XDRIVE50 M SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER SPORT C AUTO 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "IX",
-      "modelExt": "IX XDRIVE40 M SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER CLASSIC E 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "IX",
-      "modelExt": "IX XDRIVE40 SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER CLASSIC SE 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "IX",
-      "modelExt": "IX M60 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER SPORT SE 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "IX1",
-      "modelExt": "IX1 XDRIVE30 XLINE 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER SPORT E 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "IX1",
-      "modelExt": "IX1 XDRIVE30 M SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER EXCLUSIVE E 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "IX1",
-      "modelExt": "IX1 EDRIVE20 SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER EXCLUSIVE SE 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "IX1",
-      "modelExt": "IX1 EDRIVE20 XLINE 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER SPORT S AUTO 2DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "IX1",
-      "modelExt": "IX1 EDRIVE20 M SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER SPORT AUTO 2DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "IX2",
-      "modelExt": "IX2 XDRIVE30 M SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER EXCLUSIVE AUTO 2DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "IX2",
-      "modelExt": "IX2 EDRIVE20 M SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER EXCLUSIVE S AUTO 2DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "IX3",
-      "modelExt": "IX3 80 KWH M SPORT PRO 5DR 2024MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER CLASSIC AUTO 2DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "IX3",
-      "modelExt": "IX3 80 KWH M SPORT 5DR 2024MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER CLASSIC S AUTO 2DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "1 SERIES",
-      "modelExt": "118I SPORT DCT (h-back)"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER JCW 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "1 SERIES",
-      "modelExt": "118I SPORT (h-back)"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER JCW AUTO 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "1 SERIES",
-      "modelExt": "1 SERIES M135 XDRIVE 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER JCW AUTO 2DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "1 SERIES",
-      "modelExt": "1 SERIES 120 SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COUNTRYMAN",
+    "modelExt": "COUNTRYMAN JOHN COOPER WORKS 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "1 SERIES",
-      "modelExt": "1 SERIES 120 M SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COUNTRYMAN",
+    "modelExt": "COUNTRYMAN COOPER CLASSIC C 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "1 SERIES",
-      "modelExt": "1 SERIES 123 M SPORT XDRIVE 5DR 2025MY"
+    "make": "MINI",
+    "model": "COUNTRYMAN",
+    "modelExt": "COUNTRYMAN COOPER SPORT C 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES",
-      "modelExt": "218I M SPORT (saloon)"
+    "make": "MINI",
+    "model": "COUNTRYMAN",
+    "modelExt": "COUNTRYMAN COOPER EXCLUSIVE C 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES",
-      "modelExt": "2 SERIES M235 XDRIVE 4DR 2025MY"
+    "make": "MINI",
+    "model": "COUNTRYMAN",
+    "modelExt": "COUNTRYMAN COOPER CLASSIC S 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES",
-      "modelExt": "218I M SPORT DCT (saloon)"
+    "make": "MINI",
+    "model": "COUNTRYMAN",
+    "modelExt": "COUNTRYMAN COOPER CLASSIC E 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES",
-      "modelExt": "220I M SPORT DCT (saloon)"
+    "make": "MINI",
+    "model": "COUNTRYMAN",
+    "modelExt": "COUNTRYMAN COOPER CLASSIC SE 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES",
-      "modelExt": "2 SERIES 220I M SPORT 2DR 2025MY"
+    "make": "MINI",
+    "model": "COUNTRYMAN",
+    "modelExt": "COUNTRYMAN COOPER EXCLUSIVE S 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES",
-      "modelExt": "2 SERIES M240I XDRIVE 2DR 2025MY"
+    "make": "MINI",
+    "model": "COUNTRYMAN",
+    "modelExt": "COUNTRYMAN COOPER EXCLUSIVE E 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES",
-      "modelExt": "2 SERIES 230I M SPORT 2DR 2025MY"
+    "make": "MINI",
+    "model": "COUNTRYMAN",
+    "modelExt": "COUNTRYMAN COOPER EXCLUSIVE SE 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES",
-      "modelExt": "2 SERIES M2 COUPE 2DR 2025MY"
+    "make": "MINI",
+    "model": "COUNTRYMAN",
+    "modelExt": "COUNTRYMAN COOPER SPORT S 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES",
-      "modelExt": "2 SERIES M2 COUPE AUTO 2DR 2025MY"
+    "make": "MINI",
+    "model": "COUNTRYMAN",
+    "modelExt": "COUNTRYMAN COOPER SPORT E 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES",
-      "modelExt": "2 SERIES 220 M SPORT 4DR 2025MY"
+    "make": "MINI",
+    "model": "COUNTRYMAN",
+    "modelExt": "COUNTRYMAN COOPER SPORT SE 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES ACTIVE TOURER",
-      "modelExt": "2 SERIES ACTIVE TOURER 220I SPORT AUTO 5DR 2025MY"
+    "make": "MINI",
+    "model": "ACEMAN",
+    "modelExt": "ACEMAN JOHN COOPER WORKS SPORT 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES ACTIVE TOURER",
-      "modelExt": "2 SERIES ACTIVE TOURER 220I M SPORT AUTO 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER C CLASSIC 2DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES ACTIVE TOURER",
-      "modelExt": "2 SERIES ACTIVE TOURER 220I LUXURY AUTO 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER C EXCLUSIVE 2DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES ACTIVE TOURER",
-      "modelExt": "2 SERIES ACTIVE TOURER 223I SPORT AUTO 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER C SPORT 2DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES ACTIVE TOURER",
-      "modelExt": "2 SERIES ACTIVE TOURER 223I M SPORT AUTO 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER S CLASSIC 2DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES ACTIVE TOURER",
-      "modelExt": "2 SERIES ACTIVE TOURER 223I LUXURY AUTO 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER S EXCLUSIVE 2DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES ACTIVE TOURER",
-      "modelExt": "2 SERIES ACTIVE TOURER 225E XDRIVE SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER S SPORT 2DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES ACTIVE TOURER",
-      "modelExt": "2 SERIES ACTIVE TOURER 230E XDRIVE M SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER WORKS E SPORT 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES ACTIVE TOURER",
-      "modelExt": "2 SERIES ACTIVE TOURER 225E XDRIVE M SPORT 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER WORKS SPORT 2DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES ACTIVE TOURER",
-      "modelExt": "2 SERIES ACTIVE TOURER 230E XDRIVE LUXURY 5DR 2025MY"
+    "make": "MINI",
+    "model": "COOPER",
+    "modelExt": "COOPER WORKS SPORT 3DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "2 SERIES ACTIVE TOURER",
-      "modelExt": "2 SERIES ACTIVE TOURER 225E XDRIVE LUXURY 5DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 120 M SPORT 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "3 SERIES",
-      "modelExt": "3 SERIES 320I M SPORT 4DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 120 SPORT 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "3 SERIES",
-      "modelExt": "3 SERIES 330E SPORT 4DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 123 M SPORT XDRIVE 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "3 SERIES",
-      "modelExt": "3 SERIES 330E M SPORT 4DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES M135 XDRIVE 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "3 SERIES",
-      "modelExt": "3 SERIES M340I 4DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "118I SPORT (h-back)"
   },
   {
-      "make": "BMW",
-      "model": "3 SERIES",
-      "modelExt": "3 SERIES 320I M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "118I SPORT DCT (h-back)"
   },
   {
-      "make": "BMW",
-      "model": "3 SERIES",
-      "modelExt": "3 SERIES M340I 5DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 116D M SPORT 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "3 SERIES",
-      "modelExt": "3 SERIES 330E SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 116D M SPORT AUTO 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "3 SERIES",
-      "modelExt": "3 SERIES 330E M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 116D SE 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "3 SERIES",
-      "modelExt": "3 SERIES M3 COMPETITION M XDRIVE 4DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 116D SE AUTO 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "3 SERIES",
-      "modelExt": "3 SERIES 320I SPORT 4DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 116D SPORT 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "3 SERIES",
-      "modelExt": "3 SERIES 320I SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 116D SPORT AUTO 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "3 SERIES",
-      "modelExt": "3 SERIES M3 COMPETITION M XDRIVE TOURING 5DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 118D M SPORT 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "4 SERIES",
-      "modelExt": "4 SERIES 420I M SPORT AUTO 2DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 118D M SPORT AUTO 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "4 SERIES",
-      "modelExt": "4 SERIES 420I M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 118D SE 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "4 SERIES",
-      "modelExt": "4 SERIES M440I XDRIVE (MHT) AUTO 2DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 118D SE AUTO 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "4 SERIES",
-      "modelExt": "4 SERIES 420I M SPORT AUTO 2DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 118D SPORT 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "4 SERIES",
-      "modelExt": "4 SERIES M440I XDRIVE (MHT) AUTO 2DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 118D SPORT AUTO 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "4 SERIES",
-      "modelExt": "4 SERIES M4 COMPETITION M XDRIVE COUPE AUTO 2DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 118I M SPORT 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "4 SERIES",
-      "modelExt": "4 SERIES M4 COMPETITION M XDRIVE CONVERTIBLE AUTO 2DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 118I M SPORT AUTO 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "4 SERIES",
-      "modelExt": "4 SERIES M440I XDRIVE (MHT) 5DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 118I SE 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "4 SERIES",
-      "modelExt": "4 SERIES 420I M SPORT AUTO (25%VRT) 2DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 118I SE AUTO 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "5 SERIES",
-      "modelExt": "5 SERIES 530E M SPORT 4DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 118I SPORT 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "5 SERIES",
-      "modelExt": "5 SERIES 520I M SPORT 4DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 118I SPORT AUTO 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "5 SERIES",
-      "modelExt": "5 SERIES 550E XDRIVE M SPORT 4DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 120 M SPORT AUTO 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "5 SERIES",
-      "modelExt": "5 SERIES 530E M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 120 SPORT AUTO 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "5 SERIES",
-      "modelExt": "5 SERIES 520I M SPORT PRO 4DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 120D M SPORT AUTO 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "5 SERIES",
-      "modelExt": "5 SERIES 550E XDRIVE M SPORT PRO 4DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 120D SPORT AUTO 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "5 SERIES",
-      "modelExt": "5 SERIES 530E M SPORT PRO 4DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 120D XDRIVE M SPORT AUTO 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "5 SERIES",
-      "modelExt": "520I MHEV M SPORT PRO 20% AUTO (saloon)"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 120D XDRIVE SPORT AUTO 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "5 SERIES",
-      "modelExt": "5 SERIES 530E M SPORT PRO 5DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 123 XDRIVE M SPORT AUTO 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "5 SERIES",
-      "modelExt": "5 SERIES M5 4DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES 128TI AUTO 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "5 SERIES",
-      "modelExt": "5 SERIES M5 TOURING 5DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES M135 XDRIVE AUTO 5DR 2024MY"
   },
   {
-      "make": "BMW",
-      "model": "5 SERIES",
-      "modelExt": "5 SERIES 550E XDRIVE M SPORT PRO 5DR 2025MY"
+    "make": "BMW",
+    "model": "1 SERIES",
+    "modelExt": "1 SERIES M135I XDRIVE AUTO 5DR 2019MY"
   },
   {
-      "make": "BMW",
-      "model": "5 SERIES",
-      "modelExt": "5 SERIES 520I M SPORT PRO 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES 220 M SPORT 4DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "5 SERIES",
-      "modelExt": "5 SERIES 550E XDRIVE M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES 220I M SPORT 2DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "5 SERIES",
-      "modelExt": "5 SERIES 520I M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES 230I M SPORT 2DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "7 SERIES",
-      "modelExt": "7 SERIES 750E XDRIVE M SPORT 4DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES M2 COUPE 2DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "7 SERIES",
-      "modelExt": "7 SERIES M760E XDRIVE 4DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES M2 COUPE AUTO 2DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "7 SERIES",
-      "modelExt": "7 SERIES 750E XDRIVE EXCELLENCE 4DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES M235 XDRIVE 4DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "8 SERIES",
-      "modelExt": "8 SERIES M850I XDRIVE COUPE 2DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES M240I XDRIVE 2DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "8 SERIES",
-      "modelExt": "8 SERIES M850I XDRIVE CONVERTIBLE 2DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "218I M SPORT (saloon)"
   },
   {
-      "make": "BMW",
-      "model": "8 SERIES",
-      "modelExt": "8 SERIES 840I M SPORT COUPE 2DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "218I M SPORT DCT (saloon)"
   },
   {
-      "make": "BMW",
-      "model": "8 SERIES",
-      "modelExt": "8 SERIES 840I M SPORT CONVERTIBLE 2DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "220I M SPORT DCT (saloon)"
   },
   {
-      "make": "BMW",
-      "model": "8 SERIES",
-      "modelExt": "8 SERIES 840I M SPORT 4DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES 220D M SPORT AUTO 4DR 2021MY"
   },
   {
-      "make": "BMW",
-      "model": "8 SERIES",
-      "modelExt": "8 SERIES M850I XDRIVE 4DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES 220I M SPORT 4DR 2021MY"
   },
   {
-      "make": "BMW",
-      "model": "8 SERIES",
-      "modelExt": "8 SERIES M8 COUPE COMPETITION 2DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES 220I M SPORT AUTO 4DR 2021MY"
   },
   {
-      "make": "BMW",
-      "model": "8 SERIES",
-      "modelExt": "8 SERIES M8 CONVERTIBLE COMPETITION 2DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES M2 2DR 2021MY"
   },
   {
-      "make": "BMW",
-      "model": "8 SERIES",
-      "modelExt": "8 SERIES M8 COMPETITION GRAN COUPE 4DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES M2 AUTO 2DR 2021MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 SDRIVE18D XLINE 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES M2 CS AUTO 2DR 2021MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 SDRIVE18D M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES M240I XDRIVE 2DR 2021MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 XDRIVE23I XLINE 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES M240I XDRIVE AUTO 2DR 2021MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 XDRIVE23D XLINE 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220I LUXURY AUTO 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 XDRIVE23I M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220I M SPORT AUTO 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 XDRIVE23D M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220I SPORT AUTO 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 XDRIVE25E SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 223I LUXURY AUTO 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 XDRIVE30E XLINE 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 223I M SPORT AUTO 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 SDRIVE20I SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 223I SPORT AUTO 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 XDRIVE25E M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 225E XDRIVE LUXURY 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 XDRIVE30E M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 225E XDRIVE M SPORT 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 SDRIVE20I XLINE 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 225E XDRIVE SPORT 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 SDRIVE20I M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 230E XDRIVE LUXURY 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 XDRIVE25E XLINE 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 230E XDRIVE M SPORT 5DR 2025MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 SDRIVE18D SPORT 19.5% 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 216D LUXURY 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X1",
-      "modelExt": "X1 M35I 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 216D LUXURY AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X2",
-      "modelExt": "X2 M35I XDRIVE 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 216D M SPORT 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X2",
-      "modelExt": "X2 SDRIVE20I M SPORT AUTO 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 216D M SPORT AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X3",
-      "modelExt": "X3 20D XDRIVE M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 216D SE 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X3",
-      "modelExt": "X3 20D XDRIVE XLINE 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 216D SE AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X3",
-      "modelExt": "X3 20 XDRIVE XLINE 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 216D SPORT 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X3",
-      "modelExt": "X3 20 XDRIVE M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 216D SPORT AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X3",
-      "modelExt": "X3 M50 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218D LUXURY 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X3",
-      "modelExt": "X3 30E XDRIVE XLINE 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218D LUXURY AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X3",
-      "modelExt": "X3 30E XDRIVE M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218D LUXURY AUTO 5DR 2021MY"
   },
   {
-      "make": "BMW",
-      "model": "X4",
-      "modelExt": "XDRIVE30D M SPORT AUTO (sprt utl veh)"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218D M SPORT 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X4",
-      "modelExt": "X4 M40I 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218D M SPORT AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X4",
-      "modelExt": "X4 XDRIVE20D M SPORT TU (MHT) 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218D M SPORT AUTO 5DR 2021MY"
   },
   {
-      "make": "BMW",
-      "model": "X4",
-      "modelExt": "M40D AUTO (sprt utl veh)"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218D SE 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X4",
-      "modelExt": "X4 M COMPETITION 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218D SE AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X5",
-      "modelExt": "X5 XDRIVE30D XLINE 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218D SPORT 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X5",
-      "modelExt": "X5 XDRIVE30D M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218D SPORT AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X5",
-      "modelExt": "X5 M COMPETITION 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218D SPORT AUTO 5DR 2021MY"
   },
   {
-      "make": "BMW",
-      "model": "X5",
-      "modelExt": "X5 XDRIVE50E M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218I LUXURY AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X5",
-      "modelExt": "X5 M60I 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218I LUXURY 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X5",
-      "modelExt": "X5 XDRIVE40D M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218I M SPORT 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X6",
-      "modelExt": "X6 XDRIVE30D M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218I M SPORT AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X6",
-      "modelExt": "X6 M COMPETITION 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218I SE 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X6",
-      "modelExt": "X6 M60I XDRIVE 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218I SE AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X6",
-      "modelExt": "X6 XDRIVE40I M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218I SPORT 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X6",
-      "modelExt": "X6 XDRIVE40D M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 218I SPORT AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X7",
-      "modelExt": "X7 XDRIVEM60I 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220D LUXURY AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X7",
-      "modelExt": "X7 XDRIVE40D M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220D M SPORT AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X7",
-      "modelExt": "X7 XDRIVE40D EXCELLENCE 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220D SE AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X7",
-      "modelExt": "X7 XDRIVE40I EXCELLENCE 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220D SPORT AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "X7",
-      "modelExt": "X7 XDRIVE40I M SPORT 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220D XDRIVE LUXURY AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "XM",
-      "modelExt": "XM XM 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220D XDRIVE M SPORT AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "XM",
-      "modelExt": "XM XM LABEL 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220D XDRIVE SE AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "XM",
-      "modelExt": "XM 50E 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220D XDRIVE SPORT AUTO 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "Z4",
-      "modelExt": "Z4 SDRIVE20I M SPORT 2DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220I LUXURY 5DR 2018MY"
   },
   {
-      "make": "BMW",
-      "model": "Z4",
-      "modelExt": "Z4 M40I 2DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220I LUXURY AUTO 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "ACEMAN",
-      "modelExt": "ACEMAN SPORT SE 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220I LUXURY AUTO 5DR 2021MY"
   },
   {
-      "make": "MINI",
-      "model": "ACEMAN",
-      "modelExt": "ACEMAN SPORT E 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220I M SPORT 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "ACEMAN",
-      "modelExt": "ACEMAN EXCLUSIVE SE 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220I M SPORT AUTO 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "ACEMAN",
-      "modelExt": "ACEMAN EXCLUSIVE E 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220I M SPORT AUTO 5DR 2021MY"
   },
   {
-      "make": "MINI",
-      "model": "ACEMAN",
-      "modelExt": "ACEMAN CLASSIC SE 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220I SE 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "ACEMAN",
-      "modelExt": "ACEMAN CLASSIC E 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220I SE AUTO 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "ACEMAN",
-      "modelExt": "ACEMAN JCW 5DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220I SPORT 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER CLASSIC S AUTO 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220I SPORT AUTO 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER CLASSIC C AUTO 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 220I SPORT AUTO 5DR 2021MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER CLASSIC C AUTO 3DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 223I LUXURY AUTO 5DR 2021MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER CLASSIC S AUTO 3DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 223I M SPORT AUTO 5DR 2021MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER SPORT S AUTO 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER 223I SPORT AUTO 5DR 2021MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER SPORT S AUTO 3DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER PHEV 225E XDRIVE LUXURY AUTO 5DR 2022MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER SPORT C AUTO 3DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER PHEV 225E XDRIVE M SPORT AUTO 5DR 2022MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER EXCLUSIVE S AUTO 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER PHEV 225E XDRIVE M SPORT EXECUTIVE EDITION AUTO 5DR 2022MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER EXCLUSIVE C AUTO 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER PHEV 225E XDRIVE SPORT AUTO 5DR 2022MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER EXCLUSIVE C AUTO 3DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER PHEV 225XE IPERFORMANCE LUXURY AUTO 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER EXCLUSIVE S AUTO 3DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER PHEV 225XE IPERFORMANCE M SPORT AUTO 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER SPORT C AUTO 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER PHEV 225XE IPERFORMANCE M SPORT PREMIUM AUTO 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER CLASSIC E 3DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER PHEV 225XE IPERFORMANCE SPORT AUTO 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER CLASSIC SE 3DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER PHEV 225XE IPERFORMANCE SPORT PREMIUM AUTO 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER SPORT SE 3DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER PHEV 230E XDRIVE LUXURY AUTO 5DR 2022MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER SPORT E 3DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES ACTIVE TOURER PHEV 230E XDRIVE M SPORT AUTO 5DR 2022MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER EXCLUSIVE E 3DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE 218D M SPORT 4DR 2020MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER EXCLUSIVE SE 3DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE 218D M SPORT AUTO 4DR 2020MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER SPORT S AUTO 2DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE 218D SPORT 4DR 2020MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER SPORT AUTO 2DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE 218D SPORT AUTO 4DR 2020MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER EXCLUSIVE AUTO 2DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE 218I M SPORT 4DR 2020MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER EXCLUSIVE S AUTO 2DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE 218I M SPORT AUTO 4DR 2020MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER CLASSIC AUTO 2DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE 218I SPORT 4DR 2020MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER CLASSIC S AUTO 2DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE 218I SPORT AUTO 4DR 2020MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER JCW 3DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE 220 M SPORT AUTO 4DR 2024MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER JCW AUTO 3DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE 220D M SPORT AUTO 4DR 2020MY"
   },
   {
-      "make": "MINI",
-      "model": "COOPER",
-      "modelExt": "COOPER JCW AUTO 2DR 2025MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE 220D SPORT AUTO 4DR 2020MY"
   },
   {
-      "make": "MINI",
-      "model": "COUNTRYMAN",
-      "modelExt": "COUNTRYMAN JOHN COOPER WORKS 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE 220I M SPORT AUTO 4DR 2020MY"
   },
   {
-      "make": "MINI",
-      "model": "COUNTRYMAN",
-      "modelExt": "COUNTRYMAN COOPER CLASSIC C 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE 220I SPORT AUTO 4DR 2020MY"
   },
   {
-      "make": "MINI",
-      "model": "COUNTRYMAN",
-      "modelExt": "COUNTRYMAN COOPER SPORT C 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE 223 XDRIVE M SPORT AUTO 4DR 2024MY"
   },
   {
-      "make": "MINI",
-      "model": "COUNTRYMAN",
-      "modelExt": "COUNTRYMAN COOPER EXCLUSIVE C 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE M235 XDRIVE AUTO 4DR 2024MY"
   },
   {
-      "make": "MINI",
-      "model": "COUNTRYMAN",
-      "modelExt": "COUNTRYMAN COOPER CLASSIC S 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN COUPE M235I XDRIVE AUTO 4DR 2020MY"
   },
   {
-      "make": "MINI",
-      "model": "COUNTRYMAN",
-      "modelExt": "COUNTRYMAN COOPER CLASSIC E 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 216D LUXURY 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "COUNTRYMAN",
-      "modelExt": "COUNTRYMAN COOPER CLASSIC SE 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 216D LUXURY AUTO 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "COUNTRYMAN",
-      "modelExt": "COUNTRYMAN COOPER EXCLUSIVE S 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 216D M SPORT 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "COUNTRYMAN",
-      "modelExt": "COUNTRYMAN COOPER EXCLUSIVE E 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 216D M SPORT AUTO 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "COUNTRYMAN",
-      "modelExt": "COUNTRYMAN COOPER EXCLUSIVE SE 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 216D SE 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "COUNTRYMAN",
-      "modelExt": "COUNTRYMAN COOPER SPORT S 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 216D SE AUTO 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "COUNTRYMAN",
-      "modelExt": "COUNTRYMAN COOPER SPORT E 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 216D SPORT 5DR 2018MY"
   },
   {
-      "make": "MINI",
-      "model": "COUNTRYMAN",
-      "modelExt": "COUNTRYMAN COOPER SPORT SE 5DR 2024MY"
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 216D SPORT AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218D LUXURY 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218D LUXURY AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218D M SPORT 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218D M SPORT AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218D SE 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218D SE AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218D SPORT 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218D SPORT AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218I LUXURY 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218I LUXURY AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218I M SPORT 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218I M SPORT AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218I SE 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218I SE AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218I SPORT 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 218I SPORT AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 220D LUXURY AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 220D M SPORT AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 220D SPORT AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 220D XDRIVE LUXURY AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 220D XDRIVE M SPORT AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 220D XDRIVE SPORT AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 220I LUXURY 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 220I LUXURY AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 220I M SPORT 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 220I M SPORT AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 220I SPORT 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "2 SERIES",
+    "modelExt": "2 SERIES GRAN TOURER 220I SPORT AUTO 5DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I SPORT 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330E M SPORT 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330E M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330E SPORT 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330E SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES M3 COMPETITION M XDRIVE 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES M3 COMPETITION M XDRIVE TOURING 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES M340I 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES M340I 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I M SPORT 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 318D M SPORT 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 318D M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 318D SE 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 318D SE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 318D SE PRO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 318D SE PRO AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 318D SPORT 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 318D SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 318I M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 318I SE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 318I SE PRO AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 318I SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D M SPORT PLUS EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D M SPORT PRO EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D SE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D SE PRO AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D XDRIVE M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D XDRIVE M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D XDRIVE M SPORT PLUS EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D XDRIVE M SPORT PRO EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D XDRIVE SE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D XDRIVE SE PRO AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D XDRIVE SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320D XDRIVE SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I M SPORT PLUS EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I M SPORT PRO EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I SE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I SE PRO AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I XDRIVE M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I XDRIVE M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I XDRIVE M SPORT PLUS EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I XDRIVE SE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I XDRIVE SE PRO AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I XDRIVE SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 320I XDRIVE SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330D M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330D M SPORT PLUS EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330D M SPORT PRO EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330D SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330D SPORT PRO AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330D XDRIVE M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330D XDRIVE M SPORT PLUS EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330D XDRIVE M SPORT PRO EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330D XDRIVE SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330D XDRIVE SPORT PRO AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330I M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330I M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330I M SPORT PLUS EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330I M SPORT PRO EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330I SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330I SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES 330I SPORT PRO AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES M3 COMPETITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES M3 COMPETITION M XDRIVE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES M3 COMPETITION M XDRIVE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES M3 CS TOURING AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES M3 CS XDRIVE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES M340D XDRIVE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES M340D XDRIVE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES M340I XDRIVE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES M340I XDRIVE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES PHEV 330E M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES PHEV 330E M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES PHEV 330E M SPORT PLUS EDITION AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES PHEV 330E M SPORT PRO EDITION AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES PHEV 330E SE PRO AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES PHEV 330E SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES PHEV 330E SPORT PRO AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES PHEV 330E XDRIVE M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES PHEV 330E XDRIVE M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES PHEV 330E XDRIVE M SPORT PRO EDITION AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES PHEV 330E XDRIVE SE PRO AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES PHEV 330E XDRIVE SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "3 SERIES",
+    "modelExt": "3 SERIES PHEV 330E XDRIVE SPORT PRO AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 420I M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 420I M SPORT AUTO (25%VRT) 2DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 420I M SPORT AUTO 2DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 420I M SPORT AUTO 2DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES M4 COMPETITION M XDRIVE CONVERTIBLE AUTO 2DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES M4 COMPETITION M XDRIVE COUPE AUTO 2DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES M440I XDRIVE (MHT) 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES M440I XDRIVE (MHT) AUTO 2DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES M440I XDRIVE (MHT) AUTO 2DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 3.0 CSL AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 420D M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 420D M SPORT PRO EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 420D XDRIVE M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 420D XDRIVE M SPORT PRO EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 420I M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 420I M SPORT AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 420I M SPORT PRO EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 420I XDRIVE M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 420I XDRIVE M SPORT PRO EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 430D XDRIVE M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 430D XDRIVE M SPORT PRO EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 430I M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES 430I M SPORT PRO EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES M4 COMPETITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES M4 COMPETITION M XDRIVE AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES M4 COMPETITION M XDRIVE AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES M4 COMPETITION M XDRIVE KITH EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES M4 CS XDRIVE AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES M4 CSL AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES M440D XDRIVE AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES M440I XDRIVE AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES M440I XDRIVE AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES CABRIOLET 420D M SPORT AUTO 2DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES CABRIOLET 420D M SPORT PRO EDITION AUTO 2DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES CABRIOLET 420I M SPORT AUTO 2DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES CABRIOLET 420I M SPORT AUTO 2DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES CABRIOLET 420I M SPORT PRO EDITION AUTO 2DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES CABRIOLET 430D M SPORT AUTO 2DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES CABRIOLET 430D M SPORT PRO EDITION AUTO 2DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES CABRIOLET 430I M SPORT AUTO 2DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES CABRIOLET 430I M SPORT PRO EDITION AUTO 2DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES CABRIOLET M4 COMPETITION M XDRIVE AUTO 2DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES CABRIOLET M4 COMPETITION M XDRIVE AUTO 2DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES CABRIOLET M440D XDRIVE AUTO 2DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES CABRIOLET M440I XDRIVE AUTO 2DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES CABRIOLET M440I XDRIVE AUTO 2DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES GRAN COUPE 420D M SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES GRAN COUPE 420D M SPORT PRO EDITION AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES GRAN COUPE 420D XDRIVE M SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES GRAN COUPE 420D XDRIVE M SPORT PRO EDITION AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES GRAN COUPE 420I M SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES GRAN COUPE 420I M SPORT AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES GRAN COUPE 420I M SPORT PRO EDITION AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES GRAN COUPE 430I M SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES GRAN COUPE 430I M SPORT PRO EDITION AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES GRAN COUPE M440I XDRIVE AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "4 SERIES",
+    "modelExt": "4 SERIES GRAN COUPE M440I XDRIVE AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 530E M SPORT PRO 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 550E XDRIVE M SPORT 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 550E XDRIVE M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 550E XDRIVE M SPORT PRO 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 550E XDRIVE M SPORT PRO 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES M5 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES M5 TOURING 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "520I MHEV M SPORT PRO 20% AUTO (saloon)"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 520I M SPORT 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 520I M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 520I M SPORT PRO 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 520I M SPORT PRO 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 530E M SPORT 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 530E M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 530E M SPORT PRO 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 520D M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 520D M SPORT EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 520D SE AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 520D XDRIVE M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 520D XDRIVE M SPORT EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 520D XDRIVE SE AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 520I M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 520I M SPORT AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 520I M SPORT EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 520I M SPORT PRO AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 520I SE AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 530D XDRIVE M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 530D XDRIVE M SPORT EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 530D XDRIVE SE AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 540I XDRIVE M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 540I XDRIVE M SPORT EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES 540I XDRIVE SE AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES M5 COMPETITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES M5 CS AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES M550I XDRIVE AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES PHEV 530E M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES PHEV 530E M SPORT AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES PHEV 530E M SPORT EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES PHEV 530E M SPORT PRO AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES PHEV 530E SE AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES PHEV 530E XDRIVE M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES PHEV 530E XDRIVE M SPORT EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES PHEV 530E XDRIVE SE AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES PHEV 545E XDRIVE M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES PHEV 545E XDRIVE M SPORT EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES PHEV 545E XDRIVE SE AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES PHEV 550E XDRIVE M SPORT AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES PHEV 550E XDRIVE M SPORT PRO AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "5 SERIES",
+    "modelExt": "5 SERIES PHEV M5 AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 750E XDRIVE EXCELLENCE 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 750E XDRIVE M SPORT 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES M760E XDRIVE 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 730D AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 730D M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 730D XDRIVE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 730D XDRIVE M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 730LD AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 730LD M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 740D XDRIVE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 740D XDRIVE M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 740I AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 740I M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 740LD XDRIVE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 740LD XDRIVE M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 740LI AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 740LI M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 750I XDRIVE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES 750I XDRIVE M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES M760LI XDRIVE V12 AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES PHEV 745E AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES PHEV 745E M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES PHEV 745LE XDRIVE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES PHEV 745LE XDRIVE M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES PHEV 750E XDRIVE EXCELLENCE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES PHEV 750E XDRIVE M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "7 SERIES",
+    "modelExt": "7 SERIES PHEV M760E XDRIVE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES 840I M SPORT 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES 840I M SPORT CONVERTIBLE 2DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES 840I M SPORT COUPE 2DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES M8 COMPETITION GRAN COUPE 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES M8 CONVERTIBLE COMPETITION 2DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES M8 COUPE COMPETITION 2DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES M850I XDRIVE 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES M850I XDRIVE CONVERTIBLE 2DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES M850I XDRIVE COUPE 2DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES 840D XDRIVE AUTO 2DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES 840D XDRIVE M SPORT AUTO 2DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES 840I AUTO 2DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES 840I M SPORT AUTO 2DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES 840I M SPORT AUTO 2DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES M8 COMPETITION AUTO 2DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES M8 COMPETITION AUTO 2DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES M850I XDRIVE AUTO 2DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES M850I XDRIVE AUTO 2DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES GRAN COUPE 840D XDRIVE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES GRAN COUPE 840D XDRIVE M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES GRAN COUPE 840I AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES GRAN COUPE 840I M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES GRAN COUPE 840I M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES GRAN COUPE M8 COMPETITION AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES GRAN COUPE M8 COMPETITION AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES GRAN COUPE M850I XDRIVE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES GRAN COUPE M850I XDRIVE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "8 SERIES",
+    "modelExt": "8 SERIES GRAN COUPE THE 8 X JEFF KOONS AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 EDRIVE35 M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 EDRIVE35 SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 EDRIVE40 M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 EDRIVE40 SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 M50 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 EDRIVE35 M SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 EDRIVE35 M SPORT AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 EDRIVE35 SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 EDRIVE35 SPORT AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 EDRIVE40 M SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 EDRIVE40 M SPORT AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 EDRIVE40 SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 EDRIVE40 SPORT AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 M50 AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 M50 AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 M50 BY KITH AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I4",
+    "modelExt": "I4 M60 AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I5",
+    "modelExt": "I5 EDRIVE40 M SPORT 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I5",
+    "modelExt": "I5 EDRIVE40 M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I5",
+    "modelExt": "I5 EDRIVE40 M SPORT PRO 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I5",
+    "modelExt": "I5 EDRIVE40 M SPORT PRO 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I5",
+    "modelExt": "I5 EDRIVE40 SPORT EDITION 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I5",
+    "modelExt": "I5 EDRIVE40 SPORT EDITION 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I5",
+    "modelExt": "I5 M60 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I5",
+    "modelExt": "I5 M60 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I5",
+    "modelExt": "I5 EDRIVE40 M SPORT AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I5",
+    "modelExt": "I5 EDRIVE40 M SPORT PRO AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I5",
+    "modelExt": "I5 EDRIVE40 SPORT EDITION AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I5",
+    "modelExt": "I5 M60 XDRIVE AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I7",
+    "modelExt": "I7 EDRIVE50 M SPORT 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I7",
+    "modelExt": "I7 M70 XDRIVE 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I7",
+    "modelExt": "I7 XDRIVE60 EXCELLENCE 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I7",
+    "modelExt": "I7 XDRIVE60 M SPORT 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I7",
+    "modelExt": "I7 EDRIVE50 EXCELLENCE 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I7",
+    "modelExt": "I7 EDRIVE50 EXCELLENCE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I7",
+    "modelExt": "I7 EDRIVE50 M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I7",
+    "modelExt": "I7 M70 XDRIVE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I7",
+    "modelExt": "I7 XDRIVE60 EXCELLENCE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I7",
+    "modelExt": "I7 XDRIVE60 EXCELLENCE PRO AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I7",
+    "modelExt": "I7 XDRIVE60 M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I7",
+    "modelExt": "I7 XDRIVE60 M SPORT PRO AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "I8",
+    "modelExt": "I8  AUTO 2DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX M60 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX XDRIVE40 M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX XDRIVE40 SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX XDRIVE50 M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX M60 AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX M70 XDRIVE AUTO 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX XDRIVE40 M SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX XDRIVE40 M SPORT EDITION AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX XDRIVE40 SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX XDRIVE40 SPORT EDITION AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX XDRIVE45 M SPORT AUTO 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX XDRIVE45 SPORT AUTO 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX XDRIVE50 M SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX XDRIVE50 M SPORT EDITION AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX XDRIVE50 SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX",
+    "modelExt": "IX XDRIVE60 M SPORT AUTO 4DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX1",
+    "modelExt": "IX1 EDRIVE20 M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX1",
+    "modelExt": "IX1 EDRIVE20 SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX1",
+    "modelExt": "IX1 EDRIVE20 XLINE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX1",
+    "modelExt": "IX1 XDRIVE30 M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX1",
+    "modelExt": "IX1 XDRIVE30 XLINE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX1",
+    "modelExt": "IX1 EDRIVE20 M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX1",
+    "modelExt": "IX1 EDRIVE20 SHADOW EDITION AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX1",
+    "modelExt": "IX1 EDRIVE20 SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX1",
+    "modelExt": "IX1 EDRIVE20 XLINE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX1",
+    "modelExt": "IX1 XDRIVE30 M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX1",
+    "modelExt": "IX1 XDRIVE30 SHADOW EDITION AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX1",
+    "modelExt": "IX1 XDRIVE30 XLINE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX2",
+    "modelExt": "IX2 EDRIVE20 M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX2",
+    "modelExt": "IX2 XDRIVE30 M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX2",
+    "modelExt": "IX2 EDRIVE20 M SPORT AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX2",
+    "modelExt": "IX2 EDRIVE20 SHADOW EDITION AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX2",
+    "modelExt": "IX2 XDRIVE30 M SPORT AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX2",
+    "modelExt": "IX2 XDRIVE30 SHADOW EDITION AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX3",
+    "modelExt": "IX3 80 KWH M SPORT 5DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX3",
+    "modelExt": "IX3 80 KWH M SPORT PRO 5DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX3",
+    "modelExt": "IX3 50 XDRIVE AUTO 4DR 2026MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX3",
+    "modelExt": "IX3 50 XDRIVE M SPORT AUTO 4DR 2026MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX3",
+    "modelExt": "IX3 50 XDRIVE M SPORT PRO AUTO 4DR 2026MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX3",
+    "modelExt": "IX3 M SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX3",
+    "modelExt": "IX3 M SPORT PRO AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX3",
+    "modelExt": "IX3 PREMIER EDITION AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "IX3",
+    "modelExt": "IX3 PREMIER EDITION PRO AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23I M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23I XLINE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE25E M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE25E SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE25E XLINE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE30E M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE30E XLINE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 M35I 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18D M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18D SPORT 19.5% 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18D XLINE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE20I M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE20I SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE20I XLINE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23D M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23D XLINE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 M35I AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18D M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18D M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18D M SPORT PREMIER AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18D M SPORT PREMIER PRO AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18D SE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18D SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18D SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18D SPORT PREMIER AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18D XLINE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18D XLINE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18D XLINE PREMIER AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18D XLINE PREMIER PRO AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18I M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18I SE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18I SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE18I XLINE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE20I M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE20I M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE20I SE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE20I SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE20I SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE20I XLINE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 SDRIVE20I XLINE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE18D M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE18D SE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE18D SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE18D XLINE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE20D M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE20D SE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE20D SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE20D XLINE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE20I M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE20I SE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE20I SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE20I XLINE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23D M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23D M SPORT PREMIER AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23D M SPORT PREMIER PRO AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23D XLINE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23D XLINE PREMIER AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23D XLINE PREMIER PRO AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23I M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23I M SPORT PREMIER AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23I M SPORT PREMIER PRO AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23I XLINE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23I XLINE PREMIER AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 XDRIVE23I XLINE PREMIER PRO AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 PHEV XDRIVE25E M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 PHEV XDRIVE25E M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 PHEV XDRIVE25E SE AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 PHEV XDRIVE25E SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 PHEV XDRIVE25E SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 PHEV XDRIVE25E SPORT EDITION AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 PHEV XDRIVE25E XLINE AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 PHEV XDRIVE25E XLINE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 PHEV XDRIVE30E M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "modelExt": "X1 PHEV XDRIVE30E XLINE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 M35I XDRIVE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE20I M SPORT AUTO 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 M35I AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 M35I AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE18D M MESH EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE18D M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE18D M SPORT X AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE18D SE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE18D SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE18I M MESH EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE18I M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE18I M SPORT X AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE18I SE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE18I SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE20I M MESH EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE20I M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE20I M SPORT AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE20I M SPORT X AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE20I SE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 SDRIVE20I SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 XDRIVE18D M MESH EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 XDRIVE18D M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 XDRIVE18D M SPORT X AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 XDRIVE18D SE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 XDRIVE18D SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 XDRIVE20D M MESH EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 XDRIVE20D M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 XDRIVE20D M SPORT X AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 XDRIVE20D SE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 XDRIVE20D SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 XDRIVE20I M MESH EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 XDRIVE20I M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 XDRIVE20I M SPORT X AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 XDRIVE20I SE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 XDRIVE20I SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 PHEV XDRIVE25E M MESH EDITION AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 PHEV XDRIVE25E M SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 PHEV XDRIVE25E M SPORT X AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X2",
+    "modelExt": "X2 PHEV XDRIVE25E SPORT AUTO 4DR 2020MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 20 XDRIVE M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 20 XDRIVE XLINE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 20D XDRIVE M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 20D XDRIVE XLINE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 30E XDRIVE M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 30E XDRIVE XLINE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 M50 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 20 XDRIVE M SPORT AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 20 XDRIVE XLINE AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 20D XDRIVE M SPORT AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 20D XDRIVE XLINE AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 M COMPETITION AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 M40D AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 M40D M PRO EDITION AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 M40I AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 M40I M PRO EDITION AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 M50 AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 XDRIVE20D M SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 XDRIVE20D XLINE AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 XDRIVE20I M SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 XDRIVE20I XLINE AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 XDRIVE30D M SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 PHEV 30E XDRIVE M SPORT AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 PHEV 30E XDRIVE XLINE AUTO 4DR 2024MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 PHEV XDRIVE30E M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 PHEV XDRIVE30E M SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 PHEV XDRIVE30E SE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 PHEV XDRIVE30E XLINE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "modelExt": "X3 PHEV XDRIVE30E XLINE AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "XDRIVE30D M SPORT AUTO (sprt utl veh)"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 M COMPETITION 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "M40D AUTO (sprt utl veh)"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 M40I 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 XDRIVE20D M SPORT TU (MHT) 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 M COMPETITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 M COMPETITION AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 M40D AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 M40D AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 M40D M PRO EDITION AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 M40I AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 M40I AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 M40I M PRO EDITION AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 XDRIVE20D M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 XDRIVE20D M SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 XDRIVE20D M SPORT X AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 XDRIVE20D SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 XDRIVE30D M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 XDRIVE30D M SPORT AUTO 4DR 2021MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 XDRIVE30D M SPORT X AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X4",
+    "modelExt": "X4 XDRIVE30D SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 M COMPETITION 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 M60I 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE30D M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE30D XLINE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE40D M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE50E M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 M COMPETITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 M COMPETITION AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 M COMPETITION FIRST EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 M50D AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 M50I AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 M50I BLACK VERMILION EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 M60I XDRIVE AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE30D M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE30D M SPORT AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE30D M SPORT BLACK VERMILION EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE30D XLINE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE30D XLINE AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE40D M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE40D M SPORT AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE40D M SPORT BLACK VERMILION EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE40D XLINE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE40I M SPORT AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE40I M SPORT BLACK VERMILION EDITION AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 XDRIVE40I XLINE AUTO 4DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 PHEV XDRIVE45E M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 PHEV XDRIVE45E M SPORT BLACK VERMILION EDITION AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 PHEV XDRIVE45E XLINE AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "modelExt": "X5 PHEV XDRIVE50E M SPORT AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 XDRIVE30D M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 XDRIVE40D M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 XDRIVE40I M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 M COMPETITION 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 M60I XDRIVE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 M COMPETITION AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 M COMPETITION AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 M COMPETITION FIRST EDITION AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 M50D AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 M50I AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 M50I BLACK VERMILION EDITION AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 M60I XDRIVE AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 XDRIVE30D M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 XDRIVE30D M SPORT AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 XDRIVE30D M SPORT BLACK VERMILION EDITION AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 XDRIVE30D SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 XDRIVE40D M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 XDRIVE40D M SPORT AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 XDRIVE40D M SPORT BLACK VERMILION EDITION AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 XDRIVE40D SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 XDRIVE40I M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 XDRIVE40I M SPORT AUTO 4DR 2023MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 XDRIVE40I M SPORT BLACK VERMILION EDITION AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X6",
+    "modelExt": "X6 XDRIVE40I SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 XDRIVE40D EXCELLENCE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 XDRIVE40D M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 XDRIVE40I EXCELLENCE 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 XDRIVE40I M SPORT 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 XDRIVEM60I 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 DARK SHADOW EDITION AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 M50D AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 M50I AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 M50I FROZEN BLACK EDITION AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 M60I XDRIVE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 XDRIVE30D AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 XDRIVE30D M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 XDRIVE40D AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 XDRIVE40D EXCELLENCE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 XDRIVE40D M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 XDRIVE40D M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 XDRIVE40I AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 XDRIVE40I EXCELLENCE AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 XDRIVE40I M SPORT AUTO 4DR 2019MY"
+  },
+  {
+    "make": "BMW",
+    "model": "X7",
+    "modelExt": "X7 XDRIVE40I M SPORT AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "XM",
+    "modelExt": "XM 50E 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "XM",
+    "modelExt": "XM XM 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "XM",
+    "modelExt": "XM XM LABEL 5DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "XM",
+    "modelExt": "XM  AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "XM",
+    "modelExt": "XM 50E AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "XM",
+    "modelExt": "XM KITH EDITION AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "XM",
+    "modelExt": "XM LABEL AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "XM",
+    "modelExt": "XM LABEL RED AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "XM",
+    "modelExt": "XM LABEL RED EDITION AUTO 4DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "Z4",
+    "modelExt": "Z4 M40I 2DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "Z4",
+    "modelExt": "Z4 SDRIVE20I M SPORT 2DR 2025MY"
+  },
+  {
+    "make": "BMW",
+    "model": "Z4",
+    "modelExt": "Z4 FIRST EDITION AUTO 2DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "Z4",
+    "modelExt": "Z4 M40I AUTO 2DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "Z4",
+    "modelExt": "Z4 M40I AUTO 2DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "Z4",
+    "modelExt": "Z4 SDRIVE20I M SPORT AUTO 2DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "Z4",
+    "modelExt": "Z4 SDRIVE20I M SPORT AUTO 2DR 2022MY"
+  },
+  {
+    "make": "BMW",
+    "model": "Z4",
+    "modelExt": "Z4 SDRIVE20I SPORT AUTO 2DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "Z4",
+    "modelExt": "Z4 SDRIVE30I M SPORT AUTO 2DR 2018MY"
+  },
+  {
+    "make": "BMW",
+    "model": "Z4",
+    "modelExt": "Z4 SDRIVE30I SPORT AUTO 2DR 2018MY"
   }
 ];
 
