@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract JSON Visualizer</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --radius: 8px;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --positive: #166534; /* Green */
+            --negative: #991b1b; /* Red */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 { margin-top: 0; font-size: 1.5rem; color: var(--text-main); }
+        p { color: var(--text-muted); margin-bottom: 1.5rem; }
+
+        /* Input Section */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        textarea:focus {
+            outline: 2px solid var(--primary);
+            border-color: transparent;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover { opacity: 0.9; }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            display: none; /* Hidden by default */
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: #f8fafc; }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-status-open { background: #dcfce7; color: #166534; }
+        .badge-status-closed { background: #fee2e2; color: #991b1b; }
+        .badge-status-incomplete { background: #f1f5f9; color: #475569; }
+        
+        .badge-type-create { background: #e0f2fe; color: #075985; }
+        .badge-type-amend { background: #fef9c3; color: #854d0e; }
+        .badge-type-endorse { background: #f3e8ff; color: #6b21a8; }
+        .badge-type-renew { background: #dbeafe; color: #1e40af; }
+        .badge-type-cancel { background: #ffe4e6; color: #9f1239; }
+
+        .error-msg {
+            color: #ef4444;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .money {
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        .delta-val {
+            font-family: monospace;
+            font-weight: 600;
+        }
+        .delta-pos { color: var(--positive); }
+        .delta-neg { color: var(--negative); }
+        .delta-neutral { color: var(--text-muted); font-weight: normal; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h1>Contract Version Analyzer</h1>
+        <p>Paste your full JSON payload below to visualize the contract history, EV Tax, and Tax Deltas.</p>
+        <textarea id="jsonInput" placeholder='Paste JSON here...'></textarea>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <button onclick="parseJson()">Generate Overview</button>
+            <span id="errorMsg" class="error-msg">Invalid JSON format. Please check your input.</span>
+        </div>
+    </div>
+
+    <div id="resultContainer" class="table-container">
+        <table id="resultTable">
+            <thead>
+                <tr>
+                    <th>Ver.</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Effective Date</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>EV Tax (EUR)</th>
+                    <th>Delta EV Tax</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be injected here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function formatDate(isoString) {
+        if (!isoString) return "-";
+        return new Date(isoString).toISOString().split('T')[0];
+    }
+
+    function formatMoney(cents, isDelta = false) {
+        if (cents === undefined || cents === null) return isDelta ? "-" : "€ 0.00";
+        
+        const amount = cents / 100;
+        const formatter = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' });
+        let formatted = formatter.format(amount);
+
+        // Add plus sign for positive deltas
+        if (isDelta && amount > 0) {
+            formatted = "+" + formatted;
+        }
+        
+        return formatted;
+    }
+
+    // Helper to find specific tax in a list of taxes
+    function findTaxAmount(taxesList, taxName) {
+        if (!taxesList || !Array.isArray(taxesList)) return 0;
+        const taxObj = taxesList.find(t => t.name === taxName);
+        return taxObj ? taxObj.amount : 0;
+    }
+
+    // Get Absolute EV Tax from the full price
+    function getEvTaxAbsolute(version) {
+        // Try safe path totalCoverage -> price -> totalPrice -> taxes
+        let taxes = version.totalCoverage?.price?.totalPrice?.taxes;
+        
+        // Fallback for some structures: totalCoverage -> price -> taxes
+        if (!taxes) {
+            taxes = version.totalCoverage?.price?.taxes;
+        }
+
+        return findTaxAmount(taxes, "AT_EV_TAX");
+    }
+
+    // Get Delta EV Tax from priceComputationDetails
+    function getEvTaxDelta(version) {
+        // Path: totalCoverage -> price -> priceComputationDetails -> deltaPrice -> totalPrice -> taxes
+        const deltaTaxes = version.totalCoverage?.price?.priceComputationDetails?.deltaPrice?.totalPrice?.taxes;
+        
+        if (!deltaTaxes) return null; // No delta calculation present (e.g., usually on Create or pure Renew without adjustment)
+
+        const taxObj = deltaTaxes.find(t => t.name === "AT_EV_TAX");
+        // If the object exists, return amount, otherwise return 0 (it exists in calculation but is 0)
+        // If the whole array didn't exist, we returned null above.
+        return taxObj ? taxObj.amount : 0;
+    }
+
+    function getBadgeClass(type, value) {
+        const key = value.toLowerCase();
+        if (type === 'status') {
+            if (key.includes('open')) return 'badge-status-open';
+            if (key.includes('closed') || key.includes('cancel')) return 'badge-status-closed';
+            return 'badge-status-incomplete';
+        }
+        if (type === 'version') {
+            if (key.includes('create')) return 'badge-type-create';
+            if (key.includes('amend')) return 'badge-type-amend';
+            if (key.includes('endorse')) return 'badge-type-endorse';
+            if (key.includes('renew')) return 'badge-type-renew';
+            if (key.includes('cancel')) return 'badge-type-cancel';
+            return 'badge-status-incomplete'; // fallback
+        }
+        return '';
+    }
+
+    function parseJson() {
+        const input = document.getElementById('jsonInput').value;
+        const errorMsg = document.getElementById('errorMsg');
+        const resultContainer = document.getElementById('resultContainer');
+        const tbody = document.querySelector('#resultTable tbody');
+
+        // Reset UI
+        errorMsg.style.display = 'none';
+        tbody.innerHTML = '';
+        resultContainer.style.display = 'none';
+
+        if (!input.trim()) return;
+
+        try {
+            const data = JSON.parse(input);
+            
+            // 1. Collect all versions
+            let allVersions = [];
+
+            if (data.previousVersions && Array.isArray(data.previousVersions)) {
+                allVersions = [...data.previousVersions];
+            }
+
+            // Clone root version
+            const { previousVersions, ...currentVersion } = data;
+            allVersions.push(currentVersion);
+
+            // 2. Sort by version number
+            allVersions.sort((a, b) => {
+                const vA = a.versionInfo?.versionNumber || 0;
+                const vB = b.versionInfo?.versionNumber || 0;
+                return vA - vB;
+            });
+
+            // 3. Render Rows
+            allVersions.forEach(ver => {
+                const tr = document.createElement('tr');
+
+                // Data Extraction
+                const verNum = ver.versionInfo?.versionNumber || '?';
+                const verType = (ver.versionInfo?.versionType || 'UNKNOWN').replace('VERSION_TYPE_', '');
+                const status = (ver.status || 'UNKNOWN').replace('STATUS_', '');
+                
+                const effectiveDate = formatDate(ver.versionInfo?.effectiveDate);
+                const startDate = formatDate(ver.startDate);
+                const endDate = formatDate(ver.endDate);
+                
+                // Taxes
+                const taxAbsolute = getEvTaxAbsolute(ver); 
+                const taxDelta = getEvTaxDelta(ver);
+
+                // Delta formatting
+                let deltaHtml = '<span class="delta-neutral">-</span>';
+                if (taxDelta !== null) {
+                    const deltaClass = taxDelta > 0 ? 'delta-pos' : (taxDelta < 0 ? 'delta-neg' : 'delta-neutral');
+                    deltaHtml = `<span class="delta-val ${deltaClass}">${formatMoney(taxDelta, true)}</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td><strong>${verNum}</strong></td>
+                    <td><span class="badge ${getBadgeClass('version', verType)}">${verType}</span></td>
+                    <td><span class="badge ${getBadgeClass('status', status)}">${status}</span></td>
+                    <td>${effectiveDate}</td>
+                    <td>${startDate}</td>
+                    <td>${endDate}</td>
+                    <td class="money">${formatMoney(taxAbsolute)}</td>
+                    <td>${deltaHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            resultContainer.style.display = 'block';
+
+        } catch (e) {
+            console.error(e);
+            errorMsg.style.display = 'block';
+        }
+    }
+</script>
+
+</body>
+</html>
