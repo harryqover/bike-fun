@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPX Studio & Converter</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Leaflet CSS & JS for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Chart.js for Elevation Profile -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555; 
+        }
+        
+        /* Map Container Height */
+        #map {
+            height: 500px;
+            width: 100%;
+            z-index: 1;
+        }
+
+        /* Drag Overlay */
+        .drag-active {
+            border-color: #3b82f6 !important;
+            background-color: rgba(59, 130, 246, 0.1) !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-person-hiking text-green-400 text-2xl"></i>
+                    <span class="font-bold text-xl tracking-tight">GPX Studio</span>
+                </div>
+                <div>
+                    <a href="https://github.com" target="_blank" class="text-slate-300 hover:text-white transition">
+                        <i class="fa-brands fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        
+        <!-- Upload Section -->
+        <div id="upload-zone" class="bg-white rounded-xl shadow-sm border-2 border-dashed border-slate-300 p-12 text-center transition-all duration-300 hover:border-blue-400 cursor-pointer mb-8 relative group">
+            <input type="file" id="file-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".txt,.gpx,.xml">
+            <div class="space-y-4 pointer-events-none">
+                <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-700">Drop your file here</h3>
+                    <p class="text-slate-500 text-sm mt-1">Supports .txt, .gpx, .xml files containing GPX data</p>
+                </div>
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors shadow-sm">
+                    Select File
+                </button>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="error-msg" class="hidden bg-red-50 border-l-4 border-red-500 p-4 mb-8 rounded-r">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fa-solid fa-circle-exclamation text-red-500"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-red-700" id="error-text">Something went wrong.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard (Hidden by default) -->
+        <div id="dashboard" class="hidden space-y-6">
+            
+            <!-- Header & Download -->
+            <div class="bg-white rounded-xl shadow-sm p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 id="track-name" class="text-2xl font-bold text-slate-800">Track Name</h1>
+                    <p id="track-desc" class="text-slate-500 text-sm mt-1">Track description...</p>
+                </div>
+                <button id="download-btn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold shadow-md transition-all flex items-center gap-2 transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Download .GPX</span>
+                </button>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- Distance -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+                            <i class="fa-solid fa-ruler-horizontal"></i>
+                        </div>
+                        <span class="text-sm font-medium text-slate-500">Total Distance</span>
+                    </div>
+                    <div class="text-2xl font-bold text-slate-800"><span id="stat-dist">0.00</span> <span class="text-base font-normal text-slate-500">km</span></div>
+                </div>
+                
+                <!-- Elevation Gain -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                        </div>
+                        <span class="text-sm font-medium text-slate-500">Elevation Gain</span>
+                    </div>
+                    <div class="text-2xl font-bold text-slate-800"><span id="stat-gain">0</span> <span class="text-base font-normal text-slate-500">m</span></div>
+                </div>
+
+                <!-- Max Elevation -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center">
+                            <i class="fa-solid fa-mountain"></i>
+                        </div>
+                        <span class="text-sm font-medium text-slate-500">Max Elevation</span>
+                    </div>
+                    <div class="text-2xl font-bold text-slate-800"><span id="stat-max">0</span> <span class="text-base font-normal text-slate-500">m</span></div>
+                </div>
+
+                <!-- Points -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <span class="text-sm font-medium text-slate-500">Track Points</span>
+                    </div>
+                    <div class="text-2xl font-bold text-slate-800"><span id="stat-points">0</span></div>
+                </div>
+            </div>
+
+            <!-- Map & Chart Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Map -->
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                        <h3 class="font-semibold text-slate-700">Map Visualization</h3>
+                        <span class="text-xs text-slate-400 bg-white px-2 py-1 rounded border">OpenStreetMap</span>
+                    </div>
+                    <div id="map"></div>
+                </div>
+
+                <!-- Elevation Chart -->
+                <div class="lg:col-span-1 bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col">
+                    <div class="p-4 border-b border-slate-100 bg-slate-50">
+                        <h3 class="font-semibold text-slate-700">Elevation Profile</h3>
+                    </div>
+                    <div class="p-4 flex-grow flex items-center justify-center h-full min-h-[300px]">
+                        <canvas id="elevationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Metadata Editor -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                <h3 class="font-semibold text-slate-700 mb-4">Edit Metadata</h3>
+                <div class="grid gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Track Name</label>
+                        <input type="text" id="meta-name" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="Enter track name">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Description</label>
+                        <textarea id="meta-desc" rows="2" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="Enter track description"></textarea>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-12 py-8">
+        <div class="container mx-auto px-4 text-center text-slate-400 text-sm">
+            <p>100% Client-side processing. Your data never leaves your browser.</p>
+            <p class="mt-2">&copy; 2026 GPX Studio</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- State Management ---
+        let currentXMLDoc = null;
+        let originalFileName = "track.gpx";
+        let mapInstance = null;
+        let polylineLayer = null;
+        let chartInstance = null;
+        let startMarker = null;
+        let endMarker = null;
+
+        // --- DOM Elements ---
+        const dropZone = document.getElementById('upload-zone');
+        const fileInput = document.getElementById('file-input');
+        const dashboard = document.getElementById('dashboard');
+        const errorMsg = document.getElementById('error-msg');
+        const errorText = document.getElementById('error-text');
+        
+        // --- Event Listeners ---
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-active');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-active');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-active');
+            if (e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        document.getElementById('download-btn').addEventListener('click', downloadGPX);
+        document.getElementById('meta-name').addEventListener('input', updateMetadata);
+        document.getElementById('meta-desc').addEventListener('input', updateMetadata);
+
+        // --- Core Functions ---
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            
+            // Set default name based on input, but ensure .gpx extension for output
+            let baseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+            originalFileName = `${baseName}.gpx`;
+
+            reader.onload = (e) => {
+                try {
+                    const content = e.target.result;
+                    parseGPX(content);
+                } catch (err) {
+                    showError("Failed to read file: " + err.message);
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function showError(msg) {
+            errorText.textContent = msg;
+            errorMsg.classList.remove('hidden');
+            dashboard.classList.add('hidden');
+        }
+
+        function parseGPX(xmlString) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+
+            // Check for XML parse errors
+            const parseError = xmlDoc.querySelector('parsererror');
+            if (parseError) {
+                showError("Invalid XML format. Please upload a valid GPX or XML file.");
+                return;
+            }
+
+            // Verify it's GPX
+            if (xmlDoc.documentElement.nodeName.toLowerCase() !== 'gpx') {
+                showError("This file does not appear to be a GPX file (missing <gpx> root tag).");
+                return;
+            }
+
+            // Store for manipulation
+            currentXMLDoc = xmlDoc;
+
+            // Extract Metadata
+            const nameEl = xmlDoc.querySelector('metadata > name') || xmlDoc.querySelector('trk > name');
+            const descEl = xmlDoc.querySelector('metadata > desc') || xmlDoc.querySelector('trk > desc');
+            
+            const trackName = nameEl ? nameEl.textContent : "Untitled Track";
+            const trackDesc = descEl ? descEl.textContent : "No description available.";
+
+            // Extract Points
+            const trkpts = Array.from(xmlDoc.querySelectorAll('trkpt'));
+            
+            if (trkpts.length === 0) {
+                showError("No track points (<trkpt>) found in this file.");
+                return;
+            }
+
+            const parsedPoints = trkpts.map(pt => ({
+                lat: parseFloat(pt.getAttribute('lat')),
+                lon: parseFloat(pt.getAttribute('lon')),
+                ele: parseFloat(pt.querySelector('ele')?.textContent || 0),
+                time: pt.querySelector('time')?.textContent
+            }));
+
+            // Calculate Stats
+            const stats = calculateStats(parsedPoints);
+
+            // Update UI
+            updateUI(trackName, trackDesc, stats, parsedPoints);
+            
+            // Hide error, show dashboard
+            errorMsg.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+
+            // Initialize visualizers
+            setTimeout(() => {
+                initMap(parsedPoints);
+                initChart(parsedPoints);
+            }, 100); // Small delay to ensure container visibility
+        }
+
+        function calculateStats(points) {
+            let totalDist = 0;
+            let gain = 0;
+            let maxEle = -Infinity;
+            let minEle = Infinity;
+
+            for (let i = 0; i < points.length; i++) {
+                const p = points[i];
+                
+                // Min/Max Ele
+                if (p.ele > maxEle) maxEle = p.ele;
+                if (p.ele < minEle) minEle = p.ele;
+
+                // Distance & Gain
+                if (i > 0) {
+                    const prev = points[i-1];
+                    const d = getDistanceFromLatLonInKm(prev.lat, prev.lon, p.lat, p.lon);
+                    totalDist += d;
+
+                    const eleDiff = p.ele - prev.ele;
+                    if (eleDiff > 0) gain += eleDiff;
+                }
+            }
+
+            return {
+                distance: totalDist.toFixed(2),
+                gain: Math.round(gain),
+                maxEle: Math.round(maxEle),
+                count: points.length
+            };
+        }
+
+        function updateUI(name, desc, stats, points) {
+            // Text
+            document.getElementById('track-name').textContent = name;
+            document.getElementById('track-desc').textContent = desc;
+            document.getElementById('meta-name').value = name;
+            document.getElementById('meta-desc').value = desc;
+
+            // Stats
+            document.getElementById('stat-dist').textContent = stats.distance;
+            document.getElementById('stat-gain').textContent = stats.gain;
+            document.getElementById('stat-max').textContent = stats.maxEle;
+            document.getElementById('stat-points').textContent = stats.count;
+        }
+
+        function updateMetadata() {
+            if (!currentXMLDoc) return;
+
+            const newName = document.getElementById('meta-name').value;
+            const newDesc = document.getElementById('meta-desc').value;
+
+            // Update UI Header
+            document.getElementById('track-name').textContent = newName || "Untitled";
+            document.getElementById('track-desc').textContent = newDesc || "No description";
+
+            // Update XML Object
+            // 1. Check Metadata block
+            let metadata = currentXMLDoc.querySelector('metadata');
+            if (!metadata) {
+                metadata = currentXMLDoc.createElement('metadata');
+                currentXMLDoc.documentElement.insertBefore(metadata, currentXMLDoc.documentElement.firstChild);
+            }
+
+            let nameNode = metadata.querySelector('name');
+            if (!nameNode) {
+                nameNode = currentXMLDoc.createElement('name');
+                metadata.appendChild(nameNode);
+            }
+            nameNode.textContent = newName;
+
+            let descNode = metadata.querySelector('desc');
+            if (!descNode) {
+                descNode = currentXMLDoc.createElement('desc');
+                metadata.appendChild(descNode);
+            }
+            descNode.textContent = newDesc;
+
+            // 2. Also update first Track name/desc if exists (for compatibility)
+            const trk = currentXMLDoc.querySelector('trk');
+            if (trk) {
+                let tName = trk.querySelector('name');
+                if (tName) tName.textContent = newName;
+                
+                let tDesc = trk.querySelector('desc'); // some GPX formats use desc in trk
+                if (tDesc) tDesc.textContent = newDesc;
+            }
+        }
+
+        function initMap(points) {
+            const latlngs = points.map(p => [p.lat, p.lon]);
+
+            if (mapInstance) {
+                mapInstance.remove();
+            }
+
+            // Create Map
+            mapInstance = L.map('map');
+            
+            // Tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(mapInstance);
+
+            // Polyline
+            polylineLayer = L.polyline(latlngs, {color: '#ef4444', weight: 4}).addTo(mapInstance);
+
+            // Start/End Markers
+            const startIcon = L.divIcon({
+                html: '<i class="fa-solid fa-play text-green-600 text-2xl" style="filter: drop-shadow(2px 2px 2px white);"></i>',
+                className: 'bg-transparent',
+                iconSize: [20, 20],
+                iconAnchor: [10, 20]
+            });
+            
+            const endIcon = L.divIcon({
+                html: '<i class="fa-solid fa-flag-checkered text-slate-800 text-2xl" style="filter: drop-shadow(2px 2px 2px white);"></i>',
+                className: 'bg-transparent',
+                iconSize: [20, 20],
+                iconAnchor: [5, 20]
+            });
+
+            startMarker = L.marker(latlngs[0], {icon: startIcon}).addTo(mapInstance).bindPopup("Start");
+            endMarker = L.marker(latlngs[latlngs.length - 1], {icon: endIcon}).addTo(mapInstance).bindPopup("Finish");
+
+            // Fit Bounds
+            mapInstance.fitBounds(polylineLayer.getBounds(), {padding: [50, 50]});
+        }
+
+        function initChart(points) {
+            const ctx = document.getElementById('elevationChart').getContext('2d');
+            
+            // Prepare Data: Downsample if too many points for performance
+            const maxChartPoints = 500;
+            const step = Math.ceil(points.length / maxChartPoints);
+            
+            const labels = [];
+            const data = [];
+            
+            let distAcc = 0;
+            
+            for (let i = 0; i < points.length; i += step) {
+                const p = points[i];
+                if (i > 0) {
+                    const prev = points[Math.max(0, i - step)];
+                    distAcc += getDistanceFromLatLonInKm(prev.lat, prev.lon, p.lat, p.lon);
+                }
+                labels.push(distAcc.toFixed(1)); // Distance in km
+                data.push(p.ele);
+            }
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Elevation (m)',
+                        data: data,
+                        borderColor: '#10b981', // Emerald 500
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                        tension: 0.2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                title: (context) => `Distance: ${context[0].label} km`,
+                                label: (context) => `Elevation: ${context.raw} m`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Distance (km)' },
+                            grid: { display: false }
+                        },
+                        y: {
+                            title: { display: true, text: 'Elevation (m)' }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        function downloadGPX() {
+            if (!currentXMLDoc) return;
+
+            const serializer = new XMLSerializer();
+            const xmlString = serializer.serializeToString(currentXMLDoc);
+            
+            const blob = new Blob([xmlString], {type: "application/gpx+xml"});
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = originalFileName;
+            document.body.appendChild(a);
+            a.click();
+            
+            setTimeout(() => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 0);
+        }
+
+        // --- Utils ---
+        // Haversine formula for distance
+        function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the earth in km
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2); 
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+            const d = R * c; // Distance in km
+            return d;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI/180);
+        }
+    </script>
+</body>
+</html>
