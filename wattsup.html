@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WattsUp - Gradient Workout Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        glass: 'rgba(255, 255, 255, 0.1)',
+                        glassBorder: 'rgba(255, 255, 255, 0.2)',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background: linear-gradient(135deg, #2b32b2 0%, #1488cc 100%); 
+            color: #ffffff; 
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+        
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(20, 20, 30, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glass-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s;
+        }
+        .glass-input:focus { 
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.4);
+            outline: none; 
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+        /* Step Gradients based on image inspiration */
+        .gradient-warmup { background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); color: #004e92; }
+        .gradient-interval { background: linear-gradient(90deg, #ff758c 0%, #ff7eb3 100%); color: #780206; }
+        .gradient-recovery { background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%); color: #004d40; }
+        .gradient-cooldown { background: linear-gradient(90deg, #a18cd1 0%, #fbc2eb 100%); color: #4a00e0; }
+        .gradient-repeat { background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.3); }
+
+        /* Range Slider Styling */
+        input[type=range] { -webkit-appearance: none; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="flex flex-col selection:bg-pink-500 selection:text-white">
+
+    <!-- Header -->
+    <header class="glass-panel sticky top-0 z-50 border-b-0 border-b border-white/5">
+        <div class="container mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-orange-400 flex items-center justify-center text-white shadow-lg shadow-pink-500/20">
+                    <i class="fa-solid fa-bolt text-lg"></i>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight text-white">WattsUp <span class="text-xs font-normal opacity-70 ml-1">Pro</span></h1>
+            </div>
+            
+            <!-- User Stats Pill -->
+            <div class="flex items-center bg-black/30 backdrop-blur rounded-full px-1 py-1 border border-white/10">
+                <div class="px-4 py-1 flex items-center gap-2 border-r border-white/10">
+                    <span class="text-[10px] text-gray-400 uppercase font-bold">FTP</span>
+                    <input type="number" id="userFtp" class="bg-transparent w-12 text-center font-bold text-cyan-400 focus:outline-none" value="250">
+                    <span class="text-xs text-gray-500">w</span>
+                </div>
+                <div class="px-4 py-1 flex items-center gap-2">
+                    <span class="text-[10px] text-gray-400 uppercase font-bold">WGT</span>
+                    <input type="number" id="userWeight" class="bg-transparent w-10 text-center font-bold text-pink-400 focus:outline-none" value="75">
+                    <span class="text-xs text-gray-500">kg</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Column: Controls -->
+        <div class="lg:col-span-5 space-y-6 flex flex-col h-[calc(100vh-140px)]">
+            
+            <!-- Settings Card -->
+            <div class="glass-panel p-5 rounded-2xl">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs text-blue-200 mb-2 font-semibold tracking-wide uppercase">Workout Name</label>
+                        <input type="text" id="workoutName" class="glass-input w-full p-3 rounded-xl text-sm font-medium" value="Gradient Power Intervals">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Steps Builder -->
+            <div class="glass-panel p-5 rounded-2xl flex flex-col flex-grow overflow-hidden relative">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-sm font-bold text-white uppercase tracking-wider">Workout Structure</h2>
+                    
+                    <!-- Add Buttons -->
+                    <div class="flex gap-1">
+                        <button onclick="addStep('warmup')" class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-300 text-blue-900 hover:scale-105 transition flex items-center justify-center shadow-lg shadow-blue-500/30" title="Warmup"><i class="fa-solid fa-fire text-xs"></i></button>
+                        <button onclick="addStep('interval')" class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-400 text-white hover:scale-105 transition flex items-center justify-center shadow-lg shadow-pink-500/30" title="Interval"><i class="fa-solid fa-person-biking text-xs"></i></button>
+                        <button onclick="addStep('recovery')" class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-300 text-emerald-900 hover:scale-105 transition flex items-center justify-center shadow-lg shadow-emerald-500/30" title="Recovery"><i class="fa-solid fa-water text-xs"></i></button>
+                        <button onclick="addStep('cooldown')" class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-400 to-indigo-400 text-white hover:scale-105 transition flex items-center justify-center shadow-lg shadow-purple-500/30" title="Cooldown"><i class="fa-solid fa-snowflake text-xs"></i></button>
+                        <div class="w-px h-6 bg-white/20 mx-1 self-center"></div>
+                        <button onclick="addStep('repeat')" class="h-8 px-3 rounded-lg border border-white/20 text-xs text-blue-200 hover:bg-white/10 transition flex items-center justify-center gap-1" title="Add Loop"><i class="fa-solid fa-repeat"></i> Loop</button>
+                    </div>
+                </div>
+
+                <div id="stepsContainer" class="space-y-3 flex-grow overflow-y-auto pr-2 pb-20">
+                    <!-- Steps injected by JS -->
+                </div>
+                
+                <!-- Bottom Stats Bar -->
+                <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent backdrop-blur-[2px] border-t border-white/5 flex justify-between items-center rounded-b-2xl">
+                    <span id="totalDuration" class="text-lg font-mono font-bold text-white tracking-tight">00:00:00</span>
+                    <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10">
+                        <i class="fa-solid fa-chart-simple text-xs text-pink-400"></i>
+                        <span id="totalTss" class="text-xs font-bold text-white">TSS: --</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Visualization & Export -->
+        <div class="lg:col-span-7 space-y-6">
+            
+            <!-- Graph -->
+            <div class="glass-panel p-1 rounded-2xl relative overflow-hidden group">
+                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 opacity-50"></div>
+                
+                <div class="relative w-full h-72 bg-black/40 rounded-xl overflow-hidden m-1">
+                    <canvas id="workoutCanvas" class="w-full h-full"></canvas>
+                </div>
+                
+                <div class="absolute top-4 right-4 flex gap-3">
+                    <div class="px-2 py-1 rounded bg-black/60 backdrop-blur text-[10px] text-white/70 border border-white/10">
+                        Visualizing Loops Unrolled
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="glass-panel p-6 rounded-2xl">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-brands fa-garmin"></i> Garmin Export
+                    </h2>
+                </div>
+                
+                <div class="space-y-5">
+                    <!-- Cookie Input -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-end">
+                            <label class="text-xs text-blue-200 font-semibold uppercase tracking-wider">SSO Cookie (Required for Upload)</label>
+                            <button onclick="document.getElementById('cookieGuide').classList.toggle('hidden')" class="text-[10px] text-pink-300 hover:text-white transition cursor-pointer underline decoration-dotted">
+                                Where do I find this?
+                            </button>
+                        </div>
+                        
+                        <div id="cookieGuide" class="hidden p-3 rounded-xl bg-blue-900/30 border border-blue-500/30 text-xs text-blue-100 mb-2">
+                            <p class="mb-1">1. Log in to <strong>connect.garmin.com</strong>.</p>
+                            <p class="mb-1">2. Press <strong>F12</strong> > <strong>Application</strong> > <strong>Cookies</strong>.</p>
+                            <p>3. Copy value of <strong>GARMIN-SSO-GUID</strong>.</p>
+                        </div>
+
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-key text-white/30 group-focus-within:text-pink-400 transition"></i>
+                            </div>
+                            <input type="text" id="ssoCookie" placeholder="Paste GARMIN-SSO-GUID value..." class="glass-input w-full pl-10 p-3 rounded-xl text-xs font-mono text-cyan-300">
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button onclick="generateCurl()" class="relative overflow-hidden group bg-gradient-to-r from-gray-800 to-gray-900 hover:to-gray-800 text-white p-4 rounded-xl border border-white/10 transition-all shadow-lg hover:shadow-cyan-500/20">
+                            <div class="flex items-center justify-center gap-3 relative z-10">
+                                <i class="fa-solid fa-terminal text-cyan-400 group-hover:scale-110 transition"></i>
+                                <span class="font-bold text-sm">Copy cURL Command</span>
+                            </div>
+                        </button>
+                        
+                        <button onclick="downloadJson()" class="relative overflow-hidden group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white p-4 rounded-xl transition-all shadow-lg hover:shadow-blue-500/40">
+                            <div class="flex items-center justify-center gap-3 relative z-10">
+                                <i class="fa-solid fa-file-arrow-down text-white group-hover:translate-y-0.5 transition"></i>
+                                <span class="font-bold text-sm">Download JSON</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- State Management ---
+        // We support nested steps now for Repeats.
+        // Structure: { id, type, duration, targetValue, steps: [] (if type=='repeat'), repeatCount: 2 }
+        let workoutSteps = [
+            { id: 1, type: 'warmup', duration: 600, durationType: 'time', targetType: 'percent', targetValue: 50 },
+            { 
+                id: 2, 
+                type: 'repeat', 
+                repeatCount: 3, 
+                steps: [
+                    { id: 21, type: 'interval', duration: 180, durationType: 'time', targetType: 'percent', targetValue: 110 },
+                    { id: 22, type: 'recovery', duration: 120, durationType: 'time', targetType: 'percent', targetValue: 50 }
+                ]
+            },
+            { id: 3, type: 'cooldown', duration: 300, durationType: 'time', targetType: 'percent', targetValue: 40 }
+        ];
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+            renderSteps();
+            updateVisualization();
+            
+            // Listeners
+            document.getElementById('userFtp').addEventListener('input', (e) => { saveSettings(); renderSteps(); updateVisualization(); });
+            document.getElementById('userWeight').addEventListener('input', saveSettings);
+            document.getElementById('workoutName').addEventListener('input', updateVisualization);
+        });
+
+        // --- Core Logic ---
+        function getFtp() { return parseInt(document.getElementById('userFtp').value) || 250; }
+        function saveSettings() {
+            localStorage.setItem('garmin_ftp', document.getElementById('userFtp').value);
+            localStorage.setItem('garmin_weight', document.getElementById('userWeight').value);
+        }
+        function loadSettings() {
+            if (localStorage.getItem('garmin_ftp')) document.getElementById('userFtp').value = localStorage.getItem('garmin_ftp');
+            if (localStorage.getItem('garmin_weight')) document.getElementById('userWeight').value = localStorage.getItem('garmin_weight');
+        }
+
+        // --- CRUD Operations ---
+
+        function addStep(type, parentId = null) {
+            const newStep = {
+                id: Date.now() + Math.random(),
+                type: type,
+                duration: 300, // 5 mins default
+                durationType: 'time',
+                targetType: 'percent',
+                targetValue: type === 'interval' ? 100 : 50
+            };
+
+            if (type === 'repeat') {
+                newStep.repeatCount = 2;
+                newStep.steps = []; // Container for child steps
+            }
+
+            if (parentId) {
+                // Add to specific repeat block
+                const parent = findStepById(workoutSteps, parentId);
+                if (parent && parent.steps) parent.steps.push(newStep);
+            } else {
+                // Add to root
+                workoutSteps.push(newStep);
+            }
+            renderSteps();
+            updateVisualization();
+        }
+
+        function removeStep(id, parentId = null) {
+            if (parentId) {
+                const parent = findStepById(workoutSteps, parentId);
+                if (parent) parent.steps = parent.steps.filter(s => s.id !== id);
+            } else {
+                workoutSteps = workoutSteps.filter(s => s.id !== id);
+            }
+            renderSteps();
+            updateVisualization();
+        }
+
+        function updateStepValue(id, field, value) {
+            const step = findStepById(workoutSteps, id);
+            if (step) {
+                step[field] = value;
+                renderSteps();
+                updateVisualization();
+            }
+        }
+
+        function findStepById(list, id) {
+            for (let s of list) {
+                if (s.id === id) return s;
+                if (s.steps) {
+                    const found = findStepById(s.steps, id);
+                    if (found) return found;
+                }
+            }
+            return null;
+        }
+
+        // --- Rendering ---
+
+        function secondsToMmSs(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60);
+            const s = totalSeconds % 60;
+            return { m, s };
+        }
+
+        function renderSteps() {
+            const container = document.getElementById('stepsContainer');
+            container.innerHTML = '';
+            
+            // Calculate stats
+            let totalSecs = 0;
+            let totalTssScore = 0;
+            const ftp = getFtp();
+
+            // Recursive function to calculate stats
+            const calcStats = (list, multiplier = 1) => {
+                list.forEach(s => {
+                    if (s.type === 'repeat') {
+                        calcStats(s.steps, multiplier * s.repeatCount);
+                    } else if (s.durationType === 'time') {
+                        const dur = parseInt(s.duration);
+                        totalSecs += dur * multiplier;
+                        const watts = ftp * (s.targetValue / 100);
+                        const IF = watts / ftp;
+                        const stepTSS = ((dur * IF * IF) / 36) * multiplier;
+                        totalTssScore += stepTSS;
+                    }
+                });
+            };
+            calcStats(workoutSteps);
+
+            // Update Header Stats
+            const hrs = Math.floor(totalSecs / 3600);
+            const mins = Math.floor((totalSecs % 3600) / 60);
+            const secs = totalSecs % 60;
+            document.getElementById('totalDuration').innerText = `${hrs > 0 ? hrs + ':' : ''}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('totalTss').innerText = `TSS: ${Math.round(totalTssScore)}`;
+
+            // Render Logic
+            const renderList = (list, parentElement, parentId = null) => {
+                list.forEach((step, index) => {
+                    const el = document.createElement('div');
+                    
+                    if (step.type === 'repeat') {
+                        // Render Repeat Block
+                        el.className = `gradient-repeat p-3 rounded-xl border relative`;
+                        el.innerHTML = `
+                            <div class="flex justify-between items-center mb-2 pb-2 border-b border-white/10">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-rotate text-blue-300 text-xs"></i>
+                                    <span class="text-xs font-bold text-blue-200">REPEAT BLOCK</span>
+                                    <div class="flex items-center bg-black/40 rounded px-2">
+                                        <input type="number" min="1" max="50" value="${step.repeatCount}" 
+                                            onchange="updateStepValue(${step.id}, 'repeatCount', parseInt(this.value))"
+                                            class="w-8 bg-transparent text-center text-xs font-bold text-white focus:outline-none">
+                                        <span class="text-[10px] text-gray-400">x times</span>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <div class="flex gap-1 bg-black/30 rounded p-0.5">
+                                        <button onclick="addStep('interval', ${step.id})" class="w-5 h-5 rounded hover:bg-white/10 text-pink-400 flex items-center justify-center" title="Add Interval"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                                        <button onclick="addStep('recovery', ${step.id})" class="w-5 h-5 rounded hover:bg-white/10 text-emerald-400 flex items-center justify-center" title="Add Recovery"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                                    </div>
+                                    <button onclick="removeStep(${step.id}, ${parentId})" class="text-gray-500 hover:text-red-400 transition ml-2"><i class="fa-solid fa-trash text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="space-y-2 pl-1 border-l-2 border-white/5" id="container-${step.id}"></div>
+                        `;
+                        parentElement.appendChild(el);
+                        // Recursively render children
+                        renderList(step.steps, el.querySelector(`#container-${step.id}`), step.id);
+
+                    } else {
+                        // Render Standard Step
+                        const watts = Math.round(ftp * (step.targetValue / 100));
+                        const { m, s } = secondsToMmSs(step.duration);
+                        
+                        el.className = `gradient-${step.type} p-3 rounded-xl shadow-lg relative group transition-all hover:brightness-110`;
+                        
+                        el.innerHTML = `
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="uppercase text-[10px] font-bold tracking-widest opacity-80 flex items-center gap-1">
+                                    <i class="fa-solid ${getIconForType(step.type)}"></i> ${step.type}
+                                </span>
+                                <button onclick="removeStep(${step.id}, ${parentId})" class="opacity-0 group-hover:opacity-100 text-inherit hover:scale-110 transition"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                            
+                            <div class="flex gap-3 items-end">
+                                <!-- Time Input Group -->
+                                <div class="bg-black/20 rounded-lg p-1.5 backdrop-blur-sm min-w-[100px]">
+                                    <label class="text-[8px] uppercase tracking-wide opacity-70 block mb-1">Duration</label>
+                                    <div class="flex items-center gap-1">
+                                        ${step.durationType === 'time' ? `
+                                            <input type="number" placeholder="m" value="${m}" 
+                                                onchange="const total = (parseInt(this.value)||0)*60 + (parseInt(this.nextElementSibling.value)||0); updateStepValue(${step.id}, 'duration', total)"
+                                                class="w-8 bg-transparent border-b border-white/30 text-center text-sm font-bold focus:outline-none focus:border-white">
+                                            <span class="text-[10px] opacity-60">:</span>
+                                            <input type="number" placeholder="s" value="${s}" 
+                                                onchange="const total = (parseInt(this.previousElementSibling.previousElementSibling.value)||0)*60 + (parseInt(this.value)||0); updateStepValue(${step.id}, 'duration', total)"
+                                                class="w-8 bg-transparent border-b border-white/30 text-center text-sm font-bold focus:outline-none focus:border-white">
+                                        ` : `
+                                            <div class="w-full text-center text-xs font-bold py-1"><i class="fa-solid fa-stopwatch"></i> Lap Button</div>
+                                        `}
+                                    </div>
+                                </div>
+
+                                <!-- Intensity Slider -->
+                                <div class="flex-grow bg-black/20 rounded-lg p-1.5 backdrop-blur-sm">
+                                    <div class="flex justify-between text-[8px] uppercase tracking-wide opacity-70 mb-1">
+                                        <span>Intensity</span>
+                                        <span class="font-bold">${step.targetValue}% / ${watts}w</span>
+                                    </div>
+                                    <input type="range" min="30" max="200" step="5" 
+                                        value="${step.targetValue}" 
+                                        oninput="updateStepValue(${step.id}, 'targetValue', parseInt(this.value))"
+                                        class="w-full h-1"
+                                    >
+                                </div>
+                            </div>
+                        `;
+                        parentElement.appendChild(el);
+                    }
+                });
+            };
+
+            renderList(workoutSteps, container);
+        }
+
+        function getIconForType(type) {
+            if(type === 'warmup') return 'fa-fire';
+            if(type === 'interval') return 'fa-bolt';
+            if(type === 'recovery') return 'fa-water';
+            if(type === 'cooldown') return 'fa-snowflake';
+            return 'fa-circle';
+        }
+
+        // --- Visualization (Canvas) ---
+
+        function updateVisualization() {
+            const canvas = document.getElementById('workoutCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.parentElement.offsetWidth;
+            const height = canvas.height = canvas.parentElement.offsetHeight;
+            const ftp = getFtp();
+
+            // Clear & Grid
+            ctx.clearRect(0,0,width,height);
+            
+            // Unroll loop logic for drawing
+            let flatSteps = [];
+            const flatten = (list) => {
+                list.forEach(s => {
+                    if (s.type === 'repeat') {
+                        for(let i=0; i<s.repeatCount; i++) flatten(s.steps);
+                    } else {
+                        flatSteps.push(s);
+                    }
+                });
+            };
+            flatten(workoutSteps);
+
+            // Calculate Scale
+            let maxPower = 120;
+            let totalTime = 0;
+            flatSteps.forEach(s => {
+                if(s.targetValue > maxPower) maxPower = s.targetValue;
+                totalTime += (s.durationType === 'time' ? parseInt(s.duration) : 600);
+            });
+            maxPower = maxPower * 1.1;
+            if(totalTime === 0) totalTime = 3600;
+
+            // Draw FTP Line
+            const ftpY = height - ((100 / maxPower) * height);
+            ctx.beginPath(); ctx.moveTo(0, ftpY); ctx.lineTo(width, ftpY);
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.setLineDash([5,5]); ctx.stroke(); ctx.setLineDash([]);
+            ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = '10px Inter'; ctx.fillText('FTP', 5, ftpY - 5);
+
+            // Draw Blocks
+            let currentX = 0;
+            flatSteps.forEach(step => {
+                const duration = step.durationType === 'time' ? parseInt(step.duration) : 600;
+                const percent = step.targetValue;
+                
+                const w = (duration / totalTime) * width;
+                const h = (percent / maxPower) * height;
+                const x = currentX;
+                const y = height - h;
+
+                // Gradients for Canvas
+                const grd = ctx.createLinearGradient(x, y, x, y + h);
+                if(step.type === 'warmup') { grd.addColorStop(0, '#4facfe'); grd.addColorStop(1, '#00f2fe'); }
+                if(step.type === 'interval') { grd.addColorStop(0, '#ff758c'); grd.addColorStop(1, '#ff7eb3'); }
+                if(step.type === 'recovery') { grd.addColorStop(0, '#43e97b'); grd.addColorStop(1, '#38f9d7'); }
+                if(step.type === 'cooldown') { grd.addColorStop(0, '#a18cd1'); grd.addColorStop(1, '#fbc2eb'); }
+                
+                ctx.fillStyle = grd;
+                
+                // Rounded top corners for bars
+                ctx.beginPath();
+                ctx.roundRect(x, y, w, h, [4, 4, 0, 0]);
+                ctx.fill();
+                
+                // Top Highlight
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.fillRect(x, y, w, 2);
+
+                currentX += w;
+            });
+        }
+
+        // --- Garmin Export Logic (Unrolled for compatibility) ---
+        function generatePayloadObj() {
+            const workoutName = document.getElementById('workoutName').value || "WattsUp Workout";
+            const ftp = getFtp();
+
+            // Mappings
+            const stepTypeMap = { 'warmup': {id:1,k:'warmup'}, 'cooldown': {id:2,k:'cooldown'}, 'interval': {id:3,k:'interval'}, 'recovery': {id:4,k:'recovery'} };
+            const endConditionMap = { 'lap.button': {id:1,k:'lap.button'}, 'time': {id:2,k:'time'} };
+
+            let flatSteps = [];
+            
+            // Helper to unroll steps recursively
+            const unroll = (list) => {
+                list.forEach(s => {
+                    if (s.type === 'repeat') {
+                        for(let i=0; i<s.repeatCount; i++) unroll(s.steps);
+                    } else {
+                        flatSteps.push(s);
+                    }
+                });
+            };
+            unroll(workoutSteps);
+
+            const mappedSteps = flatSteps.map((step, idx) => {
+                const stepType = stepTypeMap[step.type];
+                const endCond = endConditionMap[step.durationType];
+                const targetWatts = Math.round(ftp * (step.targetValue / 100));
+
+                return {
+                    "stepId": null,
+                    "stepOrder": idx + 1,
+                    "stepType": { "stepTypeId": stepType.id, "stepTypeKey": stepType.k },
+                    "type": "ExecutableStepDTO",
+                    "endCondition": { "conditionTypeId": endCond.id, "conditionTypeKey": endCond.k },
+                    "endConditionValue": step.durationType === 'time' ? parseInt(step.duration) : null,
+                    "targetType": { "workoutTargetTypeId": 4, "workoutTargetTypeKey": "power" },
+                    "targetValueOne": targetWatts - 5,
+                    "targetValueTwo": targetWatts + 5
+                };
+            });
+
+            return {
+                "sportType": { "sportTypeId": 2, "sportTypeKey": "cycling", "displayOrder": 2 },
+                "workoutName": workoutName,
+                "workoutSegments": [{ "segmentOrder": 1, "sportType": { "sportTypeId": 2, "sportTypeKey": "cycling", "displayOrder": 2 }, "workoutSteps": mappedSteps }],
+            };
+        }
+
+        function generateCurl() {
+            const cookies = document.getElementById('ssoCookie').value.trim();
+            if (!cookies) { alert("Please paste your Garmin SSO Cookie first."); return; }
+
+            const payload = JSON.stringify(generatePayloadObj()).replace(/'/g, "'\\''");
+            const curl = `curl 'https://connect.garmin.com/gc-api/workout-service/workout' -H 'content-type: application/json' -H 'cookie: GARMIN-SSO-GUID=${cookies}' --data-raw '${payload}'`;
+            
+            navigator.clipboard.writeText(curl).then(() => {
+                const btn = document.querySelector('button[onclick="generateCurl()"] span');
+                const original = btn.innerText;
+                btn.innerText = "Copied!";
+                setTimeout(() => btn.innerText = original, 2000);
+            });
+        }
+
+        function downloadJson() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(generatePayloadObj(), null, 2));
+            const dl = document.createElement('a');
+            dl.setAttribute("href", dataStr);
+            dl.setAttribute("download", document.getElementById('workoutName').value + ".json");
+            dl.click();
+        }
+    </script>
+</body>
+</html>
