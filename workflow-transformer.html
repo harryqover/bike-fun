@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Workflow Transformer</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Monaco Editor Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        /* Monaco Editor overrides */
+        .monaco-editor .margin { background-color: #0f172a !important; }
+        .monaco-editor { background-color: #0f172a !important; }
+        .monaco-editor-background { background-color: #0f172a !important; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 h-screen overflow-hidden">
+
+<div id="root"></div>
+
+<script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const App = () => {
+        const [input, setInput] = useState('');
+        const [output, setOutput] = useState('');
+        const [error, setError] = useState(null);
+        const [copied, setCopied] = useState(false);
+
+        const inputContainerRef = useRef(null);
+        const outputContainerRef = useRef(null);
+        const inputEditorRef = useRef(null);
+        const outputEditorRef = useRef(null);
+
+        // Initialize Monaco Editors
+        useEffect(() => {
+            require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' }});
+
+            require(['vs/editor/editor.main'], () => {
+                // Input Editor
+                if (!inputEditorRef.current && inputContainerRef.current) {
+                    inputEditorRef.current = monaco.editor.create(inputContainerRef.current, {
+                        value: input,
+                        language: 'json',
+                        theme: 'vs-dark',
+                        automaticLayout: true,
+                        minimap: { enabled: false },
+                        scrollBeyondLastLine: false,
+                        fontSize: 13,
+                        fontFamily: "'Menlo', 'Monaco', 'Courier New', monospace",
+                        padding: { top: 16, bottom: 16 }
+                    });
+
+                    // Sync model changes to React state
+                    inputEditorRef.current.onDidChangeModelContent(() => {
+                        setInput(inputEditorRef.current.getValue());
+                    });
+                }
+
+                // Output Editor
+                if (!outputEditorRef.current && outputContainerRef.current) {
+                    outputEditorRef.current = monaco.editor.create(outputContainerRef.current, {
+                        value: output,
+                        language: 'json',
+                        theme: 'vs-dark',
+                        readOnly: true,
+                        automaticLayout: true,
+                        minimap: { enabled: false },
+                        scrollBeyondLastLine: false,
+                        fontSize: 13,
+                        fontFamily: "'Menlo', 'Monaco', 'Courier New', monospace",
+                        padding: { top: 16, bottom: 16 }
+                    });
+                }
+            });
+
+            // Cleanup
+            return () => {
+                if (inputEditorRef.current) inputEditorRef.current.dispose();
+                if (outputEditorRef.current) outputEditorRef.current.dispose();
+            };
+        }, []);
+
+        // Sync State -> Input Editor (e.g. Load Example)
+        useEffect(() => {
+            if (inputEditorRef.current && input !== inputEditorRef.current.getValue()) {
+                inputEditorRef.current.setValue(input);
+            }
+        }, [input]);
+
+        // Sync State -> Output Editor
+        useEffect(() => {
+            if (outputEditorRef.current && output !== outputEditorRef.current.getValue()) {
+                outputEditorRef.current.setValue(output);
+            }
+        }, [output]);
+
+        const loadExample = () => {
+            const exampleData = {
+                "id": "615ebdd1046c956b796ed4e4",
+                "version": 0,
+                "name": "[BIKE] Default",
+                "description": "Default Bike claim workflow",
+                "statuses": [
+                    { "id": "90194c79", "name": "Received", "category": "STATUS_CODE_PENDING" },
+                    { "id": "d8eb449a", "name": "Not admissible", "category": "STATUS_CODE_WARNING" }
+                ],
+                "transitions": [
+                    {
+                        "id": "ff47bff6",
+                        "type": "TRANSITION_TYPE_INITIAL",
+                        "to": { "id": "90194c79", "name": "Received", "category": "STATUS_CODE_PENDING" },
+                        "from": [],
+                        "hooks": {
+                            "onEntered": [
+                                {
+                                    "id": "262f4a86",
+                                    "deletable": true,
+                                    "configuration": { "id": "received" }
+                                }
+                            ]
+                        }
+                    },
+                     {
+                        "id": "d172d67b",
+                        "type": "TRANSITION_TYPE_SPECIFIC",
+                        "to": { "id": "b47a2afe", "name": "Open", "category": "STATUS_CODE_PENDING" },
+                        "from": [
+                            { "id": "90194c79", "name": "Received", "category": "STATUS_CODE_PENDING" },
+                            { "id": "d8eb449a", "name": "Not admissible", "category": "STATUS_CODE_WARNING" }
+                        ],
+                        "hooks": {}
+                    }
+                ],
+                "schema": "| From | Transition | To |"
+            };
+            setInput(JSON.stringify(exampleData, null, 2));
+            setError(null);
+        };
+
+        const transformData = () => {
+            if (!input.trim()) {
+                setError("Please enter JSON to transform.");
+                return;
+            }
+
+            try {
+                const data = JSON.parse(input);
+
+                // 1. Transform Statuses
+                if (data.statuses && Array.isArray(data.statuses)) {
+                    data.statuses = data.statuses.map(status => {
+                        const newStatus = { statusId: status.id };
+                        Object.keys(status).forEach(key => {
+                            if (key !== 'id' && key !== 'name' && key !== 'category') {
+                                newStatus[key] = status[key];
+                            }
+                        });
+                        return newStatus;
+                    });
+                }
+
+                // Process Transitions
+                if (data.transitions && Array.isArray(data.transitions)) {
+                    data.transitions = data.transitions.map(t => {
+                        // 2. Transform 'to'
+                        if (t.to && typeof t.to === 'object' && t.to.id) {
+                            t.to = t.to.id;
+                        }
+
+                        // 3. Transform 'from'
+                        if (t.from && Array.isArray(t.from)) {
+                            t.from = t.from.map(item => {
+                                if (typeof item === 'object' && item.id) {
+                                    return item.id;
+                                }
+                                return item;
+                            });
+                        }
+
+                        // 4. Transform Hooks
+                        if (t.hooks && t.hooks.onEntered && Array.isArray(t.hooks.onEntered)) {
+                            t.hooks.onEntered = t.hooks.onEntered.map(hook => {
+                                const { deletable, ...rest } = hook;
+                                return rest;
+                            });
+                        }
+
+                        return t;
+                    });
+                }
+
+                // 5. Remove Schema
+                if (data.hasOwnProperty('schema')) {
+                    delete data.schema;
+                }
+
+                setOutput(JSON.stringify(data, null, 2));
+                setError(null);
+            } catch (err) {
+                setError(`Invalid JSON: ${err.message}`);
+                setOutput('');
+            }
+        };
+
+        const copyToClipboard = () => {
+            if (!output) return;
+            navigator.clipboard.writeText(output);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        };
+
+        // Initialize icons
+        useEffect(() => {
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        });
+
+        return (
+            <div className="flex flex-col h-full">
+                {/* Header */}
+                <header className="bg-slate-800 border-b border-slate-700 p-4 flex items-center justify-between shadow-md z-20 relative">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-blue-600 p-2 rounded-lg">
+                            <i data-lucide="file-json" className="text-white w-6 h-6"></i>
+                        </div>
+                        <h1 className="text-xl font-bold text-white tracking-tight">Workflow JSON Transformer</h1>
+                    </div>
+                    <div className="flex gap-2">
+                         <button 
+                            onClick={loadExample}
+                            className="px-3 py-1.5 text-sm text-slate-400 hover:text-white transition-colors flex items-center gap-2"
+                        >
+                            <i data-lucide="play-circle" className="w-4 h-4"></i>
+                            Load Example
+                        </button>
+                    </div>
+                </header>
+
+                {/* Main Content */}
+                <main className="flex-1 flex flex-col md:flex-row overflow-hidden relative z-10">
+                    
+                    {/* Input Section */}
+                    <div className="flex-1 flex flex-col min-w-0 border-r border-slate-700 relative">
+                        <div className="bg-slate-800/50 p-3 text-xs font-semibold text-slate-400 uppercase tracking-wider flex justify-between items-center border-b border-slate-800">
+                            <span>Input JSON</span>
+                            <button onClick={() => setInput('')} className="hover:text-red-400 transition-colors">Clear</button>
+                        </div>
+                        <div className="flex-1 relative" ref={inputContainerRef}>
+                            {/* Monaco Editor mounts here */}
+                        </div>
+                    </div>
+
+                    {/* Middle Action Bar */}
+                    <div className="bg-slate-800 p-4 flex md:flex-col justify-center items-center gap-4 z-20 shadow-lg border-y md:border-y-0 md:border-x border-slate-700">
+                        <button 
+                            onClick={transformData}
+                            className="bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-full shadow-lg hover:shadow-blue-500/20 transition-all transform hover:scale-105 group"
+                            title="Transform JSON"
+                        >
+                            <i data-lucide="arrow-right" className="w-6 h-6 md:block hidden group-hover:animate-pulse"></i>
+                            <i data-lucide="arrow-down" className="w-6 h-6 md:hidden block"></i>
+                        </button>
+                    </div>
+
+                    {/* Output Section */}
+                    <div className="flex-1 flex flex-col min-w-0 bg-slate-950 relative">
+                        <div className="bg-slate-800/50 p-3 text-xs font-semibold text-slate-400 uppercase tracking-wider flex justify-between items-center border-b border-slate-800">
+                            <span>Output JSON</span>
+                            {output && (
+                                <button 
+                                    onClick={copyToClipboard}
+                                    className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${copied ? 'text-green-400 bg-green-400/10' : 'text-blue-400 hover:text-blue-300 hover:bg-blue-400/10'}`}
+                                >
+                                    {copied ? (
+                                        <>
+                                            <i data-lucide="check" className="w-3 h-3"></i>
+                                            <span>Copied</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i data-lucide="copy" className="w-3 h-3"></i>
+                                            <span>Copy</span>
+                                        </>
+                                    )}
+                                </button>
+                            )}
+                        </div>
+                        
+                        <div className="relative flex-1">
+                            {error && (
+                                <div className="absolute top-4 left-4 right-4 z-30">
+                                    <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-lg flex items-start gap-3 backdrop-blur-md shadow-xl">
+                                        <i data-lucide="alert-triangle" className="w-5 h-5 mt-0.5 shrink-0"></i>
+                                        <div className="font-mono text-sm break-all">{error}</div>
+                                    </div>
+                                </div>
+                            )}
+                            <div className="w-full h-full" ref={outputContainerRef}>
+                                {/* Monaco Editor mounts here */}
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                
+                {/* Footer */}
+                <footer className="bg-slate-900 border-t border-slate-800 p-2 text-center text-xs text-slate-600 z-20 relative">
+                    Runs entirely in your browser. No data is sent to any server.
+                </footer>
+            </div>
+        );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+</body>
+</html>
