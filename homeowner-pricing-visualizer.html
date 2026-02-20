@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing & Rates Visualizer</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-is@18/umd/react-is.production.min.js"></script>
+    
+    <!-- Babel for in-browser JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Recharts for Data Visualization -->
+    <script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        const { useState, useMemo, useEffect } = React;
+        const { 
+            LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
+            ResponsiveContainer, AreaChart, Area, ComposedChart, Bar 
+        } = window.Recharts;
+
+        // The initial data provided by the user
+        const initialData = [
+            {
+              "id": "67a22558f3f7fe9552404dc4",
+              "renew": false,
+              "startDate": "2024-03-02",
+              "ratesAndPremiumsBuilding": [ { "maximumCapital": 15000000, "rate": 0.0008112, "premium": 0 }, { "maximumCapital": 20000000, "rate": 0.0005253, "premium": 4288 }, { "maximumCapital": 25000000, "rate": 0.0004976, "premium": 4845 } ],
+              "ratesAndPremiumsEmbellishment": [ { "maximumCapital": 15000000, "rate": 0.0009699, "premium": 0 }, { "maximumCapital": 20000000, "rate": 0.0008852, "premium": 1270 }, { "maximumCapital": 25000000, "rate": 0.000732, "premium": 4334 } ],
+              "coefficientTheft": { "A0.5adjacent": 0.00066, "A1isolated": 0.00111, "C1isolated": 0.00215 },
+              "legalProtectionFireNip": 1337,
+              "civilLiabilityNip": 3945,
+              "legalProtectionFamilyNip": 1308,
+              "rateFirstRisk": 0.0009486
+            },
+            {
+              "id": "67a22558f3f7fe9552404dc5",
+              "renew": true,
+              "startDate": "2024-07-02",
+              "ratesAndPremiumsBuilding": [ { "maximumCapital": 15000000, "rate": 0.0008355, "premium": 0 }, { "maximumCapital": 20000000, "rate": 0.0005411, "premium": 4417 }, { "maximumCapital": 25000000, "rate": 0.0005125, "premium": 4990 } ],
+              "ratesAndPremiumsEmbellishment": [ { "maximumCapital": 15000000, "rate": 0.0009989, "premium": 0 }, { "maximumCapital": 20000000, "rate": 0.0009117, "premium": 1308 }, { "maximumCapital": 25000000, "rate": 0.0007539, "premium": 4464 } ],
+              "coefficientTheft": { "A0.5adjacent": 0.00068, "A1isolated": 0.00115, "C1isolated": 0.00221 },
+              "legalProtectionFireNip": 1337,
+              "civilLiabilityNip": 3945,
+              "legalProtectionFamilyNip": 1308,
+              "rateFirstRisk": 0.0009486
+            },
+            {
+              "id": "67a22558f3f7fe9552404dc6",
+              "renew": false,
+              "startDate": "2025-03-02",
+              "ratesAndPremiumsBuilding": [ { "maximumCapital": 15000000, "rate": 0.000825, "premium": 0 }, { "maximumCapital": 20000000, "rate": 0.0005342, "premium": 4361 }, { "maximumCapital": 25000000, "rate": 0.000506, "premium": 4927 } ],
+              "ratesAndPremiumsEmbellishment": [ { "maximumCapital": 15000000, "rate": 0.0009864, "premium": 0 }, { "maximumCapital": 20000000, "rate": 0.0009002, "premium": 1292 }, { "maximumCapital": 25000000, "rate": 0.0007444, "premium": 4408 } ],
+              "coefficientTheft": { "A0.5adjacent": 0.00067, "A1isolated": 0.00113, "C1isolated": 0.00218 },
+              "legalProtectionFireNip": 1399,
+              "civilLiabilityNip": 4083,
+              "legalProtectionFamilyNip": 1354,
+              "rateFirstRisk": 0.0009486
+            },
+            {
+              "id": "67a22558f3f7fe9552404dc7",
+              "renew": true,
+              "startDate": "2025-07-02",
+              "ratesAndPremiumsBuilding": [ { "maximumCapital": 15000000, "rate": 0.0008689, "premium": 0 }, { "maximumCapital": 20000000, "rate": 0.0005627, "premium": 4593 }, { "maximumCapital": 25000000, "rate": 0.000533, "premium": 5190 } ],
+              "ratesAndPremiumsEmbellishment": [ { "maximumCapital": 15000000, "rate": 0.0010389, "premium": 0 }, { "maximumCapital": 20000000, "rate": 0.0009482, "premium": 1360 }, { "maximumCapital": 25000000, "rate": 0.0007841, "premium": 4643 } ],
+              "coefficientTheft": { "A0.5adjacent": 0.00071, "A1isolated": 0.00119, "C1isolated": 0.0023 },
+              "legalProtectionFireNip": 1399,
+              "civilLiabilityNip": 4083,
+              "legalProtectionFamilyNip": 1354,
+              "rateFirstRisk": 0.0009486
+            },
+            {
+              "id": "6998256861fec3168baa6b46",
+              "renew": false,
+              "startDate": "2026-03-02",
+              "ratesAndPremiumsBuilding": [ { "maximumCapital": 15000000, "rate": 0.000825, "premium": 0 }, { "maximumCapital": 20000000, "rate": 0.0005342, "premium": 4361 }, { "maximumCapital": 25000000, "rate": 0.000506, "premium": 4927 } ],
+              "ratesAndPremiumsEmbellishment": [ { "maximumCapital": 15000000, "rate": 0.0009864, "premium": 0 }, { "maximumCapital": 20000000, "rate": 0.0009002, "premium": 1292 }, { "maximumCapital": 25000000, "rate": 0.0007444, "premium": 4408 } ],
+              "coefficientTheft": { "A0.5adjacent": 0.00067, "A1isolated": 0.00113, "C1isolated": 0.00218 },
+              "legalProtectionFireNip": 1448,
+              "civilLiabilityNip": 4083,
+              "legalProtectionFamilyNip": 1354,
+              "rateFirstRisk": 0.0009486
+            },
+            {
+              "id": "69982e57ba1e0345da97c247",
+              "renew": true,
+              "startDate": "2026-07-02",
+              "ratesAndPremiumsBuilding": [ { "maximumCapital": 15000000, "rate": 0.0008924, "premium": 0 }, { "maximumCapital": 20000000, "rate": 0.0005779, "premium": 4717 }, { "maximumCapital": 25000000, "rate": 0.0005474, "premium": 5330 } ],
+              "ratesAndPremiumsEmbellishment": [ { "maximumCapital": 15000000, "rate": 0.001067, "premium": 0 }, { "maximumCapital": 20000000, "rate": 0.0009738, "premium": 1397 }, { "maximumCapital": 25000000, "rate": 0.0008053, "premium": 4768 } ],
+              "coefficientTheft": { "A0.5adjacent": 0.00073, "A1isolated": 0.00122, "C1isolated": 0.00236 },
+              "legalProtectionFireNip": 1448,
+              "civilLiabilityNip": 4083,
+              "legalProtectionFamilyNip": 1354,
+              "rateFirstRisk": 0.0009486
+            }
+        ];
+
+        // Extracted full original payload to auto-populate textarea with accurate full data
+        const fullInitialJson = window.initialFullJsonPayload || initialData;
+
+        const App = () => {
+            const [jsonInput, setJsonInput] = useState(JSON.stringify(initialData, null, 2));
+            const [data, setData] = useState(initialData);
+            const [error, setError] = useState("");
+            
+            // Filters
+            const [renewFilter, setRenewFilter] = useState("all");
+            const [selectedCapital, setSelectedCapital] = useState(20000000);
+
+            // Update Data from textarea
+            const handleUpdateData = () => {
+                try {
+                    const parsed = JSON.parse(jsonInput);
+                    if (!Array.isArray(parsed)) throw new Error("Input must be a JSON array.");
+                    setData(parsed);
+                    setError("");
+                } catch (err) {
+                    setError("Invalid JSON: " + err.message);
+                }
+            };
+
+            // Process Data: Filter & Sort by Date
+            const processedData = useMemo(() => {
+                return data
+                    .filter(d => renewFilter === "all" ? true : d.renew.toString() === renewFilter)
+                    .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+            }, [data, renewFilter]);
+
+            // Available Capitals for Dropdown
+            const availableCapitals = useMemo(() => {
+                const caps = new Set();
+                data.forEach(d => {
+                    if (d.ratesAndPremiumsBuilding) {
+                        d.ratesAndPremiumsBuilding.forEach(r => caps.add(r.maximumCapital));
+                    }
+                });
+                return Array.from(caps).sort((a, b) => a - b);
+            }, [data]);
+
+            // Data Transformation for Charts
+            const chartData = useMemo(() => {
+                return processedData.map(d => {
+                    const bldgMatch = d.ratesAndPremiumsBuilding?.find(r => r.maximumCapital === selectedCapital) || {};
+                    const embMatch = d.ratesAndPremiumsEmbellishment?.find(r => r.maximumCapital === selectedCapital) || {};
+                    
+                    return {
+                        date: d.startDate,
+                        renew: d.renew,
+                        // NIP values
+                        fireNip: d.legalProtectionFireNip,
+                        civilNip: d.civilLiabilityNip,
+                        familyNip: d.legalProtectionFamilyNip,
+                        // Selected Capital Rates
+                        bldgRate: bldgMatch.rate || 0,
+                        bldgPremium: bldgMatch.premium || 0,
+                        embRate: embMatch.rate || 0,
+                        embPremium: embMatch.premium || 0,
+                        // Selected Coefficients
+                        theftA1Iso: d.coefficientTheft?.A1isolated || 0,
+                        theftC1Iso: d.coefficientTheft?.C1isolated || 0,
+                        rateFirstRisk: d.rateFirstRisk || 0
+                    };
+                });
+            }, [processedData, selectedCapital]);
+
+            // Formatters
+            const formatCurrency = (val) => val ? `€${val.toLocaleString()}` : '0';
+            const formatRate = (val) => val ? val.toFixed(5) : '0';
+
+            return (
+                <div className="min-h-screen p-4 md:p-8">
+                    <div className="max-w-7xl mx-auto space-y-6">
+                        
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h1 className="text-3xl font-bold text-slate-800">Pricing Trends Dashboard</h1>
+                                <p className="text-slate-500">Analyze rate and premium increases over time.</p>
+                            </div>
+                            
+                            <div className="flex bg-white shadow-sm rounded-lg p-1 border border-slate-200">
+                                <button onClick={() => setRenewFilter('all')} className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${renewFilter === 'all' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50'}`}>All Data</button>
+                                <button onClick={() => setRenewFilter('true')} className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${renewFilter === 'true' ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-50'}`}>Renew: True</button>
+                                <button onClick={() => setRenewFilter('false')} className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${renewFilter === 'false' ? 'bg-amber-50 text-amber-700' : 'text-slate-600 hover:bg-slate-50'}`}>Renew: False</button>
+                            </div>
+                        </div>
+
+                        {/* Top Summary Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                                <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider">Civil Liability NIP Range</h3>
+                                <div className="mt-2 flex items-baseline gap-2">
+                                    <span className="text-3xl font-bold text-slate-800">
+                                        {chartData.length > 0 ? formatCurrency(chartData[0].civilNip) : '0'}
+                                    </span>
+                                    <span className="text-slate-400">→</span>
+                                    <span className="text-3xl font-bold text-slate-800">
+                                        {chartData.length > 0 ? formatCurrency(chartData[chartData.length - 1].civilNip) : '0'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                                <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider">Fire NIP Range</h3>
+                                <div className="mt-2 flex items-baseline gap-2">
+                                    <span className="text-3xl font-bold text-slate-800">
+                                        {chartData.length > 0 ? formatCurrency(chartData[0].fireNip) : '0'}
+                                    </span>
+                                    <span className="text-slate-400">→</span>
+                                    <span className="text-3xl font-bold text-slate-800">
+                                        {chartData.length > 0 ? formatCurrency(chartData[chartData.length - 1].fireNip) : '0'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                                <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider">Data Points</h3>
+                                <div className="mt-2">
+                                    <span className="text-3xl font-bold text-blue-600">{chartData.length}</span>
+                                    <span className="text-slate-500 ml-2">records matching filter</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+                            
+                            {/* Left Column: Data Input */}
+                            <div className="xl:col-span-1 flex flex-col gap-4">
+                                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col h-full">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h2 className="text-lg font-semibold text-slate-800">Data Source</h2>
+                                    </div>
+                                    <p className="text-xs text-slate-500 mb-2">Paste a new JSON array to update the charts.</p>
+                                    <textarea 
+                                        className="w-full flex-grow p-3 border border-slate-300 rounded-lg text-xs font-mono custom-scrollbar focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                        value={jsonInput}
+                                        onChange={(e) => setJsonInput(e.target.value)}
+                                        placeholder="[{ ... }]"
+                                        style={{ minHeight: '300px' }}
+                                    ></textarea>
+                                    {error && <p className="text-red-500 text-xs mt-2 font-medium">{error}</p>}
+                                    <button 
+                                        onClick={handleUpdateData}
+                                        className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors"
+                                    >
+                                        Apply Data Update
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Right Column: Charts */}
+                            <div className="xl:col-span-3 space-y-6">
+                                
+                                {/* NIP Over Time Chart */}
+                                <div className="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                                    <h2 className="text-lg font-semibold text-slate-800 mb-6">NIP Flat Fees Over Time</h2>
+                                    <div className="h-72">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <LineChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                                <XAxis dataKey="date" tick={{fontSize: 12, fill: '#64748b'}} tickMargin={10} />
+                                                <YAxis tick={{fontSize: 12, fill: '#64748b'}} axisLine={false} tickLine={false} />
+                                                <Tooltip 
+                                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                                />
+                                                <Legend wrapperStyle={{ paddingTop: '20px' }}/>
+                                                <Line type="monotone" name="Civil Liability NIP" dataKey="civilNip" stroke="#3b82f6" strokeWidth={3} dot={{r: 4}} activeDot={{r: 6}} />
+                                                <Line type="monotone" name="Legal Protection Fire NIP" dataKey="fireNip" stroke="#f59e0b" strokeWidth={3} dot={{r: 4}} />
+                                                <Line type="monotone" name="Legal Protection Family NIP" dataKey="familyNip" stroke="#10b981" strokeWidth={3} dot={{r: 4}} />
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+
+                                {/* Rates & Premiums based on Maximum Capital */}
+                                <div className="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                                        <h2 className="text-lg font-semibold text-slate-800">Rates & Premiums Trajectory</h2>
+                                        <div className="flex items-center gap-2">
+                                            <label className="text-sm font-medium text-slate-600">Select Capital:</label>
+                                            <select 
+                                                className="border border-slate-300 rounded-md py-1.5 px-3 text-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                                value={selectedCapital}
+                                                onChange={(e) => setSelectedCapital(Number(e.target.value))}
+                                            >
+                                                {availableCapitals.map(cap => (
+                                                    <option key={cap} value={cap}>{(cap / 1000000).toFixed(1)}M</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                        <div className="h-64">
+                                            <h3 className="text-sm text-center text-slate-500 mb-2 font-medium">Building & Embellishment Rates</h3>
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 10, bottom: 0 }}>
+                                                    <defs>
+                                                        <linearGradient id="colorBldg" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                                                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0"/>
+                                                    <XAxis dataKey="date" tick={{fontSize: 10}} />
+                                                    <YAxis tickFormatter={formatRate} domain={['auto', 'auto']} tick={{fontSize: 10}} width={65} axisLine={false} tickLine={false} />
+                                                    <Tooltip formatter={(value) => [formatRate(value), 'Rate']} />
+                                                    <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }}/>
+                                                    <Area type="monotone" name="Building Rate" dataKey="bldgRate" stroke="#8b5cf6" fillOpacity={1} fill="url(#colorBldg)" strokeWidth={2} />
+                                                    <Area type="monotone" name="Embellishment Rate" dataKey="embRate" stroke="#ec4899" fillOpacity={0} strokeWidth={2} />
+                                                </AreaChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                        <div className="h-64">
+                                            <h3 className="text-sm text-center text-slate-500 mb-2 font-medium">Building & Embellishment Premiums</h3>
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <ComposedChart data={chartData} margin={{ top: 5, right: 10, left: 10, bottom: 0 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0"/>
+                                                    <XAxis dataKey="date" tick={{fontSize: 10}} />
+                                                    <YAxis tickFormatter={formatCurrency} tick={{fontSize: 10}} width={50} axisLine={false} tickLine={false}/>
+                                                    <Tooltip formatter={(value) => [formatCurrency(value), 'Premium']} />
+                                                    <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }}/>
+                                                    <Bar dataKey="bldgPremium" name="Building Premium" fill="#6366f1" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                                                    <Line type="monotone" dataKey="embPremium" name="Embellishment Premium" stroke="#14b8a6" strokeWidth={3} dot={{r: 4}} />
+                                                </ComposedChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Theft Coefficients */}
+                                <div className="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                                    <h2 className="text-lg font-semibold text-slate-800 mb-6">Theft Coefficients Trend</h2>
+                                    <div className="h-60">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <LineChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0"/>
+                                                <XAxis dataKey="date" tick={{fontSize: 12, fill: '#64748b'}} />
+                                                <YAxis tickFormatter={formatRate} domain={['auto', 'auto']} tick={{fontSize: 12, fill: '#64748b'}} width={60} axisLine={false} tickLine={false}/>
+                                                <Tooltip formatter={(value) => [formatRate(value), 'Coefficient']} />
+                                                <Legend />
+                                                <Line type="stepAfter" name="A1 Isolated" dataKey="theftA1Iso" stroke="#ef4444" strokeWidth={2} />
+                                                <Line type="stepAfter" name="C1 Isolated" dataKey="theftC1Iso" stroke="#8b5cf6" strokeWidth={2} />
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
