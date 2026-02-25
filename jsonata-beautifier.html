@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSONata Prettifier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom scrollbar for textareas */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 4px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #52525b;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans">
+    
+    <!-- Header -->
+    <header class="border-b border-zinc-800 bg-zinc-900/50 p-4 md:px-6 flex items-center justify-between sticky top-0 z-10">
+        <div class="flex items-center gap-3">
+            <div class="bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                <i data-lucide="code-2" class="w-5 h-5 text-emerald-400"></i>
+            </div>
+            <div>
+                <h1 class="font-semibold text-lg tracking-tight">JSONata Prettifier</h1>
+                <p class="text-xs text-zinc-400">Clean & format complex expressions</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col md:flex-row gap-4 md:gap-6 p-4 md:p-6 overflow-hidden">
+        
+        <!-- Left Panel: Input -->
+        <section class="flex-1 flex flex-col bg-zinc-900/80 border border-zinc-800 rounded-xl overflow-hidden shadow-2xl shadow-black/50 min-h-[40vh]">
+            <div class="flex items-center justify-between p-3 px-4 border-b border-zinc-800 bg-zinc-900">
+                <h2 class="text-sm font-medium text-zinc-300 flex items-center gap-2">
+                    <i data-lucide="wand-2" class="w-4 h-4 text-emerald-500"></i> Raw JSONata
+                </h2>
+                <div class="flex items-center gap-2">
+                    <button id="btn-example" class="px-3 py-1.5 text-xs font-medium rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors flex items-center gap-1.5">
+                        <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Example
+                    </button>
+                    <button id="btn-clear" class="p-1.5 rounded-md hover:bg-zinc-800 text-zinc-400 hover:text-red-400 transition-colors" title="Clear input">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 relative">
+                <textarea
+                    id="input-box"
+                    placeholder="Paste your minified JSONata expression here..."
+                    class="absolute inset-0 w-full h-full p-4 bg-transparent resize-none focus:outline-none focus:ring-0 text-zinc-300 font-mono text-sm leading-relaxed"
+                    spellcheck="false"
+                ></textarea>
+            </div>
+        </section>
+
+        <!-- Right Panel: Output -->
+        <section class="flex-1 flex flex-col bg-[#0d1117] border border-zinc-800 rounded-xl overflow-hidden shadow-2xl shadow-black/50 min-h-[40vh]">
+            <div class="flex items-center justify-between p-3 px-4 border-b border-zinc-800/80 bg-zinc-900/50">
+                <h2 class="text-sm font-medium text-emerald-400 flex items-center gap-2">
+                   Formatted Result
+                </h2>
+                <button id="btn-copy" disabled class="px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5 opacity-50 cursor-not-allowed bg-zinc-800 text-zinc-500 border border-transparent">
+                    <i data-lucide="copy" id="icon-copy" class="w-3.5 h-3.5"></i>
+                    <i data-lucide="check" id="icon-check" class="w-3.5 h-3.5 hidden"></i>
+                    <span id="text-copy">Copy to Clipboard</span>
+                </button>
+            </div>
+            <div class="flex-1 relative">
+                <textarea
+                    id="output-box"
+                    readonly
+                    placeholder="Prettified output will appear here..."
+                    class="absolute inset-0 w-full h-full p-4 bg-transparent resize-none focus:outline-none focus:ring-0 text-emerald-300 font-mono text-sm leading-relaxed"
+                    spellcheck="false"
+                ></textarea>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // DOM Elements
+        const inputBox = document.getElementById('input-box');
+        const outputBox = document.getElementById('output-box');
+        const btnExample = document.getElementById('btn-example');
+        const btnClear = document.getElementById('btn-clear');
+        const btnCopy = document.getElementById('btn-copy');
+        const iconCopy = document.getElementById('icon-copy');
+        const iconCheck = document.getElementById('icon-check');
+        const textCopy = document.getElementById('text-copy');
+
+        // Custom JSONata Formatter Engine (ported from React)
+        function prettifyJSONata(expression) {
+            if (!expression || typeof expression !== 'string') return "";
+
+            let result = "";
+            let indentLevel = 0;
+            const indentChar = "  "; // 2 spaces per indent
+            let inString = false;
+            let stringChar = "";
+            const stack = []; // Tracks context: 'OBJECT', 'ARRAY_LITERAL', 'PREDICATE', 'PAREN'
+            let lastNonWsChar = '';
+
+            for (let i = 0; i < expression.length; i++) {
+                const char = expression[i];
+
+                // Handle block comments /* ... */
+                if (!inString && char === '/' && expression[i + 1] === '*') {
+                    result += "/*";
+                    i += 2;
+                    while (i < expression.length && !(expression[i] === '*' && expression[i + 1] === '/')) {
+                        result += expression[i];
+                        i++;
+                    }
+                    if (i < expression.length) {
+                        result += "*/";
+                        i++; // skip the closing '*'
+                    }
+                    continue;
+                }
+
+                // Handle string boundaries
+                if (inString) {
+                    result += char;
+                    if (char === stringChar && expression[i - 1] !== "\\") {
+                        inString = false;
+                    }
+                    continue;
+                }
+
+                // Enter strings
+                if (char === "'" || char === '"' || char === "`") {
+                    inString = true;
+                    stringChar = char;
+                    result += char;
+                    lastNonWsChar = char;
+                    continue;
+                }
+
+                // Handle Objects
+                if (char === "{") {
+                    indentLevel++;
+                    stack.push('OBJECT');
+                    result += "{\n" + indentChar.repeat(indentLevel);
+                    lastNonWsChar = char;
+                    continue;
+                }
+
+                if (char === "}") {
+                    indentLevel = Math.max(0, indentLevel - 1);
+                    stack.pop();
+                    if (result.endsWith("{\n" + indentChar.repeat(indentLevel + 1))) {
+                        result = result.substring(0, result.lastIndexOf("\n")) + "}";
+                    } else {
+                        result += "\n" + indentChar.repeat(indentLevel) + "}";
+                    }
+                    lastNonWsChar = char;
+                    continue;
+                }
+
+                // Handle Arrays vs Predicates
+                if (char === "[") {
+                    const isIdentifierChar = /[a-zA-Z0-9_\$\`\]\)\"\'\.]/.test(lastNonWsChar);
+                    
+                    if (isIdentifierChar) {
+                        stack.push('PREDICATE');
+                        result += "[";
+                    } else {
+                        stack.push('ARRAY_LITERAL');
+                        indentLevel++;
+                        result += "[\n" + indentChar.repeat(indentLevel);
+                    }
+                    lastNonWsChar = char;
+                    continue;
+                }
+
+                if (char === "]") {
+                    const context = stack.pop();
+                    if (context === 'ARRAY_LITERAL') {
+                        indentLevel = Math.max(0, indentLevel - 1);
+                        if (result.endsWith("[\n" + indentChar.repeat(indentLevel + 1))) {
+                            result = result.substring(0, result.lastIndexOf("\n")) + "]";
+                        } else {
+                            result += "\n" + indentChar.repeat(indentLevel) + "]";
+                        }
+                    } else {
+                        result += "]"; 
+                    }
+                    lastNonWsChar = char;
+                    continue;
+                }
+
+                // Handle Parentheses
+                if (char === "(") {
+                    stack.push('PAREN');
+                    result += "(";
+                    lastNonWsChar = char;
+                    continue;
+                }
+
+                if (char === ")") {
+                    stack.pop();
+                    result += ")";
+                    lastNonWsChar = char;
+                    continue;
+                }
+
+                // Handle Commas
+                if (char === ",") {
+                    const context = stack[stack.length - 1];
+                    if (context === 'OBJECT' || context === 'ARRAY_LITERAL') {
+                        result += ",\n" + indentChar.repeat(indentLevel);
+                    } else {
+                        result += ", "; 
+                    }
+                    lastNonWsChar = char;
+                    continue;
+                }
+
+                // Handle Whitespace (collapse and standardize)
+                if (/\s/.test(char)) {
+                    if (!result.endsWith(" ") && !result.endsWith("\n") && !result.endsWith(indentChar)) {
+                        let nextC = '';
+                        for (let j = i + 1; j < expression.length; j++) {
+                            if (!/\s/.test(expression[j])) {
+                                nextC = expression[j];
+                                break;
+                            }
+                        }
+                        if (![',', ']', '}', ')'].includes(nextC)) {
+                            result += " ";
+                        }
+                    }
+                    continue;
+                }
+
+                // Handle colons
+                if (char === ":" && expression[i + 1] !== "=") {
+                    result += ":";
+                    if (expression[i + 1] !== " " && expression[i + 1] !== "\n") {
+                        result += " ";
+                    }
+                    lastNonWsChar = char;
+                    continue;
+                }
+
+                result += char;
+                lastNonWsChar = char;
+            }
+
+            return result.split('\n').map(line => line.trimEnd()).join('\n');
+        }
+
+        // Event Listeners
+        inputBox.addEventListener('input', (e) => {
+            const output = prettifyJSONata(e.target.value);
+            outputBox.value = output;
+            
+            // Update copy button state
+            if (output) {
+                btnCopy.disabled = false;
+                btnCopy.className = "px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white border border-transparent";
+            } else {
+                btnCopy.disabled = true;
+                btnCopy.className = "px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5 opacity-50 cursor-not-allowed bg-zinc-800 text-zinc-500 border border-transparent";
+            }
+        });
+
+        btnExample.addEventListener('click', () => {
+            const example = `Account.Order[Price>10].{"OrderID":OrderID,"Total":Price*Quantity,"Items":Product.{"Name":SKU,"Cost":Price},"Shipping":Address.City}`;
+            inputBox.value = example;
+            inputBox.dispatchEvent(new Event('input'));
+        });
+
+        btnClear.addEventListener('click', () => {
+            inputBox.value = '';
+            inputBox.dispatchEvent(new Event('input'));
+        });
+
+        btnCopy.addEventListener('click', () => {
+            if (!outputBox.value) return;
+            
+            try {
+                const textArea = document.createElement("textarea");
+                textArea.value = outputBox.value;
+                textArea.style.position = "absolute";
+                textArea.style.left = "-9999px";
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                // Show success state
+                btnCopy.className = "px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                iconCopy.classList.add('hidden');
+                iconCheck.classList.remove('hidden');
+                textCopy.textContent = 'Copied!';
+
+                // Reset after 2s
+                setTimeout(() => {
+                    btnCopy.className = "px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white border border-transparent";
+                    iconCopy.classList.remove('hidden');
+                    iconCheck.classList.add('hidden');
+                    textCopy.textContent = 'Copy to Clipboard';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            }
+        });
+    </script>
+</body>
+</html>
