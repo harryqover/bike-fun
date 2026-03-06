@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSONata Minifier</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Monaco Editor Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans antialiased selection:bg-brand-100 selection:text-brand-700">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-brand-100 text-brand-600 p-2 rounded-lg">
+                    <i data-lucide="zap" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">JSONata Minifier</h1>
+                    <p class="text-xs text-slate-500 font-medium">Compress to one line</p>
+                </div>
+            </div>
+            <a href="https://jsonata.org/" target="_blank" class="text-sm font-medium text-slate-500 hover:text-brand-600 transition-colors flex items-center gap-1.5">
+                <i data-lucide="book-open" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">Docs</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-grow min-h-[500px]">
+            
+            <!-- Left Pane: Input -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-transparent transition-shadow">
+                <div class="bg-slate-50/50 border-b border-slate-200 px-4 py-3 flex justify-between items-center">
+                    <div class="flex items-center gap-2 text-slate-700 font-semibold text-sm">
+                        <i data-lucide="file-code-2" class="w-4 h-4 text-slate-400"></i>
+                        Beautified Expression
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="exampleBtn" class="px-3 py-1.5 text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-md hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-1.5 shadow-sm">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                            Example
+                        </button>
+                        <button id="clearBtn" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-white border border-slate-200 rounded-md hover:bg-red-50 hover:border-red-200 transition-colors flex items-center gap-1.5 shadow-sm">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+                <div class="relative flex-grow w-full h-full min-h-[300px]">
+                    <div id="input-editor" class="absolute inset-0"></div>
+                </div>
+            </div>
+
+            <!-- Right Pane: Output -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden group">
+                <div class="bg-slate-50/50 border-b border-slate-200 px-4 py-3 flex justify-between items-center">
+                    <div class="flex items-center gap-2 text-slate-700 font-semibold text-sm">
+                        <i data-lucide="minimize-2" class="w-4 h-4 text-slate-400"></i>
+                        Minified One-Liner
+                    </div>
+                    <button id="copyBtn" class="px-3 py-1.5 text-xs font-bold text-white bg-brand-600 rounded-md hover:bg-brand-700 transition-colors flex items-center gap-1.5 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span id="copyIconWrapper" class="flex items-center gap-1.5">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            Copy Output
+                        </span>
+                    </button>
+                </div>
+                <div class="relative flex-grow w-full h-full min-h-[300px]">
+                    <div id="output-editor" class="absolute inset-0 bg-slate-50/30"></div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="text-center py-6 text-slate-400 text-sm font-medium">
+        Built for parsing JSONata effortlessly.
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // DOM Elements
+        const copyBtn = document.getElementById('copyBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const exampleBtn = document.getElementById('exampleBtn');
+        const copyIconWrapper = document.getElementById('copyIconWrapper');
+
+        // Example JSONata payload
+        const exampleData = `/* Calculate order summary */
+(
+  $orders := Account.Order;
+  $total := $sum($orders.Product.(Price * Quantity));
+
+  /* Format the output nicely */
+  {
+    "Account Name": Account.\`Order Name\`,
+    "Total Orders": $count($orders),
+    "Grand Total": $total,
+    "Is VIP": $total > 1000 ? true : false,
+    "Categories": $distinct($orders.Product.Category)
+  }
+)`;
+
+        // Core Minification Logic
+        function minifyJSONata(expr) {
+            if (!expr) return '';
+            
+            let i = 0;
+            let inStr = false;
+            let strChar = '';
+            let out = '';
+
+            // Pass 1: Remove comments and normalize whitespace
+            while (i < expr.length) {
+                let c = expr[i];
+                let next = expr[i + 1] || '';
+
+                if (!inStr && (c === '"' || c === "'" || c === '\`')) {
+                    // Enter string
+                    inStr = true;
+                    strChar = c;
+                    out += c;
+                } else if (inStr) {
+                    // Handle strings & escape sequences
+                    if (c === '\\') {
+                        out += c + next;
+                        i++;
+                    } else if (c === strChar) {
+                        inStr = false;
+                        out += c;
+                    } else if (c === '\n') {
+                        out += '\\n'; // Flatten literal newlines inside strings
+                    } else if (c !== '\r') {
+                        out += c;
+                    }
+                } else if (!inStr && c === '/' && next === '*') {
+                    // Block comments /* ... */
+                    i += 2;
+                    while (i < expr.length && !(expr[i] === '*' && expr[i + 1] === '/')) {
+                        i++;
+                    }
+                    i++; // Skip the last '/'
+                } else if (!inStr && /\s/.test(c)) {
+                    // Normalize outside whitespaces to a single space
+                    if (out.length > 0 && !/\s/.test(out[out.length - 1])) {
+                        out += ' ';
+                    }
+                } else {
+                    out += c;
+                }
+                i++;
+            }
+
+            // Pass 2: Aggressively remove spaces around structural chars and operators
+            // Safe characters: [ ] { } ( ) , . ; = < > ! + - * / | & ?
+            const safeRegex = /\s*([\[\]{}():,.;=<>!+\-*\/|&?])\s*/g;
+            out = out.replace(safeRegex, '$1');
+
+            return out.trim();
+        }
+
+        // Initialize state
+        copyBtn.disabled = true;
+
+        // Initialize Monaco Editor
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            const inputEditor = monaco.editor.create(document.getElementById('input-editor'), {
+                value: '',
+                language: 'javascript', // Closest to JSONata for syntax highlighting
+                theme: 'vs-light',
+                minimap: { enabled: false },
+                automaticLayout: true,
+                wordWrap: 'on',
+                scrollBeyondLastLine: false,
+                padding: { top: 16, bottom: 16 },
+                fontSize: 14,
+                fontFamily: "'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'"
+            });
+
+            const outputEditor = monaco.editor.create(document.getElementById('output-editor'), {
+                value: '',
+                language: 'plaintext',
+                theme: 'vs-light',
+                readOnly: true,
+                minimap: { enabled: false },
+                automaticLayout: true,
+                wordWrap: 'on',
+                scrollBeyondLastLine: false,
+                lineNumbers: 'off',
+                padding: { top: 16, bottom: 16 },
+                fontSize: 14,
+                fontFamily: "'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'",
+                renderLineHighlight: "none"
+            });
+
+            // Event Listeners for Editors
+            inputEditor.onDidChangeModelContent(() => {
+                const minified = minifyJSONata(inputEditor.getValue());
+                outputEditor.setValue(minified);
+                copyBtn.disabled = !minified;
+            });
+
+            clearBtn.addEventListener('click', () => {
+                inputEditor.setValue('');
+                outputEditor.setValue('');
+                copyBtn.disabled = true;
+                inputEditor.focus();
+            });
+
+            exampleBtn.addEventListener('click', () => {
+                inputEditor.setValue(exampleData);
+            });
+
+            copyBtn.addEventListener('click', () => {
+                const textToCopy = outputEditor.getValue();
+                if (!textToCopy) return;
+
+                // Safe copy for iframes
+                const ta = document.createElement('textarea');
+                ta.value = textToCopy;
+                ta.style.position = 'absolute';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                
+                // UX feedback
+                const originalHTML = copyIconWrapper.innerHTML;
+                copyIconWrapper.innerHTML = `
+                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+                    Copied!
+                `;
+                lucide.createIcons();
+                copyBtn.classList.remove('bg-brand-600', 'hover:bg-brand-700');
+                copyBtn.classList.add('bg-slate-800', 'hover:bg-slate-900');
+
+                setTimeout(() => {
+                    copyIconWrapper.innerHTML = originalHTML;
+                    lucide.createIcons();
+                    copyBtn.classList.add('bg-brand-600', 'hover:bg-brand-700');
+                    copyBtn.classList.remove('bg-slate-800', 'hover:bg-slate-900');
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
