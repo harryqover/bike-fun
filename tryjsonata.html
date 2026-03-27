@@ -302,9 +302,18 @@
             shareBtn.innerHTML = `<svg class="animate-spin w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Generating...</span>`;
 
             try {
+                // First, remove any existing generated link comment from the query to prevent stacking
+                let currentQuery = queryEditor.getValue();
+                const baseUrl = window.location.origin + window.location.pathname;
+                const escapedBaseUrl = baseUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                
+                // Regex to find and remove previous auto-injected link comments
+                const oldLinkRegex = new RegExp(`[ \\t]*\\/\\*\\s*${escapedBaseUrl}\\?id=[a-zA-Z0-9_-]+\\s*\\*\\/[ \\t]*\\n?`, 'g');
+                let cleanQuery = currentQuery.replace(oldLinkRegex, '');
+
                 const payload = {
                     json: jsonEditor.getValue(),
-                    query: queryEditor.getValue()
+                    query: cleanQuery // Send the cleaned query to be saved
                 };
 
                 const response = await fetch(GAS_WEB_APP_URL, {
@@ -316,10 +325,28 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    const newUrl = window.location.origin + window.location.pathname + '?id=' + result.id;
+                    const newUrl = baseUrl + '?id=' + result.id;
                     window.history.replaceState(null, null, '?id=' + result.id);
                     
                     await navigator.clipboard.writeText(newUrl);
+
+                    // Inject the new shareable link as a comment into the editor
+                    const commentStr = `/* ${newUrl} */`;
+                    let updatedQuery = cleanQuery;
+                    
+                    if (updatedQuery.trim().startsWith('(')) {
+                        const firstParenIndex = updatedQuery.indexOf('(');
+                        // Inject the comment immediately after the first opening parenthesis
+                        updatedQuery = updatedQuery.slice(0, firstParenIndex + 1) + `\n    ${commentStr}` + updatedQuery.slice(firstParenIndex + 1);
+                    } else {
+                        // Otherwise, prepend it to the top
+                        updatedQuery = `${commentStr}\n` + updatedQuery;
+                    }
+                    
+                    // Update Monaco with the new query format
+                    queryEditor.setValue(updatedQuery);
+                    evaluate(); // Re-trigger evaluate locally just in case
+                    
                     showToast("Shareable link generated and copied!");
                 } else {
                     throw new Error(result.error || "Unknown error saving");
@@ -328,6 +355,7 @@
                 console.error(err);
                 showToast("Failed to generate link. Check API URL.");
             } finally {
+                // Restore button state
                 shareBtn.innerHTML = originalHtml;
                 shareBtn.disabled = false;
                 if (typeof lucide !== 'undefined') {
