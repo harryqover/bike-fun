@@ -70,8 +70,8 @@
             <a href="https://docs.jsonata.org/" target="_blank" class="text-sm text-gray-400 hover:text-white transition flex items-center gap-1">
                 <i data-lucide="book" class="w-4 h-4"></i> Documentation
             </a>
-            <button onclick="copyShareLink()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded text-sm font-medium transition flex items-center gap-2 shadow-sm">
-                <i data-lucide="share-2" class="w-4 h-4"></i> Share Link
+            <button id="share-btn" onclick="copyShareLink()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded text-sm font-medium transition flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                <i data-lucide="share-2" class="w-4 h-4"></i> <span>Share Link</span>
             </button>
         </div>
     </header>
@@ -131,11 +131,14 @@
     </main>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none">
+    <div id="toast" class="fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none z-50">
         Copied to clipboard!
     </div>
 
     <script>
+        // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyDjxN1zoLbdXC-NCn26hVof4B9sOretgNnjkSX8vYF12X6eE-obs0hINx1LCEGd5VP5A/exec";
+
         // Initialize Lucide Icons
         lucide.createIcons();
 
@@ -151,19 +154,13 @@
                     "Product Name": "Bowler Hat",
                     "ProductID": 858383,
                     "SKU": "0406654608",
-                    "Item": {
-                      "Price": 34.45,
-                      "Quantity": 2
-                    }
+                    "Item": { "Price": 34.45, "Quantity": 2 }
                   },
                   {
                     "Product Name": "Trilby hat",
                     "ProductID": 858236,
                     "SKU": "0406634348",
-                    "Item": {
-                      "Price": 21.67,
-                      "Quantity": 1
-                    }
+                    "Item": { "Price": 21.67, "Quantity": 1 }
                   }
                 ]
               },
@@ -174,19 +171,13 @@
                     "Product Name": "Bowler Hat",
                     "ProductID": 858383,
                     "SKU": "040657863",
-                    "Item": {
-                      "Price": 34.45,
-                      "Quantity": 4
-                    }
+                    "Item": { "Price": 34.45, "Quantity": 4 }
                   },
                   {
                     "Product Name": "Cloak",
                     "ProductID": 658236,
                     "SKU": "0306634348",
-                    "Item": {
-                      "Price": 107.99,
-                      "Quantity": 1
-                    }
+                    "Item": { "Price": 107.99, "Quantity": 1 }
                   }
                 ]
               }
@@ -208,7 +199,7 @@
             };
         }
 
-        function init() {
+        async function init() {
             // Configuration for CodeMirror
             const commonConfig = {
                 theme: 'material-darker',
@@ -228,7 +219,7 @@
             // Initialize Query Editor
             queryEditor = CodeMirror.fromTextArea(document.getElementById('query-input'), {
                 ...commonConfig,
-                mode: 'javascript', // Closest default mode for JSONata syntax
+                mode: 'javascript', 
                 value: ''
             });
 
@@ -239,19 +230,13 @@
                 readOnly: true
             });
 
-            // Load state from URL or use defaults
-            loadState();
+            // Load state from DB or URL, then evaluate
+            await loadState();
 
             // Setup Event Listeners for Live Evaluation
-            jsonEditor.on('change', debounce(() => {
-                evaluate();
-                saveState();
-            }, 300));
-
-            queryEditor.on('change', debounce(() => {
-                evaluate();
-                saveState();
-            }, 300));
+            // Note: We removed saveState() from here to avoid hitting the DB on every keystroke
+            jsonEditor.on('change', debounce(evaluate, 300));
+            queryEditor.on('change', debounce(evaluate, 300));
 
             // Initial evaluation
             evaluate();
@@ -277,7 +262,7 @@
 
             // 1. Parse JSON Input
             try {
-                if (!jsonText.trim()) {
+                if (!jsonText.trim() || jsonText.includes('// Loading...')) {
                     data = undefined;
                 } else {
                     data = JSON.parse(jsonText);
@@ -289,7 +274,7 @@
             }
 
             // 2. Evaluate JSONata
-            if (!queryText.trim()) {
+            if (!queryText.trim() || queryText.includes('// Loading...')) {
                 resultEditor.setValue('');
                 return;
             }
@@ -318,34 +303,87 @@
             errorOverlay.classList.remove('hidden');
         }
 
-        // URL State Management for sharing links
-        function saveState() {
-            const data = jsonEditor.getValue();
-            const query = queryEditor.getValue();
-            
-            const params = new URLSearchParams();
-            if (query !== defaultQuery) params.set('query', query);
-            
-            // Only save data if it's vastly different or not too huge, 
-            // but for a playground it's standard to save.
-            params.set('data', data);
-            
-            const hash = params.toString();
-            window.history.replaceState(null, null, '#' + hash);
+        // App Script / Database Integration 
+        async function loadState() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+
+            if (id) {
+                jsonEditor.setValue('// Loading from database...');
+                queryEditor.setValue('// Loading from database...');
+
+                try {
+                    const response = await fetch(`${GAS_WEB_APP_URL}?id=${id}`);
+                    const result = await response.json();
+
+                    if (result.success) {
+                        jsonEditor.setValue(result.data.json);
+                        queryEditor.setValue(result.data.query);
+                    } else {
+                        showToast("Snippet not found, loading defaults.");
+                        loadDefaults();
+                    }
+                } catch (e) {
+                    console.error(e);
+                    showToast("Failed to load shared link.");
+                    loadDefaults();
+                }
+            } else {
+                loadDefaults();
+            }
         }
 
-        function loadState() {
-            let loadedQuery = defaultQuery;
-            let loadedData = JSON.stringify(defaultData, null, 2);
+        function loadDefaults() {
+            jsonEditor.setValue(JSON.stringify(defaultData, null, 2));
+            queryEditor.setValue(defaultQuery);
+        }
 
-            if (window.location.hash) {
-                const params = new URLSearchParams(window.location.hash.substring(1));
-                if (params.has('query')) loadedQuery = params.get('query');
-                if (params.has('data')) loadedData = params.get('data');
+        async function copyShareLink() {
+            const shareBtn = document.getElementById('share-btn');
+            const originalHtml = shareBtn.innerHTML;
+            
+            // UI Loading state
+            shareBtn.disabled = true;
+            shareBtn.innerHTML = `<svg class="animate-spin w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Generating...</span>`;
+
+            try {
+                const payload = {
+                    json: jsonEditor.getValue(),
+                    query: queryEditor.getValue()
+                };
+
+                // We use Content-Type text/plain so we bypass the complex CORS Preflight (OPTIONS)
+                // request that Google Apps script rejects by default.
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update current URL without reloading
+                    const newUrl = window.location.origin + window.location.pathname + '?id=' + result.id;
+                    window.history.replaceState(null, null, '?id=' + result.id);
+                    
+                    // Copy to clipboard
+                    await navigator.clipboard.writeText(newUrl);
+                    showToast("Shareable link generated and copied!");
+                } else {
+                    throw new Error(result.error || "Unknown error saving");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Failed to generate link. Check API URL.");
+            } finally {
+                // Restore UI state
+                shareBtn.innerHTML = originalHtml;
+                shareBtn.disabled = false;
+                lucide.createIcons(); // re-init icon inside button
             }
-
-            jsonEditor.setValue(loadedData);
-            queryEditor.setValue(loadedQuery);
         }
 
         // Toolbar Actions
@@ -359,30 +397,14 @@
             }
         }
 
-        function copyShareLink() {
-            // Save current state to URL first
-            saveState();
-            navigator.clipboard.writeText(window.location.href).then(() => {
-                showToast("Share link copied to clipboard!");
-            }).catch(() => {
-                // Fallback for older browsers / iframe restrictions
-                const input = document.createElement('input');
-                input.value = window.location.href;
-                document.body.appendChild(input);
-                input.select();
-                document.execCommand('copy');
-                document.body.removeChild(input);
-                showToast("Share link copied to clipboard!");
-            });
-        }
-
-        function copyResult() {
+        async function copyResult() {
             const result = resultEditor.getValue();
             if (!result || result === '** no match **') return;
             
-            navigator.clipboard.writeText(result).then(() => {
+            try {
+                await navigator.clipboard.writeText(result);
                 showToast("Result copied to clipboard!");
-            }).catch(() => {
+            } catch (err) {
                 // Fallback
                 const input = document.createElement('textarea');
                 input.value = result;
@@ -391,7 +413,7 @@
                 document.execCommand('copy');
                 document.body.removeChild(input);
                 showToast("Result copied to clipboard!");
-            });
+            }
         }
 
         function showToast(message) {
