@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSONata Playground</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- JSONata Engine -->
+    <script src="https://cdn.jsdelivr.net/npm/jsonata@2.0.2/jsonata.min.js"></script>
+
+    <!-- CodeMirror Core and Theme -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/material-darker.min.css">
+    
+    <!-- CodeMirror Modes & Addons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Custom styles to ensure CodeMirror fills its container */
+        .CodeMirror {
+            height: 100% !important;
+            width: 100% !important;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 14px;
+        }
+        .CodeMirror-gutters {
+            border-right: 1px solid #333;
+            background-color: #212121;
+        }
+        
+        /* Custom scrollbar for a darker aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #212121;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #424242;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #616161;
+        }
+    </style>
+</head>
+<body class="bg-[#121212] text-gray-200 h-screen flex flex-col font-sans overflow-hidden">
+
+    <!-- Header Navigation -->
+    <header class="bg-[#1e1e1e] border-b border-[#333] p-3 flex justify-between items-center shadow-md z-10">
+        <div class="flex items-center gap-3">
+            <svg class="w-8 h-8 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            <h1 class="text-xl font-bold tracking-wide text-white">JSONata <span class="text-blue-500 font-light">Playground</span></h1>
+        </div>
+        <div class="flex gap-4 items-center">
+            <a href="https://docs.jsonata.org/" target="_blank" class="text-sm text-gray-400 hover:text-white transition flex items-center gap-1">
+                <i data-lucide="book" class="w-4 h-4"></i> Documentation
+            </a>
+            <button onclick="copyShareLink()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded text-sm font-medium transition flex items-center gap-2 shadow-sm">
+                <i data-lucide="share-2" class="w-4 h-4"></i> Share Link
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 flex flex-col md:flex-row gap-4 p-4 overflow-hidden h-full">
+        
+        <!-- Left Panel: JSON Input -->
+        <section class="flex-1 flex flex-col bg-[#1e1e1e] border border-[#333] rounded-lg shadow-lg overflow-hidden min-h-[300px]">
+            <div class="bg-[#2a2a2a] p-2 px-4 border-b border-[#333] flex justify-between items-center">
+                <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                    <i data-lucide="database" class="w-4 h-4 text-green-400"></i> JSON Data
+                </h2>
+                <button onclick="formatJSON()" class="text-xs text-gray-400 hover:text-white transition" title="Format JSON">
+                    <i data-lucide="align-left" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="flex-1 relative">
+                <textarea id="json-input" class="hidden"></textarea>
+            </div>
+        </section>
+
+        <!-- Right Panel: Query & Result -->
+        <section class="flex-1 flex flex-col gap-4 overflow-hidden min-h-[400px]">
+            
+            <!-- Top Right: JSONata Expression -->
+            <div class="flex-1 flex flex-col bg-[#1e1e1e] border border-[#333] rounded-lg shadow-lg overflow-hidden">
+                <div class="bg-[#2a2a2a] p-2 px-4 border-b border-[#333] flex justify-between items-center">
+                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="code" class="w-4 h-4 text-blue-400"></i> JSONata Expression
+                    </h2>
+                </div>
+                <div class="flex-1 relative">
+                    <textarea id="query-input" class="hidden"></textarea>
+                </div>
+            </div>
+
+            <!-- Bottom Right: Evaluation Result -->
+            <div class="flex-1 flex flex-col bg-[#1e1e1e] border border-[#333] rounded-lg shadow-lg overflow-hidden relative">
+                <div class="bg-[#2a2a2a] p-2 px-4 border-b border-[#333] flex justify-between items-center">
+                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="terminal" class="w-4 h-4 text-purple-400"></i> Result
+                    </h2>
+                    <button onclick="copyResult()" class="text-xs text-gray-400 hover:text-white transition" title="Copy Result">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div class="flex-1 relative">
+                    <textarea id="result-output" class="hidden"></textarea>
+                </div>
+                <!-- Error Overlay -->
+                <div id="error-overlay" class="absolute bottom-0 left-0 right-0 bg-red-900/90 text-red-100 p-3 text-sm font-mono hidden border-t border-red-700 max-h-32 overflow-y-auto">
+                </div>
+            </div>
+            
+        </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none">
+        Copied to clipboard!
+    </div>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Default Data Example (similar to standard JSONata exerciser)
+        const defaultData = {
+          "Account": {
+            "Account Name": "Firefly",
+            "Order": [
+              {
+                "OrderID": "order103",
+                "Product": [
+                  {
+                    "Product Name": "Bowler Hat",
+                    "ProductID": 858383,
+                    "SKU": "0406654608",
+                    "Item": {
+                      "Price": 34.45,
+                      "Quantity": 2
+                    }
+                  },
+                  {
+                    "Product Name": "Trilby hat",
+                    "ProductID": 858236,
+                    "SKU": "0406634348",
+                    "Item": {
+                      "Price": 21.67,
+                      "Quantity": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "OrderID": "order104",
+                "Product": [
+                  {
+                    "Product Name": "Bowler Hat",
+                    "ProductID": 858383,
+                    "SKU": "040657863",
+                    "Item": {
+                      "Price": 34.45,
+                      "Quantity": 4
+                    }
+                  },
+                  {
+                    "Product Name": "Cloak",
+                    "ProductID": 658236,
+                    "SKU": "0306634348",
+                    "Item": {
+                      "Price": 107.99,
+                      "Quantity": 1
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        };
+
+        const defaultQuery = "Account.Order[0].Product[0].Product Name";
+
+        // Global Editor Instances
+        let jsonEditor, queryEditor, resultEditor;
+
+        // Debounce utility to prevent spamming evaluations while typing
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        function init() {
+            // Configuration for CodeMirror
+            const commonConfig = {
+                theme: 'material-darker',
+                lineNumbers: true,
+                matchBrackets: true,
+                autoCloseBrackets: true,
+                viewportMargin: Infinity
+            };
+
+            // Initialize JSON Editor
+            jsonEditor = CodeMirror.fromTextArea(document.getElementById('json-input'), {
+                ...commonConfig,
+                mode: 'application/json',
+                value: ''
+            });
+
+            // Initialize Query Editor
+            queryEditor = CodeMirror.fromTextArea(document.getElementById('query-input'), {
+                ...commonConfig,
+                mode: 'javascript', // Closest default mode for JSONata syntax
+                value: ''
+            });
+
+            // Initialize Result Editor (Read Only)
+            resultEditor = CodeMirror.fromTextArea(document.getElementById('result-output'), {
+                ...commonConfig,
+                mode: 'application/json',
+                readOnly: true
+            });
+
+            // Load state from URL or use defaults
+            loadState();
+
+            // Setup Event Listeners for Live Evaluation
+            jsonEditor.on('change', debounce(() => {
+                evaluate();
+                saveState();
+            }, 300));
+
+            queryEditor.on('change', debounce(() => {
+                evaluate();
+                saveState();
+            }, 300));
+
+            // Initial evaluation
+            evaluate();
+            
+            // Re-render CodeMirror correctly after slight delay to ensure fonts/layout are loaded
+            setTimeout(() => {
+                jsonEditor.refresh();
+                queryEditor.refresh();
+                resultEditor.refresh();
+            }, 100);
+        }
+
+        // The core Evaluation function
+        async function evaluate() {
+            const errorOverlay = document.getElementById('error-overlay');
+            errorOverlay.classList.add('hidden');
+            errorOverlay.innerText = '';
+            
+            const jsonText = jsonEditor.getValue();
+            const queryText = queryEditor.getValue();
+            
+            let data;
+
+            // 1. Parse JSON Input
+            try {
+                if (!jsonText.trim()) {
+                    data = undefined;
+                } else {
+                    data = JSON.parse(jsonText);
+                }
+            } catch (err) {
+                showError(`JSON Parse Error: ${err.message}`);
+                resultEditor.setValue('');
+                return;
+            }
+
+            // 2. Evaluate JSONata
+            if (!queryText.trim()) {
+                resultEditor.setValue('');
+                return;
+            }
+
+            try {
+                // Compile the expression
+                const expression = jsonata(queryText);
+                
+                // Evaluate against data
+                const result = await expression.evaluate(data);
+                
+                if (result === undefined) {
+                    resultEditor.setValue('** no match **');
+                } else {
+                    resultEditor.setValue(JSON.stringify(result, null, 2));
+                }
+            } catch (err) {
+                showError(`JSONata Error: ${err.message}\nPosition: ${err.position || 'Unknown'}`);
+            }
+        }
+
+        // Helper to display errors visually
+        function showError(msg) {
+            const errorOverlay = document.getElementById('error-overlay');
+            errorOverlay.innerText = msg;
+            errorOverlay.classList.remove('hidden');
+        }
+
+        // URL State Management for sharing links
+        function saveState() {
+            const data = jsonEditor.getValue();
+            const query = queryEditor.getValue();
+            
+            const params = new URLSearchParams();
+            if (query !== defaultQuery) params.set('query', query);
+            
+            // Only save data if it's vastly different or not too huge, 
+            // but for a playground it's standard to save.
+            params.set('data', data);
+            
+            const hash = params.toString();
+            window.history.replaceState(null, null, '#' + hash);
+        }
+
+        function loadState() {
+            let loadedQuery = defaultQuery;
+            let loadedData = JSON.stringify(defaultData, null, 2);
+
+            if (window.location.hash) {
+                const params = new URLSearchParams(window.location.hash.substring(1));
+                if (params.has('query')) loadedQuery = params.get('query');
+                if (params.has('data')) loadedData = params.get('data');
+            }
+
+            jsonEditor.setValue(loadedData);
+            queryEditor.setValue(loadedQuery);
+        }
+
+        // Toolbar Actions
+        function formatJSON() {
+            try {
+                const val = jsonEditor.getValue();
+                const parsed = JSON.parse(val);
+                jsonEditor.setValue(JSON.stringify(parsed, null, 2));
+            } catch (err) {
+                showToast("Cannot format: Invalid JSON");
+            }
+        }
+
+        function copyShareLink() {
+            // Save current state to URL first
+            saveState();
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                showToast("Share link copied to clipboard!");
+            }).catch(() => {
+                // Fallback for older browsers / iframe restrictions
+                const input = document.createElement('input');
+                input.value = window.location.href;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showToast("Share link copied to clipboard!");
+            });
+        }
+
+        function copyResult() {
+            const result = resultEditor.getValue();
+            if (!result || result === '** no match **') return;
+            
+            navigator.clipboard.writeText(result).then(() => {
+                showToast("Result copied to clipboard!");
+            }).catch(() => {
+                // Fallback
+                const input = document.createElement('textarea');
+                input.value = result;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showToast("Result copied to clipboard!");
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.remove('opacity-0');
+            toast.classList.add('opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0');
+            }, 3000);
+        }
+
+        // Boot the app
+        window.onload = init;
+
+    </script>
+</body>
+</html>
