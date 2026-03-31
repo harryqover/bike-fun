@@ -1,14 +1,14 @@
 /*20250403 0913*/
-console.log("20260331 1331")
+console.log("20260331 1336")
 const isValidEmail = (str) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str);
 
 const productPattern = [
   { PatternPrefix: "xx20", Product: "IAB" },
   { PatternPrefix: "xx10", Product: "BIKE" },
-  { PatternPrefix: "P-BIKBE", Product: "BIKE" },
-  { PatternPrefix: "P-BIKDE", Product: "BIKE" },
-  { PatternPrefix: "P-BIKFR", Product: "BIKE" },
-  { PatternPrefix: "P-BIKNL", Product: "BIKE" },
+  { PatternPrefix: "P-BIKBE", Product: "BIKEPOL" },
+  { PatternPrefix: "P-BIKDE", Product: "BIKEPOL" },
+  { PatternPrefix: "P-BIKFR", Product: "BIKEPOL" },
+  { PatternPrefix: "P-BIKNL", Product: "BIKEPOL" },
   { PatternPrefix: "BE08", Product: "COWBOY" },
   { PatternPrefix: "NL01", Product: "COWBOY" },
   { PatternPrefix: "DE01", Product: "COWBOYDE" },
@@ -36,6 +36,7 @@ const redirectConfig = [
   { product: "COWBOYDE", claimProcess: "CowboyAlteos", Redirect: "https://forms.qover.com/213533942109352?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=Alteos" },
   { product: "COWBOY", claimProcess: "bikeQover", Redirect: "https://forms.qover.com/212795616223356?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=Qover" },
   { product: "BIKE", claimProcess: "bikeQover", Redirect: "https://forms.qover.com/212795616223356?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=Qover&ref_country={{country}}" },
+  { product: "BIKEPOL", claimProcess: "bikeQover", Redirect: "https://forms.qover.com/212795616223356?language={{lang}}&variant={{variant}}&email={{email}}&contract_number={{cigarId}}&claims_handler=Qover&ref_country={{country}}" },
   { product: "IAB", claimProcess: "teslaWakam", Redirect: "https://insuremytesla.qover.com/claims?language={{lang}}&variant={{variant}}&claimant_email={{email}}&policy_reference={{cigarId}}&claims_handler=Crawford&ref_country={{country}}" },
   { product: "IAB", claimProcess: "teslaHelvetia", Redirect: "https://insuremytesla.qover.com/claims?language={{lang}}&variant={{variant}}&claimant_email={{email}}&policy_reference={{cigarId}}&claims_handler=VanAmeyde&ref_country={{country}}" },
   { product: "PLEV", claimProcess: "PLEV", Redirect: "https://carrefour-assurance.qover.com/declaration-de-sinistre?language=fr&claimant_email={{email}}&contract_number={{cigarId}}&partner=634e5fe8c9833bb23bd94be9&variant={{variant}}" },
@@ -49,6 +50,25 @@ const redirectConfig = [
 
 const modalContent = {
   BIKE: `
+    <p>Make sure you have these elements in your possession before you continue:</p>
+    <ul>
+      <li>Invoice of your bike</li>
+      <li>Your IBAN (and/or RIB in France)</li>
+      <li>If your bike has an additional marking (Bicycode, Paravol, ...), we need the marking ID</li>
+    </ul>
+    <p><strong>Specific in case of material damage:</strong></p>
+    <ul>
+      <li>Pictures of the damaged bike</li>
+      <li>If there is a third party involved, the information of that third party</li>
+    </ul>
+    <p><strong>Specific in case of theft:</strong></p>
+    <ul>
+      <li>The copy of the police report</li>
+      <li>The brand and the model of your lock</li>
+      <li>If you have a GPS tracker on your bike, a screenshot of the last location</li>
+    </ul>
+  `,
+  BIKEPOL: `
     <p>Make sure you have these elements in your possession before you continue:</p>
     <ul>
       <li>Invoice of your bike</li>
