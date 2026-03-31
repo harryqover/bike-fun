@@ -5,7 +5,10 @@ const isValidEmail = (str) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str);
 const productPattern = [
   { PatternPrefix: "xx20", Product: "IAB" },
   { PatternPrefix: "xx10", Product: "BIKE" },
-  { PatternPrefix: "P-BIK", Product: "BIKE" },
+  { PatternPrefix: "P-BIKBE", Product: "BIKE" },
+  { PatternPrefix: "P-BIKDE", Product: "BIKE" },
+  { PatternPrefix: "P-BIKFR", Product: "BIKE" },
+  { PatternPrefix: "P-BIKNL", Product: "BIKE" },
   { PatternPrefix: "BE08", Product: "COWBOY" },
   { PatternPrefix: "NL01", Product: "COWBOY" },
   { PatternPrefix: "DE01", Product: "COWBOYDE" },
