@@ -974,6 +974,33 @@ $(document).ready(function(){
         });
         $('#companyFields').slideUp();
 
+        // ---> INSERT REAL-TIME VAT VALIDATION HERE <---
+        $("input[name='companyNumber']").on("input blur", function() {
+          const companyNumber = $(this).val().trim();
+          const $field = $(this);
+          
+          if (companyNumber === "") {
+            $field.css("border", "1px solid #E2E2E2");
+            return;
+          }
+
+          let isValid = true;
+          if (country === "AT") {
+            const atVatRegex = /^ATU[0-9]{8}$/;
+            isValid = atVatRegex.test(companyNumber);
+          } else if (country === "DE") {
+            const deVatRegex = /^DE[0-9]{9}$/;
+            isValid = deVatRegex.test(companyNumber);
+          }
+
+          if (!isValid) {
+            $field.css("border", "2px solid red");
+          } else {
+            $field.css("border", "1px solid #E2E2E2");
+          }
+        });
+        // ---> END REAL-TIME VAT VALIDATION <---
+
         if(country == "AT"){
           $("#registeredOwnerSection").remove();
         } else {
@@ -1280,6 +1307,32 @@ $("#quoteForm").on("submit", function(e) {
   const setStart = $("#setStartDateNow").is(":checked");
   const startDate = setStart ? formData.get("startDate") : "";
 
+  // ---> INSERT VAT VALIDATION HERE <---
+  if (isCompany === "yes" && companyNumber) {
+    let vatValid = true;
+    
+    if (country === "AT") {
+      const atVatRegex = /^ATU[0-9]{8}$/;
+      if (!atVatRegex.test(companyNumber)) {
+        $("#message").html('<p class="error">Die österreichische UID-Nummer muss mit "ATU" beginnen, gefolgt von 8 Ziffern.</p>');
+        vatValid = false;
+      }
+    } else if (country === "DE") {
+      const deVatRegex = /^DE[0-9]{9}$/;
+      if (!deVatRegex.test(companyNumber)) {
+        $("#message").html('<p class="error">Die deutsche USt-IdNr. muss mit "DE" beginnen, gefolgt von 9 Ziffern.</p>');
+        vatValid = false;
+      }
+    }
+
+    if (!vatValid) {
+      $("[name='companyNumber']").css("border", "2px solid red");
+      $("#loadingOverlay").hide();
+      return;
+    }
+  }
+  // ---> END VAT VALIDATION <---
+
   // --- Country-Specific Data Collection ---
   let diplomaticCar, interchangeableLicensePlate; // AT specific
   let firstRegistrationDate, policyholderRegistrationDate, registeredCar, sfClassTpl, sfClassMod, previousInsurerId, previousInsurerReference, previousInsurerVRN, policyholderIsRegisteredOwner, registeredOwnerisCompany, registeredOwnerfirstName, registeredOwnerlastName, registeredOwnerstreet, registeredOwnerzip, registeredOwnercity, registeredOwnercountry; //DE specific
@@ -1314,6 +1367,8 @@ $("#quoteForm").on("submit", function(e) {
       sfClassTpl = formData.get("sfClassTpl");
       sfClassMod = formData.get("sfClassMod");
   }
+
+
   
   if (!email) {
     $("#message").html('<p class="error">Bitte geben Sie eine E-Mail-Adresse ein.</p>');
