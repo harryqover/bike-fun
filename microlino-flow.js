@@ -1,4 +1,4 @@
-console.log("20260402 0831")
+console.log("20260402 0834")
 
 const ENABLE_VEHICLE_TYPE_IN_PRODUCTION = true;
 
@@ -974,12 +974,54 @@ $(document).ready(function(){
         });
         $('#companyFields').slideUp();
 
-        // ---> INSERT REAL-TIME VAT VALIDATION HERE <---
-        $("input[name='companyNumber']").on("input blur", function() {
-          const companyNumber = $(this).val().trim();
+        // ---> INSERT REAL-TIME VAT MASK & VALIDATION HERE <---
+        const $companyNumberInput = $("input[name='companyNumber']");
+
+        // Set the placeholder and max length based on the country
+        if (country === "AT") {
+          $companyNumberInput.attr("placeholder", "ATU12345678").attr("maxlength", "11");
+        } else if (country === "DE") {
+          $companyNumberInput.attr("placeholder", "DE123456789").attr("maxlength", "11");
+        }
+
+        // Real-time masking and validation
+        $companyNumberInput.on("input blur", function() {
+          // Get value, force uppercase, and strip out spaces or special characters
+          let val = $(this).val().toUpperCase().replace(/[^A-Z0-9]/g, ''); 
           const $field = $(this);
           
-          if (companyNumber === "") {
+          // --- 1. Enforce the Mask ---
+          if (country === "AT") {
+            if (val.startsWith("ATU")) {
+              // If it starts with ATU, allow only up to 8 digits afterward
+              let digits = val.substring(3).replace(/\D/g, '').substring(0, 8);
+              val = "ATU" + digits;
+            } else if ("ATU".startsWith(val)) {
+              // Allow the user to naturally type "A", "AT", "ATU"
+            } else {
+              // If the user pastes numbers directly or types a number first, auto-prefix it
+              let digits = val.replace(/\D/g, '').substring(0, 8);
+              val = digits.length > 0 ? "ATU" + digits : "";
+            }
+          } else if (country === "DE") {
+            if (val.startsWith("DE")) {
+              // If it starts with DE, allow only up to 9 digits afterward
+              let digits = val.substring(2).replace(/\D/g, '').substring(0, 9);
+              val = "DE" + digits;
+            } else if ("DE".startsWith(val)) {
+               // Allow the user to naturally type "D", "DE"
+            } else {
+              // If the user pastes numbers directly, auto-prefix it
+              let digits = val.replace(/\D/g, '').substring(0, 9);
+              val = digits.length > 0 ? "DE" + digits : "";
+            }
+          }
+          
+          // Update the input field with the forcefully formatted value
+          $(this).val(val);
+
+          // --- 2. Apply Validation ---
+          if (val === "") {
             $field.css("border", "1px solid #E2E2E2");
             return;
           }
@@ -987,19 +1029,20 @@ $(document).ready(function(){
           let isValid = true;
           if (country === "AT") {
             const atVatRegex = /^ATU[0-9]{8}$/;
-            isValid = atVatRegex.test(companyNumber);
+            isValid = atVatRegex.test(val);
           } else if (country === "DE") {
             const deVatRegex = /^DE[0-9]{9}$/;
-            isValid = deVatRegex.test(companyNumber);
+            isValid = deVatRegex.test(val);
           }
 
+          // Apply visual feedback
           if (!isValid) {
             $field.css("border", "2px solid red");
           } else {
             $field.css("border", "1px solid #E2E2E2");
           }
         });
-        // ---> END REAL-TIME VAT VALIDATION <---
+        // ---> END REAL-TIME VAT MASK & VALIDATION <---
 
         if(country == "AT"){
           $("#registeredOwnerSection").remove();
