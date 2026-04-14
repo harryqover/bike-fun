@@ -11,99 +11,185 @@
     <!-- JSONata Engine -->
     <script src="https://cdn.jsdelivr.net/npm/jsonata@2.0.2/jsonata.min.js"></script>
 
-    <!-- Monaco Editor Loader -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
-
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
+    <!-- Split.js for Resizable Panels -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script>
+
+    <!-- Monaco Editor Loader (Loaded last to prevent AMD define collisions) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+
     <style>
-        /* Monaco handles its own scrollbars internally, so we don't need custom global scrollbars for the editors anymore */
         body {
             background-color: #1e1e1e; /* VS Code default dark background */
+        }
+        
+        /* Split.js Gutter Styling */
+        .gutter {
+            background-color: #252526;
+            background-repeat: no-repeat;
+            background-position: 50%;
+            transition: background-color 0.2s ease;
+            position: relative;
+            z-index: 10;
+        }
+        .gutter::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 122, 204, 0); /* VS Code Blue */
+            transition: background 0.2s ease;
+        }
+        .gutter:hover::after, .gutter.gutter-dragging::after {
+            background: rgba(0, 122, 204, 1);
+        }
+        .gutter.gutter-horizontal {
+            cursor: col-resize;
+            border-left: 1px solid #3c3c3c;
+            border-right: 1px solid #3c3c3c;
+        }
+        .gutter.gutter-vertical {
+            cursor: row-resize;
+            border-top: 1px solid #3c3c3c;
+            border-bottom: 1px solid #3c3c3c;
+        }
+
+        /* Monaco overrides */
+        .monaco-editor .margin {
+            background-color: #1e1e1e !important;
+        }
+        
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #1e1e1e; }
+        ::-webkit-scrollbar-thumb { background: #424242; border-radius: 5px; border: 2px solid #1e1e1e; }
+        ::-webkit-scrollbar-thumb:hover { background: #4f4f4f; }
+        
+        /* Dropdown transition */
+        .dropdown-menu {
+            transform-origin: top right;
+            transition: transform 0.15s ease-out, opacity 0.15s ease-out;
         }
     </style>
 </head>
 <body class="text-gray-200 h-screen flex flex-col font-sans overflow-hidden">
 
     <!-- Header Navigation -->
-    <header class="bg-[#252526] border-b border-[#3c3c3c] p-3 flex justify-between items-center shadow-md z-10">
+    <header class="bg-[#252526] border-b border-[#3c3c3c] p-3 px-5 flex justify-between items-center z-10 shrink-0 relative">
         <div class="flex items-center gap-3">
-            <svg class="w-8 h-8 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="w-7 h-7 text-[#007acc]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
                 <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
                 <line x1="12" y1="22.08" x2="12" y2="12"></line>
             </svg>
-            <h1 class="text-xl font-bold tracking-wide text-white">JSONata <span class="text-blue-500 font-light">Playground</span></h1>
+            <h1 class="text-xl font-semibold tracking-wide text-gray-100">JSONata <span class="text-[#007acc] font-light">Playground</span></h1>
         </div>
         <div class="flex gap-4 items-center">
-            <a href="https://docs.jsonata.org/" target="_blank" class="text-sm text-gray-400 hover:text-white transition flex items-center gap-1">
-                <i data-lucide="book" class="w-4 h-4"></i> Documentation
+            
+            <!-- Examples Dropdown -->
+            <div class="relative">
+                <button id="examples-btn" onclick="toggleDropdown()" class="text-sm text-gray-300 hover:text-white transition flex items-center gap-1.5 bg-[#333333] hover:bg-[#3c3c3c] px-3 py-1.5 rounded border border-[#4a4a4a]">
+                    <i data-lucide="library" class="w-4 h-4 text-yellow-500"></i> Examples <i data-lucide="chevron-down" class="w-3 h-3 ml-1"></i>
+                </button>
+                <div id="examples-dropdown" class="dropdown-menu absolute right-0 mt-2 w-56 bg-[#252526] border border-[#3c3c3c] rounded shadow-2xl opacity-0 scale-95 pointer-events-none z-50 overflow-hidden">
+                    <div class="px-3 py-2 border-b border-[#3c3c3c] bg-[#1e1e1e]">
+                        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Snippets</span>
+                    </div>
+                    <ul class="py-1" id="examples-list">
+                        <!-- Populated via JS -->
+                    </ul>
+                </div>
+            </div>
+
+            <a href="https://docs.jsonata.org/" target="_blank" class="text-sm text-gray-400 hover:text-white transition flex items-center gap-1.5 bg-[#333333] hover:bg-[#3c3c3c] px-3 py-1.5 rounded">
+                <i data-lucide="book" class="w-4 h-4"></i> Docs
             </a>
-            <button id="share-btn" onclick="copyShareLink()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded text-sm font-medium transition flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+            <button id="share-btn" onclick="copyShareLink()" class="bg-[#007acc] hover:bg-[#0098ff] text-white px-4 py-1.5 rounded text-sm font-medium transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                 <i data-lucide="share-2" class="w-4 h-4"></i> <span>Share Link</span>
             </button>
         </div>
     </header>
 
     <!-- Main Workspace -->
-    <main class="flex-1 flex flex-col md:flex-row gap-4 p-4 overflow-hidden h-full bg-[#1e1e1e]">
+    <main id="main-layout" class="flex-1 flex flex-row overflow-hidden w-full bg-[#1e1e1e]">
         
         <!-- Left Panel: JSON Input -->
-        <section class="flex-1 flex flex-col bg-[#1e1e1e] border border-[#3c3c3c] rounded shadow-lg overflow-hidden min-h-[300px]">
-            <div class="bg-[#252526] p-2 px-4 border-b border-[#3c3c3c] flex justify-between items-center">
+        <section id="pane-left" class="flex flex-col h-full bg-[#1e1e1e] overflow-hidden">
+            <div class="bg-[#252526] p-2 px-4 flex justify-between items-center shrink-0 h-10">
                 <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                    <i data-lucide="database" class="w-4 h-4 text-green-400"></i> JSON Data
+                    <i data-lucide="database" class="w-4 h-4 text-green-500"></i> JSON Data
                 </h2>
-                <button onclick="formatJSON()" class="text-xs text-gray-400 hover:text-white transition" title="Format JSON">
-                    <i data-lucide="align-left" class="w-4 h-4"></i>
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="formatJSON()" class="text-gray-400 hover:text-white transition p-1 rounded hover:bg-[#333333]" title="Format JSON (Shift+Alt+F)">
+                        <i data-lucide="align-left" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="copyEditorContent(jsonEditor)" class="text-gray-400 hover:text-white transition p-1 rounded hover:bg-[#333333]" title="Copy JSON">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                    </button>
+                </div>
             </div>
-            <!-- Monaco needs absolute positioning inside a flex container to size correctly -->
-            <div class="flex-1 relative min-h-0">
+            <div class="flex-1 relative w-full h-full">
                 <div id="json-editor" class="absolute inset-0"></div>
             </div>
         </section>
 
         <!-- Right Panel: Query & Result -->
-        <section class="flex-1 flex flex-col gap-4 overflow-hidden min-h-[400px]">
+        <section id="pane-right" class="flex flex-col h-full overflow-hidden">
             
             <!-- Top Right: JSONata Expression -->
-            <div class="flex-1 flex flex-col bg-[#1e1e1e] border border-[#3c3c3c] rounded shadow-lg overflow-hidden">
-                <div class="bg-[#252526] p-2 px-4 border-b border-[#3c3c3c] flex justify-between items-center">
+            <div id="pane-top-right" class="flex flex-col h-full bg-[#1e1e1e] overflow-hidden">
+                <div class="bg-[#252526] p-2 px-4 flex justify-between items-center shrink-0 h-10">
                     <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                        <i data-lucide="code" class="w-4 h-4 text-blue-400"></i> JSONata Expression
+                        <i data-lucide="code-2" class="w-4 h-4 text-[#007acc]"></i> JSONata Expression
                     </h2>
+                    <button onclick="copyEditorContent(queryEditor)" class="text-gray-400 hover:text-white transition p-1 rounded hover:bg-[#333333]" title="Copy Query">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                    </button>
                 </div>
-                <div class="flex-1 relative min-h-0">
+                <div class="flex-1 relative w-full h-full">
                     <div id="query-editor" class="absolute inset-0"></div>
                 </div>
             </div>
 
             <!-- Bottom Right: Evaluation Result -->
-            <div class="flex-1 flex flex-col bg-[#1e1e1e] border border-[#3c3c3c] rounded shadow-lg overflow-hidden relative">
-                <div class="bg-[#252526] p-2 px-4 border-b border-[#3c3c3c] flex justify-between items-center">
+            <div id="pane-bottom-right" class="flex flex-col h-full bg-[#1e1e1e] overflow-hidden relative">
+                <div class="bg-[#252526] p-2 px-4 flex justify-between items-center shrink-0 h-10">
                     <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                         <i data-lucide="terminal" class="w-4 h-4 text-purple-400"></i> Result
                     </h2>
-                    <button onclick="copyResult()" class="text-xs text-gray-400 hover:text-white transition" title="Copy Result">
+                    <button onclick="copyEditorContent(resultEditor)" class="text-gray-400 hover:text-white transition p-1 rounded hover:bg-[#333333]" title="Copy Result">
                         <i data-lucide="copy" class="w-4 h-4"></i>
                     </button>
                 </div>
-                <div class="flex-1 relative min-h-0">
+                <div class="flex-1 relative w-full h-full">
                     <div id="result-editor" class="absolute inset-0"></div>
                 </div>
                 <!-- Error Overlay -->
-                <div id="error-overlay" class="absolute bottom-0 left-0 right-0 bg-red-900/95 text-red-100 p-3 text-sm font-mono hidden border-t border-red-700 max-h-32 overflow-y-auto z-20">
+                <div id="error-overlay" class="absolute bottom-0 left-0 right-0 bg-[#3a0000]/90 text-[#ff8080] p-3 text-sm font-mono hidden border-t border-[#660000] max-h-40 overflow-y-auto z-20 backdrop-blur-sm transition-all duration-200 shadow-[0_-4px_15px_rgba(0,0,0,0.5)]">
                 </div>
             </div>
             
         </section>
     </main>
 
+    <!-- IDE Status Bar -->
+    <footer id="status-bar" class="bg-[#007acc] text-white text-xs px-3 py-1 flex justify-between items-center z-20 shrink-0 transition-colors duration-300">
+        <div class="flex items-center gap-4">
+            <span id="status-message" class="flex items-center gap-1.5 font-medium">
+                <i data-lucide="check-circle" class="w-3.5 h-3.5" id="status-icon"></i> <span id="status-text">Ready</span>
+            </span>
+        </div>
+        <div class="flex items-center gap-4">
+            <span id="eval-time" class="font-mono">0ms</span>
+            <span class="opacity-80 hover:opacity-100 cursor-pointer transition">JSONata v2.0.2</span>
+        </div>
+    </footer>
+
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-[#252526] text-white border border-[#3c3c3c] px-4 py-2 rounded shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none z-50">
-        Copied to clipboard!
+    <div id="toast" class="fixed bottom-10 right-4 bg-[#252526] text-white border border-[#3c3c3c] px-4 py-2 rounded shadow-xl transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-none z-50 flex items-center gap-2">
+        <i data-lucide="info" class="w-4 h-4 text-[#007acc]"></i>
+        <span id="toast-msg">Copied!</span>
     </div>
 
     <script>
@@ -115,107 +201,254 @@
             lucide.createIcons();
         }
 
-        // Default Data
-        const defaultData = {
-          "Account": {
-            "Account Name": "Firefly",
-            "Order": [
-              {
-                "OrderID": "order103",
-                "Product": [
-                  { "Product Name": "Bowler Hat", "ProductID": 858383, "SKU": "0406654608", "Item": { "Price": 34.45, "Quantity": 2 } },
-                  { "Product Name": "Trilby hat", "ProductID": 858236, "SKU": "0406634348", "Item": { "Price": 21.67, "Quantity": 1 } }
-                ]
-              },
-              {
-                "OrderID": "order104",
-                "Product": [
-                  { "Product Name": "Bowler Hat", "ProductID": 858383, "SKU": "040657863", "Item": { "Price": 34.45, "Quantity": 4 } },
-                  { "Product Name": "Cloak", "ProductID": 658236, "SKU": "0306634348", "Item": { "Price": 107.99, "Quantity": 1 } }
-                ]
-              }
-            ]
-          }
+        // --- Layout UI Init (Split.js) ---
+        let mainSplit, rightSplit;
+        
+        function initLayouts() {
+            const isMobile = window.innerWidth < 768;
+            
+            if(mainSplit) mainSplit.destroy();
+            if(rightSplit) rightSplit.destroy();
+
+            if (!isMobile) {
+                document.getElementById('main-layout').classList.remove('flex-col');
+                document.getElementById('main-layout').classList.add('flex-row');
+                
+                mainSplit = Split(['#pane-left', '#pane-right'], {
+                    sizes: [40, 60], minSize: 300, gutterSize: 6, cursor: 'col-resize', onDrag: updateEditorLayouts
+                });
+
+                rightSplit = Split(['#pane-top-right', '#pane-bottom-right'], {
+                    direction: 'vertical', sizes: [40, 60], minSize: 150, gutterSize: 6, cursor: 'row-resize', onDrag: updateEditorLayouts
+                });
+            } else {
+                document.getElementById('main-layout').classList.remove('flex-row');
+                document.getElementById('main-layout').classList.add('flex-col');
+                
+                mainSplit = Split(['#pane-left', '#pane-right'], {
+                    direction: 'vertical', sizes: [33, 67], minSize: 200, gutterSize: 6, cursor: 'row-resize', onDrag: updateEditorLayouts
+                });
+
+                rightSplit = Split(['#pane-top-right', '#pane-bottom-right'], {
+                    direction: 'vertical', sizes: [50, 50], minSize: 150, gutterSize: 6, cursor: 'row-resize', onDrag: updateEditorLayouts
+                });
+            }
+        }
+
+        initLayouts();
+        window.addEventListener('resize', () => { initLayouts(); updateEditorLayouts(); });
+
+        // --- Snippets & Examples Library ---
+        const snippetLibrary = {
+            "basic": {
+                label: "Basic Filtering",
+                icon: "filter",
+                data: { "Account": { "Account Name": "Firefly", "Order": [ { "OrderID": "order103", "Product": [ { "Product Name": "Bowler Hat", "Price": 34.45 }, { "Product Name": "Trilby hat", "Price": 21.67 } ] }, { "OrderID": "order104", "Product": [ { "Product Name": "Bowler Hat", "Price": 34.45 }, { "Product Name": "Cloak", "Price": 107.99 } ] } ] } },
+                query: "Account.Order[0].Product[0].`Product Name`"
+            },
+            "math": {
+                label: "Math & Aggregation",
+                icon: "calculator",
+                data: { "Invoices": [ { "Id": 1, "Amount": 120.50, "Status": "Paid" }, { "Id": 2, "Amount": 340.00, "Status": "Pending" }, { "Id": 3, "Amount": 55.20, "Status": "Paid" } ] },
+                query: "/* Calculate total of Paid invoices */\n$sum(Invoices[Status='Paid'].Amount)"
+            },
+            "transform": {
+                label: "Object Transformation",
+                icon: "braces",
+                data: { "customers": [ { "firstname": "John", "lastname": "Doe", "age": 28 }, { "firstname": "Jane", "lastname": "Smith", "age": 34 } ] },
+                query: "/* Restructure array of objects */\ncustomers.{\n  \"fullName\": firstname & \" \" & lastname,\n  \"isAdult\": age >= 18\n}"
+            },
+            "sorting": {
+                label: "Sorting & Grouping",
+                icon: "arrow-down-a-z",
+                data: { "Catalog": [ {"Category": "Books", "Title": "Dune", "Price": 15}, {"Category": "Electronics", "Title": "Mouse", "Price": 25}, {"Category": "Books", "Title": "1984", "Price": 10} ] },
+                query: "/* Group by Category, then sort items by price */\nCatalog{ Category: [ $ ^(Price) ] }"
+            }
         };
 
-        const defaultQuery = "Account.Order[0].Product[0].Product Name";
+        const defaultData = snippetLibrary.basic.data;
+        const defaultQuery = snippetLibrary.basic.query;
+
+        // Populate Dropdown
+        const examplesList = document.getElementById('examples-list');
+        Object.keys(snippetLibrary).forEach(key => {
+            const item = snippetLibrary[key];
+            const li = document.createElement('li');
+            li.innerHTML = `<button onclick="loadSnippet('${key}')" class="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-[#007acc] hover:text-white transition flex items-center gap-3"><i data-lucide="${item.icon}" class="w-4 h-4 opacity-70"></i> ${item.label}</button>`;
+            examplesList.appendChild(li);
+        });
+
+        // Dropdown Logic
+        let dropdownOpen = false;
+        function toggleDropdown() {
+            const menu = document.getElementById('examples-dropdown');
+            dropdownOpen = !dropdownOpen;
+            if(dropdownOpen) {
+                menu.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+                menu.classList.add('opacity-100', 'scale-100');
+            } else {
+                menu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+                menu.classList.remove('opacity-100', 'scale-100');
+            }
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (dropdownOpen && !e.target.closest('.relative')) {
+                toggleDropdown();
+            }
+        });
+
+        function loadSnippet(key) {
+            const snippet = snippetLibrary[key];
+            jsonEditor.setValue(JSON.stringify(snippet.data, null, 2));
+            queryEditor.setValue(snippet.query);
+            toggleDropdown();
+            showToast(`Loaded example: ${snippet.label}`);
+        }
 
         // Global Editor Instances
         let jsonEditor, queryEditor, resultEditor;
 
-        // Debounce utility to prevent spamming evaluations while typing
         function debounce(func, wait) {
             let timeout;
-            return function(...args) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), wait);
-            };
+            return function(...args) { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), wait); };
         }
 
-        // Initialize Monaco Editors
+        // --- Initialize Monaco Editors with Custom Language ---
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' }});
         require(['vs/editor/editor.main'], async function() {
             
-            // Common Editor Settings
+            // Register Custom JSONata Language
+            monaco.languages.register({ id: 'jsonata' });
+            
+            // Define Custom Syntax Highlighting (Monarch)
+            monaco.languages.setMonarchTokensProvider('jsonata', {
+                tokenizer: {
+                    root: [
+                        [/\$[a-zA-Z0-9_]*/, 'variable.name'], // Highlighting $variables
+                        [/`[^`]*`/, 'identifier.quote'],       // Highlighting `quoted keys`
+                        [/"([^"\\]|\\.)*$/, 'string.invalid'],
+                        [/"/, 'string', '@string'],
+                        [/[0-9]+(\.[0-9]+)?([eE][\-+]?[0-9]+)?/, 'number'],
+                        [/[=><!~?&|+\-*\/\^%]+/, 'operator'],
+                        [/\/\*/, 'comment', '@comment'],       // Block comments /* */
+                    ],
+                    string: [
+                        [/[^\\"]+/, 'string'],
+                        [/\\./, 'string.escape'],
+                        [/"/, 'string', '@pop']
+                    ],
+                    comment: [
+                        [/[^\/*]+/, 'comment'],
+                        [/\*\//, 'comment', '@pop'],
+                        [/[\/*]/, 'comment']
+                    ]
+                }
+            });
+
+            // Set Theme colors for our custom tokens
+            monaco.editor.defineTheme('jsonataTheme', {
+                base: 'vs-dark', inherit: true,
+                rules: [
+                    { token: 'variable.name', foreground: '9cdcfe' }, // Light Blue
+                    { token: 'identifier.quote', foreground: 'ce9178' }, // Orange/String-like
+                    { token: 'operator', foreground: 'd4d4d4' }
+                ],
+                colors: {}
+            });
+
+            // Define Auto-completion Snippets (IntelliSense Wow-Factor)
+            monaco.languages.registerCompletionItemProvider('jsonata', {
+                provideCompletionItems: function(model, position) {
+                    const suggestions = [
+                        { label: '$sum', kind: monaco.languages.CompletionItemKind.Function, insertText: '$sum(${1:array})', insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet, detail: 'Returns the sum of an array of numbers' },
+                        { label: '$count', kind: monaco.languages.CompletionItemKind.Function, insertText: '$count(${1:array})', insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet, detail: 'Returns the number of items in an array' },
+                        { label: '$average', kind: monaco.languages.CompletionItemKind.Function, insertText: '$average(${1:array})', insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet, detail: 'Returns the average value of an array of numbers' },
+                        { label: '$uppercase', kind: monaco.languages.CompletionItemKind.Function, insertText: '$uppercase(${1:string})', insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet, detail: 'Converts a string to uppercase' },
+                        { label: '$lowercase', kind: monaco.languages.CompletionItemKind.Function, insertText: '$lowercase(${1:string})', insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet, detail: 'Converts a string to lowercase' },
+                        { label: '$join', kind: monaco.languages.CompletionItemKind.Function, insertText: '$join(${1:array}, ${2:separator})', insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet, detail: 'Joins an array of strings into a single string' },
+                        { label: '$split', kind: monaco.languages.CompletionItemKind.Function, insertText: '$split(${1:string}, ${2:separator})', insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet, detail: 'Splits a string into an array of strings' },
+                        { label: '$map', kind: monaco.languages.CompletionItemKind.Function, insertText: '$map(${1:array}, function($v, $i, $a) {\n  ${2:/* expression */}\n})', insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet, detail: 'Maps over an array' },
+                        { label: '$filter', kind: monaco.languages.CompletionItemKind.Function, insertText: '$filter(${1:array}, function($v, $i, $a) {\n  ${2:/* condition */}\n})', insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet, detail: 'Filters an array' },
+                    ];
+                    return { suggestions: suggestions };
+                }
+            });
+
             const commonOptions = {
-                theme: 'vs-dark',
+                theme: 'jsonataTheme', // Using our custom theme
                 automaticLayout: true,
-                minimap: { enabled: false }, // Turn off minimap to save space
-                fontSize: 14,
+                minimap: { enabled: false },
+                fontSize: 14, lineHeight: 22,
                 fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
                 scrollBeyondLastLine: false,
-                renderLineHighlight: 'all',
-                smoothScrolling: true
+                renderLineHighlight: 'gutter',
+                smoothScrolling: true,
+                padding: { top: 12, bottom: 12 },
+                scrollbar: { verticalScrollbarSize: 10, horizontalScrollbarSize: 10 }
             };
 
-            // 1. JSON Data Editor
             jsonEditor = monaco.editor.create(document.getElementById('json-editor'), {
-                ...commonOptions,
-                value: '// Loading...',
-                language: 'json',
-                formatOnPaste: true,
-                formatOnType: true
+                ...commonOptions, value: '// Loading...', language: 'json', formatOnPaste: true, formatOnType: true
             });
 
-            // 2. Query Editor
+            // Use the new 'jsonata' language we just registered
             queryEditor = monaco.editor.create(document.getElementById('query-editor'), {
-                ...commonOptions,
-                value: '// Loading...',
-                language: 'javascript', // Closest highlighting for JSONata
+                ...commonOptions, value: '// Loading...', language: 'jsonata', lineNumbers: "off", wordWrap: "on"
             });
 
-            // 3. Result Editor (Read-Only)
             resultEditor = monaco.editor.create(document.getElementById('result-editor'), {
-                ...commonOptions,
-                value: '',
-                language: 'json',
-                readOnly: true,
+                ...commonOptions, value: '', language: 'json', readOnly: true, wordWrap: "on"
             });
 
-            // Load State & Bind Events once editors are ready
             await loadState();
 
-            jsonEditor.onDidChangeModelContent(debounce(evaluate, 300));
-            queryEditor.onDidChangeModelContent(debounce(evaluate, 300));
+            jsonEditor.onDidChangeModelContent(debounce(evaluate, 200));
+            queryEditor.onDidChangeModelContent(debounce(evaluate, 200));
 
-            // Initial evaluation
             evaluate();
+            if (typeof lucide !== 'undefined') lucide.createIcons(); // ensure icons in dynamic dropdown load
         });
 
-        // The core Evaluation function
+        function updateEditorLayouts() {
+            if(jsonEditor) jsonEditor.layout();
+            if(queryEditor) queryEditor.layout();
+            if(resultEditor) resultEditor.layout();
+        }
+
+        function updateStatus(state, msg = "", time = "0") {
+            const bar = document.getElementById('status-bar');
+            const icon = document.getElementById('status-icon');
+            const text = document.getElementById('status-text');
+            const timeEl = document.getElementById('eval-time');
+            
+            timeEl.innerText = `${time}ms`;
+
+            if (state === 'ready' || state === 'success') {
+                bar.className = 'bg-[#007acc] text-white text-xs px-3 py-1 flex justify-between items-center z-20 shrink-0 transition-colors duration-300';
+                icon.setAttribute('data-lucide', 'check-circle');
+                text.innerText = 'Ready';
+            } else if (state === 'error') {
+                bar.className = 'bg-[#8a2222] text-white text-xs px-3 py-1 flex justify-between items-center z-20 shrink-0 transition-colors duration-300';
+                icon.setAttribute('data-lucide', 'x-circle');
+                text.innerText = msg;
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
         async function evaluate() {
             if (!jsonEditor || !queryEditor || !resultEditor) return;
 
+            const t0 = performance.now();
             const errorOverlay = document.getElementById('error-overlay');
             errorOverlay.classList.add('hidden');
-            errorOverlay.innerText = '';
             
             const jsonText = jsonEditor.getValue();
             const queryText = queryEditor.getValue();
             
             let data;
 
-            // 1. Parse JSON Input
             try {
                 if (!jsonText.trim() || jsonText.includes('// Loading...')) {
                     data = undefined;
@@ -225,20 +458,18 @@
             } catch (err) {
                 showError(`JSON Parse Error: ${err.message}`);
                 resultEditor.setValue('');
+                updateStatus('error', 'Invalid JSON Input', Math.round(performance.now() - t0));
                 return;
             }
 
-            // 2. Evaluate JSONata
             if (!queryText.trim() || queryText.includes('// Loading...')) {
                 resultEditor.setValue('');
+                updateStatus('ready', '', Math.round(performance.now() - t0));
                 return;
             }
 
             try {
-                // Compile the expression
                 const expression = jsonata(queryText);
-                
-                // Evaluate against data
                 const result = await expression.evaluate(data);
                 
                 if (result === undefined) {
@@ -246,19 +477,21 @@
                 } else {
                     resultEditor.setValue(JSON.stringify(result, null, 2));
                 }
+                
+                const t1 = performance.now();
+                updateStatus('success', '', Math.round(t1 - t0));
             } catch (err) {
                 showError(`JSONata Error: ${err.message}\nPosition: ${err.position || 'Unknown'}`);
+                updateStatus('error', `Query Error (Pos: ${err.position || '?'})`, Math.round(performance.now() - t0));
             }
         }
 
-        // Helper to display errors visually
         function showError(msg) {
             const errorOverlay = document.getElementById('error-overlay');
             errorOverlay.innerText = msg;
             errorOverlay.classList.remove('hidden');
         }
 
-        // App Script / Database Integration 
         async function loadState() {
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
@@ -297,24 +530,18 @@
             const shareBtn = document.getElementById('share-btn');
             const originalHtml = shareBtn.innerHTML;
             
-            // UI Loading state
             shareBtn.disabled = true;
             shareBtn.innerHTML = `<svg class="animate-spin w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Generating...</span>`;
 
             try {
-                // First, remove any existing generated link comment from the query to prevent stacking
                 let currentQuery = queryEditor.getValue();
                 const baseUrl = window.location.origin + window.location.pathname;
                 const escapedBaseUrl = baseUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                 
-                // Regex to find and remove previous auto-injected link comments
                 const oldLinkRegex = new RegExp(`[ \\t]*\\/\\*\\s*${escapedBaseUrl}\\?id=[a-zA-Z0-9_-]+\\s*\\*\\/[ \\t]*\\n?`, 'g');
                 let cleanQuery = currentQuery.replace(oldLinkRegex, '');
 
-                const payload = {
-                    json: jsonEditor.getValue(),
-                    query: cleanQuery // Send the cleaned query to be saved
-                };
+                const payload = { json: jsonEditor.getValue(), query: cleanQuery };
 
                 const response = await fetch(GAS_WEB_APP_URL, {
                     method: 'POST',
@@ -330,22 +557,18 @@
                     
                     await navigator.clipboard.writeText(newUrl);
 
-                    // Inject the new shareable link as a comment into the editor
                     const commentStr = `/* ${newUrl} */`;
                     let updatedQuery = cleanQuery;
                     
                     if (updatedQuery.trim().startsWith('(')) {
                         const firstParenIndex = updatedQuery.indexOf('(');
-                        // Inject the comment immediately after the first opening parenthesis
                         updatedQuery = updatedQuery.slice(0, firstParenIndex + 1) + `\n    ${commentStr}` + updatedQuery.slice(firstParenIndex + 1);
                     } else {
-                        // Otherwise, prepend it to the top
                         updatedQuery = `${commentStr}\n` + updatedQuery;
                     }
                     
-                    // Update Monaco with the new query format
                     queryEditor.setValue(updatedQuery);
-                    evaluate(); // Re-trigger evaluate locally just in case
+                    evaluate(); 
                     
                     showToast("Shareable link generated and copied!");
                 } else {
@@ -355,55 +578,46 @@
                 console.error(err);
                 showToast("Failed to generate link. Check API URL.");
             } finally {
-                // Restore button state
                 shareBtn.innerHTML = originalHtml;
                 shareBtn.disabled = false;
-                if (typeof lucide !== 'undefined') {
-                    lucide.createIcons(); 
-                }
+                if (typeof lucide !== 'undefined') lucide.createIcons(); 
             }
         }
 
-        // Toolbar Actions
         function formatJSON() {
             try {
-                // Alternatively, we could trigger Monaco's native format action:
-                // jsonEditor.getAction('editor.action.formatDocument').run();
-                const val = jsonEditor.getValue();
-                const parsed = JSON.parse(val);
-                jsonEditor.setValue(JSON.stringify(parsed, null, 2));
+                jsonEditor.getAction('editor.action.formatDocument').run();
             } catch (err) {
                 showToast("Cannot format: Invalid JSON");
             }
         }
 
-        async function copyResult() {
-            const result = resultEditor.getValue();
-            if (!result || result === '** no match **') return;
+        async function copyEditorContent(editorInstance) {
+            const content = editorInstance.getValue();
+            if (!content || content === '** no match **') return;
             
             try {
-                await navigator.clipboard.writeText(result);
-                showToast("Result copied to clipboard!");
+                await navigator.clipboard.writeText(content);
+                showToast("Copied to clipboard!");
             } catch (err) {
-                // Fallback
                 const input = document.createElement('textarea');
-                input.value = result;
+                input.value = content;
                 document.body.appendChild(input);
                 input.select();
                 document.execCommand('copy');
                 document.body.removeChild(input);
-                showToast("Result copied to clipboard!");
+                showToast("Copied to clipboard!");
             }
         }
 
         function showToast(message) {
             const toast = document.getElementById('toast');
-            toast.innerText = message;
-            toast.classList.remove('opacity-0');
-            toast.classList.add('opacity-100');
+            document.getElementById('toast-msg').innerText = message;
+            toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-0');
             setTimeout(() => {
-                toast.classList.remove('opacity-100');
-                toast.classList.add('opacity-0');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
             }, 3000);
         }
     </script>
