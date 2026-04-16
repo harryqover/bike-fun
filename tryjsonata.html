@@ -17,12 +17,12 @@
     <!-- Split.js for Resizable Panels -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script>
 
-    <!-- Monaco Editor Loader (Loaded last to prevent AMD define collisions) -->
+    <!-- Monaco Editor Loader -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
 
     <style>
         body {
-            background-color: #1e1e1e; /* VS Code default dark background */
+            background-color: #1e1e1e;
         }
         
         /* Split.js Gutter Styling */
@@ -38,7 +38,7 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 122, 204, 0); /* VS Code Blue */
+            background: rgba(0, 122, 204, 0);
             transition: background 0.2s ease;
         }
         .gutter:hover::after, .gutter.gutter-dragging::after {
@@ -121,6 +121,9 @@
                     <i data-lucide="database" class="w-4 h-4 text-green-500"></i> JSON Data
                 </h2>
                 <div class="flex gap-2">
+                    <button onclick="pruneJSONData()" class="text-gray-400 hover:text-white transition p-1 rounded hover:bg-[#333333]" title="Reduce JSON Data (Keep Used Keys)">
+                        <i data-lucide="scissors" class="w-4 h-4"></i>
+                    </button>
                     <button onclick="formatJSON()" class="text-gray-400 hover:text-white transition p-1 rounded hover:bg-[#333333]" title="Format JSON (Shift+Alt+F)">
                         <i data-lucide="align-left" class="w-4 h-4"></i>
                     </button>
@@ -143,9 +146,14 @@
                     <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                         <i data-lucide="code-2" class="w-4 h-4 text-[#007acc]"></i> JSONata Expression
                     </h2>
-                    <button onclick="copyEditorContent(queryEditor)" class="text-gray-400 hover:text-white transition p-1 rounded hover:bg-[#333333]" title="Copy Query">
-                        <i data-lucide="copy" class="w-4 h-4"></i>
-                    </button>
+                    <div class="flex gap-2">
+                        <button onclick="minifyQuery()" class="text-gray-400 hover:text-white transition p-1 rounded hover:bg-[#333333]" title="Make 1-Line (Keep \n breaks)">
+                            <i data-lucide="minimize-2" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="copyEditorContent(queryEditor)" class="text-gray-400 hover:text-white transition p-1 rounded hover:bg-[#333333]" title="Copy Query">
+                            <i data-lucide="copy" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="flex-1 relative w-full h-full">
                     <div id="query-editor" class="absolute inset-0"></div>
@@ -319,20 +327,18 @@
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' }});
         require(['vs/editor/editor.main'], async function() {
             
-            // Register Custom JSONata Language
             monaco.languages.register({ id: 'jsonata' });
             
-            // Define Custom Syntax Highlighting (Monarch)
             monaco.languages.setMonarchTokensProvider('jsonata', {
                 tokenizer: {
                     root: [
-                        [/\$[a-zA-Z0-9_]*/, 'variable.name'], // Highlighting $variables
-                        [/`[^`]*`/, 'identifier.quote'],       // Highlighting `quoted keys`
+                        [/\$[a-zA-Z0-9_]*/, 'variable.name'], 
+                        [/`[^`]*`/, 'identifier.quote'],       
                         [/"([^"\\]|\\.)*$/, 'string.invalid'],
                         [/"/, 'string', '@string'],
                         [/[0-9]+(\.[0-9]+)?([eE][\-+]?[0-9]+)?/, 'number'],
                         [/[=><!~?&|+\-*\/\^%]+/, 'operator'],
-                        [/\/\*/, 'comment', '@comment'],       // Block comments /* */
+                        [/\/\*/, 'comment', '@comment'],       
                     ],
                     string: [
                         [/[^\\"]+/, 'string'],
@@ -347,18 +353,16 @@
                 }
             });
 
-            // Set Theme colors for our custom tokens
             monaco.editor.defineTheme('jsonataTheme', {
                 base: 'vs-dark', inherit: true,
                 rules: [
-                    { token: 'variable.name', foreground: '9cdcfe' }, // Light Blue
-                    { token: 'identifier.quote', foreground: 'ce9178' }, // Orange/String-like
+                    { token: 'variable.name', foreground: '9cdcfe' },
+                    { token: 'identifier.quote', foreground: 'ce9178' },
                     { token: 'operator', foreground: 'd4d4d4' }
                 ],
                 colors: {}
             });
 
-            // Define Auto-completion Snippets (IntelliSense Wow-Factor)
             monaco.languages.registerCompletionItemProvider('jsonata', {
                 provideCompletionItems: function(model, position) {
                     const suggestions = [
@@ -377,7 +381,7 @@
             });
 
             const commonOptions = {
-                theme: 'jsonataTheme', // Using our custom theme
+                theme: 'jsonataTheme',
                 automaticLayout: true,
                 minimap: { enabled: false },
                 fontSize: 14, lineHeight: 22,
@@ -393,7 +397,6 @@
                 ...commonOptions, value: '// Loading...', language: 'json', formatOnPaste: true, formatOnType: true
             });
 
-            // Use the new 'jsonata' language we just registered
             queryEditor = monaco.editor.create(document.getElementById('query-editor'), {
                 ...commonOptions, value: '// Loading...', language: 'jsonata', lineNumbers: "off", wordWrap: "on"
             });
@@ -408,7 +411,7 @@
             queryEditor.onDidChangeModelContent(debounce(evaluate, 200));
 
             evaluate();
-            if (typeof lucide !== 'undefined') lucide.createIcons(); // ensure icons in dynamic dropdown load
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         });
 
         function updateEditorLayouts() {
@@ -492,6 +495,66 @@
             errorOverlay.classList.remove('hidden');
         }
 
+        // --- New Feature: Reduce JSON based on Expression ---
+        function pruneJSONData() {
+            if (!jsonEditor || !queryEditor) return;
+            const queryStr = queryEditor.getValue();
+            let data;
+            
+            try {
+                data = JSON.parse(jsonEditor.getValue());
+            } catch (e) {
+                showToast("Invalid JSON. Cannot reduce.");
+                return;
+            }
+
+            // Heuristic matching: Keep node if the property key string literally exists inside the query editor text
+            // Also keep it if any of its children nodes match
+            function keepNode(key, value, qStr) {
+                if (qStr.includes(key)) return true;
+                if (typeof value === 'object' && value !== null) {
+                    return Object.entries(value).some(([k, v]) => keepNode(k, v, qStr));
+                }
+                return false;
+            }
+
+            // Recursive function to strip unnecessary objects
+            function prune(obj, qStr) {
+                if (Array.isArray(obj)) {
+                    return obj.map(item => prune(item, qStr));
+                }
+                if (typeof obj === 'object' && obj !== null) {
+                    const newObj = {};
+                    for (const key in obj) {
+                        if (keepNode(key, obj[key], qStr)) {
+                            newObj[key] = prune(obj[key], qStr);
+                        }
+                    }
+                    return newObj;
+                }
+                return obj; 
+            }
+
+            const prunedData = prune(data, queryStr);
+            jsonEditor.setValue(JSON.stringify(prunedData, null, 2));
+            showToast("JSON successfully reduced based on query keys!");
+        }
+
+        // --- New Feature: Minify to 1 Line ---
+        function minifyQuery() {
+            if (!queryEditor) return;
+            let query = queryEditor.getValue();
+            
+            // 1. Escape double quotes for JSON configuration compatibility
+            query = query.replace(/"/g, '\\"');
+            
+            // 2. Replace actual real newlines with "\n" string representation
+            query = query.replace(/\r?\n/g, '\\n');
+            
+            queryEditor.setValue(query.trim());
+            showToast("Expression condensed to 1 line!");
+        }
+
         async function loadState() {
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
@@ -530,18 +593,30 @@
             const shareBtn = document.getElementById('share-btn');
             const originalHtml = shareBtn.innerHTML;
             
+            const jsonText = jsonEditor.getValue();
+            let currentQuery = queryEditor.getValue();
+
+            // --- New Feature: Warn User on Length Restriction ---
+            const totalLength = jsonText.length + currentQuery.length;
+            if (totalLength > 50000) {
+                showError(`⚠️ Cannot share! Your total characters (${totalLength.toLocaleString()}) exceed the 50,000 character limit. Please reduce your data payload to save.`);
+                
+                // Flash the bar red automatically to catch attention
+                updateStatus('error', 'Payload Too Large', 0);
+                return; // Stop the share execution
+            }
+
             shareBtn.disabled = true;
             shareBtn.innerHTML = `<svg class="animate-spin w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Generating...</span>`;
 
             try {
-                let currentQuery = queryEditor.getValue();
                 const baseUrl = window.location.origin + window.location.pathname;
                 const escapedBaseUrl = baseUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                 
                 const oldLinkRegex = new RegExp(`[ \\t]*\\/\\*\\s*${escapedBaseUrl}\\?id=[a-zA-Z0-9_-]+\\s*\\*\\/[ \\t]*\\n?`, 'g');
                 let cleanQuery = currentQuery.replace(oldLinkRegex, '');
 
-                const payload = { json: jsonEditor.getValue(), query: cleanQuery };
+                const payload = { json: jsonText, query: cleanQuery };
 
                 const response = await fetch(GAS_WEB_APP_URL, {
                     method: 'POST',
