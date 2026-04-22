@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 101 for Project Managers: Insurance Flow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        qover: '#00D18F',
+                        'qover-dark': '#00A873',
+                        codebg: '#1E293B',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Simple syntax highlighting for our JSON blocks */
+        .json-key { color: #38BDF8; }
+        .json-string { color: #A7F3D0; }
+        .json-number { color: #FBBF24; }
+        .json-boolean { color: #F472B6; }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Custom scrollbar for code blocks */
+        pre::-webkit-scrollbar { height: 8px; width: 8px; }
+        pre::-webkit-scrollbar-track { background: #0f172a; }
+        pre::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-qover text-white p-2 rounded-lg">
+                    <i class="fa-solid fa-server"></i>
+                </div>
+                <h1 class="text-xl font-bold text-gray-900">API 101 for PMs</h1>
+            </div>
+            <a href="https://docs-ui.stg.qover.io/api/dojo.policies/PolicyQuoteApiService" target="_blank" class="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center transition-colors">
+                <i class="fa-solid fa-book mr-2"></i> Qover API Docs
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        
+        <!-- Intro Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">How an Insurance API Works</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold text-lg flex items-center text-gray-700 mb-2">
+                        <i class="fa-solid fa-exchange-alt text-qover mr-2"></i> What is an API?
+                    </h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        Think of an API as a digital waiter. Your website (the customer) gives the waiter an order. The waiter takes the order to the kitchen (our systems/database), and brings back the food (the data/result).
+                    </p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg flex items-center text-gray-700 mb-2">
+                        <i class="fa-solid fa-code text-qover mr-2"></i> What is JSON?
+                    </h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        JSON (JavaScript Object Notation) is simply the language the waiter speaks. It's a structured, lightweight text format organized in simple "Key-Value" pairs (like a digital form) that both computers easily understand.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- The Interactive Playground -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg-gray-800 text-white p-4 flex justify-between items-center">
+                <h2 class="font-semibold text-lg"><i class="fa-solid fa-play mr-2 text-qover"></i> Interactive Flow Simulator</h2>
+                <button onclick="resetFlow()" class="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-gray-200 transition">
+                    <i class="fa-solid fa-rotate-right mr-1"></i> Reset App
+                </button>
+            </div>
+
+            <div class="grid lg:grid-cols-12 min-h-[600px]">
+                
+                <!-- LEFT PANEL: User Interface (What the customer sees) -->
+                <div class="lg:col-span-5 bg-gray-50 border-r border-gray-200 p-6 flex flex-col relative">
+                    <div class="absolute top-0 right-0 bg-gray-200 text-gray-600 text-xs px-3 py-1 rounded-bl-lg font-mono">FRONTEND UI</div>
+                    
+                    <!-- STEP 1: UI -->
+                    <div id="ui-step-1" class="flex-grow">
+                        <h3 class="text-xl font-bold mb-2">Step 1: Get a Quote</h3>
+                        <p class="text-sm text-gray-500 mb-6">The user fills out their details to see a price.</p>
+                        
+                        <div class="space-y-4 bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Vehicle Type</label>
+                                <select id="vehicleInput" onchange="updateLiveJSON()" class="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-qover focus:border-qover">
+                                    <option value="ebike">E-Bike</option>
+                                    <option value="scooter">Electric Scooter</option>
+                                    <option value="bicycle">Standard Bicycle</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Estimated Value (€)</label>
+                                <input type="number" id="valueInput" value="2500" oninput="updateLiveJSON()" class="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-qover focus:border-qover">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Coverage Tier</label>
+                                <div class="flex space-x-2">
+                                    <label class="flex-1 bg-gray-50 border border-gray-300 rounded p-2 text-center text-sm cursor-pointer hover:bg-gray-100">
+                                        <input type="radio" name="tier" value="theft" onchange="updateLiveJSON()" class="mr-1 text-qover focus:ring-qover"> Theft
+                                    </label>
+                                    <label class="flex-1 bg-gray-50 border border-gray-300 rounded p-2 text-center text-sm cursor-pointer hover:bg-gray-100">
+                                        <input type="radio" name="tier" value="comprehensive" onchange="updateLiveJSON()" checked class="mr-1 text-qover focus:ring-qover"> Comprehensive
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button id="btnGetQuote" onclick="submitQuote()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition mt-4 flex justify-center items-center">
+                                <span>Get My Price (Call API)</span>
+                                <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: UI (Hidden initially) -->
+                    <div id="ui-step-2" class="flex-grow hidden fade-in">
+                        <div class="bg-green-100 border border-green-300 text-green-800 p-3 rounded-lg mb-6 flex items-start">
+                            <i class="fa-solid fa-check-circle mt-1 mr-2"></i>
+                            <div class="text-sm">
+                                <strong>Success!</strong> The API returned a price. We now show this to the user.
+                            </div>
+                        </div>
+
+                        <h3 class="text-xl font-bold mb-2">Step 2: Convert to Policy</h3>
+                        <p class="text-sm text-gray-500 mb-6">User reviews the price and decides to buy.</p>
+                        
+                        <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm text-center">
+                            <div class="text-sm text-gray-500 uppercase tracking-wide">Your Monthly Premium</div>
+                            <div class="text-4xl font-bold text-gray-900 my-2" id="displayPrice">€0.00</div>
+                            <div class="text-xs text-gray-400 mb-6">Quote Ref: <span id="displayQuoteId" class="font-mono bg-gray-100 px-1 rounded"></span></div>
+                            
+                            <hr class="mb-6">
+                            
+                            <p class="text-sm text-gray-600 mb-4">By clicking buy, we don't send all the vehicle data again. We just send the <strong>Quote Reference ID</strong> to lock it in.</p>
+                            
+                            <button id="btnBuyPolicy" onclick="convertPolicy()" class="w-full bg-qover hover:bg-qover-dark text-white font-medium py-3 px-4 rounded-md transition flex justify-center items-center shadow-lg">
+                                <span>Buy Policy Now</span>
+                                <i class="fa-solid fa-shield-check ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: UI (Hidden initially) -->
+                    <div id="ui-step-3" class="flex-grow hidden fade-in flex flex-col justify-center items-center text-center h-full">
+                        <div class="bg-qover text-white w-20 h-20 rounded-full flex items-center justify-center text-4xl mb-6 shadow-lg shadow-green-200 fade-in">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Policy Active!</h3>
+                        <p class="text-gray-500 mb-6">The customer is now officially insured.</p>
+                        
+                        <div class="bg-white border border-gray-200 rounded p-4 text-sm w-full max-w-sm">
+                            <div class="text-gray-500 mb-1">Official Policy ID:</div>
+                            <div class="font-mono text-lg font-bold text-gray-800" id="displayPolicyId">POL-XXX</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT PANEL: API / JSON View (What the computer sees) -->
+                <div class="lg:col-span-7 bg-codebg p-6 flex flex-col relative font-mono text-sm">
+                    <div class="absolute top-0 right-0 bg-gray-700 text-gray-300 text-xs px-3 py-1 rounded-bl-lg">BACKEND API (JSON)</div>
+                    
+                    <!-- Code view wrapper -->
+                    <div class="flex-grow flex flex-col space-y-4">
+                        
+                        <!-- Request Block -->
+                        <div class="flex-1 flex flex-col">
+                            <div class="text-gray-400 text-xs mb-2 flex items-center">
+                                <i class="fa-solid fa-arrow-up text-blue-400 mr-2"></i> 
+                                WHAT WE SEND (REQUEST)
+                                <span id="endpointLabel" class="ml-auto bg-gray-800 px-2 py-0.5 rounded text-[10px]">POST /api/v1/quotes</span>
+                            </div>
+                            <pre class="bg-gray-900 border border-gray-700 rounded-lg p-4 flex-grow overflow-auto text-gray-300"><code id="requestJson"></code></pre>
+                        </div>
+
+                        <!-- API Loading State -->
+                        <div id="apiLoader" class="hidden justify-center items-center py-2 text-qover">
+                            <i class="fa-solid fa-circle-notch fa-spin text-2xl"></i>
+                            <span class="ml-3 font-sans text-sm font-medium">API is processing...</span>
+                        </div>
+
+                        <!-- Response Block -->
+                        <div class="flex-1 flex flex-col">
+                            <div class="text-gray-400 text-xs mb-2 flex items-center">
+                                <i class="fa-solid fa-arrow-down text-qover mr-2"></i> 
+                                WHAT API RETURNS (RESPONSE)
+                                <span id="statusLabel" class="ml-auto bg-gray-800 px-2 py-0.5 rounded text-[10px] hidden">200 OK</span>
+                            </div>
+                            <pre class="bg-gray-900 border border-gray-700 rounded-lg p-4 flex-grow overflow-auto text-gray-500 transition-colors duration-300" id="responsePre"><code id="responseJson">// Waiting for request...</code></pre>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Manager Takeaways -->
+        <div class="mt-8 grid md:grid-cols-3 gap-6">
+            <div class="bg-blue-50 border border-blue-100 p-5 rounded-lg">
+                <div class="text-blue-600 mb-2"><i class="fa-solid fa-lightbulb text-xl"></i></div>
+                <h4 class="font-bold text-blue-900 mb-1">PM Takeaway #1</h4>
+                <p class="text-sm text-blue-800">Notice how we break the flow into two steps. Creating a <strong>Quote</strong> is harmless and doesn't charge money. It creates an ID that acts as a temporary shopping cart.</p>
+            </div>
+            <div class="bg-purple-50 border border-purple-100 p-5 rounded-lg">
+                <div class="text-purple-600 mb-2"><i class="fa-solid fa-link text-xl"></i></div>
+                <h4 class="font-bold text-purple-900 mb-1">PM Takeaway #2</h4>
+                <p class="text-sm text-purple-800">The <code>quote_id</code> is the vital link. The frontend stores it temporarily, and when the user clicks "Buy", we just send that ID to the Policy API endpoint. No need to resend the bike details!</p>
+            </div>
+            <div class="bg-green-50 border border-green-100 p-5 rounded-lg">
+                <div class="text-green-600 mb-2"><i class="fa-solid fa-tachometer-alt text-xl"></i></div>
+                <h4 class="font-bold text-green-900 mb-1">PM Takeaway #3</h4>
+                <p class="text-sm text-green-800">JSON acts as a strict contract. If the API expects <code>vehicle_type</code> but the frontend sends <code>bike_type</code>, the API will reject it (400 Bad Request error).</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // State variables
+        let currentQuoteId = null;
+        let currentPrice = 0;
+
+        // Utility: Colorize JSON string for HTML display
+        function syntaxHighlight(json) {
+            if (typeof json != 'string') {
+                json = JSON.stringify(json, undefined, 2);
+            }
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-boolean';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        // Generate dynamic request JSON based on UI inputs
+        function getLiveQuoteRequest() {
+            const vehicle = document.getElementById('vehicleInput').value;
+            const value = parseInt(document.getElementById('valueInput').value) || 0;
+            const tier = document.querySelector('input[name="tier"]:checked').value;
+
+            return {
+                "action": "create_quote",
+                "risk_data": {
+                    "vehicle_type": vehicle,
+                    "estimated_value_cents": value * 100
+                },
+                "product": {
+                    "coverage_tier": tier,
+                    "currency": "EUR"
+                }
+            };
+        }
+
+        // Update the JSON request view in real-time
+        function updateLiveJSON() {
+            if (currentQuoteId) return; // Don't update if we are already past step 1
+            const payload = getLiveQuoteRequest();
+            document.getElementById('requestJson').innerHTML = syntaxHighlight(payload);
+        }
+
+        // Simulate Network Delay and API processing
+        function simulateApiCall(callback) {
+            document.getElementById('apiLoader').classList.remove('hidden');
+            document.getElementById('apiLoader').classList.add('flex');
+            
+            // Dim the response box while loading
+            document.getElementById('responsePre').classList.add('opacity-50');
+
+            setTimeout(() => {
+                document.getElementById('apiLoader').classList.add('hidden');
+                document.getElementById('apiLoader').classList.remove('flex');
+                document.getElementById('responsePre').classList.remove('opacity-50');
+                
+                // Show Status code
+                const statusLbl = document.getElementById('statusLabel');
+                statusLbl.classList.remove('hidden');
+                statusLbl.classList.add('text-green-400');
+                statusLbl.innerText = '200 OK';
+
+                callback();
+            }, 1500); // 1.5 second fake delay
+        }
+
+        // Action: User clicks "Get Quote"
+        function submitQuote() {
+            const btn = document.getElementById('btnGetQuote');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+            simulateApiCall(() => {
+                // Generate fake backend data
+                const value = parseInt(document.getElementById('valueInput').value) || 2500;
+                const tier = document.querySelector('input[name="tier"]:checked').value;
+                
+                // Fake math for pricing
+                currentPrice = ((value * (tier === 'comprehensive' ? 0.08 : 0.04)) / 12).toFixed(2);
+                currentQuoteId = "QOT-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+
+                const responseData = {
+                    "status": "success",
+                    "quote_id": currentQuoteId,
+                    "pricing": {
+                        "monthly_premium": parseFloat(currentPrice),
+                        "currency": "EUR"
+                    },
+                    "expires_at": new Date(Date.now() + 86400000).toISOString()
+                };
+
+                // Update JSON Response UI
+                document.getElementById('responseJson').innerHTML = syntaxHighlight(responseData);
+                document.getElementById('responsePre').classList.remove('text-gray-500');
+                document.getElementById('responsePre').classList.add('text-gray-300');
+
+                // Update Frontend UI to Step 2
+                document.getElementById('ui-step-1').classList.add('hidden');
+                document.getElementById('ui-step-2').classList.remove('hidden');
+                
+                document.getElementById('displayPrice').innerText = '€' + currentPrice;
+                document.getElementById('displayQuoteId').innerText = currentQuoteId;
+
+                // Prepare Request view for Step 2
+                document.getElementById('endpointLabel').innerText = "POST /api/v1/policies";
+                document.getElementById('statusLabel').classList.add('hidden');
+                const policyRequest = {
+                    "action": "convert_to_policy",
+                    "quote_id": currentQuoteId,
+                    "payment_method": "saved_credit_card",
+                    "user_agreed_to_terms": true
+                };
+                document.getElementById('requestJson').innerHTML = syntaxHighlight(policyRequest);
+            });
+        }
+
+        // Action: User clicks "Buy Policy"
+        function convertPolicy() {
+            const btn = document.getElementById('btnBuyPolicy');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+            simulateApiCall(() => {
+                const policyId = "POL-" + new Date().getFullYear() + "-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+                
+                const responseData = {
+                    "status": "active",
+                    "policy_id": policyId,
+                    "quote_reference": currentQuoteId,
+                    "start_date": new Date().toISOString().split('T')[0],
+                    "documents": [
+                        "https://api.qover.com/docs/" + policyId + "/certificate.pdf"
+                    ]
+                };
+
+                // Update JSON Response UI
+                document.getElementById('responseJson').innerHTML = syntaxHighlight(responseData);
+
+                // Update Frontend UI to Step 3
+                document.getElementById('ui-step-2').classList.add('hidden');
+                document.getElementById('ui-step-3').classList.remove('hidden');
+                document.getElementById('displayPolicyId').innerText = policyId;
+            });
+        }
+
+        // Action: Reset App
+        function resetFlow() {
+            currentQuoteId = null;
+            currentPrice = 0;
+            
+            // Reset UI
+            document.getElementById('ui-step-3').classList.add('hidden');
+            document.getElementById('ui-step-2').classList.add('hidden');
+            document.getElementById('ui-step-1').classList.remove('hidden');
+            
+            const btnQuote = document.getElementById('btnGetQuote');
+            btnQuote.disabled = false;
+            btnQuote.innerHTML = '<span>Get My Price (Call API)</span><i class="fa-solid fa-arrow-right ml-2"></i>';
+
+            const btnBuy = document.getElementById('btnBuyPolicy');
+            btnBuy.disabled = false;
+            btnBuy.innerHTML = '<span>Buy Policy Now</span><i class="fa-solid fa-shield-check ml-2"></i>';
+
+            // Reset API View
+            document.getElementById('endpointLabel').innerText = "POST /api/v1/quotes";
+            document.getElementById('statusLabel').classList.add('hidden');
+            document.getElementById('responseJson').innerHTML = '// Waiting for request...';
+            document.getElementById('responsePre').classList.add('text-gray-500');
+            document.getElementById('responsePre').classList.remove('text-gray-300');
+
+            updateLiveJSON();
+        }
+
+        // Initialize on load
+        updateLiveJSON();
+    </script>
+</body>
+</html>
