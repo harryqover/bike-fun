@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +7,26 @@
     
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Check local storage for theme to prevent FOUC (Flash of Unstyled Content)
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        }
+        
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#1e1e1e',
+                        darkPanel: '#252526',
+                        darkBorder: '#3c3c3c',
+                        darkHover: '#333333'
+                    }
+                }
+            }
+        }
+    </script>
     
     <!-- JSONata Engine -->
     <script src="https://cdn.jsdelivr.net/npm/jsonata@2.0.2/jsonata.min.js"></script>
@@ -21,18 +41,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
 
     <style>
-        body {
-            background-color: #1e1e1e;
-        }
-        
         /* Split.js Gutter Styling */
         .gutter {
-            background-color: #252526;
+            background-color: #e5e7eb;
             background-repeat: no-repeat;
             background-position: 50%;
             transition: background-color 0.2s ease;
             position: relative;
             z-index: 10;
+        }
+        .dark .gutter {
+            background-color: #252526;
         }
         .gutter::after {
             content: '';
@@ -46,25 +65,39 @@
         }
         .gutter.gutter-horizontal {
             cursor: col-resize;
+            border-left: 1px solid #d1d5db;
+            border-right: 1px solid #d1d5db;
+        }
+        .dark .gutter.gutter-horizontal {
             border-left: 1px solid #3c3c3c;
             border-right: 1px solid #3c3c3c;
         }
         .gutter.gutter-vertical {
             cursor: row-resize;
+            border-top: 1px solid #d1d5db;
+            border-bottom: 1px solid #d1d5db;
+        }
+        .dark .gutter.gutter-vertical {
             border-top: 1px solid #3c3c3c;
             border-bottom: 1px solid #3c3c3c;
         }
 
         /* Monaco overrides */
         .monaco-editor .margin {
+            background-color: #f9fafb !important;
+        }
+        .dark .monaco-editor .margin {
             background-color: #1e1e1e !important;
         }
         
         /* Custom Scrollbars */
         ::-webkit-scrollbar { width: 10px; height: 10px; }
-        ::-webkit-scrollbar-track { background: #1e1e1e; }
-        ::-webkit-scrollbar-thumb { background: #424242; border-radius: 5px; border: 2px solid #1e1e1e; }
-        ::-webkit-scrollbar-thumb:hover { background: #4f4f4f; }
+        ::-webkit-scrollbar-track { background: #f3f4f6; }
+        .dark ::-webkit-scrollbar-track { background: #1e1e1e; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; border: 2px solid #f3f4f6; }
+        .dark ::-webkit-scrollbar-thumb { background: #424242; border: 2px solid #1e1e1e; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #4f4f4f; }
         
         /* Dropdown transition */
         .dropdown-menu {
@@ -73,28 +106,33 @@
         }
     </style>
 </head>
-<body class="text-gray-200 h-screen flex flex-col font-sans overflow-hidden">
+<body class="text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-darkBg h-screen flex flex-col font-sans overflow-hidden transition-colors duration-200">
 
     <!-- Header Navigation -->
-    <header class="bg-[#252526] border-b border-[#3c3c3c] p-3 px-5 flex justify-between items-center z-10 shrink-0 relative">
+    <header class="bg-white dark:bg-darkPanel border-b border-gray-300 dark:border-darkBorder p-3 px-5 flex justify-between items-center z-10 shrink-0 relative transition-colors duration-200">
         <div class="flex items-center gap-3">
             <svg class="w-7 h-7 text-[#007acc]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
                 <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
                 <line x1="12" y1="22.08" x2="12" y2="12"></line>
             </svg>
-            <h1 class="text-xl font-semibold tracking-wide text-gray-100">JSONata <span class="text-[#007acc] font-light">Playground</span></h1>
+            <h1 class="text-xl font-semibold tracking-wide text-gray-800 dark:text-gray-100">JSONata <span class="text-[#007acc] font-light">Playground</span></h1>
         </div>
-        <div class="flex gap-4 items-center">
+        <div class="flex gap-3 items-center">
             
+            <!-- Theme Toggle -->
+            <button onclick="toggleTheme()" class="text-sm text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition flex items-center justify-center bg-gray-100 dark:bg-[#333333] hover:bg-gray-200 dark:hover:bg-darkBorder w-8 h-8 rounded border border-gray-300 dark:border-[#4a4a4a]" title="Toggle Dark/Light Mode">
+                <i id="theme-icon" data-lucide="sun" class="w-4 h-4"></i>
+            </button>
+
             <!-- Examples Dropdown -->
             <div class="relative">
-                <button id="examples-btn" onclick="toggleDropdown()" class="text-sm text-gray-300 hover:text-white transition flex items-center gap-1.5 bg-[#333333] hover:bg-[#3c3c3c] px-3 py-1.5 rounded border border-[#4a4a4a]">
+                <button id="examples-btn" onclick="toggleDropdown()" class="text-sm text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition flex items-center gap-1.5 bg-gray-100 dark:bg-[#333333] hover:bg-gray-200 dark:hover:bg-darkBorder px-3 py-1.5 rounded border border-gray-300 dark:border-[#4a4a4a]">
                     <i data-lucide="library" class="w-4 h-4 text-yellow-500"></i> Examples <i data-lucide="chevron-down" class="w-3 h-3 ml-1"></i>
                 </button>
-                <div id="examples-dropdown" class="dropdown-menu absolute right-0 mt-2 w-56 bg-[#252526] border border-[#3c3c3c] rounded shadow-2xl opacity-0 scale-95 pointer-events-none z-50 overflow-hidden">
-                    <div class="px-3 py-2 border-b border-[#3c3c3c] bg-[#1e1e1e]">
-                        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Snippets</span>
+                <div id="examples-dropdown" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white dark:bg-darkPanel border border-gray-200 dark:border-darkBorder rounded shadow-2xl opacity-0 scale-95 pointer-events-none z-50 overflow-hidden">
+                    <div class="px-3 py-2 border-b border-gray-200 dark:border-darkBorder bg-gray-50 dark:bg-darkBg">
+                        <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Snippets</span>
                     </div>
                     <ul class="py-1" id="examples-list">
                         <!-- Populated via JS -->
@@ -102,32 +140,32 @@
                 </div>
             </div>
 
-            <a href="https://docs.jsonata.org/" target="_blank" class="text-sm text-gray-400 hover:text-white transition flex items-center gap-1.5 bg-[#333333] hover:bg-[#3c3c3c] px-3 py-1.5 rounded">
+            <a href="https://docs.jsonata.org/" target="_blank" class="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition flex items-center gap-1.5 bg-gray-100 dark:bg-[#333333] hover:bg-gray-200 dark:hover:bg-darkBorder px-3 py-1.5 rounded border border-transparent dark:border-transparent">
                 <i data-lucide="book" class="w-4 h-4"></i> Docs
             </a>
             <button id="share-btn" onclick="copyShareLink()" class="bg-[#007acc] hover:bg-[#0098ff] text-white px-4 py-1.5 rounded text-sm font-medium transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                <i data-lucide="share-2" class="w-4 h-4"></i> <span>Share Link</span>
+                <i data-lucide="share-2" class="w-4 h-4"></i> <span>Share</span>
             </button>
         </div>
     </header>
 
     <!-- Main Workspace -->
-    <main id="main-layout" class="flex-1 flex flex-row overflow-hidden w-full bg-[#1e1e1e]">
+    <main id="main-layout" class="flex-1 flex flex-row overflow-hidden w-full bg-gray-200 dark:bg-darkBg">
         
         <!-- Left Panel: JSON Input -->
-        <section id="pane-left" class="flex flex-col h-full bg-[#1e1e1e] overflow-hidden">
-            <div class="bg-[#252526] p-2 px-4 flex justify-between items-center shrink-0 h-10">
-                <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                    <i data-lucide="database" class="w-4 h-4 text-green-500"></i> JSON Data
+        <section id="pane-left" class="flex flex-col h-full bg-white dark:bg-darkBg overflow-hidden transition-colors">
+            <div class="bg-gray-100 dark:bg-darkPanel p-2 px-4 flex justify-between items-center shrink-0 h-10 border-b border-gray-200 dark:border-transparent">
+                <h2 class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                    <i data-lucide="database" class="w-4 h-4 text-green-600 dark:text-green-500"></i> JSON Data
                 </h2>
                 <div class="flex gap-2">
-                    <button onclick="pruneJSONData()" class="text-gray-400 hover:text-white transition p-1 rounded hover:bg-[#333333]" title="Reduce JSON Data (Keep Used Keys)">
+                    <button onclick="pruneJSONData()" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition p-1 rounded hover:bg-gray-200 dark:hover:bg-darkHover" title="Reduce JSON Data (Keep Used Keys)">
                         <i data-lucide="scissors" class="w-4 h-4"></i>
                     </button>
-                    <button onclick="formatJSON()" class="text-gray-400 hover:text-white transition p-1 rounded hover:bg-[#333333]" title="Format JSON (Shift+Alt+F)">
+                    <button onclick="formatJSON()" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition p-1 rounded hover:bg-gray-200 dark:hover:bg-darkHover" title="Format JSON (Shift+Alt+F)">
                         <i data-lucide="align-left" class="w-4 h-4"></i>
                     </button>
-                    <button onclick="copyEditorContent(jsonEditor)" class="text-gray-400 hover:text-white transition p-1 rounded hover:bg-[#333333]" title="Copy JSON">
+                    <button onclick="copyEditorContent(jsonEditor)" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition p-1 rounded hover:bg-gray-200 dark:hover:bg-darkHover" title="Copy JSON">
                         <i data-lucide="copy" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -141,16 +179,16 @@
         <section id="pane-right" class="flex flex-col h-full overflow-hidden">
             
             <!-- Top Right: JSONata Expression -->
-            <div id="pane-top-right" class="flex flex-col h-full bg-[#1e1e1e] overflow-hidden">
-                <div class="bg-[#252526] p-2 px-4 flex justify-between items-center shrink-0 h-10">
-                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+            <div id="pane-top-right" class="flex flex-col h-full bg-white dark:bg-darkBg overflow-hidden transition-colors">
+                <div class="bg-gray-100 dark:bg-darkPanel p-2 px-4 flex justify-between items-center shrink-0 h-10 border-b border-gray-200 dark:border-transparent">
+                    <h2 class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
                         <i data-lucide="code-2" class="w-4 h-4 text-[#007acc]"></i> JSONata Expression
                     </h2>
                     <div class="flex gap-2">
-                        <button onclick="minifyQuery()" class="text-gray-400 hover:text-white transition p-1 rounded hover:bg-[#333333]" title="Make 1-Line (Keep \n breaks)">
+                        <button onclick="minifyQuery()" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition p-1 rounded hover:bg-gray-200 dark:hover:bg-darkHover" title="Make 1-Line (Keep \n breaks)">
                             <i data-lucide="minimize-2" class="w-4 h-4"></i>
                         </button>
-                        <button onclick="copyEditorContent(queryEditor)" class="text-gray-400 hover:text-white transition p-1 rounded hover:bg-[#333333]" title="Copy Query">
+                        <button onclick="copyEditorContent(queryEditor)" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition p-1 rounded hover:bg-gray-200 dark:hover:bg-darkHover" title="Copy Query">
                             <i data-lucide="copy" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -161,12 +199,12 @@
             </div>
 
             <!-- Bottom Right: Evaluation Result -->
-            <div id="pane-bottom-right" class="flex flex-col h-full bg-[#1e1e1e] overflow-hidden relative">
-                <div class="bg-[#252526] p-2 px-4 flex justify-between items-center shrink-0 h-10">
-                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                        <i data-lucide="terminal" class="w-4 h-4 text-purple-400"></i> Result
+            <div id="pane-bottom-right" class="flex flex-col h-full bg-white dark:bg-darkBg overflow-hidden relative transition-colors">
+                <div class="bg-gray-100 dark:bg-darkPanel p-2 px-4 flex justify-between items-center shrink-0 h-10 border-b border-gray-200 dark:border-transparent">
+                    <h2 class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="terminal" class="w-4 h-4 text-purple-600 dark:text-purple-400"></i> Result
                     </h2>
-                    <button onclick="copyEditorContent(resultEditor)" class="text-gray-400 hover:text-white transition p-1 rounded hover:bg-[#333333]" title="Copy Result">
+                    <button onclick="copyEditorContent(resultEditor)" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition p-1 rounded hover:bg-gray-200 dark:hover:bg-darkHover" title="Copy Result">
                         <i data-lucide="copy" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -174,7 +212,7 @@
                     <div id="result-editor" class="absolute inset-0"></div>
                 </div>
                 <!-- Error Overlay -->
-                <div id="error-overlay" class="absolute bottom-0 left-0 right-0 bg-[#3a0000]/90 text-[#ff8080] p-3 text-sm font-mono hidden border-t border-[#660000] max-h-40 overflow-y-auto z-20 backdrop-blur-sm transition-all duration-200 shadow-[0_-4px_15px_rgba(0,0,0,0.5)]">
+                <div id="error-overlay" class="absolute bottom-0 left-0 right-0 bg-red-100 text-red-700 dark:bg-[#3a0000]/90 dark:text-[#ff8080] p-3 text-sm font-mono hidden border-t border-red-300 dark:border-[#660000] max-h-40 overflow-y-auto z-20 backdrop-blur-sm transition-all duration-200 shadow-[0_-4px_15px_rgba(0,0,0,0.1)] dark:shadow-[0_-4px_15px_rgba(0,0,0,0.5)]">
                 </div>
             </div>
             
@@ -190,12 +228,14 @@
         </div>
         <div class="flex items-center gap-4">
             <span id="eval-time" class="font-mono">0ms</span>
-            <span class="opacity-80 hover:opacity-100 cursor-pointer transition">JSONata v2.0.2</span>
+            <span class="opacity-80 hover:opacity-100 cursor-pointer transition relative group" onclick="triggerEasterEgg()" title="Nothing to see here...">
+                JSONata v2.0.2
+            </span>
         </div>
     </footer>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-10 right-4 bg-[#252526] text-white border border-[#3c3c3c] px-4 py-2 rounded shadow-xl transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-none z-50 flex items-center gap-2">
+    <div id="toast" class="fixed bottom-10 right-4 bg-white dark:bg-darkPanel text-gray-800 dark:text-white border border-gray-200 dark:border-darkBorder px-4 py-2 rounded shadow-xl transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-none z-50 flex items-center gap-2">
         <i data-lucide="info" class="w-4 h-4 text-[#007acc]"></i>
         <span id="toast-msg">Copied!</span>
     </div>
@@ -204,9 +244,35 @@
         // Google Apps Script Web App URL
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyDjxN1zoLbdXC-NCn26hVof4B9sOretgNnjkSX8vYF12X6eE-obs0hINx1LCEGd5VP5A/exec";
 
+        // --- Theme Logic ---
+        let isDark = localStorage.getItem('theme') !== 'light';
+        const initialThemeIcon = document.getElementById('theme-icon');
+        if (initialThemeIcon) {
+            initialThemeIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+        }
+
         // Initialize Lucide Icons safely
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
+        }
+
+        function toggleTheme() {
+            isDark = !isDark;
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (isDark) {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                themeIcon.setAttribute('data-lucide', 'sun');
+                if (monaco && monaco.editor) monaco.editor.setTheme('jsonataTheme');
+            } else {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                themeIcon.setAttribute('data-lucide', 'moon');
+                if (monaco && monaco.editor) monaco.editor.setTheme('jsonataThemeLight');
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         // --- Layout UI Init (Split.js) ---
@@ -282,7 +348,7 @@
         Object.keys(snippetLibrary).forEach(key => {
             const item = snippetLibrary[key];
             const li = document.createElement('li');
-            li.innerHTML = `<button onclick="loadSnippet('${key}')" class="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-[#007acc] hover:text-white transition flex items-center gap-3"><i data-lucide="${item.icon}" class="w-4 h-4 opacity-70"></i> ${item.label}</button>`;
+            li.innerHTML = `<button onclick="loadSnippet('${key}')" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#007acc] hover:text-black dark:hover:text-white transition flex items-center gap-3"><i data-lucide="${item.icon}" class="w-4 h-4 opacity-70"></i> ${item.label}</button>`;
             examplesList.appendChild(li);
         });
 
@@ -353,6 +419,7 @@
                 }
             });
 
+            // Dark Theme
             monaco.editor.defineTheme('jsonataTheme', {
                 base: 'vs-dark', inherit: true,
                 rules: [
@@ -360,7 +427,22 @@
                     { token: 'identifier.quote', foreground: 'ce9178' },
                     { token: 'operator', foreground: 'd4d4d4' }
                 ],
-                colors: {}
+                colors: {
+                    'editor.background': '#1e1e1e'
+                }
+            });
+
+            // Light Theme
+            monaco.editor.defineTheme('jsonataThemeLight', {
+                base: 'vs', inherit: true,
+                rules: [
+                    { token: 'variable.name', foreground: '001080' },
+                    { token: 'identifier.quote', foreground: 'a31515' },
+                    { token: 'operator', foreground: '000000' }
+                ],
+                colors: {
+                    'editor.background': '#f9fafb'
+                }
             });
 
             monaco.languages.registerCompletionItemProvider('jsonata', {
@@ -381,7 +463,7 @@
             });
 
             const commonOptions = {
-                theme: 'jsonataTheme',
+                theme: isDark ? 'jsonataTheme' : 'jsonataThemeLight',
                 automaticLayout: true,
                 minimap: { enabled: false },
                 fontSize: 14, lineHeight: 22,
@@ -433,7 +515,7 @@
                 icon.setAttribute('data-lucide', 'check-circle');
                 text.innerText = 'Ready';
             } else if (state === 'error') {
-                bar.className = 'bg-[#8a2222] text-white text-xs px-3 py-1 flex justify-between items-center z-20 shrink-0 transition-colors duration-300';
+                bar.className = 'bg-[#b91c1c] dark:bg-[#8a2222] text-white text-xs px-3 py-1 flex justify-between items-center z-20 shrink-0 transition-colors duration-300';
                 icon.setAttribute('data-lucide', 'x-circle');
                 text.innerText = msg;
             }
@@ -508,8 +590,6 @@
                 return;
             }
 
-            // Heuristic matching: Keep node if the property key string literally exists inside the query editor text
-            // Also keep it if any of its children nodes match
             function keepNode(key, value, qStr) {
                 if (qStr.includes(key)) return true;
                 if (typeof value === 'object' && value !== null) {
@@ -518,7 +598,6 @@
                 return false;
             }
 
-            // Recursive function to strip unnecessary objects
             function prune(obj, qStr) {
                 if (Array.isArray(obj)) {
                     return obj.map(item => prune(item, qStr));
@@ -544,13 +623,8 @@
         function minifyQuery() {
             if (!queryEditor) return;
             let query = queryEditor.getValue();
-            
-            // 1. Escape double quotes for JSON configuration compatibility
             query = query.replace(/"/g, '\\"');
-            
-            // 2. Replace actual real newlines with "\n" string representation
             query = query.replace(/\r?\n/g, '\\n');
-            
             queryEditor.setValue(query.trim());
             showToast("Expression condensed to 1 line!");
         }
@@ -596,14 +670,11 @@
             const jsonText = jsonEditor.getValue();
             let currentQuery = queryEditor.getValue();
 
-            // --- New Feature: Warn User on Length Restriction ---
             const totalLength = jsonText.length + currentQuery.length;
             if (totalLength > 50000) {
                 showError(`⚠️ Cannot share! Your total characters (${totalLength.toLocaleString()}) exceed the 50,000 character limit. Please reduce your data payload to save.`);
-                
-                // Flash the bar red automatically to catch attention
                 updateStatus('error', 'Payload Too Large', 0);
-                return; // Stop the share execution
+                return;
             }
 
             shareBtn.disabled = true;
@@ -694,6 +765,80 @@
                 toast.classList.remove('opacity-100', 'translate-y-0');
                 toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
             }, 3000);
+        }
+
+        // --- Easter Egg Feature ---
+        let eggParticles = [];
+        let animationId = null;
+
+        function triggerEasterEgg() {
+            const phrases = ['$.*', '$sum()', '$map()', '/* */', '[]', '{}', ':=', '?', '|', '$count()', '$average()', '^(sort)', '✨', '🚀'];
+            const colors = ['#007acc', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899', '#3b82f6'];
+            
+            const rect = document.getElementById('status-bar').getBoundingClientRect();
+            const startY = rect.top;
+            const startX = window.innerWidth - 100; // General area of the version number
+
+            for(let i=0; i<60; i++) {
+                const el = document.createElement('div');
+                el.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+                el.style.position = 'fixed';
+                el.style.left = '0px';
+                el.style.top = '0px';
+                el.style.color = colors[Math.floor(Math.random() * colors.length)];
+                el.style.fontWeight = 'bold';
+                el.style.fontSize = (Math.random() * 16 + 12) + 'px';
+                el.style.pointerEvents = 'none';
+                el.style.zIndex = '9999';
+                el.style.textShadow = isDark ? '0px 0px 4px rgba(0,0,0,0.8)' : '0px 0px 4px rgba(255,255,255,0.8)';
+                document.body.appendChild(el);
+
+                eggParticles.push({
+                    el: el,
+                    x: startX + (Math.random() * 40 - 20),
+                    y: startY,
+                    vx: (Math.random() - 0.5) * 22,
+                    vy: -(Math.random() * 15 + 10),
+                    rot: Math.random() * 360,
+                    vRot: (Math.random() - 0.5) * 15,
+                    opacity: 1
+                });
+            }
+
+            if (!animationId) {
+                animateEggParticles();
+            }
+        }
+
+        function animateEggParticles() {
+            let active = false;
+            for(let i=0; i<eggParticles.length; i++) {
+                let p = eggParticles[i];
+                if (p.opacity > 0) {
+                    active = true;
+                    p.vy += 0.4; // gravity
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.rot += p.vRot;
+                    
+                    if (p.y > window.innerHeight) {
+                        p.opacity -= 0.03;
+                    }
+
+                    p.el.style.transform = `translate(${p.x}px, ${p.y}px) rotate(${p.rot}deg)`;
+                    p.el.style.opacity = p.opacity;
+                } else if (p.el.parentNode) {
+                    p.el.parentNode.removeChild(p.el);
+                }
+            }
+            
+            eggParticles = eggParticles.filter(p => p.opacity > 0);
+
+            if (active) {
+                animationId = requestAnimationFrame(animateEggParticles);
+            } else {
+                animationId = null;
+            }
         }
     </script>
 </body>
