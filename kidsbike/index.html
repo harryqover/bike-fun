@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidsBike BE - Trouvez le meilleur vélo léger (Woom, Frog, Puky)</title>
+    
+    <!-- Meta SEO & AI Crawlability -->
+    <meta name="description" content="Découvrez notre comparateur de vélos enfants légers en Belgique (Woom, Frog, Puky, Decathlon). Vérifiez si votre annonce d'occasion (2ememain) est une bonne affaire et consultez l'historique des prix.">
+    <meta name="keywords" content="vélo enfant léger, Woom 2, Woom 3, occasion Woom, Frog bikes Belgique, Puky LS-PRO, comparateur vélo enfant decathlon, prix 2ememain">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="author" content="KidsBike BE">
+    <link rel="canonical" href="https://www.kidsbike.be/">
+    
+    <!-- Open Graph for Social Sharing & iMessage/WhatsApp previews -->
+    <meta property="og:title" content="KidsBike BE - Le guide ultime du vélo enfant">
+    <meta property="og:description" content="Ne vous faites pas avoir sur le marché de l'occasion. Vérifiez le juste prix d'un vélo Woom, comparez avec Decathlon, visualisez l'historique des prix et trouvez le modèle idéal.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.kidsbike.be/">
+    <meta property="og:locale" content="fr_BE">
+    <meta property="og:locale:alternate" content="nl_BE">
+    <meta property="og:locale:alternate" content="en_BE">
+    
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Outil d'évaluation de vélos enfants d'occasion (Belgique)">
+    <meta name="twitter:description" content="Vérifiez si l'annonce 2ememain.be que vous regardez est une bonne affaire grâce à notre algorithme basé sur l'historique du marché.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#E02424', secondary: '#1C64F2', dark: '#111827', light: '#F3F4F6' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts & Icons & Charts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Schema.org Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://www.kidsbike.be/#website",
+          "url": "https://www.kidsbike.be/",
+          "name": "KidsBike BE",
+          "description": "Comparateur de vélos enfants et évaluateur de prix d'occasion en Belgique.",
+          "inLanguage": ["fr-BE", "nl-BE", "en-BE"]
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Deal Checker 2ememain",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "All",
+          "description": "Outil d'estimation permettant de vérifier si le prix d'un vélo d'occasion en ligne est une bonne affaire par rapport au marché belge.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Pourquoi un vélo Woom coûte-t-il si cher ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "L'investissement initial est plus élevé, mais la géométrie spécifique, le poids plume accélèrent l'apprentissage. Surtout, la valeur de revente en Belgique (sur 2ememain) est excellente, vous récupérez souvent 75% du prix après 2 ans." }
+            },
+            {
+              "@type": "Question",
+              "name": "Quelle taille choisir (Woom 2 vs Woom 3) ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Basez-vous sur l'entrejambe de votre enfant, pas juste sur l'âge. Le Woom 2 (14 pouces) est idéal dès 95cm, tandis que le Woom 3 (16 pouces) convient à partir de 105cm." }
+            },
+            {
+              "@type": "Question",
+              "name": "Woom vs Decathlon (B'twin) : Lequel choisir ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Le B'twin est excellent pour les petits budgets, mais il pèse presque 9kg. Le Woom (5kg) permet à l'enfant d'apprendre en quelques heures sans petites roues. Sur le long terme, le Woom revient au même prix grâce à sa revente exceptionnelle." }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .gradient-text { background: linear-gradient(to right, #E02424, #9B1C1C); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <header class="fixed w-full z-50 glass-panel shadow-sm transition-all duration-300" id="header">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="scrollToTop()" aria-label="Retour à l'accueil">
+                    <i class="ph-fill ph-bicycle text-4xl text-primary" aria-hidden="true"></i>
+                    <span class="font-extrabold text-2xl tracking-tight">KidsBike<span class="text-primary">.be</span></span>
+                </div>
+                
+                <nav class="hidden md:flex space-x-8" aria-label="Menu principal">
+                    <a href="#bikes" class="text-gray-600 hover:text-primary font-semibold transition-colors" data-i18n="nav_bikes">Vélos</a>
+                    <a href="#deal-checker" class="text-gray-600 hover:text-primary font-semibold transition-colors" data-i18n="nav_tool">Estimer une occasion</a>
+                    <a href="#market-stats" class="text-gray-600 hover:text-primary font-semibold transition-colors" data-i18n="nav_stats">Stats du marché</a>
+                    <a href="#faq" class="text-gray-600 hover:text-primary font-semibold transition-colors" data-i18n="nav_faq">FAQ</a>
+                </nav>
+
+                <div class="flex items-center gap-4">
+                    <select id="lang-switcher" aria-label="Changer de langue" class="bg-gray-100 border-none text-sm rounded-lg focus:ring-primary focus:border-primary block p-2 cursor-pointer font-medium" onchange="changeLanguage(this.value)">
+                        <option value="fr">🇫🇷 FR</option>
+                        <option value="nl">🇳🇱 NL</option>
+                        <option value="en">🇬🇧 EN</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow pt-20">
+        <!-- Hero Section -->
+        <section class="relative overflow-hidden bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 lg:pt-32 lg:pb-32 flex flex-col lg:flex-row items-center gap-12">
+                <div class="lg:w-1/2 text-center lg:text-left z-10">
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6">
+                        <span data-i18n="hero_title1">L'apprentissage du vélo,</span><br>
+                        <span class="gradient-text" data-i18n="hero_title2">sans les pleurs.</span>
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto lg:mx-0" data-i18n="hero_subtitle">
+                        Un vélo léger (comme Woom ou Frog) change tout. Découvrez les meilleurs modèles pour vos enfants, comparez les prix neufs ou vérifiez si votre trouvaille sur 2ememain est une bonne affaire.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="#bikes" class="bg-primary text-white font-bold py-4 px-8 rounded-full shadow-lg hover:bg-red-700 hover:shadow-xl transition-all transform hover:-translate-y-1 text-center" data-i18n="btn_compare_new">Voir les modèles</a>
+                        <a href="#deal-checker" class="bg-white text-gray-800 border border-gray-200 font-bold py-4 px-8 rounded-full shadow hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
+                            <i class="ph ph-magnifying-glass text-xl"></i>
+                            <span data-i18n="btn_check_used">Outil Occasion</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="lg:w-1/2 relative">
+                    <div class="relative w-full aspect-square max-w-md mx-auto bg-gray-50 rounded-full flex items-center justify-center border-8 border-white shadow-2xl">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-red-100 to-transparent rounded-full opacity-50"></div>
+                        <i class="ph-duotone ph-person-simple-bike text-[12rem] text-primary relative z-10 animate-bounce" style="animation-duration: 3s;"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The USP: Second Hand Deal Checker -->
+        <section id="deal-checker" class="py-20 bg-dark text-white relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary via-dark to-dark"></div>
+            
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 relative z-10 text-center">
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-4" data-i18n="tool_title">L'outil Anti-Arnaque (Occasion)</h2>
+                <p class="text-gray-400 mb-10 text-lg" data-i18n="tool_subtitle">Basé sur une base de données de plus de 400 annonces Woom de 2ememain.be depuis 2024. Entrez le prix vu en ligne pour vérifier si c'est une bonne affaire.</p>
+
+                <div class="bg-white rounded-3xl p-8 shadow-2xl text-gray-800 max-w-2xl mx-auto text-left transform transition-all hover:scale-[1.01]">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2" data-i18n="tool_label_model">Modèle de vélo</label>
+                            <select id="bike-model" class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-xl focus:ring-primary focus:border-primary block p-3 font-medium">
+                                <option value="woom1">Woom 1 (12")</option>
+                                <option value="woom2" selected>Woom 2 (14")</option>
+                                <option value="woom3">Woom 3 (16")</option>
+                                <option value="woom4">Woom 4 (20")</option>
+                                <option value="frog40">Frog 40 (14")</option>
+                                <option value="btwin14">B'twin 500 Decathlon (14")</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2" data-i18n="tool_label_price">Prix demandé (€)</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 font-bold">€</span>
+                                </div>
+                                <input type="number" id="used-price" placeholder="ex: 280" aria-label="Prix d'occasion" class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-xl focus:ring-primary focus:border-primary block p-3 pl-8 font-medium">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="calculateDeal()" class="w-full bg-dark text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:bg-gray-800 transition-colors text-lg flex items-center justify-center gap-2">
+                        <i class="ph ph-calculator text-2xl"></i>
+                        <span data-i18n="tool_btn_eval">Évaluer l'annonce</span>
+                    </button>
+
+                    <!-- Results Area -->
+                    <div id="deal-result" aria-live="polite" class="mt-8 hidden rounded-2xl p-6 border-2 transition-all">
+                        <div class="flex items-start gap-4">
+                            <div id="result-icon" class="text-4xl mt-1"></div>
+                            <div>
+                                <h3 id="result-title" class="text-xl font-extrabold mb-2"></h3>
+                                <p id="result-desc" class="text-gray-600 mb-4"></p>
+                                <div id="result-cta" class="hidden">
+                                    <a href="#" class="inline-flex items-center gap-2 bg-primary text-white font-bold py-2 px-6 rounded-lg hover:bg-red-700 transition-colors">
+                                        <i class="ph ph-shopping-cart"></i>
+                                        <span data-i18n="tool_buy_new">Acheter Neuf avec Garantie</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Section: Data Visualization from GSheet -->
+        <section id="market-stats" class="py-20 bg-gray-100">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-extrabold text-gray-900" data-i18n="stats_title">Évolution des Prix (2ememain.be)</h2>
+                    <p class="mt-4 text-gray-600" data-i18n="stats_subtitle">Analyse en temps réel des annonces autour de Bruxelles pour le modèle Woom 3.</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-200">
+                    <!-- Placeholder de chargement -->
+                    <div id="chart-loading" class="flex flex-col items-center justify-center h-64 text-gray-500">
+                        <i class="ph ph-spinner-gap animate-spin text-4xl mb-2"></i>
+                        <span data-i18n="stats_loading">Synchronisation avec la base de données...</span>
+                    </div>
+                    <!-- Le canvas pour Chart.js -->
+                    <canvas id="priceChart" class="hidden w-full h-64 md:h-96"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Picks (Affiliate Section) -->
+        <section id="bikes" class="py-24 bg-white">
+            <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl" data-i18n="bikes_title">Comparatif des Meilleurs Vélos Légers</h2>
+                    <p class="mt-4 text-xl text-gray-600" data-i18n="bikes_subtitle">Des vélos conçus pour la morphologie des enfants. (Prix indicatifs neufs)</p>
+                </div>
+
+                <!-- Modifié en grille de 4 colonnes pour grands écrans -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+                    
+                    <!-- Product 1: Woom -->
+                    <article class="bg-gray-50 rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow flex flex-col relative">
+                        <div class="absolute top-4 right-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full z-10" data-i18n="badge_bestseller">Le plus populaire</div>
+                        <div class="h-48 bg-white flex items-center justify-center p-6 relative overflow-hidden group">
+                             <i class="ph-duotone ph-bicycle text-8xl text-red-500 transform group-hover:scale-110 transition-transform"></i>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-2xl font-bold text-gray-900">Woom 2</h3>
+                                <span class="font-extrabold text-lg text-primary">~400€</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-4 font-medium" data-i18n="bike_specs_1">14 pouces | 3 - 4.5 ans | 5.0 kg</p>
+                            <ul class="text-sm text-gray-600 mb-6 space-y-2 flex-grow">
+                                <li class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-green-500"></i> Poids plume exceptionnel</li>
+                                <li class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-green-500"></i> Freins codés par couleur</li>
+                                <li class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-green-500"></i> Excellente valeur de revente (+/- 300€)</li>
+                            </ul>
+                            <a href="https://www.awin1.com/cread.php?awinmid=YOUR_ID" target="_blank" rel="sponsored" class="w-full block text-center bg-gray-900 text-white font-bold py-3 px-4 rounded-xl hover:bg-primary transition-colors mt-auto" data-i18n="btn_buy_affiliate">Voir les offres (Neuf)</a>
+                        </div>
+                    </article>
+
+                    <!-- Product 2: Frog -->
+                    <article class="bg-gray-50 rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow flex flex-col">
+                        <div class="h-48 bg-white flex items-center justify-center p-6 relative overflow-hidden group">
+                             <i class="ph-duotone ph-bicycle text-8xl text-green-500 transform group-hover:scale-110 transition-transform"></i>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-2xl font-bold text-gray-900">Frog 40</h3>
+                                <span class="font-extrabold text-lg text-primary">~415€</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-4 font-medium" data-i18n="bike_specs_2">14 pouces | 3 - 4 ans | 6.46 kg</p>
+                            <ul class="text-sm text-gray-600 mb-6 space-y-2 flex-grow">
+                                <li class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-green-500"></i> Très robuste (UK design)</li>
+                                <li class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-green-500"></i> Livré avec garde-boues</li>
+                                <li class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-green-500"></i> Choix de couleurs originaux</li>
+                            </ul>
+                            <a href="https://www.awin1.com/cread.php?awinmid=YOUR_ID" target="_blank" rel="sponsored" class="w-full block text-center bg-gray-900 text-white font-bold py-3 px-4 rounded-xl hover:bg-primary transition-colors mt-auto" data-i18n="btn_buy_affiliate">Voir les offres (Neuf)</a>
+                        </div>
+                    </article>
+
+                    <!-- Product 3: Puky -->
+                    <article class="bg-gray-50 rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow flex flex-col">
+                        <div class="absolute top-4 right-4 bg-gray-200 text-gray-800 text-xs font-bold px-3 py-1 rounded-full z-10" data-i18n="badge_budget">Budget Malin</div>
+                        <div class="h-48 bg-white flex items-center justify-center p-6 relative overflow-hidden group">
+                             <i class="ph-duotone ph-bicycle text-8xl text-blue-500 transform group-hover:scale-110 transition-transform"></i>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-2xl font-bold text-gray-900">Puky LS-PRO 16</h3>
+                                <span class="font-extrabold text-lg text-primary">~360€</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-4 font-medium" data-i18n="bike_specs_3">16 pouces | 4 - 5.5 ans | 5.9 kg</p>
+                            <ul class="text-sm text-gray-600 mb-6 space-y-2 flex-grow">
+                                <li class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-green-500"></i> Qualité Allemande</li>
+                                <li class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-green-500"></i> Cadre très bas pour enjamber facilement</li>
+                                <li class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-green-500"></i> Excellent rapport qualité/prix</li>
+                            </ul>
+                            <a href="https://www.awin1.com/cread.php?awinmid=YOUR_ID" target="_blank" rel="sponsored" class="w-full block text-center bg-gray-900 text-white font-bold py-3 px-4 rounded-xl hover:bg-primary transition-colors mt-auto" data-i18n="btn_buy_affiliate">Voir les offres (Neuf)</a>
+                        </div>
+                    </article>
+
+                    <!-- Product 4: Decathlon (NEW) -->
+                    <article class="bg-gray-50 rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow flex flex-col relative opacity-90">
+                        <div class="absolute top-4 right-4 bg-gray-300 text-gray-800 text-xs font-bold px-3 py-1 rounded-full z-10" data-i18n="badge_standard">Le Classique</div>
+                        <div class="h-48 bg-white flex items-center justify-center p-6 relative overflow-hidden group">
+                             <i class="ph-duotone ph-bicycle text-8xl text-gray-400 transform group-hover:scale-110 transition-transform"></i>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-2xl font-bold text-gray-900">B'twin 500</h3>
+                                <span class="font-extrabold text-lg text-gray-700">~110€</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-4 font-medium" data-i18n="bike_specs_4">14 pouces | 3 - 4.5 ans | 8.7 kg</p>
+                            <ul class="text-sm text-gray-600 mb-6 space-y-2 flex-grow">
+                                <li class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-green-500"></i> <span data-i18n="btwin_pro1">Prix neuf imbattable</span></li>
+                                <li class="flex items-center gap-2"><i class="ph-fill ph-x-circle text-red-500"></i> <span data-i18n="btwin_con1">Lourd (+8.7kg), difficile pour l'enfant</span></li>
+                                <li class="flex items-center gap-2"><i class="ph-fill ph-x-circle text-red-500"></i> <span data-i18n="btwin_con2">Faible valeur de revente (~30€)</span></li>
+                            </ul>
+                            <a href="https://www.decathlon.be/fr/" target="_blank" rel="sponsored" class="w-full block text-center bg-gray-200 text-gray-800 font-bold py-3 px-4 rounded-xl hover:bg-gray-300 transition-colors mt-auto" data-i18n="btn_buy_decathlon">Voir chez Decathlon</a>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ for SEO Long Tail Keywords -->
+        <section id="faq" class="py-20 bg-gray-50">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-extrabold text-gray-900" data-i18n="faq_title">Questions Fréquentes</h2>
+                </div>
+                <div class="space-y-6">
+                    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-question text-primary"></i>
+                            <span data-i18n="faq_q1">Pourquoi un vélo Woom coûte-t-il si cher ?</span>
+                        </h3>
+                        <p class="text-gray-600 leading-relaxed" data-i18n="faq_a1">
+                            L'investissement initial est plus élevé, mais la géométrie spécifique, le poids plume (jusqu'à 40% plus léger qu'un vélo classique) accélèrent l'apprentissage. Surtout, la valeur de revente en Belgique (sur 2ememain) est excellente, vous récupérez souvent 75% du prix après 2 ans.
+                        </p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-question text-primary"></i>
+                            <span data-i18n="faq_q3">Woom vs Decathlon (B'twin) : Lequel choisir ?</span>
+                        </h3>
+                        <p class="text-gray-600 leading-relaxed" data-i18n="faq_a3">
+                            Le B'twin est excellent pour les petits budgets, mais il pèse près de 9kg (plus de la moitié du poids de l'enfant). Le Woom (5kg) permet à l'enfant d'apprendre l'équilibre sans petites roues très rapidement. De plus, sur le long terme, le Woom revient presque au même prix grâce à sa revente exceptionnelle d'occasion.
+                        </p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-question text-primary"></i>
+                            <span data-i18n="faq_q2">Quelle taille choisir (Woom 2 vs Woom 3) ?</span>
+                        </h3>
+                        <p class="text-gray-600 leading-relaxed" data-i18n="faq_a2">
+                            Basez-vous sur l'entrejambe de votre enfant, pas juste sur l'âge. Le Woom 2 (14") est idéal dès 95cm, tandis que le Woom 3 (16") convient à partir de 105cm. Ne prenez pas "trop grand pour durer", cela freine l'apprentissage.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-gray-400 py-12 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:text-left flex flex-col sm:flex-row justify-between items-center gap-6">
+            <div>
+                <span class="font-extrabold text-xl tracking-tight text-white mb-2 block">KidsBike<span class="text-primary">.be</span></span>
+                <p class="text-sm max-w-sm" data-i18n="footer_disclaimer">
+                    Ce site utilise des liens d'affiliation. Si vous achetez un vélo via nos liens, nous touchons une petite commission sans surcoût pour vous. Merci de soutenir notre travail !
+                </p>
+            </div>
+            <div class="flex space-x-6">
+                <a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a>
+                <a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- 1. DATA: Used Market Database ---
+        const marketData = {
+            'woom1': { newPrice: 230, minFair: 130, maxFair: 170, affiliateLink: '#' },
+            'woom2': { newPrice: 400, minFair: 240, maxFair: 290, affiliateLink: '#' },
+            'woom3': { newPrice: 450, minFair: 280, maxFair: 340, affiliateLink: '#' },
+            'woom4': { newPrice: 530, minFair: 360, maxFair: 420, affiliateLink: '#' },
+            'frog40': { newPrice: 415, minFair: 200, maxFair: 260, affiliateLink: '#' },
+            'btwin14': { newPrice: 110, minFair: 25, maxFair: 45, affiliateLink: 'https://www.decathlon.be/' },
+        };
+
+        // --- 2. LOGIC: Deal Checker Tool ---
+        function calculateDeal() {
+            const modelKey = document.getElementById('bike-model').value;
+            const priceInput = document.getElementById('used-price').value;
+            const resultBox = document.getElementById('deal-result');
+            const resultTitle = document.getElementById('result-title');
+            const resultDesc = document.getElementById('result-desc');
+            const resultIcon = document.getElementById('result-icon');
+            const resultCta = document.getElementById('result-cta');
+            const currentLang = document.documentElement.lang;
+
+            if (!priceInput || isNaN(priceInput) || priceInput <= 0) {
+                const inputEl = document.getElementById('used-price');
+                inputEl.classList.add('border-red-500', 'animate-pulse');
+                setTimeout(() => inputEl.classList.remove('border-red-500', 'animate-pulse'), 1000);
+                return;
+            }
+
+            const price = parseFloat(priceInput);
+            const data = marketData[modelKey];
+            
+            resultBox.classList.remove('hidden', 'border-green-500', 'bg-green-50', 'border-yellow-500', 'bg-yellow-50', 'border-red-500', 'bg-red-50');
+            resultCta.classList.add('hidden');
+            resultBox.classList.add('opacity-0');
+
+            setTimeout(() => {
+                if (price <= data.minFair) {
+                    resultBox.classList.add('border-green-500', 'bg-green-50');
+                    resultTitle.className = 'text-xl font-extrabold mb-2 text-green-800';
+                    resultIcon.innerHTML = '🎉';
+                    resultTitle.innerText = translations[currentLang].eval_great_title;
+                    resultDesc.innerText = translations[currentLang].eval_great_desc.replace('{price}', `${data.minFair}€ - ${data.maxFair}€`);
+                } else if (price > data.minFair && price <= data.maxFair) {
+                    resultBox.classList.add('border-yellow-500', 'bg-yellow-50');
+                    resultTitle.className = 'text-xl font-extrabold mb-2 text-yellow-800';
+                    resultIcon.innerHTML = '⚖️';
+                    resultTitle.innerText = translations[currentLang].eval_fair_title;
+                    resultDesc.innerText = translations[currentLang].eval_fair_desc.replace('{price}', `${data.minFair}€ - ${data.maxFair}€`);
+                } else {
+                    resultBox.classList.add('border-red-500', 'bg-red-50');
+                    resultTitle.className = 'text-xl font-extrabold mb-2 text-red-800';
+                    resultIcon.innerHTML = '⚠️';
+                    resultTitle.innerText = translations[currentLang].eval_bad_title;
+                    resultDesc.innerText = translations[currentLang].eval_bad_desc.replace('{newPrice}', `${data.newPrice}€`);
+                    
+                    resultCta.classList.remove('hidden');
+                    resultCta.querySelector('a').href = data.affiliateLink;
+                }
+                resultBox.classList.remove('opacity-0');
+            }, 150);
+        }
+
+        // --- 3. I18N: Translations Dictionary ---
+        const translations = {
+            fr: {
+                nav_bikes: "Vélos", nav_tool: "Estimer une occasion", nav_stats: "Statistiques", nav_faq: "FAQ",
+                hero_title1: "L'apprentissage du vélo,", hero_title2: "sans les pleurs.",
+                hero_subtitle: "Un vélo léger (comme Woom ou Frog) change tout. Découvrez les meilleurs modèles pour vos enfants, comparez les prix neufs ou vérifiez si votre trouvaille sur 2ememain est une bonne affaire.",
+                btn_compare_new: "Voir les modèles", btn_check_used: "Outil Occasion",
+                tool_title: "L'outil Anti-Arnaque (Occasion)",
+                tool_subtitle: "Basé sur une base de données de plus de 400 annonces Woom de 2ememain.be depuis 2024. Entrez le prix vu en ligne pour vérifier si c'est une bonne affaire.",
+                tool_label_model: "Modèle de vélo", tool_label_price: "Prix demandé (€)", tool_btn_eval: "Évaluer l'annonce", tool_buy_new: "Acheter Neuf avec Garantie",
+                stats_title: "Évolution des Prix (2ememain.be)", stats_subtitle: "Analyse en temps réel des annonces autour de Bruxelles pour le modèle Woom 3.", stats_loading: "Synchronisation avec la base de données...",
+                bikes_title: "Comparatif des Meilleurs Vélos Légers", bikes_subtitle: "Des vélos conçus pour la morphologie des enfants. (Prix indicatifs neufs)",
+                badge_bestseller: "Le plus populaire", badge_budget: "Budget Malin", badge_standard: "Le Classique",
+                bike_specs_1: "14 pouces | 3 - 4.5 ans | 5.0 kg", bike_specs_2: "14 pouces | 3 - 4 ans | 6.46 kg", bike_specs_3: "16 pouces | 4 - 5.5 ans | 5.9 kg", bike_specs_4: "14 pouces | 3 - 4.5 ans | 8.7 kg",
+                btwin_pro1: "Prix neuf imbattable", btwin_con1: "Lourd (+8.7kg), difficile pour l'enfant", btwin_con2: "Faible valeur de revente (~30€)",
+                btn_buy_affiliate: "Voir les offres (Neuf)", btn_buy_decathlon: "Voir chez Decathlon",
+                faq_title: "Questions Fréquentes",
+                faq_q1: "Pourquoi un vélo Woom coûte-t-il si cher ?", faq_a1: "L'investissement initial est plus élevé, mais la géométrie spécifique, le poids plume (jusqu'à 40% plus léger qu'un vélo classique) accélèrent l'apprentissage. Surtout, la valeur de revente en Belgique (sur 2ememain) est excellente, vous récupérez souvent 75% du prix après 2 ans.",
+                faq_q3: "Woom vs Decathlon (B'twin) : Lequel choisir ?", faq_a3: "Le B'twin est excellent pour les petits budgets, mais il pèse près de 9kg (plus de la moitié du poids de l'enfant). Le Woom (5kg) permet à l'enfant d'apprendre l'équilibre sans petites roues très rapidement. De plus, sur le long terme, le Woom revient presque au même prix grâce à sa revente exceptionnelle d'occasion.",
+                faq_q2: "Quelle taille choisir (Woom 2 vs Woom 3) ?", faq_a2: "Basez-vous sur l'entrejambe de votre enfant, pas juste sur l'âge. Le Woom 2 (14\") est idéal dès 95cm, tandis que le Woom 3 (16\") convient à partir de 105cm. Ne prenez pas \"trop grand pour durer\", cela freine l'apprentissage.",
+                footer_disclaimer: "Ce site utilise des liens d'affiliation. Si vous achetez un vélo via nos liens, nous touchons une petite commission sans surcoût pour vous. Merci de soutenir notre travail !",
+                eval_great_title: "Super affaire ! Foncez ! 🚀", eval_great_desc: "Ce prix est excellent. Le prix moyen constaté sur le marché de l'occasion pour ce modèle se situe entre {price}.",
+                eval_fair_title: "Prix juste. 🤝", eval_fair_desc: "C'est dans la moyenne du marché ({price}). Si le vélo est en très bon état (sans griffes), c'est un achat honnête.",
+                eval_bad_title: "Trop cher ! 🛑", eval_bad_desc: "À ce prix-là, autant acheter neuf ({newPrice}) et profiter de la garantie de 2 ans et de la tranquillité d'esprit.",
+            },
+            nl: {
+                nav_bikes: "Fietsen", nav_tool: "Tweedehands schatten", nav_stats: "Statistieken", nav_faq: "FAQ",
+                hero_title1: "Leren fietsen,", hero_title2: "zonder tranen.",
+                hero_subtitle: "Een lichte fiets (zoals Woom of Frog) maakt het verschil. Ontdek de beste modellen, vergelijk nieuwprijzen of check of jouw 2ehands vondst een goede deal is.",
+                btn_compare_new: "Bekijk modellen", btn_check_used: "Tweedehands Tool",
+                tool_title: "De Anti-Oplichting Tool (2ehands)",
+                tool_subtitle: "Gebaseerd op een database van meer dan 400 Woom zoekertjes op 2dehands.be sinds 2024. Vul de prijs in om te checken of het een goede deal is.",
+                tool_label_model: "Fiets model", tool_label_price: "Vraagprijs (€)", tool_btn_eval: "Beoordeel zoekertje", tool_buy_new: "Koop Nieuw met Garantie",
+                stats_title: "Prijsontwikkeling (2dehands.be)", stats_subtitle: "Realtime analyse van zoekertjes rond Brussel voor de Woom 3.", stats_loading: "Synchroniseren met database...",
+                bikes_title: "Vergelijking van de Beste Lichte Kinderfietsen", bikes_subtitle: "Fietsen ontworpen voor kinderen. (Indicatieve nieuwprijzen)",
+                badge_bestseller: "Meest populair", badge_budget: "Slimme Keuze", badge_standard: "De Klassieker",
+                bike_specs_1: "14 inch | 3 - 4.5 jaar | 5.0 kg", bike_specs_2: "14 inch | 3 - 4 jaar | 6.46 kg", bike_specs_3: "16 inch | 4 - 5.5 jaar | 5.9 kg", bike_specs_4: "14 inch | 3 - 4.5 jaar | 8.7 kg",
+                btwin_pro1: "Onverslaanbare nieuwprijs", btwin_con1: "Zwaar (+8.7kg), moeilijk voor het kind", btwin_con2: "Lage herverkoopwaarde (~€30)",
+                btn_buy_affiliate: "Bekijk aanbiedingen (Nieuw)", btn_buy_decathlon: "Bekijk bij Decathlon",
+                faq_title: "Veelgestelde Vragen",
+                faq_q1: "Waarom is een Woom fiets zo duur?", faq_a1: "De initiële investering is hoger, maar de specifieke geometrie en het lichte gewicht versnellen het leerproces. Bovendien is de herverkoopwaarde in België (op 2dehands) uitstekend; je krijgt vaak 75% terug na 2 jaar.",
+                faq_q3: "Woom vs Decathlon (B'twin) : Welke kiezen?", faq_a3: "B'twin is prima voor kleine budgetten, maar weegt bijna 9 kg. Op een Woom (5 kg) leert een kind veel sneller fietsen zonder zijwieltjes. Op lange termijn kost een Woom bijna evenveel dankzij de hoge herverkoopwaarde.",
+                faq_q2: "Welke maat kiezen (Woom 2 vs Woom 3)?", faq_a2: "Kijk naar de binnenbeenlengte van je kind, niet enkel de leeftijd. De Woom 2 (14\") is ideaal vanaf 95cm, de Woom 3 (16\") vanaf 105cm.",
+                footer_disclaimer: "Deze site gebruikt affiliate links. Bedankt voor uw steun!",
+                eval_great_title: "Topdeal! Snel reageren! 🚀", eval_great_desc: "Deze prijs is uitstekend. De gemiddelde tweedehandsprijs ligt tussen {price}.",
+                eval_fair_title: "Eerlijke prijs. 🤝", eval_fair_desc: "Dit is de marktprijs ({price}). Als de fiets in goede staat is, is dit correct.",
+                eval_bad_title: "Te duur! 🛑", eval_bad_desc: "Voor deze prijs kun je beter nieuw kopen ({newPrice}) met garantie.",
+            },
+            en: {
+                nav_bikes: "Bikes", nav_tool: "Used Deal Checker", nav_stats: "Market Stats", nav_faq: "FAQ",
+                hero_title1: "Learning to ride,", hero_title2: "without the tears.",
+                hero_subtitle: "A lightweight bike changes everything. Discover the best models, compare new prices, or check if your 2nd-hand find is a good deal.",
+                btn_compare_new: "View Models", btn_check_used: "Used Deal Tool",
+                tool_title: "The Anti-Scam Tool (Second Hand)",
+                tool_subtitle: "Based on a database of over 400 Woom listings on 2ememain.be since 2024. Enter the asking price to check if it's a good deal.",
+                tool_label_model: "Bike Model", tool_label_price: "Asking Price (€)", tool_btn_eval: "Evaluate Listing", tool_buy_new: "Buy New with Warranty",
+                stats_title: "Price Evolution (2ememain.be)", stats_subtitle: "Real-time analysis of listings around Brussels for Woom 3.", stats_loading: "Syncing with database...",
+                bikes_title: "Comparison of Best Lightweight Kids Bikes", bikes_subtitle: "Bikes designed for kids. (Indicative new prices)",
+                badge_bestseller: "Most Popular", badge_budget: "Smart Budget", badge_standard: "The Standard",
+                bike_specs_1: "14 inches | 3 - 4.5 yrs | 5.0 kg", bike_specs_2: "14 inches | 3 - 4 yrs | 6.46 kg", bike_specs_3: "16 inches | 4 - 5.5 yrs | 5.9 kg", bike_specs_4: "14 inches | 3 - 4.5 yrs | 8.7 kg",
+                btwin_pro1: "Unbeatable new price", btwin_con1: "Heavy (+8.7kg), hard for the child", btwin_con2: "Low resale value (~€30)",
+                btn_buy_affiliate: "View Offers (New)", btn_buy_decathlon: "View at Decathlon",
+                faq_title: "Frequently Asked Questions",
+                faq_q1: "Why is a Woom bike so expensive?", faq_a1: "The initial investment is higher, but light weight accelerates learning. The resale value in Belgium is excellent; you often recover 75% after 2 years.",
+                faq_q3: "Woom vs Decathlon (B'twin) : Which one?", faq_a3: "B'twin is great for tight budgets, but weighs almost 9kg. On a Woom (5kg), kids learn to ride without training wheels in hours. Long-term, a Woom costs about the same thanks to its incredible resale value.",
+                faq_q2: "What size to choose (Woom 2 vs Woom 3)?", faq_a2: "Base it on your child's inseam. Woom 2 (14\") is ideal from 95cm, Woom 3 (16\") from 105cm.",
+                footer_disclaimer: "This site uses affiliate links. Thank you for supporting our work!",
+                eval_great_title: "Great deal! Go for it! 🚀", eval_great_desc: "This price is excellent. The average used price is between {price}.",
+                eval_fair_title: "Fair price. 🤝", eval_fair_desc: "This is the market average ({price}). If it's in very good condition, it's an honest purchase.",
+                eval_bad_title: "Overpriced! 🛑", eval_bad_desc: "At this price, you might as well buy new ({newPrice}).",
+            }
+        };
+
+        function changeLanguage(lang) {
+            document.documentElement.lang = lang;
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) el.innerHTML = translations[lang][key];
+            });
+            const resultBox = document.getElementById('deal-result');
+            if (!resultBox.classList.contains('hidden') && !resultBox.classList.contains('opacity-0')) calculateDeal();
+        }
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 20) header.classList.add('shadow-md');
+            else header.classList.remove('shadow-md');
+        });
+
+        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+        // --- 4. DATA VISUALIZATION (Chart.js via GSheet Data) ---
+        // URL of your Google Apps Script Web App
+        const GSHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyi80DWdoJxTJxndnC7ASvXICzcyBOZtSwAYjPCkt9JzOOlQ8c8udhGqsIxADuKhCIvwg/exec'; 
+
+        async function fetchMarketDataAndDrawChart() {
+            let chartData;
+            try {
+                if(GSHEET_API_URL) {
+                    const response = await fetch(GSHEET_API_URL);
+                    chartData = await response.json();
+                } else {
+                    // MOCK DATA: Fallback if API URL is not set (based on your CSV)
+                    await new Promise(r => setTimeout(r, 1000)); // Simulate network delay
+                    chartData = [
+                        { date: '11/02', price: 260, model: 'Woom 3' },
+                        { date: '25/02', price: 270, model: 'Woom 3' },
+                        { date: '10/03', price: 300, model: 'Woom 3' },
+                        { date: '05/04', price: 290, model: 'Woom 3' },
+                        { date: '29/04', price: 350, model: 'Woom 3' }
+                    ];
+                }
+
+                document.getElementById('chart-loading').style.display = 'none';
+                const canvas = document.getElementById('priceChart');
+                canvas.classList.remove('hidden');
+
+                const ctx = canvas.getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: chartData.map(d => d.date),
+                        datasets: [{
+                            label: 'Prix demandé moyen (€) - Woom 3',
+                            data: chartData.map(d => d.price),
+                            borderColor: '#E02424',
+                            backgroundColor: 'rgba(224, 36, 36, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#111827',
+                            pointRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'top' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) { return context.parsed.y + ' €'; }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: { beginAtZero: false, suggestedMin: 200, suggestedMax: 450 }
+                        }
+                    }
+                });
+            } catch (error) {
+                document.getElementById('chart-loading').innerHTML = "Erreur de chargement des données.";
+                console.error("Erreur Fetch GSheet:", error);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('lang-switcher').value = 'fr';
+            fetchMarketDataAndDrawChart();
+        });
+
+    </script>
+</body>
+</html>
