@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RDW Reporting Dashboard | Resolution Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        },
+                        rdw: '#F3C53B' // Dutch license plate yellow
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .toast-enter { transform: translateY(0) !important; opacity: 1 !important; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans h-screen flex flex-col overflow-hidden">
+
+    <!-- Navbar -->
+    <header class="bg-white shadow-sm border-b border-slate-200 z-10 flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-brand-600 text-white p-2 rounded-lg">
+                    <i class="fas fa-car-shield text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight text-slate-900">RDW Resolution Center</h1>
+                    <p class="text-xs text-slate-500 font-medium">Agent Relationship Expired Manager</p>
+                </div>
+            </div>
+            <div id="nav-actions" class="hidden">
+                <button onclick="resetApp()" class="text-sm font-medium text-slate-600 hover:text-slate-900 flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-md transition-colors">
+                    <i class="fas fa-arrow-left"></i> Load New Data
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow overflow-auto p-4 sm:p-6 lg:p-8" id="main-container">
+        
+        <!-- View 1: Data Input -->
+        <div id="view-input" class="max-w-4xl mx-auto fade-in h-full flex flex-col justify-center">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-2">Import RDW Report Data</h2>
+                    <p class="text-slate-500">Paste your JSON array below to identify impacted customers and take action.</p>
+                </div>
+
+                <!-- Instructions Block -->
+                <div class="bg-brand-50 border border-brand-200 text-brand-800 rounded-xl p-5 mb-6 text-sm text-left">
+                    <h3 class="font-bold text-base mb-2"><i class="fas fa-info-circle mr-1"></i> How to get the array:</h3>
+                    <ol class="list-decimal pl-5 space-y-1.5">
+                        <li>Go to the <strong>playground</strong> in the admin area.</li>
+                        <li>Execute a <strong class="uppercase text-green-700">GET</strong> request targeting <strong>dojo-iab</strong>.</li>
+                        <li>Use the following endpoint: 
+                            <code class="bg-white px-2 py-0.5 rounded border border-brand-200 font-mono text-xs text-brand-700 select-all cursor-pointer shadow-sm">/v1/proof-of-insurance/entities?country=NL&amp;pageSize=200</code>
+                        </li>
+                        <li>Copy the resulting array of items and paste it in the box below.</li>
+                    </ol>
+                </div>
+                
+                <div class="mb-4 relative">
+                    <textarea id="json-input" rows="12" 
+                        class="w-full border border-slate-300 rounded-xl p-4 font-mono text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow resize-none shadow-inner"
+                        placeholder='[\n  {\n    "id": "...",\n    "status": "REPORT_STATUS_FAILED",\n    "error": {\n      "message": "The agent relationship is expired"\n    }\n  }\n]'></textarea>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <button onclick="loadSampleData()" class="text-brand-600 text-sm font-medium hover:text-brand-700 transition-colors">
+                        <i class="fas fa-magic mr-1"></i> Not sure? Use sample data structure
+                    </button>
+                    <button onclick="processData()" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition-all flex items-center gap-2 transform active:scale-95">
+                        <i class="fas fa-microchip"></i> Analyze Records
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- View 2: Dashboard -->
+        <div id="view-dashboard" class="max-w-7xl mx-auto hidden fade-in flex-col h-full gap-6">
+            
+            <!-- KPIs -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 flex-shrink-0">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Total Scanned</p>
+                        <h3 class="text-2xl font-bold text-slate-900" id="kpi-total">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+                        <i class="fas fa-database"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-red-200 shadow-sm flex items-center justify-between ring-1 ring-red-50">
+                    <div>
+                        <p class="text-xs font-semibold text-red-500 uppercase tracking-wider mb-1">Agent Expired</p>
+                        <h3 class="text-2xl font-bold text-red-600" id="kpi-expired">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-orange-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-orange-500 uppercase tracking-wider mb-1">Other Errors</p>
+                        <h3 class="text-2xl font-bold text-orange-600" id="kpi-other-errors">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-emerald-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-emerald-500 uppercase tracking-wider mb-1">Success / Pending</p>
+                        <h3 class="text-2xl font-bold text-emerald-600" id="kpi-success">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Navigation & Export -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 flex-shrink-0">
+                <div class="bg-slate-200/50 p-1 rounded-lg inline-flex">
+                    <button onclick="switchTab('expired')" id="tab-expired" class="tab-btn active bg-white shadow-sm text-slate-800 px-4 py-2 rounded-md text-sm font-medium transition-all">
+                        <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i> Agent Expired
+                    </button>
+                    <button onclick="switchTab('other')" id="tab-other" class="tab-btn text-slate-600 hover:text-slate-800 px-4 py-2 rounded-md text-sm font-medium transition-all">
+                        <i class="fas fa-times-circle text-orange-500 mr-2"></i> Other Errors
+                    </button>
+                    <button onclick="switchTab('all')" id="tab-all" class="tab-btn text-slate-600 hover:text-slate-800 px-4 py-2 rounded-md text-sm font-medium transition-all">
+                        <i class="fas fa-list text-slate-500 mr-2"></i> All Records
+                    </button>
+                </div>
+                <button onclick="exportCSV()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 shadow-sm">
+                    <i class="fas fa-download"></i> Export Displayed to CSV
+                </button>
+            </div>
+
+            <!-- Data Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 flex-grow flex flex-col overflow-hidden relative">
+                <div class="overflow-auto flex-grow">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
+                            <tr>
+                                <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Policyholder</th>
+                                <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Contact Details</th>
+                                <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Vehicle & Policy</th>
+                                <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Error Insight</th>
+                                <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body" class="divide-y divide-slate-200">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Empty State -->
+                <div id="empty-state" class="hidden absolute inset-0 bg-white flex flex-col items-center justify-center p-8 text-center">
+                    <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-check text-2xl text-slate-400"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">No records found</h3>
+                    <p class="text-slate-500 text-sm">There are no records matching the current filter.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-800 text-white px-5 py-3 rounded-lg shadow-xl flex items-center gap-3 z-50 pointer-events-none">
+        <i class="fas fa-check-circle text-emerald-400"></i>
+        <span id="toast-msg" class="font-medium text-sm">Action successful!</span>
+    </div>
+
+    <script>
+        // --- State Management ---
+        let appData = {
+            all: [],
+            expired: [],
+            other: [],
+            success: []
+        };
+        let currentTab = 'expired';
+
+        // --- Core Functions ---
+        
+        function processData() {
+            const input = document.getElementById('json-input').value.trim();
+            if (!input) {
+                showToast("Please paste the JSON array first.", "error");
+                return;
+            }
+
+            try {
+                const parsed = JSON.parse(input);
+                if (!Array.isArray(parsed)) throw new Error("Input is not an array");
+
+                // Reset state
+                appData = { all: parsed, expired: [], other: [], success: [] };
+
+                // Categorize
+                parsed.forEach(item => {
+                    const status = item.status || '';
+                    if (status === 'REPORT_STATUS_FAILED') {
+                        const errMsg = item.error?.message || '';
+                        // Identify specific Agent Relationship error
+                        if (errMsg.toLowerCase().includes('agent relationship is expired') || item.error?.code === "544") {
+                            appData.expired.push(item);
+                        } else {
+                            appData.other.push(item);
+                        }
+                    } else {
+                        appData.success.push(item);
+                    }
+                });
+
+                updateDashboard();
+                
+                // UI Switch
+                document.getElementById('view-input').classList.add('hidden');
+                document.getElementById('view-dashboard').classList.remove('hidden');
+                document.getElementById('view-dashboard').classList.add('flex');
+                document.getElementById('nav-actions').classList.remove('hidden');
+                
+                // Set initial tab to expired if we have them, else all
+                if(appData.expired.length > 0) switchTab('expired');
+                else switchTab('all');
+
+                showToast("Data analyzed successfully!");
+
+            } catch (e) {
+                showToast("Invalid JSON format. Please verify your data.", "error");
+                console.error(e);
+            }
+        }
+
+        function updateDashboard() {
+            document.getElementById('kpi-total').textContent = appData.all.length;
+            document.getElementById('kpi-expired').textContent = appData.expired.length;
+            document.getElementById('kpi-other-errors').textContent = appData.other.length;
+            document.getElementById('kpi-success').textContent = appData.success.length;
+        }
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            
+            // Update UI Tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'shadow-sm', 'text-slate-800');
+                btn.classList.add('text-slate-600');
+            });
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.add('bg-white', 'shadow-sm', 'text-slate-800');
+            activeBtn.classList.remove('text-slate-600');
+
+            // Determine data to show
+            let dataToShow = [];
+            if (tabId === 'expired') dataToShow = appData.expired;
+            else if (tabId === 'other') dataToShow = appData.other;
+            else if (tabId === 'all') dataToShow = appData.all;
+
+            renderTable(dataToShow);
+        }
+
+        // --- Rendering ---
+        
+        function renderTable(data) {
+            const tbody = document.getElementById('table-body');
+            const emptyState = document.getElementById('empty-state');
+            
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+
+            data.forEach((item, index) => {
+                const holder = item.insuranceInfo?.policyholder || {};
+                const name = `${holder.firstName || ''} ${holder.lastName || ''}`.trim() || 'Unknown Customer';
+                const email = holder.email || 'N/A';
+                const phone = holder.phone || 'N/A';
+                
+                const vehicle = item.insuranceInfo || {};
+                const plate = vehicle.registrationPlate || 'N/A';
+                const policyNo = vehicle.cigarId || 'Unknown Policy';
+                
+                const err = item.error || {};
+                const isError = item.status === 'REPORT_STATUS_FAILED';
+                const isExpiredAgent = isError && (err.code === "544" || (err.message || '').toLowerCase().includes('agent relationship is expired'));
+                
+                // Get initials for Avatar
+                const initials = (holder.firstName?.[0] || '') + (holder.lastName?.[0] || '');
+
+                // Dutch License Plate UI
+                const plateHtml = plate !== 'N/A' ? `
+                    <div class="flex items-stretch border border-slate-800 rounded mb-1 overflow-hidden shadow-sm max-w-max bg-rdw h-6">
+                        <div class="bg-blue-700 w-4 flex flex-col items-center justify-center text-white text-[6px] font-bold p-0.5">
+                            <span class="mt-auto">NL</span>
+                        </div>
+                        <div class="px-2 flex items-center justify-center text-black font-bold font-mono tracking-widest text-xs uppercase">
+                            ${formatDutchPlate(plate)}
+                        </div>
+                    </div>
+                ` : `<span class="text-xs text-slate-400">No Plate</span>`;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition-colors group";
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center font-bold text-sm border border-brand-200">
+                                ${initials || '<i class="fas fa-user"></i>'}
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-bold text-slate-900">${name}</div>
+                                <div class="text-xs text-slate-500 mt-0.5">ID: ${holder.customerId || 'N/A'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-slate-900 flex items-center gap-2 hover:text-brand-600 transition-colors">
+                            <i class="fas fa-envelope text-slate-400 w-3"></i> 
+                            <a href="mailto:${email}" class="hover:underline">${email}</a>
+                        </div>
+                        <div class="text-sm text-slate-500 flex items-center gap-2 mt-1">
+                            <i class="fas fa-phone text-slate-400 w-3"></i>
+                            <a href="tel:${phone}" class="hover:underline">${phone}</a>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${plateHtml}
+                        <div class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                            <i class="fas fa-shield-alt"></i> ${policyNo}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        ${isError ? `
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isExpiredAgent ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-orange-100 text-orange-800 border border-orange-200'}">
+                                ${isExpiredAgent ? '<i class="fas fa-exclamation-circle mr-1"></i> Agent Expired' : '<i class="fas fa-times-circle mr-1"></i> Error'}
+                            </span>
+                            <div class="text-xs text-slate-500 mt-1 max-w-[200px] truncate" title="${err.message || ''}">
+                                Code ${err.code || '?'}: ${err.message || 'Unknown reason'}
+                            </div>
+                        ` : `
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                <i class="fas fa-check-circle mr-1"></i> ${item.status === 'REPORT_STATUS_PROCESSED' ? 'Processed' : 'Pending'}
+                            </span>
+                        `}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        ${isExpiredAgent ? `
+                            <button onclick='sendResolutionEmail(${JSON.stringify(item).replace(/'/g, "&apos;")})' class="text-brand-600 hover:text-brand-900 bg-brand-50 hover:bg-brand-100 p-2 rounded-lg transition-colors border border-brand-200 shadow-sm mr-2" title="Send Resolution Email">
+                                <i class="fas fa-paper-plane"></i> Email
+                            </button>
+                        ` : ''}
+                        <button onclick='copyCustomerData(${JSON.stringify(item).replace(/'/g, "&apos;")})' class="text-slate-500 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 p-2 rounded-lg transition-colors border border-slate-200 shadow-sm" title="Copy Details">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- Action Helpers ---
+
+        function formatDutchPlate(plate) {
+            // Very basic formatter for UI aesthetics, standardizes visually (removes hyphens, puts them back in standard 2-2-2 or 1-3-2 etc if possible, but simplest is just keep as provided or format standardly. Since user data has random formats like 'S385PZ' or 'S-070-SZ', we just ensure uppercase)
+            return plate.replace(/-/g, '').toUpperCase();
+        }
+
+        function sendResolutionEmail(item) {
+            const holder = item.insuranceInfo?.policyholder || {};
+            const email = holder.email || '';
+            if(!email || email === 'N/A') {
+                showToast("No email address available for this customer.", "error");
+                return;
+            }
+
+            const name = holder.firstName || 'Customer';
+            const plate = item.insuranceInfo?.registrationPlate ? formatDutchPlate(item.insuranceInfo.registrationPlate) : '[Unknown Plate]';
+            const policy = item.insuranceInfo?.cigarId || '[Unknown Policy]';
+
+            const subject = encodeURIComponent(`Important: Action required for your vehicle insurance registration (Plate: ${plate})`);
+            const body = encodeURIComponent(
+`Dear ${name},
+
+We are reaching out to you regarding your vehicle insurance policy (${policy}) for the vehicle with license plate ${plate}.
+
+During our standard reporting to the Dutch authorities (RDW), we encountered a technical issue indicating that our agent relationship on your behalf has expired. 
+
+To ensure your vehicle remains correctly registered as insured in the RDW registry and to avoid potential fines, we kindly request you to [Insert Action Required by Customer here, e.g., renew mandate, contact support, sign document via portal].
+
+If you have already taken care of this, please disregard this message. 
+
+If you need any assistance, please reply to this email or contact our support team.
+
+Best regards,
+
+Customer Support Team`
+            );
+
+            // Open default mail client
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+            showToast("Drafting email in your mail client...");
+        }
+
+        function copyCustomerData(item) {
+            const holder = item.insuranceInfo?.policyholder || {};
+            const dataToCopy = 
+`Name: ${holder.firstName || ''} ${holder.lastName || ''}
+Email: ${holder.email || 'N/A'}
+Phone: ${holder.phone || 'N/A'}
+Policy: ${item.insuranceInfo?.cigarId || 'N/A'}
+Plate: ${item.insuranceInfo?.registrationPlate || 'N/A'}
+Error: ${item.error?.message || 'None'}`;
+
+            // Fallback for document.execCommand as navigator.clipboard might be restricted in iframes
+            const textarea = document.createElement("textarea");
+            textarea.value = dataToCopy;
+            textarea.style.position = "fixed"; // Prevent scrolling to bottom
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand("copy");
+                showToast("Customer details copied to clipboard!");
+            } catch (err) {
+                showToast("Failed to copy. Try manually.", "error");
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        function exportCSV() {
+            let dataToExport = [];
+            if (currentTab === 'expired') dataToExport = appData.expired;
+            else if (currentTab === 'other') dataToExport = appData.other;
+            else if (currentTab === 'all') dataToExport = appData.all;
+
+            if(dataToExport.length === 0) {
+                showToast("No data to export in this view.", "error");
+                return;
+            }
+
+            // Define CSV Headers
+            const headers = ["Customer ID", "First Name", "Last Name", "Email", "Phone", "Registration Plate", "VIN", "Policy ID", "Status", "Error Code", "Error Message"];
+            
+            const rows = dataToExport.map(item => {
+                const holder = item.insuranceInfo?.policyholder || {};
+                const err = item.error || {};
+                return [
+                    holder.customerId || '',
+                    holder.firstName || '',
+                    holder.lastName || '',
+                    holder.email || '',
+                    holder.phone || '',
+                    item.insuranceInfo?.registrationPlate || '',
+                    item.insuranceInfo?.vin || '',
+                    item.insuranceInfo?.cigarId || '',
+                    item.status || '',
+                    err.code || '',
+                    err.message || ''
+                ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','); // Escape quotes
+            });
+
+            const csvContent = [headers.join(','), ...rows].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `rdw_report_${currentTab}_${new Date().getTime()}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast(`Exported ${dataToExport.length} records to CSV.`);
+        }
+
+        function resetApp() {
+            document.getElementById('json-input').value = '';
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-dashboard').classList.remove('flex');
+            document.getElementById('view-input').classList.remove('hidden');
+            document.getElementById('nav-actions').classList.add('hidden');
+        }
+
+        // --- UX Utilities ---
+
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-msg');
+            const icon = toast.querySelector('i');
+            
+            msgEl.textContent = message;
+            
+            if(type === 'error') {
+                icon.className = "fas fa-exclamation-circle text-red-400";
+            } else {
+                icon.className = "fas fa-check-circle text-emerald-400";
+            }
+
+            toast.classList.add('toast-enter');
+            
+            // Clear existing timeout to prevent jittering if clicked rapidly
+            if(window.toastTimeout) clearTimeout(window.toastTimeout);
+            
+            window.toastTimeout = setTimeout(() => {
+                toast.classList.remove('toast-enter');
+            }, 3000);
+        }
+
+        function loadSampleData() {
+            // A tiny subset to demonstrate functionality
+            const sample = [
+                {
+                    "status": "REPORT_STATUS_FAILED",
+                    "insuranceInfo": {
+                        "registrationPlate": "AB123C",
+                        "cigarId": "NL00000000001",
+                        "policyholder": {
+                            "firstName": "Jane",
+                            "lastName": "Doe",
+                            "email": "jane.doe@example.com",
+                            "phone": "+31600000001"
+                        }
+                    },
+                    "error": {
+                        "code": "544",
+                        "message": "The agent relationship is expired"
+                    }
+                },
+                {
+                    "status": "REPORT_STATUS_PROCESSED",
+                    "insuranceInfo": {
+                        "registrationPlate": "XY987Z",
+                        "cigarId": "NL00000000002",
+                        "policyholder": {
+                            "firstName": "John",
+                            "lastName": "Smith",
+                            "email": "john.smith@example.com",
+                            "phone": "+31600000002"
+                        }
+                    }
+                }
+            ];
+            document.getElementById('json-input').value = JSON.stringify(sample, null, 2);
+            showToast("Sample data loaded! Click Analyze.");
+        }
+    </script>
+</body>
+</html>
