@@ -157,8 +157,8 @@
                         <i class="fas fa-list text-slate-500 mr-2"></i> All Records
                     </button>
                 </div>
-                <button onclick="exportCSV()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 shadow-sm">
-                    <i class="fas fa-download"></i> Export Displayed to CSV
+                <button onclick="exportCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 shadow-sm">
+                    <i class="fas fa-file-csv"></i> Export to CSV (GSheets)
                 </button>
             </div>
 
@@ -495,8 +495,9 @@ Error: ${item.error?.message || 'None'}`;
                 ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','); // Escape quotes
             });
 
+            // Added BOM (\uFEFF) to tell Excel/GSheets this is explicitly UTF-8
             const csvContent = [headers.join(','), ...rows].join('\n');
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             
             const link = document.createElement("a");
@@ -507,7 +508,7 @@ Error: ${item.error?.message || 'None'}`;
             link.click();
             document.body.removeChild(link);
             
-            showToast(`Exported ${dataToExport.length} records to CSV.`);
+            showToast(`Exported ${dataToExport.length} records to CSV for Google Sheets.`);
         }
 
         function resetApp() {
