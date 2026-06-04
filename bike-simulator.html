@@ -41,6 +41,7 @@
         };
 
         const TAX_RATES = { DE: 0.19, FR: 0.09, NL: 0.21, BE: 0.0925 };
+        const COMMISSIONS = { DE: 0.35, FR: 0.447529, NL: 0.40, BE: 0.447529 };
         const FR_GAREAT = 6.5;
 
         // Pricing Engine
@@ -92,7 +93,10 @@
                 const dedMult = v.theftDeductible === 'THEFT_DEDUCTIBLE_NO_DEDUCTIBLE' ? 1.27 : 1.0;
                 nip = baseAdj * noDepMultFR_BE * dedMult * secMult * typeMult * zipMult;
             }
-            return Math.max(nip, minNip);
+            
+            // JSONata outputs the Risk Premium. NIP = Risk Premium / (1 - Commission)
+            const riskPremium = Math.max(nip, minNip);
+            return riskPremium / (1 - COMMISSIONS[country]);
         }
 
         function calculateDamageNIP(country, v) {
@@ -135,7 +139,10 @@
                 else if (v.damageDeductible === 'DAMAGE_DEDUCTIBLE_ENGLISH_75_FIX') dedMult = 1.30;
                 nip = 0.0175 * (0.096 * v.bikeValue - dedVal + 470.48) * dedMult * noDepMult * typeMult * zipMult * priceInc;
             }
-            return Math.max(nip, 0);
+            
+            // JSONata outputs the Risk Premium. NIP = Risk Premium / (1 - Commission)
+            const riskPremium = Math.max(nip, 0);
+            return riskPremium / (1 - COMMISSIONS[country]);
         }
 
         // App Component
@@ -183,21 +190,46 @@
                 };
                 
                 const rate = TAX_RATES[country];
-                let totalNip = 0, totalTax = 0;
+                
+                // 1. Calculate each coverage component individually
+                const coverageTheftNip = calculateTheftNIP(country, stateVars);
+                
+                // For Damage, check if the package uses the 'default' variant or the 'alone' variant
+                const coverageDamageDefaultNip = calculateDamageNIP(country, stateVars);
+                
+                // 'alone' variant gives us a CIP (Gross), so we mathematically reverse-calculate the NIP based on the country's tax rate
+                const coverageDamageAloneCip = bikeValue < 5000 ? 67.2 : 107.52;
+                const coverageDamageAloneNip = coverageDamageAloneCip / (1 + rate);
+                const coverageDamageAloneTax = coverageDamageAloneCip - coverageDamageAloneNip;
+                
+                // Assistance is always 0
+                const coverageAssistanceNip = 0; 
+                
+                let totalNip = 0;
+                let totalTax = 0;
 
+                // 2. Aggregate Based on Package definitions exactly as mapped in configuration rules
                 if (pkg === 'VARIANT_THEFT_ASSISTANCE') {
-                    totalNip = calculateTheftNIP(country, stateVars);
+                    // coverage theft + assistance
+                    totalNip = coverageTheftNip + coverageAssistanceNip;
                     totalTax = totalNip * rate;
+                    
                 } else if (pkg === 'VARIANT_THEFT_DAMAGE_ASSISTANCE') {
-                    totalNip = calculateTheftNIP(country, stateVars) + calculateDamageNIP(country, stateVars);
+                    // coverage theft + damage (variant default) + assistance
+                    totalNip = coverageTheftNip + coverageDamageDefaultNip + coverageAssistanceNip;
                     totalTax = totalNip * rate;
+                    
                 } else if (pkg === 'VARIANT_DAMAGE_ASSISTANCE') {
-                    const cip = bikeValue < 5000 ? 67.2 : 107.52;
-                    totalNip = cip / (1 + rate);
-                    totalTax = cip - totalNip;
+                    // coverage damage (variant alone) + assistance
+                    totalNip = coverageDamageAloneNip + coverageAssistanceNip;
+                    // For the 'alone' package, we apply the manually reversed tax to prevent any slight JavaScript floating-point inconsistencies
+                    totalTax = coverageDamageAloneTax; 
                 }
 
-                if (country === 'FR') totalTax += FR_GAREAT;
+                // 3. Add Absolute Package Taxes (e.g. GAREAT for France is set at the package level)
+                if (country === 'FR') {
+                    totalTax += FR_GAREAT;
+                }
                 
                 return {
                     nip: totalNip,
