@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro QR Generator</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Using the verified working qrcodejs library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 900: '#1e3a8a' }
+                    },
+                    boxShadow: {
+                        'glass': '0 10px 40px -10px rgba(0,0,0,0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f8fafc;
+            background-image: radial-gradient(at 0% 0%, hsla(217,100%,76%,0.15) 0px, transparent 50%),
+                              radial-gradient(at 100% 100%, hsla(253,100%,76%,0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        
+        /* Custom Webkit Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Smooth UI transitions */
+        .input-transition { transition: all 0.2s ease; }
+        
+        /* Toast Animations */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translate(-50%, 0); }
+            to { opacity: 0; transform: translate(-50%, -20px); }
+        }
+        .toast-enter { animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .toast-exit { animation: fadeOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        /* QR Code Container Styling */
+        #qr-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Force the high-res generated canvas and image to fit our UI boundaries */
+        #qr-container canvas,
+        #qr-container img {
+            width: 100% !important;
+            height: 100% !important;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-brand-500 selection:text-white pb-20 md:pb-0 flex items-center justify-center">
+
+    <main class="container mx-auto px-4 py-12 max-w-5xl">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold tracking-tight text-slate-900 mb-2">QR Studio</h1>
+            <p class="text-slate-500">Generate, customize, and export high-quality QR codes instantly.</p>
+        </header>
+
+        <div class="bg-white/70 backdrop-blur-xl border border-slate-200/60 rounded-3xl shadow-glass overflow-hidden grid grid-cols-1 md:grid-cols-12 gap-0 relative">
+            
+            <!-- Left Column: Controls -->
+            <div class="md:col-span-7 p-6 md:p-10 border-b md:border-b-0 md:border-r border-slate-200/60 flex flex-col gap-8">
+                
+                <!-- Input Section -->
+                <div class="space-y-3">
+                    <label for="qr-data" class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                        <i data-lucide="link" class="w-4 h-4 text-brand-500"></i> Content
+                    </label>
+                    <textarea id="qr-data" rows="3" 
+                        class="w-full bg-white/50 border border-slate-300 rounded-xl px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 input-transition resize-none"
+                        placeholder="Enter a URL, text, email, or wifi credentials..."
+                    >https://github.com</textarea>
+                </div>
+
+                <!-- Customization Grid -->
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <label class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                            <i data-lucide="palette" class="w-4 h-4 text-slate-400"></i> Foreground
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <input type="color" id="color-dark" value="#0f172a" class="w-10 h-10 rounded-lg cursor-pointer border-0 p-0 bg-transparent">
+                            <span class="text-sm text-slate-500 font-mono uppercase" id="color-dark-label">#0F172A</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <label class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                            <i data-lucide="droplet" class="w-4 h-4 text-slate-400"></i> Background
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <input type="color" id="color-light" value="#ffffff" class="w-10 h-10 rounded-lg cursor-pointer border-0 p-0 bg-transparent">
+                            <span class="text-sm text-slate-500 font-mono uppercase" id="color-light-label">#FFFFFF</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Correction -->
+                <div class="space-y-3">
+                    <label class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-slate-400"></i> Error Correction
+                        <span class="text-xs font-normal text-slate-400 ml-auto" title="Higher levels allow the QR code to be readable even if dirty or damaged.">What's this?</span>
+                    </label>
+                    <div class="grid grid-cols-4 gap-2 bg-slate-100/50 p-1 rounded-xl">
+                        <button class="level-btn active bg-white shadow-sm rounded-lg py-2 text-sm font-medium text-slate-800 input-transition border border-slate-200/60" data-level="L">Low</button>
+                        <button class="level-btn text-slate-500 hover:text-slate-800 rounded-lg py-2 text-sm font-medium input-transition border border-transparent" data-level="M">Med</button>
+                        <button class="level-btn text-slate-500 hover:text-slate-800 rounded-lg py-2 text-sm font-medium input-transition border border-transparent" data-level="Q">High</button>
+                        <button class="level-btn text-slate-500 hover:text-slate-800 rounded-lg py-2 text-sm font-medium input-transition border border-transparent" data-level="H">Max</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Preview & Export -->
+            <div class="md:col-span-5 bg-slate-50/50 p-6 md:p-10 flex flex-col items-center justify-center relative">
+                
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/60 mb-8 relative group">
+                    <!-- Container where QRCodeJS will inject the canvas -->
+                    <div id="qr-container" class="w-48 h-48 sm:w-56 sm:h-56 relative z-10"></div>
+                    
+                    <!-- Empty state overlay -->
+                    <div id="empty-state" class="absolute inset-0 z-20 bg-white backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+                        <i data-lucide="qr-code" class="w-10 h-10 text-slate-300 mb-2"></i>
+                        <span class="text-sm text-slate-400 font-medium">Awaiting content...</span>
+                    </div>
+                </div>
+
+                <!-- Export Actions -->
+                <div class="w-full max-w-xs grid grid-cols-2 gap-3">
+                    <button onclick="copyToClipboard()" class="flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 py-3 px-4 rounded-xl font-medium shadow-sm input-transition">
+                        <i data-lucide="copy" class="w-4 h-4"></i> Copy
+                    </button>
+                    <button onclick="downloadQR()" class="flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white py-3 px-4 rounded-xl font-medium shadow-sm input-transition">
+                        <i data-lucide="download" class="w-4 h-4"></i> Save PNG
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // DOM Elements
+        const dataInput = document.getElementById('qr-data');
+        const colorDarkInput = document.getElementById('color-dark');
+        const colorLightInput = document.getElementById('color-light');
+        const colorDarkLabel = document.getElementById('color-dark-label');
+        const colorLightLabel = document.getElementById('color-light-label');
+        const levelBtns = document.querySelectorAll('.level-btn');
+        const qrContainer = document.getElementById('qr-container');
+        const emptyState = document.getElementById('empty-state');
+        
+        // State
+        let currentOptions = {
+            colorDark: '#0f172a',
+            colorLight: '#ffffff',
+            correctLevel: 'L'
+        };
+
+        // Helper to grab the internally generated canvas
+        const getGeneratedCanvas = () => qrContainer.querySelector('canvas');
+
+        // Real-time updates
+        const updateQR = () => {
+            if (typeof QRCode === 'undefined') {
+                console.warn('QR Code library is still loading...');
+                return;
+            }
+
+            const text = dataInput.value.trim();
+            
+            if (!text) {
+                emptyState.classList.remove('opacity-0');
+                emptyState.classList.add('opacity-100');
+                qrContainer.innerHTML = ''; // Clear DOM
+                return;
+            } else {
+                emptyState.classList.add('opacity-0');
+                emptyState.classList.remove('opacity-100');
+            }
+
+            // Clear previous QR code
+            qrContainer.innerHTML = '';
+
+            // Map string levels to QRCodejs Constants
+            const levelMap = {
+                'L': QRCode.CorrectLevel.L,
+                'M': QRCode.CorrectLevel.M,
+                'Q': QRCode.CorrectLevel.Q,
+                'H': QRCode.CorrectLevel.H
+            };
+
+            try {
+                // Generate new QR code (High resolution internally, scaled down by CSS)
+                new QRCode(qrContainer, {
+                    text: text,
+                    width: 1000, 
+                    height: 1000,
+                    colorDark : currentOptions.colorDark,
+                    colorLight : currentOptions.colorLight,
+                    correctLevel : levelMap[currentOptions.correctLevel] || QRCode.CorrectLevel.L
+                });
+            } catch (err) {
+                console.error(err);
+                showToast('Text too long for this error correction level.', 'error');
+            }
+        };
+
+        // Listeners for Inputs
+        dataInput.addEventListener('input', updateQR);
+        
+        colorDarkInput.addEventListener('input', (e) => {
+            currentOptions.colorDark = e.target.value;
+            colorDarkLabel.textContent = e.target.value.toUpperCase();
+            updateQR();
+        });
+
+        colorLightInput.addEventListener('input', (e) => {
+            currentOptions.colorLight = e.target.value;
+            colorLightLabel.textContent = e.target.value.toUpperCase();
+            updateQR();
+        });
+
+        // Error Correction Buttons Logic
+        levelBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                levelBtns.forEach(b => {
+                    b.classList.remove('bg-white', 'shadow-sm', 'border-slate-200/60', 'text-slate-800');
+                    b.classList.add('text-slate-500', 'border-transparent');
+                });
+                const target = e.currentTarget;
+                target.classList.remove('text-slate-500', 'border-transparent');
+                target.classList.add('bg-white', 'shadow-sm', 'border-slate-200/60', 'text-slate-800');
+
+                currentOptions.correctLevel = target.dataset.level;
+                updateQR();
+            });
+        });
+
+        // Export Functions
+        const downloadQR = () => {
+            if (!dataInput.value.trim()) return showToast('Nothing to download', 'error');
+            
+            const canvas = getGeneratedCanvas();
+            if (!canvas) return showToast('QR Code not ready yet', 'error');
+
+            const link = document.createElement('a');
+            link.download = `qrcode_${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast(`Downloaded High-Res PNG`, 'success');
+        };
+
+        // Clipboard Function (modern async)
+        const copyToClipboard = async () => {
+            if (!dataInput.value.trim()) return showToast('Nothing to copy', 'error');
+            
+            const canvas = getGeneratedCanvas();
+            if (!canvas) return showToast('QR Code not ready yet', 'error');
+
+            try {
+                canvas.toBlob(async (blob) => {
+                    try {
+                        const item = new ClipboardItem({ 'image/png': blob });
+                        await navigator.clipboard.write([item]);
+                        showToast('Copied to clipboard!', 'success');
+                    } catch (err) {
+                        console.error('Clipboard write error:', err);
+                        showToast('Unable to copy image. Try downloading.', 'error');
+                    }
+                }, 'image/png');
+            } catch (err) {
+                console.error(err);
+                showToast('Clipboard API not supported here', 'error');
+            }
+        };
+
+        // Custom Toast Notification System
+        const toastContainer = document.getElementById('toast-container');
+        const showToast = (message, type = 'success') => {
+            const toast = document.createElement('div');
+            
+            toast.className = `flex items-center gap-3 px-4 py-3 rounded-full shadow-lg border toast-enter pointer-events-auto bg-white/90 backdrop-blur-md`;
+            let iconColor = type === 'success' ? 'text-green-500' : 'text-red-500';
+            let iconName = type === 'success' ? 'check-circle-2' : 'alert-circle';
+            
+            toast.innerHTML = `
+                <i data-lucide="${iconName}" class="w-5 h-5 ${iconColor}"></i>
+                <span class="text-sm font-medium text-slate-700">${message}</span>
+            `;
+            
+            toastContainer.appendChild(toast);
+            lucide.createIcons({ root: toast });
+
+            setTimeout(() => {
+                toast.classList.replace('toast-enter', 'toast-exit');
+                toast.addEventListener('animationend', () => toast.remove());
+            }, 3000);
+        };
+
+        // Initial Generation with loading fallback
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof QRCode !== 'undefined') {
+                updateQR();
+            } else {
+                let attempts = 0;
+                const checkReady = setInterval(() => {
+                    if (typeof QRCode !== 'undefined') {
+                        clearInterval(checkReady);
+                        updateQR();
+                    } else if (attempts > 100) { 
+                        clearInterval(checkReady);
+                        showToast('Failed to load QR Code library. Check connection.', 'error');
+                    }
+                    attempts++;
+                }, 100);
+            }
+        });
+
+    </script>
+</body>
+</html>
