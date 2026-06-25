@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Data Extractor</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h2 {
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            height: 250px;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            font-size: 13px;
+            resize: vertical;
+            background-color: #fafbfc;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #0366d6;
+            box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
+        }
+        button {
+            background-color: #0366d6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 15px 0;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #005cc5;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #dfe2e5;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f6f8fa;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+        .error {
+            color: #cb2431;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding: 12px;
+            background-color: #ffeef0;
+            border: 1px solid #f8a8b4;
+            border-radius: 6px;
+            display: none;
+        }
+        .placeholder-text {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Extract JSON Data</h2>
+        <p>Paste your JSON payload below to extract the <strong>Reference</strong> and <strong>Details ID</strong>.</p>
+        
+        <textarea id="jsonInput" placeholder='Paste JSON here... Example:
+{
+  "items": [
+    {
+      "request": { "reference": "123" },
+      "response": { "body": { "details": { "id": "abc" } } }
+    }
+  ]
+}'></textarea>
+        <br>
+        <button id="processBtn">Generate Table</button>
+        
+        <div id="errorMsg" class="error"></div>
+
+        <table id="resultTable">
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Reference</th>
+                    <th>Details ID</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr><td colspan="4" class="placeholder-text">Waiting for data...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.getElementById('processBtn').addEventListener('click', function() {
+            const inputData = document.getElementById('jsonInput').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+            const tableBody = document.getElementById('tableBody');
+
+            // Reset UI
+            errorMsg.style.display = 'none';
+            errorMsg.textContent = '';
+            tableBody.innerHTML = '';
+
+            if (!inputData) {
+                showError('Please paste a JSON payload into the text area.');
+                setPlaceholder();
+                return;
+            }
+
+            try {
+                const parsedData = JSON.parse(inputData);
+
+                // Ensure the JSON has the expected "items" array
+                if (!parsedData.items || !Array.isArray(parsedData.items)) {
+                    showError('Invalid JSON structure: missing the "items" array.');
+                    setPlaceholder();
+                    return;
+                }
+
+                if (parsedData.items.length === 0) {
+                    showError('The "items" array is empty.');
+                    setPlaceholder();
+                    return;
+                }
+
+                // Loop through items and extract data
+                parsedData.items.forEach(item => {
+                    // Using optional chaining (?.) to prevent crashes if a field is missing in an item
+                    const firstName = item?.request?.policyholder?.firstName || 'N/A';
+                    const lastName = item?.request?.policyholder?.lastName || 'N/A';
+                    const reference = item?.request?.reference || 'N/A';
+                    const id = item?.response?.body?.details?.id || 'N/A';
+
+                    // Create table row
+                    const tr = document.createElement('tr');
+                    
+                    const tdFirstName = document.createElement('td');
+                    tdFirstName.textContent = firstName;
+
+                    const tdLastName = document.createElement('td');
+                    tdLastName.textContent = lastName;
+
+                    const tdRef = document.createElement('td');
+                    tdRef.textContent = reference;
+                    
+                    const tdId = document.createElement('td');
+                    tdId.textContent = id;
+
+                    tr.appendChild(tdFirstName);
+                    tr.appendChild(tdLastName);
+                    tr.appendChild(tdRef);
+                    tr.appendChild(tdId);
+                    
+                    tableBody.appendChild(tr);
+                });
+
+            } catch (e) {
+                showError('Failed to parse JSON. Please ensure it is formatted correctly. \nError: ' + e.message);
+                setPlaceholder();
+            }
+        });
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMsg');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function setPlaceholder() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '<tr><td colspan="4" class="placeholder-text">Waiting for valid data...</td></tr>';
+        }
+    </script>
+
+</body>
+</html>
