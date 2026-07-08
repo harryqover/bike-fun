@@ -283,9 +283,11 @@ function getNinjaData(cigarId, email) {
             } else {
                 //showing only price per month
                 $(".peryear").hide();
-                $("[data-var='pricepermonth']").text(currency+ " " + formatPrice(response.payload.price/12));
+                $(".permonth").hide();
+                //hiding everything as we can't fully rely on monthly price
+                //$("[data-var='pricepermonth']").text(currency+ " " + formatPrice(response.payload.price/12));
                 if(response.payload.nextVersion){
-                    $("[data-var='pricepermonthrenewal']").text(currency+ " " + formatPrice(response.payload.nextVersion.price/12));
+                   // $("[data-var='pricepermonthrenewal']").text(currency+ " " + formatPrice(response.payload.nextVersion.price/12));
                 }
             }
             //STOP show prices information
