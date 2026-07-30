@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qover API Orchestrator - Insurer Panel & Resilience</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind Config Customizations -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            qover: {
+              50: '#f0f7ff',
+              500: '#0066ff',
+              600: '#0052cc',
+              900: '#002966',
+            },
+            mobilize: '#e02b20',
+            allianz: '#003775',
+            verti: '#28a745'
+          },
+          fontFamily: {
+            mono: ['Fira Code', 'Monaco', 'Consolas', 'monospace'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    /* Grid Background Pattern */
+    .bg-grid {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    /* Animated Wire Connection Path */
+    @keyframes dash {
+      to {
+        stroke-dashoffset: -40;
+      }
+    }
+    .wire-active {
+      stroke-dasharray: 8, 8;
+      animation: dash 1s linear infinite;
+    }
+    .pulse-glow {
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+    }
+    .pulse-glow-error {
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
+    }
+    .pulse-glow-success {
+      box-shadow: 0 0 25px rgba(34, 197, 94, 0.6);
+    }
+    .pulse-glow-warning {
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.6);
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col font-sans overflow-hidden bg-slate-950 text-slate-100 select-none">
+
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="h-16 bg-slate-900/90 border-b border-slate-800 px-6 flex items-center justify-between z-30 shrink-0 backdrop-blur-md">
+    <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-bold text-lg text-white shadow-lg shadow-blue-500/30">
+          Q
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="font-bold text-base text-slate-100 tracking-wide">Qover Multi-Insurer Panel Orchestration</h1>
+            <span class="px-2 py-0.5 text-xs font-semibold rounded bg-red-950/80 text-red-400 border border-red-800/50 flex items-center gap-1">
+              <i class="fa-solid fa-car text-[10px]"></i> Mobilize Germany
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">Insurer Panel Comparison & Resilience Gateway (Promise.allSettled)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orchestrator Controls -->
+    <div class="flex items-center space-x-4">
+      <!-- Scenario Selector -->
+      <div class="flex items-center space-x-2 bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5">
+        <i class="fa-solid fa-sliders text-xs text-slate-400"></i>
+        <label for="scenarioSelect" class="text-xs text-slate-400 font-medium">Scenario:</label>
+        <select id="scenarioSelect" class="bg-transparent text-xs font-medium text-slate-200 outline-none cursor-pointer">
+          <option value="success_all">🟢 Panel Success - Allianz & Verti Both Available</option>
+          <option value="allianz_down">🟡 Partial Outage - Allianz 500 (Verti Panel Shown)</option>
+          <option value="verti_down">🟡 Partial Outage - Verti 500 (Allianz Panel Shown)</option>
+          <option value="both_down">🔴 Total Outage - Both Insurers Down (Trigger Modal)</option>
+          <option value="uw_reject">🔴 UW Rules Error - Age &lt; 18 (Trigger Modal)</option>
+        </select>
+      </div>
+
+      <!-- Execution Controls -->
+      <div class="flex items-center bg-slate-800/80 rounded-lg p-1 border border-slate-700/80">
+        <button id="btnRun" onclick="startSimulation()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs transition shadow-md shadow-emerald-900/30">
+          <i class="fa-solid fa-play text-[10px]"></i>
+          <span>Run API Flow</span>
+        </button>
+        <button id="btnReset" onclick="resetSimulation()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-md hover:bg-slate-700 text-slate-300 font-medium text-xs transition ml-1">
+          <i class="fa-solid fa-rotate-left text-[10px]"></i>
+          <span>Reset</span>
+        </button>
+      </div>
+
+      <!-- Speed Control -->
+      <div class="flex items-center space-x-1 text-xs text-slate-400">
+        <span>Speed:</span>
+        <button onclick="setSpeed(1)" id="speed1x" class="px-2 py-1 rounded bg-blue-600/30 border border-blue-500 text-blue-300 font-mono text-xs">1x</button>
+        <button onclick="setSpeed(2)" id="speed2x" class="px-2 py-1 rounded hover:bg-slate-800 text-slate-400 font-mono text-xs">2x</button>
+      </div>
+
+      <!-- View Switcher -->
+      <div class="flex bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs">
+        <button id="tabFlow" onclick="switchMainView('flow')" class="px-3 py-1 rounded-md bg-slate-800 text-blue-400 font-medium flex items-center space-x-1">
+          <i class="fa-solid fa-diagram-project text-[11px]"></i>
+          <span>Graph View</span>
+        </button>
+        <button id="tabSequence" onclick="switchMainView('sequence')" class="px-3 py-1 rounded-md hover:bg-slate-900 text-slate-400 font-medium flex items-center space-x-1">
+          <i class="fa-solid fa-list-check text-[11px]"></i>
+          <span>Sequence Flow</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE -->
+  <div class="flex-1 flex overflow-hidden relative">
+    
+    <!-- LEFT / MAIN CANVAS: NODE GRAPH EDITOR VIEW -->
+    <div id="flowCanvasContainer" class="flex-1 relative bg-grid overflow-auto flex items-center justify-center p-8 min-w-[950px]">
+      
+      <!-- SVG Overlay for Animated Dynamic Connections -->
+      <svg id="svgOverlay" class="absolute inset-0 w-full h-full pointer-events-none z-10">
+        <defs>
+          <linearGradient id="gradDefault" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#6366f1" stop-opacity="0.6"/>
+          </linearGradient>
+          <linearGradient id="gradSuccess" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#10b981" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#059669" stop-opacity="0.8"/>
+          </linearGradient>
+
+          <!-- Marker Arrowheads -->
+          <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+          </marker>
+          <marker id="arrow-active" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6"/>
+          </marker>
+          <marker id="arrow-success" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981"/>
+          </marker>
+          <marker id="arrow-error" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444"/>
+          </marker>
+          <marker id="arrow-warning" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#f59e0b"/>
+          </marker>
+        </defs>
+      </svg>
+
+      <!-- GRAPH NODES LAYOUT GRID -->
+      <div id="nodesGrid" class="relative z-20 flex items-center space-x-12 min-w-[1200px] justify-between py-10">
+
+        <!-- COLUMN 1: FRONTEND -->
+        <div class="flex flex-col space-y-6 w-56">
+          <div id="node-frontend" onclick="selectNode('frontend')" class="node-card cursor-pointer bg-slate-900 border-2 border-slate-700/80 rounded-xl p-4 shadow-xl transition-all hover:border-slate-500 relative">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-mobile-screen-button text-red-500"></i>
+                <span class="text-xs font-bold text-slate-200 uppercase tracking-wider">Mobilize FE</span>
+              </div>
+              <span id="badge-frontend" class="px-1.5 py-0.5 text-[10px] rounded font-mono bg-slate-800 text-slate-400">READY</span>
+            </div>
+            <p class="text-[11px] text-slate-400">Requests quote for Insurer Panel</p>
+            <div class="mt-3 pt-2 border-t border-slate-800/80 text-[10px] font-mono text-slate-400 flex justify-between">
+              <span>Trigger</span>
+              <span class="text-slate-200">User Submit</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMN 2: QOVER ORCHESTRATOR PLATFORM -->
+        <div class="flex flex-col space-y-6 w-64">
+          <div id="node-qover" onclick="selectNode('qover')" class="node-card cursor-pointer bg-slate-900 border-2 border-blue-600/70 rounded-xl p-4 shadow-xl transition-all hover:border-blue-400 relative">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-diagram-project text-blue-400"></i>
+                <span class="text-xs font-bold text-slate-100 uppercase tracking-wider">Qover Platform</span>
+              </div>
+              <span id="badge-qover" class="px-1.5 py-0.5 text-[10px] rounded font-mono bg-blue-950 text-blue-400 border border-blue-800">IDLE</span>
+            </div>
+            <p class="text-[11px] text-slate-300">Resilient Panel Aggregator (Promise.allSettled)</p>
+            <div class="mt-2 space-y-1 text-[10px] font-mono">
+              <div class="bg-slate-950 p-1.5 rounded text-slate-400 border border-slate-800">
+                1. Parallel Fan-out: <span class="text-blue-400">Allianz POST</span> + <span class="text-emerald-400">Verti 3x GET</span>
+              </div>
+              <div class="bg-slate-950 p-1.5 rounded text-slate-400 border border-slate-800">
+                2. Fault Tolerance: <span class="text-amber-400">Allow 1 Insurer Outage</span>
+              </div>
+              <div class="bg-slate-950 p-1.5 rounded text-slate-400 border border-slate-800">
+                3. Aggregate Available Offers
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMN 3: ALLIANZ & VERTI INSURER PANEL CALLS -->
+        <div class="flex flex-col space-y-5 w-72">
+          
+          <!-- Allianz Node -->
+          <div id="node-allianz" onclick="selectNode('allianz')" class="node-card cursor-pointer bg-slate-900 border-2 border-slate-700/80 rounded-xl p-3.5 shadow-xl transition-all hover:border-slate-500 relative">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1.5">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-building-columns text-blue-500"></i>
+                <span class="text-xs font-bold text-blue-200">Allianz Insurer API</span>
+              </div>
+              <span id="badge-allianz" class="px-1.5 py-0.5 text-[10px] rounded font-mono bg-slate-800 text-slate-400">STANDBY</span>
+            </div>
+            <div class="text-[10px] font-mono text-indigo-300 font-semibold mb-1">POST ../CalculateOffers</div>
+            <p class="text-[10px] text-slate-400">Returns Allianz pricing for 3 packages (Liability, Partial, Full)</p>
+            <div class="mt-2 text-[9px] font-mono grid grid-cols-3 gap-1 text-center">
+              <span class="bg-slate-950 p-1 rounded text-slate-300 border border-slate-800">Liab: €38</span>
+              <span class="bg-slate-950 p-1 rounded text-slate-300 border border-slate-800">Part: €55</span>
+              <span class="bg-slate-950 p-1 rounded text-slate-300 border border-slate-800">Full: €84</span>
+            </div>
+          </div>
+
+          <!-- Verti Package 1 -->
+          <div id="node-verti1" onclick="selectNode('verti1')" class="node-card cursor-pointer bg-slate-900 border-2 border-slate-700/80 rounded-xl p-3 shadow-xl transition-all hover:border-slate-500 relative">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-1 mb-1">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-bolt text-emerald-400"></i>
+                <span class="text-xs font-semibold text-emerald-300">Verti API [Pkg 1]</span>
+              </div>
+              <span id="badge-verti1" class="px-1.5 py-0.5 text-[9px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
+            </div>
+            <div class="text-[10px] font-mono text-emerald-400">GET ../quote?pkg=liability</div>
+            <div class="text-[10px] text-slate-400">Verti Liability Pricing: €34.50</div>
+          </div>
+
+          <!-- Verti Package 2 -->
+          <div id="node-verti2" onclick="selectNode('verti2')" class="node-card cursor-pointer bg-slate-900 border-2 border-slate-700/80 rounded-xl p-3 shadow-xl transition-all hover:border-slate-500 relative">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-1 mb-1">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-bolt text-emerald-400"></i>
+                <span class="text-xs font-semibold text-emerald-300">Verti API [Pkg 2]</span>
+              </div>
+              <span id="badge-verti2" class="px-1.5 py-0.5 text-[9px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
+            </div>
+            <div class="text-[10px] font-mono text-emerald-400">GET ../quote?pkg=liability_partial</div>
+            <div class="text-[10px] text-slate-400">Verti Partial Casco Pricing: €52.10</div>
+          </div>
+
+          <!-- Verti Package 3 -->
+          <div id="node-verti3" onclick="selectNode('verti3')" class="node-card cursor-pointer bg-slate-900 border-2 border-slate-700/80 rounded-xl p-3 shadow-xl transition-all hover:border-slate-500 relative">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-1 mb-1">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-bolt text-emerald-400"></i>
+                <span class="text-xs font-semibold text-emerald-300">Verti API [Pkg 3]</span>
+              </div>
+              <span id="badge-verti3" class="px-1.5 py-0.5 text-[9px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
+            </div>
+            <div class="text-[10px] font-mono text-emerald-400">GET ../quote?pkg=liability_full</div>
+            <div class="text-[10px] text-slate-400">Verti Full Casco Pricing: €78.90</div>
+          </div>
+
+        </div>
+
+        <!-- COLUMN 4: PANEL AGGREGATOR & RULE EVALUATOR -->
+        <div class="flex flex-col space-y-6 w-64">
+          <div id="node-rules" onclick="selectNode('rules')" class="node-card cursor-pointer bg-slate-900 border-2 border-purple-600/70 rounded-xl p-4 shadow-xl transition-all hover:border-purple-400 relative">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-shield-halved text-purple-400"></i>
+                <span class="text-xs font-bold text-slate-100 uppercase tracking-wider">Panel Evaluator</span>
+              </div>
+              <span id="badge-rules" class="px-1.5 py-0.5 text-[10px] rounded font-mono bg-purple-950 text-purple-300 border border-purple-800">WAITING</span>
+            </div>
+            <p class="text-[11px] text-slate-300">Filters valid quotes &amp; handles partial outages</p>
+            <div class="mt-2 text-[10px] font-mono space-y-1">
+              <div class="flex justify-between text-slate-400"><span>Active Insurers:</span> <span id="uwInsurersCount" class="text-slate-200 font-bold">- / 2</span></div>
+              <div class="flex justify-between text-slate-400"><span>Resilience Mode:</span> <span class="text-emerald-400 font-bold">Partial OK</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMN 5: RESPONSE OUTPUTS -->
+        <div class="flex flex-col space-y-10 w-60">
+          
+          <!-- Branch A: 200 OK Panel Returned -->
+          <div id="node-response-ok" onclick="selectNode('response-ok')" class="node-card cursor-pointer bg-slate-900 border-2 border-emerald-800/60 rounded-xl p-3.5 shadow-xl transition-all hover:border-emerald-500 relative">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1.5">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                <span class="text-xs font-bold text-emerald-300">200 OK Panel</span>
+              </div>
+              <span id="badge-response-ok" class="px-1.5 py-0.5 text-[9px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
+            </div>
+            <p class="text-[10px] text-slate-400">Delivers active insurer options to frontend comparison grid.</p>
+          </div>
+
+          <!-- Branch B: 422 / 503 Total Failure Error -->
+          <div id="node-response-error" onclick="selectNode('response-error')" class="node-card cursor-pointer bg-slate-900 border-2 border-red-800/60 rounded-xl p-3.5 shadow-xl transition-all hover:border-red-500 relative">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1.5">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-triangle-exclamation text-red-400"></i>
+                <span class="text-xs font-bold text-red-300">Validation Error</span>
+              </div>
+              <span id="badge-response-error" class="px-1.5 py-0.5 text-[9px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
+            </div>
+            <p class="text-[10px] text-slate-400">Triggers UI Rejection Modal when 0 valid insurer quotes available.</p>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Execution Status Bar Toast Overlay -->
+      <div id="statusBar" class="absolute bottom-4 left-6 right-6 bg-slate-900/95 border border-slate-800 rounded-xl px-5 py-3 flex items-center justify-between backdrop-blur-md shadow-2xl z-30">
+        <div class="flex items-center space-x-3">
+          <div id="statusSpinner" class="w-2.5 h-2.5 rounded-full bg-slate-500 animate-pulse"></div>
+          <span id="statusMessage" class="text-xs text-slate-300 font-mono">System Ready. Click "Run API Flow" to test insurer panel resilience.</span>
+        </div>
+        <div class="flex items-center space-x-4 text-xs font-mono text-slate-400">
+          <div>Latency: <span id="metricLatency" class="text-slate-200">0ms</span></div>
+          <div>Calls: <span id="metricCalls" class="text-slate-200">0 / 4</span></div>
+          <div>Status: <span id="metricStatus" class="text-slate-200">READY</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ALTERNATIVE SEQUENCE DIAGRAM VIEW (Hidden by Default) -->
+    <div id="sequenceCanvasContainer" class="hidden flex-1 bg-slate-950 p-8 overflow-y-auto">
+      <div class="max-w-4xl mx-auto bg-slate-900 rounded-xl p-6 border border-slate-800 shadow-2xl">
+        <h3 class="text-sm font-bold text-slate-200 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-timeline text-blue-400"></i> API Call Sequence &amp; Resilient Fan-out Timeline
+        </h3>
+        <div id="sequenceTimeline" class="space-y-3 font-mono text-xs">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR: NODE INSPECTOR & FRONTEND PREVIEW MODAL -->
+    <div class="w-[440px] bg-slate-900/90 border-l border-slate-800 flex flex-col z-30 backdrop-blur-md">
+      
+      <!-- Tab Headers -->
+      <div class="flex border-b border-slate-800 bg-slate-950/60">
+        <button id="sideTabInspect" onclick="switchSideTab('inspect')" class="flex-1 py-3 text-xs font-semibold text-blue-400 border-b-2 border-blue-500 flex items-center justify-center space-x-1.5">
+          <i class="fa-solid fa-code text-[11px]"></i>
+          <span>Node Inspector</span>
+        </button>
+        <button id="sideTabModal" onclick="switchSideTab('modal')" class="flex-1 py-3 text-xs font-semibold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center justify-center space-x-1.5">
+          <i class="fa-solid fa-window-restore text-[11px]"></i>
+          <span>Mobilize Panel UI</span>
+        </button>
+      </div>
+
+      <!-- SIDE TAB 1: INSPECTOR PANEL -->
+      <div id="panelInspect" class="flex-1 flex flex-col overflow-hidden p-4 space-y-4">
+        
+        <!-- Node Info Banner -->
+        <div class="bg-slate-950 rounded-lg p-3 border border-slate-800 flex items-center justify-between">
+          <div>
+            <div class="text-xs font-bold text-slate-200" id="inspectNodeTitle">Qover Platform Orchestrator</div>
+            <div class="text-[10px] text-slate-400 font-mono" id="inspectNodeEndpoint">Internal Hub Routing Engine</div>
+          </div>
+          <span id="inspectNodeStatus" class="px-2 py-0.5 text-[10px] font-mono rounded bg-blue-900/50 text-blue-300 border border-blue-700">IDLE</span>
+        </div>
+
+        <!-- Inspector Content: JSON Payload -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+          <div class="flex space-x-2 mb-2 text-xs">
+            <span class="text-slate-400 font-semibold">Active Payload Inspection</span>
+          </div>
+
+          <!-- JSON Viewer -->
+          <div class="flex-1 bg-slate-950 rounded-lg border border-slate-800/90 p-3 font-mono text-[11px] overflow-y-auto leading-relaxed text-slate-300" id="jsonViewer">
+            <span class="text-slate-500">// Select a node or click "Run API Flow" to view live payloads</span>
+          </div>
+        </div>
+
+        <!-- Node Execution Metrics -->
+        <div class="bg-slate-950 rounded-lg p-3 border border-slate-800 grid grid-cols-2 gap-2 text-[10px] font-mono">
+          <div class="text-slate-400">Method: <span id="inspectMethod" class="text-slate-200">POST</span></div>
+          <div class="text-slate-400">Latency: <span id="inspectLatency" class="text-slate-200">-- ms</span></div>
+          <div class="text-slate-400">HTTP Status: <span id="inspectHttpStatus" class="text-slate-200">--</span></div>
+          <div class="text-slate-400">Fault Tolerant: <span class="text-emerald-400">ENABLED</span></div>
+        </div>
+
+      </div>
+
+      <!-- SIDE TAB 2: MOBILIZE GERMANY FRONTEND PREVIEW SIMULATOR -->
+      <div id="panelModal" class="hidden flex-1 flex flex-col p-4 bg-slate-950 overflow-y-auto">
+        <div class="text-xs text-slate-400 mb-2 font-mono flex items-center justify-between">
+          <span>Mobilize DE Portal Sandbox</span>
+          <span class="text-emerald-400">Insurer Panel Mode</span>
+        </div>
+
+        <!-- Mock Mobilize Germany App Frame (Matching Screenshot Design) -->
+        <div class="bg-white text-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl relative min-h-[580px] flex flex-col font-sans">
+          
+          <!-- Top Header: Brand Logo -->
+          <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+            <div class="flex flex-col">
+              <div class="font-black text-slate-900 text-sm tracking-widest uppercase flex items-center gap-1">
+                <span class="text-slate-900 font-extrabold tracking-tighter text-base">MØBILIZE</span>
+              </div>
+              <span class="text-[9px] font-bold tracking-wider text-slate-500 uppercase -mt-0.5">FINANCIAL SERVICES</span>
+            </div>
+            <span class="px-2 py-0.5 text-[9px] font-mono font-bold bg-slate-100 text-slate-600 rounded border border-slate-200">GERMANY DE</span>
+          </div>
+
+          <!-- Body Container with Left Stepper + Right Content -->
+          <div class="flex-1 flex overflow-hidden">
+            
+            <!-- LEFT COLUMN: Vertical Stepper Navigation -->
+            <div class="w-32 bg-slate-50 border-r border-slate-100 p-3 flex flex-col space-y-4 shrink-0 text-[11px]">
+              
+              <!-- Step 1: Vehicle -->
+              <div class="flex items-center space-x-2 text-slate-500">
+                <div class="w-5 h-5 rounded-full border border-slate-400 flex items-center justify-center text-[9px] font-semibold text-slate-600">
+                  <i class="fa-solid fa-check text-[8px]"></i>
+                </div>
+                <span class="text-[10px] font-medium">Fahrzeug</span>
+              </div>
+              <div class="w-0.5 h-2 bg-slate-300 ml-2.5 -my-2"></div>
+
+              <!-- Step 2: Eligibility -->
+              <div class="flex items-center space-x-2 text-slate-500">
+                <div class="w-5 h-5 rounded-full border border-slate-400 flex items-center justify-center text-[9px] font-semibold text-slate-600">
+                  <i class="fa-solid fa-check text-[8px]"></i>
+                </div>
+                <span class="text-[10px] font-medium">Eligibility</span>
+              </div>
+              <div class="w-0.5 h-2 bg-slate-300 ml-2.5 -my-2"></div>
+
+              <!-- Step 3: Assurance (ACTIVE STEP) -->
+              <div class="flex items-center space-x-2 font-bold text-slate-900">
+                <div class="w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center text-[9px]">
+                  3
+                </div>
+                <span class="text-[10px]">Versicherung</span>
+              </div>
+              <div class="w-0.5 h-2 bg-slate-200 ml-2.5 -my-2"></div>
+
+              <!-- Step 4: Applicant -->
+              <div class="flex items-center space-x-2 text-slate-400">
+                <div class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[9px]">
+                  4
+                </div>
+                <span class="text-[10px]">Antragsteller</span>
+              </div>
+              <div class="w-0.5 h-2 bg-slate-200 ml-2.5 -my-2"></div>
+
+              <!-- Step 5: Summary -->
+              <div class="flex items-center space-x-2 text-slate-400">
+                <div class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[9px]">
+                  5
+                </div>
+                <span class="text-[10px]">Übersicht</span>
+              </div>
+              <div class="w-0.5 h-2 bg-slate-200 ml-2.5 -my-2"></div>
+
+              <!-- Step 6: Finalization -->
+              <div class="flex items-center space-x-2 text-slate-400">
+                <div class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[9px]">
+                  6
+                </div>
+                <span class="text-[10px]">Abschluss</span>
+              </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: Main Content & Offers -->
+            <div id="mobilizeUiBody" class="flex-1 p-4 overflow-y-auto flex flex-col justify-between relative bg-white">
+              
+              <!-- Title Section -->
+              <div class="mb-3 text-left">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">UNSERE EMPFEHLUNG</h3>
+                <p class="text-[10px] text-slate-500">Wählen Sie Ihre Selbstbeteiligung für die Kaskoversicherung</p>
+              </div>
+
+              <!-- Blue Styled Deductible Selector Box (Matching Screenshot Dropdown) -->
+              <div class="w-full text-left mb-3">
+                <label for="deductibleSelect" class="block text-[10px] font-medium text-slate-600 mb-1">
+                  Selbstbeteiligung (Deductibles)
+                </label>
+                <div class="relative">
+                  <select id="deductibleSelect" onchange="onDeductibleChange()" class="w-full bg-white border-2 border-blue-600 text-slate-900 text-xs font-semibold rounded-lg p-2.5 pr-8 focus:outline-none cursor-pointer appearance-none shadow-sm">
+                    <option value="fc300_tc150">Vollkasko €300 / Teilkasko €150 (Standard)</option>
+                    <option value="fc500_tc150">Vollkasko €500 / Teilkasko €150</option>
+                    <option value="fc500_tc300">Vollkasko €500 / Teilkasko €300</option>
+                    <option value="fc500_tc500">Vollkasko €500 / Teilkasko €500</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down absolute right-3 top-3.5 text-xs text-blue-600 pointer-events-none"></i>
+                </div>
+                <p class="text-[9px] text-slate-400 mt-1">Die gewählte Kaskoschutz-Stufe bestimmt Ihre monatliche Prämie.</p>
+              </div>
+
+              <!-- DEFAULT IDLE VIEW -->
+              <div id="uiIdle" class="py-8 text-center">
+                <i class="fa-solid fa-calculator text-2xl text-slate-300 mb-2"></i>
+                <h4 class="text-xs font-bold text-slate-700">Multi-Insurer Panel bereit</h4>
+                <p class="text-[10px] text-slate-400 mt-1 max-w-[200px] mx-auto">Klicken Sie oben auf "Run API Flow", um Echtzeit-Angebote abzufragen.</p>
+              </div>
+
+              <!-- LOADING VIEW -->
+              <div id="uiLoading" class="hidden py-10 flex-col items-center justify-center text-center">
+                <div class="w-7 h-7 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-2"></div>
+                <p class="text-xs font-bold text-slate-800">Versicherungsangebote werden ermittelt...</p>
+                <p class="text-[10px] text-slate-400 mt-0.5">Qover fragt parallel Allianz &amp; Verti ab</p>
+              </div>
+
+              <!-- SUCCESS VIEW: Hero Price Callout + Insurer Offers Breakdown -->
+              <div id="uiSuccess" class="hidden w-full text-left space-y-3">
+                
+                <!-- Hero Highlight Price Box (Screenshot Style) -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Ab-Preis / Bestes Angebot</div>
+                  <div class="flex items-baseline space-x-1.5 mt-0.5">
+                    <span id="heroBestPrice" class="text-2xl font-black text-slate-900">34,50 €</span>
+                    <span class="text-[10px] font-semibold text-slate-500">/Monat inkl. MwSt.</span>
+                  </div>
+                  <div class="text-[9px] text-slate-500 mt-0.5 font-medium">
+                    Gesamtkosten p.a. <span id="heroBestPriceAnnual" class="font-bold text-slate-700">414,00 €</span>
+                  </div>
+                </div>
+
+                <!-- Warning Banner for Partial Outage -->
+                <div id="uiWarningBanner" class="hidden bg-amber-50 border border-amber-300 p-2 rounded-lg text-[10px] text-amber-800 flex items-center gap-1.5">
+                  <i class="fa-solid fa-triangle-exclamation text-amber-600 shrink-0"></i>
+                  <span id="uiWarningText">Hinweis: Allianz ist aktuell nicht erreichbar. Nur Verti Angebote stehen zur Verfügung.</span>
+                </div>
+
+                <!-- Insurer Comparison Panel Header -->
+                <div class="flex items-center justify-between pt-1">
+                  <span class="text-xs font-black text-slate-900">TARIF-VERGLEICH PANEL:</span>
+                  <span id="uiPanelStatusBadge" class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300">2 Anbieter aktiv</span>
+                </div>
+
+                <!-- Package 1: Haftpflicht -->
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 space-y-1.5">
+                  <div class="text-[11px] font-bold text-slate-800 flex justify-between items-center border-b border-slate-200 pb-1">
+                    <span>1. Haftpflicht (Liability)</span>
+                    <span class="text-[9px] text-slate-500 font-normal">Ohne SB</span>
+                  </div>
+                  <!-- Allianz Option -->
+                  <div id="uiCard-allianz-1" class="flex justify-between items-center p-1.5 rounded bg-white border border-slate-200 text-[10px]">
+                    <div class="flex items-center space-x-1.5">
+                      <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-blue-900 text-white">Allianz</span>
+                      <span class="text-slate-700">Basis Tarif</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <span class="font-bold text-slate-900" id="price-allianz-1">€ 38.00 <span class="text-[8px] text-slate-400">/Mo</span></span>
+                      <button class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-white text-[9px] font-bold rounded">Wählen</button>
+                    </div>
+                  </div>
+                  <!-- Verti Option -->
+                  <div id="uiCard-verti-1" class="flex justify-between items-center p-1.5 rounded bg-white border border-slate-200 text-[10px]">
+                    <div class="flex items-center space-x-1.5">
+                      <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-emerald-600 text-white">Verti</span>
+                      <span class="text-slate-700">Kompakt Tarif</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <span class="font-bold text-emerald-700" id="price-verti-1">€ 34.50 <span class="text-[8px] text-slate-400">/Mo</span></span>
+                      <button class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-white text-[9px] font-bold rounded">Wählen</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Package 2: Teilkasko -->
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 space-y-1.5">
+                  <div class="text-[11px] font-bold text-slate-800 flex justify-between items-center border-b border-slate-200 pb-1">
+                    <span>2. Teilkasko (Partial)</span>
+                    <span id="badge-tc-deductible" class="text-[9px] text-blue-700 font-medium">SB TK: €150</span>
+                  </div>
+                  <!-- Allianz Option -->
+                  <div id="uiCard-allianz-2" class="flex justify-between items-center p-1.5 rounded bg-white border border-slate-200 text-[10px]">
+                    <div class="flex items-center space-x-1.5">
+                      <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-blue-900 text-white">Allianz</span>
+                      <span class="text-slate-700">Komfort Schutz</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <span class="font-bold text-slate-900" id="price-allianz-2">€ 55.00 <span class="text-[8px] text-slate-400">/Mo</span></span>
+                      <button class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-white text-[9px] font-bold rounded">Wählen</button>
+                    </div>
+                  </div>
+                  <!-- Verti Option -->
+                  <div id="uiCard-verti-2" class="flex justify-between items-center p-1.5 rounded bg-white border border-slate-200 text-[10px]">
+                    <div class="flex items-center space-x-1.5">
+                      <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-emerald-600 text-white">Verti</span>
+                      <span class="text-slate-700">Smart Teilkasko</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <span class="font-bold text-emerald-700" id="price-verti-2">€ 52.10 <span class="text-[8px] text-slate-400">/Mo</span></span>
+                      <button class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-white text-[9px] font-bold rounded">Wählen</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Package 3: Vollkasko -->
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 space-y-1.5">
+                  <div class="text-[11px] font-bold text-slate-800 flex justify-between items-center border-b border-slate-200 pb-1">
+                    <span>3. Vollkasko (Full Casco)</span>
+                    <span id="badge-vk-deductible" class="text-[9px] text-purple-700 font-medium">SB VK: €300 / TK: €150</span>
+                  </div>
+                  <!-- Allianz Option -->
+                  <div id="uiCard-allianz-3" class="flex justify-between items-center p-1.5 rounded bg-white border border-slate-200 text-[10px]">
+                    <div class="flex items-center space-x-1.5">
+                      <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-blue-900 text-white">Allianz</span>
+                      <span class="text-slate-700">Premium Schutz</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <span class="font-bold text-slate-900" id="price-allianz-3">€ 84.00 <span class="text-[8px] text-slate-400">/Mo</span></span>
+                      <button class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-white text-[9px] font-bold rounded">Wählen</button>
+                    </div>
+                  </div>
+                  <!-- Verti Option -->
+                  <div id="uiCard-verti-3" class="flex justify-between items-center p-1.5 rounded bg-white border border-slate-200 text-[10px]">
+                    <div class="flex items-center space-x-1.5">
+                      <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-emerald-600 text-white">Verti</span>
+                      <span class="text-slate-700">Rundum Vollkasko</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <span class="font-bold text-emerald-700" id="price-verti-3">€ 78.90 <span class="text-[8px] text-slate-400">/Mo</span></span>
+                      <button class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-white text-[9px] font-bold rounded">Wählen</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Benefit Highlights Section (Screenshot style) -->
+                <div class="border-t border-slate-200 pt-3 space-y-2 text-[10px] text-slate-700">
+                  <div class="font-bold text-slate-900">Inkludierte Vorteile &amp; Leistungen:</div>
+                  
+                  <div class="flex items-start space-x-2">
+                    <i class="fa-solid fa-wrench text-slate-700 mt-0.5 text-xs"></i>
+                    <div>
+                      <div class="font-semibold text-slate-900">Umfassende EV-Batterie Abdeckung</div>
+                      <div class="text-[9px] text-slate-500">Übernahme definierter Bauteile &amp; Pannen bei Elektro- und Hybridfahrzeugen.</div>
+                      <a href="#" onclick="return false;" class="text-blue-600 underline font-medium text-[9px]">Details anzeigen</a>
+                    </div>
+                  </div>
+
+                  <div class="flex items-start space-x-2 pt-1">
+                    <i class="fa-solid fa-shield-halved text-slate-700 mt-0.5 text-xs"></i>
+                    <div>
+                      <div class="font-semibold text-slate-900">Langzeitschutz (bis 150 000 km)</div>
+                      <div class="text-[9px] text-slate-500">Zuverlässiger Versicherungsschutz bis zu 150.000 km Fahrleistung.</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- ERROR MODAL OVERLAY -->
+              <div id="uiModalError" class="hidden absolute inset-0 bg-slate-900/60 backdrop-blur-sm p-4 flex items-center justify-center z-50">
+                <div class="bg-white border border-slate-200 rounded-xl p-4 text-center max-w-xs shadow-2xl">
+                  <div class="w-10 h-10 rounded-full bg-red-100 border border-red-200 text-red-600 flex items-center justify-center mx-auto mb-2 text-base">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                  </div>
+                  <h4 class="text-xs font-bold text-slate-900">Hinweis zur Versicherung</h4>
+                  <p id="uiErrorMessage" class="text-[11px] text-slate-600 mt-2 leading-snug">
+                    Leider stehen aktuell keine Versicherungsangebote zur Verfügung.
+                  </p>
+                  <div class="mt-3 pt-2 border-t border-slate-100 text-[9px] text-slate-400 font-mono" id="uiErrorCode">
+                    Code: INSURER_PANEL_UNAVAILABLE
+                  </div>
+                  <button onclick="closeModalPreview()" class="mt-3 w-full py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg">
+                    Schließen
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    /* GLOBAL STATE & UTILITIES */
+    let speed = 1;
+    let isRunning = false;
+    let selectedNodeId = 'qover';
+    let selectedDeductibleKey = 'fc300_tc150';
+
+    // Canvas Connection Map
+    const connections = [
+      { id: 'path-fe-qover', from: 'node-frontend', to: 'node-qover' },
+      { id: 'path-qover-allianz', from: 'node-qover', to: 'node-allianz' },
+      { id: 'path-qover-verti1', from: 'node-qover', to: 'node-verti1' },
+      { id: 'path-qover-verti2', from: 'node-qover', to: 'node-verti2' },
+      { id: 'path-qover-verti3', from: 'node-qover', to: 'node-verti3' },
+      { id: 'path-allianz-rules', from: 'node-allianz', to: 'node-rules' },
+      { id: 'path-verti1-rules', from: 'node-verti1', to: 'node-rules' },
+      { id: 'path-verti2-rules', from: 'node-verti2', to: 'node-rules' },
+      { id: 'path-verti3-rules', from: 'node-verti3', to: 'node-rules' },
+      { id: 'path-rules-ok', from: 'node-rules', to: 'node-response-ok' },
+      { id: 'path-rules-error', from: 'node-rules', to: 'node-response-error' }
+    ];
+
+    // Deductible Configurations Map
+    const deductibleConfigs = {
+      'fc300_tc150': {
+        fullCasco: 300,
+        partialCasco: 150,
+        label: 'VK €300 / TK €150',
+        allianz: { liability: 38.00, partial: 55.00, full: 84.00 },
+        verti: { liability: 34.50, partial: 52.10, full: 78.90 }
+      },
+      'fc500_tc150': {
+        fullCasco: 500,
+        partialCasco: 150,
+        label: 'VK €500 / TK €150',
+        allianz: { liability: 38.00, partial: 55.00, full: 78.50 },
+        verti: { liability: 34.50, partial: 52.10, full: 74.20 }
+      },
+      'fc500_tc300': {
+        fullCasco: 500,
+        partialCasco: 300,
+        label: 'VK €500 / TK €300',
+        allianz: { liability: 38.00, partial: 50.20, full: 73.10 },
+        verti: { liability: 34.50, partial: 47.80, full: 69.50 }
+      },
+      'fc500_tc500': {
+        fullCasco: 500,
+        partialCasco: 500,
+        label: 'VK €500 / TK €500',
+        allianz: { liability: 38.00, partial: 46.50, full: 68.00 },
+        verti: { liability: 34.50, partial: 44.00, full: 64.20 }
+      }
+    };
+
+    // Explicitly define functions at global top-level scope
+    function drawConnections() {
+      const svg = document.getElementById('svgOverlay');
+      const container = document.getElementById('flowCanvasContainer');
+      if (!svg || !container) return;
+
+      // Remove existing connection paths (preserving definitions/markers)
+      const existingPaths = svg.querySelectorAll('path');
+      existingPaths.forEach(p => p.remove());
+
+      const containerRect = container.getBoundingClientRect();
+
+      connections.forEach(conn => {
+        const fromNode = document.getElementById(conn.from);
+        const toNode = document.getElementById(conn.to);
+        if (!fromNode || !toNode) return;
+
+        const fromRect = fromNode.getBoundingClientRect();
+        const toRect = toNode.getBoundingClientRect();
+
+        const x1 = fromRect.right - containerRect.left + container.scrollLeft;
+        const y1 = fromRect.top + fromRect.height / 2 - containerRect.top + container.scrollTop;
+        const x2 = toRect.left - containerRect.left + container.scrollLeft;
+        const y2 = toRect.top + toRect.height / 2 - containerRect.top + container.scrollTop;
+
+        const dx = Math.abs(x2 - x1) * 0.45;
+        const pathD = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('id', conn.id);
+        path.setAttribute('d', pathD);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', '#334155');
+        path.setAttribute('stroke-width', '2');
+        path.setAttribute('marker-end', 'url(#arrow)');
+
+        svg.appendChild(path);
+      });
+    }
+
+    function setNodeStatus(nodeId, statusText, state = 'normal') {
+      const badge = document.getElementById(`badge-${nodeId}`);
+      const node = document.getElementById(`node-${nodeId}`);
+      if (!badge || !node) return;
+
+      badge.innerText = statusText;
+      node.classList.remove('pulse-glow', 'pulse-glow-error', 'pulse-glow-success', 'pulse-glow-warning', 'border-blue-500', 'border-emerald-500', 'border-red-500', 'border-amber-500');
+
+      if (state === 'active') {
+        badge.className = 'px-1.5 py-0.5 text-[10px] rounded font-mono bg-blue-900 text-blue-200 border border-blue-500 animate-pulse';
+        node.classList.add('pulse-glow', 'border-blue-500');
+      } else if (state === 'success') {
+        badge.className = 'px-1.5 py-0.5 text-[10px] rounded font-mono bg-emerald-950 text-emerald-300 border border-emerald-700';
+        node.classList.add('pulse-glow-success', 'border-emerald-500');
+      } else if (state === 'error') {
+        badge.className = 'px-1.5 py-0.5 text-[10px] rounded font-mono bg-red-950 text-red-300 border border-red-700';
+        node.classList.add('pulse-glow-error', 'border-red-500');
+      } else if (state === 'warning') {
+        badge.className = 'px-1.5 py-0.5 text-[10px] rounded font-mono bg-amber-950 text-amber-300 border border-amber-700';
+        node.classList.add('pulse-glow-warning', 'border-amber-500');
+      } else {
+        badge.className = 'px-1.5 py-0.5 text-[10px] rounded font-mono bg-slate-800 text-slate-400';
+      }
+
+      if (selectedNodeId === nodeId) {
+        document.getElementById('inspectNodeStatus').innerText = statusText;
+      }
+    }
+
+    function setWireStatus(wireId, active, color = 'blue') {
+      const wire = document.getElementById(wireId);
+      if (!wire) return;
+
+      if (active) {
+        wire.classList.add('wire-active');
+        if (color === 'green') {
+          wire.setAttribute('stroke', '#10b981');
+          wire.setAttribute('marker-end', 'url(#arrow-success)');
+        } else if (color === 'red') {
+          wire.setAttribute('stroke', '#ef4444');
+          wire.setAttribute('marker-end', 'url(#arrow-error)');
+        } else if (color === 'amber') {
+          wire.setAttribute('stroke', '#f59e0b');
+          wire.setAttribute('marker-end', 'url(#arrow-warning)');
+        } else {
+          wire.setAttribute('stroke', '#3b82f6');
+          wire.setAttribute('marker-end', 'url(#arrow-active)');
+        }
+        wire.setAttribute('stroke-width', '3');
+      } else {
+        wire.classList.remove('wire-active');
+        wire.setAttribute('stroke', '#334155');
+        wire.setAttribute('stroke-width', '2');
+        wire.setAttribute('marker-end', 'url(#arrow)');
+      }
+    }
+
+    function addSequenceLog(step, sender, text, type = 'normal') {
+      const timeline = document.getElementById('sequenceTimeline');
+      if (!timeline) return;
+
+      const colors = {
+        normal: 'border-slate-800 bg-slate-950 text-slate-300',
+        success: 'border-emerald-800/80 bg-emerald-950/40 text-emerald-200',
+        warning: 'border-amber-800/80 bg-amber-950/40 text-amber-200',
+        error: 'border-red-800/80 bg-red-950/40 text-red-200'
+      };
+
+      const badgeColors = {
+        normal: 'bg-blue-900/60 text-blue-300 border-blue-700',
+        success: 'bg-emerald-900/60 text-emerald-300 border-emerald-700',
+        warning: 'bg-amber-900/60 text-amber-300 border-amber-700',
+        error: 'bg-red-900/60 text-red-300 border-red-700'
+      };
+
+      const item = document.createElement('div');
+      item.className = `p-3 rounded-lg border flex items-start space-x-3 ${colors[type] || colors.normal}`;
+      item.innerHTML = `
+        <span class="px-2 py-0.5 text-[10px] font-bold rounded border ${badgeColors[type] || badgeColors.normal}">Step ${step}</span>
+        <div class="flex-1">
+          <div class="font-bold text-slate-200 text-xs">${sender}</div>
+          <div class="text-[11px] mt-0.5 font-mono">${text}</div>
+        </div>
+      `;
+      timeline.appendChild(item);
+      timeline.scrollTop = timeline.scrollHeight;
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms / speed));
+    }
+
+    function switchMainView(view) {
+      const flowContainer = document.getElementById('flowCanvasContainer');
+      const seqContainer = document.getElementById('sequenceCanvasContainer');
+      const tabFlow = document.getElementById('tabFlow');
+      const tabSequence = document.getElementById('tabSequence');
+
+      if (view === 'flow') {
+        flowContainer.classList.remove('hidden');
+        seqContainer.classList.add('hidden');
+        tabFlow.className = 'px-3 py-1 rounded-md bg-slate-800 text-blue-400 font-medium flex items-center space-x-1';
+        tabSequence.className = 'px-3 py-1 rounded-md hover:bg-slate-900 text-slate-400 font-medium flex items-center space-x-1';
+        setTimeout(drawConnections, 50);
+      } else {
+        flowContainer.classList.add('hidden');
+        seqContainer.classList.remove('hidden');
+        tabFlow.className = 'px-3 py-1 rounded-md hover:bg-slate-900 text-slate-400 font-medium flex items-center space-x-1';
+        tabSequence.className = 'px-3 py-1 rounded-md bg-slate-800 text-blue-400 font-medium flex items-center space-x-1';
+      }
+    }
+
+    function switchSideTab(tab) {
+      const panelInspect = document.getElementById('panelInspect');
+      const panelModal = document.getElementById('panelModal');
+      const sideTabInspect = document.getElementById('sideTabInspect');
+      const sideTabModal = document.getElementById('sideTabModal');
+
+      if (tab === 'inspect') {
+        panelInspect.classList.remove('hidden');
+        panelInspect.classList.add('flex');
+        panelModal.classList.add('hidden');
+        sideTabInspect.className = 'flex-1 py-3 text-xs font-semibold text-blue-400 border-b-2 border-blue-500 flex items-center justify-center space-x-1.5';
+        sideTabModal.className = 'flex-1 py-3 text-xs font-semibold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center justify-center space-x-1.5';
+      } else {
+        panelInspect.classList.add('hidden');
+        panelInspect.classList.remove('flex');
+        panelModal.classList.remove('hidden');
+        sideTabInspect.className = 'flex-1 py-3 text-xs font-semibold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center justify-center space-x-1.5';
+        sideTabModal.className = 'flex-1 py-3 text-xs font-semibold text-blue-400 border-b-2 border-blue-500 flex items-center justify-center space-x-1.5';
+      }
+    }
+
+    function setSpeed(s) {
+      speed = s;
+      document.getElementById('speed1x').className = s === 1 ? 'px-2 py-1 rounded bg-blue-600/30 border border-blue-500 text-blue-300 font-mono text-xs' : 'px-2 py-1 rounded hover:bg-slate-800 text-slate-400 font-mono text-xs';
+      document.getElementById('speed2x').className = s === 2 ? 'px-2 py-1 rounded bg-blue-600/30 border border-blue-500 text-blue-300 font-mono text-xs' : 'px-2 py-1 rounded hover:bg-slate-800 text-slate-400 font-mono text-xs';
+    }
+
+    function resetSimulation() {
+      isRunning = false;
+      resetNodeStyles();
+      document.getElementById('sequenceTimeline').innerHTML = '';
+      document.getElementById('metricLatency').innerText = '0ms';
+      document.getElementById('metricCalls').innerText = '0 / 4';
+      document.getElementById('metricStatus').innerText = 'READY';
+      document.getElementById('statusMessage').innerText = 'System Reset. Select scenario and click "Run API Flow" to execute.';
+      
+      document.getElementById('uiIdle').classList.remove('hidden');
+      document.getElementById('uiLoading').classList.add('hidden');
+      document.getElementById('uiLoading').classList.remove('flex');
+      document.getElementById('uiSuccess').classList.add('hidden');
+      document.getElementById('uiModalError').classList.add('hidden');
+      selectNode('qover');
+    }
+
+    function closeModalPreview() {
+      document.getElementById('uiModalError').classList.add('hidden');
+    }
+
+    // Dynamic Node Payload Generator based on active Deductible selection
+    function getActiveNodeData() {
+      const ded = deductibleConfigs[selectedDeductibleKey];
+
+      return {
+        'frontend': {
+          title: 'Mobilize DE Frontend',
+          endpoint: 'POST /api/v1/quote-request',
+          method: 'POST',
+          payloads: {
+            request: {
+              vehicle: { brand: "Renault", model: "Megane E-Tech", year: 2023, value: 38000 },
+              driver: { age: 32, postalCode: "80331", claimsPast3Years: 0 },
+              deductibles: {
+                fullCasco: ded.fullCasco,
+                partialCasco: ded.partialCasco
+              },
+              panelRequest: {
+                providers: ["ALLIANZ", "VERTI"],
+                requestedPackages: ["LIABILITY", "PARTIAL_CASCO", "FULL_CASCO"]
+              }
+            }
+          }
+        },
+        'qover': {
+          title: 'Qover Platform Orchestrator',
+          endpoint: 'Internal Resilient Hub Core',
+          method: 'ORCHESTRATE',
+          payloads: {
+            flow: "Mobilize DE Resilient Panel Aggregation",
+            deductiblesConfig: { fullCasco: ded.fullCasco, partialCasco: ded.partialCasco },
+            strategy: "Promise.allSettled() across Insurers",
+            resiliencePolicy: {
+              requireMinimumInsurers: 1,
+              allowPartialDegradation: true
+            }
+          }
+        },
+        'allianz': {
+          title: 'Allianz Insurer API',
+          endpoint: 'POST ../CalculateOffers',
+          method: 'POST',
+          payloads: {
+            request: {
+              country: "DE",
+              partnerId: "MOBILIZE_GERMANY",
+              deductibleFC: ded.fullCasco,
+              deductibleTC: ded.partialCasco
+            },
+            responseSuccess: {
+              status: "SUCCESS",
+              insurer: "Allianz DE",
+              offers: [
+                { package: "LIABILITY", monthlyPrice: ded.allianz.liability, deductible: null },
+                { package: "PARTIAL_CASCO", monthlyPrice: ded.allianz.partial, deductibleTC: ded.partialCasco },
+                { package: "FULL_CASCO", monthlyPrice: ded.allianz.full, deductibleFC: ded.fullCasco, deductibleTC: ded.partialCasco }
+              ]
+            },
+            responseFail: { status: 500, error: "Internal Server Error / Service Unavailable" }
+          }
+        },
+        'verti1': {
+          title: 'Verti API (Package 1)',
+          endpoint: 'GET ../quote?package=liability',
+          method: 'GET',
+          payloads: {
+            response: { insurer: "Verti", package: "LIABILITY", totalMonthly: ded.verti.liability, deductible: null }
+          }
+        },
+        'verti2': {
+          title: 'Verti API (Package 2)',
+          endpoint: `GET ../quote?package=liability_partial&deductibleTC=${ded.partialCasco}`,
+          method: 'GET',
+          payloads: {
+            response: { insurer: "Verti", package: "PARTIAL_CASCO", totalMonthly: ded.verti.partial, deductibleTC: ded.partialCasco }
+          }
+        },
+        'verti3': {
+          title: 'Verti API (Package 3)',
+          endpoint: `GET ../quote?package=liability_full&deductibleFC=${ded.fullCasco}&deductibleTC=${ded.partialCasco}`,
+          method: 'GET',
+          payloads: {
+            response: { insurer: "Verti", package: "FULL_CASCO", totalMonthly: ded.verti.full, deductibleFC: ded.fullCasco, deductibleTC: ded.partialCasco }
+          }
+        },
+        'rules': {
+          title: 'Panel Evaluator & Aggregator',
+          endpoint: 'Internal Rules Evaluator',
+          method: 'EVALUATE',
+          payloads: {
+            evaluation: {
+              appliedDeductibles: { VK: ded.fullCasco, TK: ded.partialCasco },
+              allianzStatus: "FULFILLED",
+              vertiStatus: "FULFILLED",
+              acceptedProvidersCount: 2,
+              action: "RENDER_COMPARISON_GRID"
+            }
+          }
+        },
+        'response-ok': {
+          title: '200 OK Panel Response',
+          endpoint: 'HTTP 200 Success',
+          method: 'RESPONSE',
+          payloads: {
+            status: 200,
+            data: {
+              panelSize: 2,
+              deductibles: { fullCasco: ded.fullCasco, partialCasco: ded.partialCasco },
+              packages: [
+                { name: "Liability", offers: [{ insurer: "Verti", price: ded.verti.liability }, { insurer: "Allianz", price: ded.allianz.liability }] },
+                { name: "Partial Casco", offers: [{ insurer: "Verti", price: ded.verti.partial }, { insurer: "Allianz", price: ded.allianz.partial }] },
+                { name: "Full Casco", offers: [{ insurer: "Verti", price: ded.verti.full }, { insurer: "Allianz", price: ded.allianz.full }] }
+              ]
+            }
+          }
+        },
+        'response-error': {
+          title: 'Validation / Outage Error',
+          endpoint: 'HTTP 422 / 503',
+          method: 'RESPONSE',
+          payloads: {
+            status: 422,
+            error: {
+              code: "NO_INSURER_OFFERS_AVAILABLE",
+              message: "Neither Allianz nor Verti returned valid pricing options.",
+              frontendAction: "DISPLAY_ERROR_MODAL"
+            }
+          }
+        }
+      };
+    }
+
+    function onDeductibleChange() {
+      const selectEl = document.getElementById('deductibleSelect');
+      if (selectEl) {
+        selectedDeductibleKey = selectEl.value;
+      }
+      const config = deductibleConfigs[selectedDeductibleKey];
+      if (!config) return;
+      
+      // Update Badge UI labels
+      const badgeTc = document.getElementById('badge-tc-deductible');
+      if (badgeTc) badgeTc.innerText = `SB TK: €${config.partialCasco}`;
+      
+      const badgeVk = document.getElementById('badge-vk-deductible');
+      if (badgeVk) badgeVk.innerText = `SB VK: €${config.fullCasco} / TK: €${config.partialCasco}`;
+
+      // Update UI Prices in Mobilize DE Sandbox
+      document.getElementById('price-allianz-1').innerHTML = `€ ${config.allianz.liability.toFixed(2)} <span class="text-[8px] text-slate-400">/Mo</span>`;
+      document.getElementById('price-allianz-2').innerHTML = `€ ${config.allianz.partial.toFixed(2)} <span class="text-[8px] text-slate-400">/Mo</span>`;
+      document.getElementById('price-allianz-3').innerHTML = `€ ${config.allianz.full.toFixed(2)} <span class="text-[8px] text-slate-400">/Mo</span>`;
+
+      document.getElementById('price-verti-1').innerHTML = `€ ${config.verti.liability.toFixed(2)} <span class="text-[8px] text-slate-400">/Mo</span>`;
+      document.getElementById('price-verti-2').innerHTML = `€ ${config.verti.partial.toFixed(2)} <span class="text-[8px] text-slate-400">/Mo</span>`;
+      document.getElementById('price-verti-3').innerHTML = `€ ${config.verti.full.toFixed(2)} <span class="text-[8px] text-slate-400">/Mo</span>`;
+
+      // Update Screenshot Style Hero Best Price Callout
+      const bestPriceVal = Math.min(config.allianz.liability, config.verti.liability);
+      const heroPriceEl = document.getElementById('heroBestPrice');
+      const heroAnnualEl = document.getElementById('heroBestPriceAnnual');
+      if (heroPriceEl) heroPriceEl.innerText = `€ ${bestPriceVal.toFixed(2)}`;
+      if (heroAnnualEl) heroAnnualEl.innerText = `€ ${(bestPriceVal * 12).toFixed(2)}`;
+
+      // Refresh inspector view if currently selected
+      selectNode(selectedNodeId);
+    }
+
+    function selectNode(nodeId) {
+      selectedNodeId = nodeId;
+      const dataMap = getActiveNodeData();
+      const data = dataMap[nodeId];
+      if (!data) return;
+
+      document.getElementById('inspectNodeTitle').innerText = data.title;
+      document.getElementById('inspectNodeEndpoint').innerText = data.endpoint;
+      document.getElementById('inspectMethod').innerText = data.method;
+
+      const badge = document.getElementById(`badge-${nodeId}`);
+      if (badge) {
+        document.getElementById('inspectNodeStatus').innerText = badge.innerText;
+      }
+
+      const jsonContainer = document.getElementById('jsonViewer');
+      jsonContainer.innerHTML = `<pre class="text-emerald-400 font-mono">${JSON.stringify(data.payloads, null, 2)}</pre>`;
+
+      document.querySelectorAll('.node-card').forEach(el => {
+        el.classList.remove('ring-2', 'ring-blue-400', 'bg-slate-800');
+      });
+      const currentEl = document.getElementById(`node-${nodeId}`);
+      if (currentEl) {
+        currentEl.classList.add('ring-2', 'ring-blue-400');
+      }
+    }
+
+    // MAIN RESILIENT SIMULATION RUNNER
+    async function startSimulation() {
+      if (isRunning) return;
+      isRunning = true;
+      
+      const scenario = document.getElementById('scenarioSelect').value;
+      const dedConfig = deductibleConfigs[selectedDeductibleKey];
+      const startTime = performance.now();
+
+      resetNodeStyles();
+      document.getElementById('sequenceTimeline').innerHTML = '';
+      document.getElementById('metricCalls').innerText = "0 / 4";
+      document.getElementById('metricStatus').innerText = "RUNNING";
+      document.getElementById('statusMessage').innerText = `Starting Panel Orchestration Flow with Deductibles (VK €${dedConfig.fullCasco} / TK €${dedConfig.partialCasco})...`;
+
+      // Reset UI Simulator Views
+      document.getElementById('uiIdle').classList.add('hidden');
+      document.getElementById('uiSuccess').classList.add('hidden');
+      document.getElementById('uiModalError').classList.add('hidden');
+      document.getElementById('uiWarningBanner').classList.add('hidden');
+      document.getElementById('uiLoading').classList.remove('hidden');
+      document.getElementById('uiLoading').classList.add('flex');
+
+      // Reset Card Visibility
+      ['allianz', 'verti'].forEach(ins => {
+        [1, 2, 3].forEach(pkg => {
+          const card = document.getElementById(`uiCard-${ins}-${pkg}`);
+          if (card) card.classList.remove('hidden');
+        });
+      });
+
+      // STEP 1: Mobilize FE Trigger
+      selectNode('frontend');
+      setNodeStatus('frontend', 'POSTING', 'active');
+      addSequenceLog(1, 'Mobilize FE', `Quote Request initiated (Deductible: VK €${dedConfig.fullCasco}/TK €${dedConfig.partialCasco})`);
+      await sleep(500);
+      setNodeStatus('frontend', 'SENT', 'success');
+      setWireStatus('path-fe-qover', true, 'blue');
+
+      // STEP 2: Qover Core Parallel Ingestion
+      selectNode('qover');
+      setNodeStatus('qover', 'FAN-OUT', 'active');
+      document.getElementById('statusMessage').innerText = "Qover executing parallel dispatch (Promise.allSettled) with requested deductibles...";
+      addSequenceLog(2, 'Qover Core', `Executing parallel dispatch across panel with deductibles VK €${dedConfig.fullCasco} / TK €${dedConfig.partialCasco}`);
+      await sleep(500);
+
+      // STEP 3: PARALLEL CALLS TO ALLIANZ & VERTI
+      setWireStatus('path-qover-allianz', true, 'blue');
+      setWireStatus('path-qover-verti1', true, 'blue');
+      setWireStatus('path-qover-verti2', true, 'blue');
+      setWireStatus('path-qover-verti3', true, 'blue');
+
+      setNodeStatus('allianz', 'POST Offers', 'active');
+      setNodeStatus('verti1', 'GET Pkg 1', 'active');
+      setNodeStatus('verti2', 'GET Pkg 2', 'active');
+      setNodeStatus('verti3', 'GET Pkg 3', 'active');
+      document.getElementById('metricCalls').innerText = "4 / 4 (Parallel)";
+      addSequenceLog(3, 'Parallel Gateway', `Dispatched 4 requests passing deductibles (VK €${dedConfig.fullCasco}, TK €${dedConfig.partialCasco})`);
+
+      await sleep(1000);
+
+      // INSURER OUTAGE BRANCH EVALUATIONS
+      let activeInsurers = 2;
+
+      if (scenario === 'allianz_down') {
+        activeInsurers = 1;
+        setNodeStatus('allianz', 'HTTP 500', 'error');
+        setWireStatus('path-allianz-rules', true, 'red');
+        setNodeStatus('verti1', '200 OK', 'success');
+        setNodeStatus('verti2', '200 OK', 'success');
+        setNodeStatus('verti3', '200 OK', 'success');
+        setWireStatus('path-verti1-rules', true, 'green');
+        setWireStatus('path-verti2-rules', true, 'green');
+        setWireStatus('path-verti3-rules', true, 'green');
+        addSequenceLog(4, 'Allianz API', 'HTTP 500 Failure. Resilience triggered (Verti fallback active)', 'warning');
+
+        [1, 2, 3].forEach(pkg => document.getElementById(`uiCard-allianz-${pkg}`).classList.add('hidden'));
+        document.getElementById('uiWarningBanner').classList.remove('hidden');
+        document.getElementById('uiWarningText').innerText = "Hinweis: Allianz ist aktuell nicht erreichbar. Nur Verti Angebote stehen zur Verfügung.";
+        document.getElementById('uiPanelStatusBadge').innerText = "1 von 2 Anbietern aktiv";
+        document.getElementById('uiPanelStatusBadge').className = "text-[9px] text-amber-400 bg-amber-950 px-1.5 py-0.5 rounded border border-amber-800";
+
+      } else if (scenario === 'verti_down') {
+        activeInsurers = 1;
+        setNodeStatus('allianz', '200 OK', 'success');
+        setWireStatus('path-allianz-rules', true, 'green');
+        setNodeStatus('verti1', 'HTTP 500', 'error');
+        setNodeStatus('verti2', 'HTTP 500', 'error');
+        setNodeStatus('verti3', 'HTTP 500', 'error');
+        setWireStatus('path-verti1-rules', true, 'red');
+        setWireStatus('path-verti2-rules', true, 'red');
+        setWireStatus('path-verti3-rules', true, 'red');
+        addSequenceLog(4, 'Verti API', 'HTTP 500 Failure. Resilience triggered (Allianz fallback active)', 'warning');
+
+        [1, 2, 3].forEach(pkg => document.getElementById(`uiCard-verti-${pkg}`).classList.add('hidden'));
+        document.getElementById('uiWarningBanner').classList.remove('hidden');
+        document.getElementById('uiWarningText').innerText = "Hinweis: Verti ist aktuell nicht erreichbar. Nur Allianz Angebote stehen zur Verfügung.";
+        document.getElementById('uiPanelStatusBadge').innerText = "1 von 2 Anbietern aktiv";
+        document.getElementById('uiPanelStatusBadge').className = "text-[9px] text-amber-400 bg-amber-950 px-1.5 py-0.5 rounded border border-amber-800";
+
+      } else if (scenario === 'both_down') {
+        activeInsurers = 0;
+        setNodeStatus('allianz', 'HTTP 500', 'error');
+        setNodeStatus('verti1', 'HTTP 500', 'error');
+        setNodeStatus('verti2', 'HTTP 500', 'error');
+        setNodeStatus('verti3', 'HTTP 500', 'error');
+        setWireStatus('path-allianz-rules', true, 'red');
+        setWireStatus('path-verti1-rules', true, 'red');
+        setWireStatus('path-verti2-rules', true, 'red');
+        setWireStatus('path-verti3-rules', true, 'red');
+        addSequenceLog(4, 'Panel Outage', 'Both Allianz and Verti returned errors. 0 offers available', 'error');
+
+      } else {
+        // Full Success
+        setNodeStatus('allianz', '200 OK', 'success');
+        setNodeStatus('verti1', '200 OK', 'success');
+        setNodeStatus('verti2', '200 OK', 'success');
+        setNodeStatus('verti3', '200 OK', 'success');
+        setWireStatus('path-allianz-rules', true, 'green');
+        setWireStatus('path-verti1-rules', true, 'green');
+        setWireStatus('path-verti2-rules', true, 'green');
+        setWireStatus('path-verti3-rules', true, 'green');
+        addSequenceLog(4, 'Parallel Gateway', 'Both Allianz and Verti returned valid offers for selected deductibles', 'success');
+        document.getElementById('uiPanelStatusBadge').innerText = "2 Anbieter aktiv";
+        document.getElementById('uiPanelStatusBadge').className = "text-[9px] text-emerald-400 bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-800";
+      }
+
+      // STEP 4: PANEL EVALUATION & AGGREGATION
+      selectNode('rules');
+      setNodeStatus('rules', 'EVALUATING', 'active');
+      document.getElementById('uwInsurersCount').innerText = `${activeInsurers} / 2`;
+      document.getElementById('statusMessage').innerText = "Aggregating active insurer pricings into panel comparison...";
+      await sleep(800);
+
+      // DECISION BRANCHING
+      if (scenario === 'both_down' || scenario === 'uw_reject') {
+        setNodeStatus('rules', 'REJECTED', 'error');
+        setWireStatus('path-rules-error', true, 'red');
+
+        selectNode('response-error');
+        setNodeStatus('response-error', '422 / 503', 'error');
+        
+        const totalDuration = Math.round(performance.now() - startTime);
+        document.getElementById('metricLatency').innerText = `${totalDuration}ms`;
+        document.getElementById('metricStatus').innerText = "ERROR";
+
+        if (scenario === 'uw_reject') {
+          document.getElementById('statusMessage').innerText = "Underwriting Rule Validation Error: Driver Age < 18. Returning 422 Error Modal.";
+          document.getElementById('uiErrorMessage').innerText = "Aufgrund der Underwriting-Regeln (Mindestalter 18 Jahre) ist aktuell kein Angebot verfügbar.";
+          document.getElementById('uiErrorCode').innerText = "Error Code: UW_RULE_REJECTION_422";
+        } else {
+          document.getElementById('statusMessage').innerText = "Total Outage: Both Insurers Failed. Returning Service Unavailable Error Modal.";
+          document.getElementById('uiErrorMessage').innerText = "Leider können wir Ihnen aktuell aufgrund einer technischen Störung aller Partner kein Angebot unterbreiten.";
+          document.getElementById('uiErrorCode').innerText = "Error Code: PANEL_ALL_INSURERS_DOWN_503";
+        }
+
+        document.getElementById('uiLoading').classList.add('hidden');
+        document.getElementById('uiModalError').classList.remove('hidden');
+        switchSideTab('modal');
+
+      } else {
+        const isPartial = scenario === 'allianz_down' || scenario === 'verti_down';
+        setNodeStatus('rules', isPartial ? 'PARTIAL PANEL' : 'FULL PANEL', isPartial ? 'warning' : 'success');
+        setWireStatus('path-rules-ok', true, isPartial ? 'amber' : 'green');
+
+        selectNode('response-ok');
+        setNodeStatus('response-ok', '200 OK', 'success');
+
+        const totalDuration = Math.round(performance.now() - startTime);
+        document.getElementById('metricLatency').innerText = `${totalDuration}ms`;
+        document.getElementById('metricStatus').innerText = "200 OK";
+        document.getElementById('statusMessage').innerText = `Panel Orchestration completed in ${totalDuration}ms (${activeInsurers}/2 insurers active)!`;
+        addSequenceLog(5, 'Gateway', `HTTP 200 OK - Delivered Insurer Panel (VK €${dedConfig.fullCasco}/TK €${dedConfig.partialCasco}) with ${activeInsurers} active provider(s)`, isPartial ? 'warning' : 'success');
+
+        document.getElementById('uiLoading').classList.add('hidden');
+        document.getElementById('uiSuccess').classList.remove('hidden');
+        switchSideTab('modal');
+      }
+
+      isRunning = false;
+    }
+
+    function resetNodeStyles() {
+      const dataMap = getActiveNodeData();
+      Object.keys(dataMap).forEach(id => {
+        setNodeStatus(id, 'IDLE', 'normal');
+      });
+      connections.forEach(conn => {
+        setWireStatus(conn.id, false);
+      });
+      document.getElementById('uwInsurersCount').innerText = "- / 2";
+    }
+
+    // Ensure window global exports
+    window.drawConnections = drawConnections;
+    window.startSimulation = startSimulation;
+    window.resetSimulation = resetSimulation;
+    window.setSpeed = setSpeed;
+    window.switchMainView = switchMainView;
+    window.switchSideTab = switchSideTab;
+    window.selectNode = selectNode;
+    window.onDeductibleChange = onDeductibleChange;
+    window.closeModalPreview = closeModalPreview;
+
+    window.onload = function() {
+      if (typeof drawConnections === 'function') {
+        drawConnections();
+      }
+      onDeductibleChange();
+      selectNode('qover');
+    };
+
+    window.onresize = function() {
+      if (typeof drawConnections === 'function') {
+        drawConnections();
+      }
+    };
+  </script>
