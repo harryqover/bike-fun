@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Qover API Orchestrator - Insurer Panel & Resilience</title>
+  <title>Qover Platform - Mobilize DE Hooks & Nodes Visualizer</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Tailwind Config Customizations -->
+  <!-- Custom Tailwind Configuration -->
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -56,7 +56,7 @@
       background-size: 24px 24px;
     }
 
-    /* Animated Wire Connection Path */
+    /* Animated Wire Connections */
     @keyframes dash {
       to {
         stroke-dashoffset: -40;
@@ -91,12 +91,12 @@
         </div>
         <div>
           <div class="flex items-center space-x-2">
-            <h1 class="font-bold text-base text-slate-100 tracking-wide">Qover Multi-Insurer Panel Orchestration</h1>
+            <h1 class="font-bold text-base text-slate-100 tracking-wide">Qover Engine: Hooks &amp; Nodes Architecture</h1>
             <span class="px-2 py-0.5 text-xs font-semibold rounded bg-red-950/80 text-red-400 border border-red-800/50 flex items-center gap-1">
-              <i class="fa-solid fa-car text-[10px]"></i> Mobilize Germany
+              <i class="fa-solid fa-car text-[10px]"></i> Mobilize Germany (MO-DE-MOTOR)
             </span>
           </div>
-          <p class="text-xs text-slate-400">Insurer Panel Comparison & Resilience Gateway (Promise.allSettled)</p>
+          <p class="text-xs text-slate-400">Dynamic Multi-Insurer Panel Orchestration via JSONata Hooks</p>
         </div>
       </div>
     </div>
@@ -106,13 +106,13 @@
       <!-- Scenario Selector -->
       <div class="flex items-center space-x-2 bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5">
         <i class="fa-solid fa-sliders text-xs text-slate-400"></i>
-        <label for="scenarioSelect" class="text-xs text-slate-400 font-medium">Scenario:</label>
+        <label for="scenarioSelect" class="text-xs text-slate-400 font-medium">Test Scenario:</label>
         <select id="scenarioSelect" class="bg-transparent text-xs font-medium text-slate-200 outline-none cursor-pointer">
-          <option value="success_all">🟢 Panel Success - Allianz & Verti Both Available</option>
-          <option value="allianz_down">🟡 Partial Outage - Allianz 500 (Verti Panel Shown)</option>
-          <option value="verti_down">🟡 Partial Outage - Verti 500 (Allianz Panel Shown)</option>
-          <option value="both_down">🔴 Total Outage - Both Insurers Down (Trigger Modal)</option>
-          <option value="uw_reject">🔴 UW Rules Error - Age &lt; 18 (Trigger Modal)</option>
+          <option value="success_all">🟢 Full Panel - Allianz &amp; Verti Active (200 OK)</option>
+          <option value="allianz_down">🟡 Resilient Degraded - Allianz HTTP 500 (Verti Panel Only)</option>
+          <option value="verti_down">🟡 Resilient Degraded - Verti HTTP 500 (Allianz Panel Only)</option>
+          <option value="both_down">🔴 Outage Failure - Both Insurers Down (Trigger 503 Modal)</option>
+          <option value="uw_reject">🔴 Script Node Error - Age &lt; 18 (Trigger 422 Modal)</option>
         </select>
       </div>
 
@@ -120,7 +120,7 @@
       <div class="flex items-center bg-slate-800/80 rounded-lg p-1 border border-slate-700/80">
         <button id="btnRun" onclick="startSimulation()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs transition shadow-md shadow-emerald-900/30">
           <i class="fa-solid fa-play text-[10px]"></i>
-          <span>Run API Flow</span>
+          <span>Execute Hook</span>
         </button>
         <button id="btnReset" onclick="resetSimulation()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-md hover:bg-slate-700 text-slate-300 font-medium text-xs transition ml-1">
           <i class="fa-solid fa-rotate-left text-[10px]"></i>
@@ -139,11 +139,11 @@
       <div class="flex bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs">
         <button id="tabFlow" onclick="switchMainView('flow')" class="px-3 py-1 rounded-md bg-slate-800 text-blue-400 font-medium flex items-center space-x-1">
           <i class="fa-solid fa-diagram-project text-[11px]"></i>
-          <span>Graph View</span>
+          <span>Nodes Flow</span>
         </button>
-        <button id="tabSequence" onclick="switchMainView('sequence')" class="px-3 py-1 rounded-md hover:bg-slate-900 text-slate-400 font-medium flex items-center space-x-1">
-          <i class="fa-solid fa-list-check text-[11px]"></i>
-          <span>Sequence Flow</span>
+        <button id="tabConfig" onclick="switchMainView('config')" class="px-3 py-1 rounded-md hover:bg-slate-900 text-slate-400 font-medium flex items-center space-x-1">
+          <i class="fa-solid fa-code text-[11px]"></i>
+          <span>Product Config JSON</span>
         </button>
       </div>
     </div>
@@ -152,22 +152,12 @@
   <!-- MAIN WORKSPACE -->
   <div class="flex-1 flex overflow-hidden relative">
     
-    <!-- LEFT / MAIN CANVAS: NODE GRAPH EDITOR VIEW -->
-    <div id="flowCanvasContainer" class="flex-1 relative bg-grid overflow-auto flex items-center justify-center p-8 min-w-[950px]">
+    <!-- LEFT / MAIN CANVAS: QOVER HOOK & NODE GRAPH VIEW -->
+    <div id="flowCanvasContainer" class="flex-1 relative bg-grid overflow-auto flex items-center justify-center p-8 min-w-[1000px]">
       
-      <!-- SVG Overlay for Animated Dynamic Connections -->
+      <!-- SVG Overlay for Animated Connections -->
       <svg id="svgOverlay" class="absolute inset-0 w-full h-full pointer-events-none z-10">
         <defs>
-          <linearGradient id="gradDefault" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.6"/>
-            <stop offset="100%" stop-color="#6366f1" stop-opacity="0.6"/>
-          </linearGradient>
-          <linearGradient id="gradSuccess" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#10b981" stop-opacity="0.8"/>
-            <stop offset="100%" stop-color="#059669" stop-opacity="0.8"/>
-          </linearGradient>
-
-          <!-- Marker Arrowheads -->
           <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
             <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
           </marker>
@@ -180,197 +170,221 @@
           <marker id="arrow-error" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
             <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444"/>
           </marker>
-          <marker id="arrow-warning" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#f59e0b"/>
-          </marker>
         </defs>
       </svg>
 
-      <!-- GRAPH NODES LAYOUT GRID -->
-      <div id="nodesGrid" class="relative z-20 flex items-center space-x-12 min-w-[1200px] justify-between py-10">
+      <!-- GRAPH LAYOUT GRID WRAPPED IN QOVER HOOK CONTAINERS -->
+      <div id="nodesGrid" class="relative z-20 flex items-stretch space-x-10 min-w-[1250px] py-6">
 
-        <!-- COLUMN 1: FRONTEND -->
-        <div class="flex flex-col space-y-6 w-56">
+        <!-- STEP 1: FRONTEND TRIGGER -->
+        <div class="flex flex-col justify-center w-48 shrink-0">
           <div id="node-frontend" onclick="selectNode('frontend')" class="node-card cursor-pointer bg-slate-900 border-2 border-slate-700/80 rounded-xl p-4 shadow-xl transition-all hover:border-slate-500 relative">
             <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
               <div class="flex items-center space-x-2">
                 <i class="fa-solid fa-mobile-screen-button text-red-500"></i>
-                <span class="text-xs font-bold text-slate-200 uppercase tracking-wider">Mobilize FE</span>
+                <span class="text-xs font-bold text-slate-200 uppercase">Mobilize FE</span>
               </div>
-              <span id="badge-frontend" class="px-1.5 py-0.5 text-[10px] rounded font-mono bg-slate-800 text-slate-400">READY</span>
+              <span id="badge-frontend" class="px-1.5 py-0.5 text-[9px] rounded font-mono bg-slate-800 text-slate-400">READY</span>
             </div>
-            <p class="text-[11px] text-slate-400">Requests quote for Insurer Panel</p>
-            <div class="mt-3 pt-2 border-t border-slate-800/80 text-[10px] font-mono text-slate-400 flex justify-between">
-              <span>Trigger</span>
-              <span class="text-slate-200">User Submit</span>
-            </div>
+            <p class="text-[10px] text-slate-400">Initiates quote request with driver &amp; deductible params.</p>
           </div>
         </div>
 
-        <!-- COLUMN 2: QOVER ORCHESTRATOR PLATFORM -->
-        <div class="flex flex-col space-y-6 w-64">
-          <div id="node-qover" onclick="selectNode('qover')" class="node-card cursor-pointer bg-slate-900 border-2 border-blue-600/70 rounded-xl p-4 shadow-xl transition-all hover:border-blue-400 relative">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
-              <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-diagram-project text-blue-400"></i>
-                <span class="text-xs font-bold text-slate-100 uppercase tracking-wider">Qover Platform</span>
+        <!-- HOOK CONTAINER 1: quote-bundle VALIDATION HOOK -->
+        <div class="border-2 border-dashed border-blue-600/40 bg-blue-950/10 rounded-2xl p-4 flex items-center space-x-8 relative shrink-0">
+          <div class="absolute -top-3 left-4 bg-blue-900 text-blue-200 border border-blue-600/60 px-2.5 py-0.5 rounded text-[10px] font-mono font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-anchor text-[9px]"></i> HOOK: quote-bundle (Validation Lifecycle)
+          </div>
+
+          <!-- Node 1: Pre-script Eligibility Check -->
+          <div class="w-52">
+            <div id="node-precheck" onclick="selectNode('precheck')" class="node-card cursor-pointer bg-slate-900 border-2 border-slate-700/80 rounded-xl p-3.5 shadow-xl transition-all hover:border-slate-500 relative">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1.5">
+                <div class="flex items-center space-x-1.5">
+                  <i class="fa-solid fa-code text-amber-400 text-xs"></i>
+                  <span class="text-[11px] font-bold text-slate-200">eligibility-check</span>
+                </div>
+                <span id="badge-precheck" class="px-1.5 py-0.5 text-[9px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
               </div>
-              <span id="badge-qover" class="px-1.5 py-0.5 text-[10px] rounded font-mono bg-blue-950 text-blue-400 border border-blue-800">IDLE</span>
+              <div class="text-[9px] font-mono text-amber-300">Script Engine: JSONata</div>
+              <p class="text-[10px] text-slate-400 mt-1">Validates age &ge; 18 &amp; VIN snippet rules prior to API fanout.</p>
             </div>
-            <p class="text-[11px] text-slate-300">Resilient Panel Aggregator (Promise.allSettled)</p>
-            <div class="mt-2 space-y-1 text-[10px] font-mono">
-              <div class="bg-slate-950 p-1.5 rounded text-slate-400 border border-slate-800">
-                1. Parallel Fan-out: <span class="text-blue-400">Allianz POST</span> + <span class="text-emerald-400">Verti 3x GET</span>
+          </div>
+
+          <!-- Column: Parallel Downstream Outbound API Call Nodes -->
+          <div class="flex flex-col space-y-4 w-64">
+            
+            <!-- Node 2A: Allianz API Call Node -->
+            <div id="node-allianz" onclick="selectNode('allianz')" class="node-card cursor-pointer bg-slate-900 border-2 border-slate-700/80 rounded-xl p-3 shadow-xl transition-all hover:border-slate-500 relative">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-1 mb-1">
+                <div class="flex items-center space-x-1.5">
+                  <i class="fa-solid fa-building-columns text-blue-400 text-xs"></i>
+                  <span class="text-[11px] font-bold text-blue-200">allianz-quotebundle-call</span>
+                </div>
+                <span id="badge-allianz" class="px-1.5 py-0.5 text-[9px] rounded font-mono bg-slate-800 text-slate-400">STANDBY</span>
               </div>
-              <div class="bg-slate-950 p-1.5 rounded text-slate-400 border border-slate-800">
-                2. Fault Tolerance: <span class="text-amber-400">Allow 1 Insurer Outage</span>
+              <div class="text-[9px] font-mono text-slate-400">POST ../CalculateOffers</div>
+              <div class="text-[9px] text-slate-500 font-mono">authRef: allianz-motor-de</div>
+            </div>
+
+            <!-- Node 2B: Verti Liability API Node -->
+            <div id="node-verti1" onclick="selectNode('verti1')" class="node-card cursor-pointer bg-slate-900 border-2 border-slate-700/80 rounded-xl p-2.5 shadow-xl transition-all hover:border-slate-500 relative">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-1 mb-1">
+                <div class="flex items-center space-x-1.5">
+                  <i class="fa-solid fa-bolt text-emerald-400 text-xs"></i>
+                  <span class="text-[10px] font-semibold text-emerald-300">verti-liability-call</span>
+                </div>
+                <span id="badge-verti1" class="px-1 py-0.5 text-[8px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
               </div>
-              <div class="bg-slate-950 p-1.5 rounded text-slate-400 border border-slate-800">
-                3. Aggregate Available Offers
+              <div class="text-[9px] font-mono text-emerald-400">GET ../quote?pkg=liability</div>
+            </div>
+
+            <!-- Node 2C: Verti Partial API Node -->
+            <div id="node-verti2" onclick="selectNode('verti2')" class="node-card cursor-pointer bg-slate-900 border-2 border-slate-700/80 rounded-xl p-2.5 shadow-xl transition-all hover:border-slate-500 relative">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-1 mb-1">
+                <div class="flex items-center space-x-1.5">
+                  <i class="fa-solid fa-bolt text-emerald-400 text-xs"></i>
+                  <span class="text-[10px] font-semibold text-emerald-300">verti-partial-call</span>
+                </div>
+                <span id="badge-verti2" class="px-1 py-0.5 text-[8px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
+              </div>
+              <div class="text-[9px] font-mono text-emerald-400">GET ../quote?pkg=partial</div>
+            </div>
+
+            <!-- Node 2D: Verti Full API Node -->
+            <div id="node-verti3" onclick="selectNode('verti3')" class="node-card cursor-pointer bg-slate-900 border-2 border-slate-700/80 rounded-xl p-2.5 shadow-xl transition-all hover:border-slate-500 relative">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-1 mb-1">
+                <div class="flex items-center space-x-1.5">
+                  <i class="fa-solid fa-bolt text-emerald-400 text-xs"></i>
+                  <span class="text-[10px] font-semibold text-emerald-300">verti-full-call</span>
+                </div>
+                <span id="badge-verti3" class="px-1 py-0.5 text-[8px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
+              </div>
+              <div class="text-[9px] font-mono text-emerald-400">GET ../quote?pkg=full</div>
+            </div>
+
+          </div>
+
+          <!-- Node 3: Output Transformer / Panel Aggregator -->
+          <div class="w-56">
+            <div id="node-rules" onclick="selectNode('rules')" class="node-card cursor-pointer bg-slate-900 border-2 border-purple-600/70 rounded-xl p-3.5 shadow-xl transition-all hover:border-purple-400 relative">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1.5">
+                <div class="flex items-center space-x-1.5">
+                  <i class="fa-solid fa-shield-halved text-purple-400 text-xs"></i>
+                  <span class="text-[11px] font-bold text-slate-100">panel-aggregator</span>
+                </div>
+                <span id="badge-rules" class="px-1.5 py-0.5 text-[9px] rounded font-mono bg-purple-950 text-purple-300 border border-purple-800">WAITING</span>
+              </div>
+              <div class="text-[9px] font-mono text-purple-300">outputTransformer JSONata</div>
+              <p class="text-[10px] text-slate-400 mt-1">Aggregates valid insurer pricings into output bundle or emits `_validationErrors`.</p>
+              <div class="mt-2 text-[9px] font-mono flex justify-between text-slate-400 border-t border-slate-800 pt-1">
+                <span>Active Insurers:</span>
+                <span id="uwInsurersCount" class="text-slate-200 font-bold">- / 2</span>
               </div>
             </div>
           </div>
+
         </div>
 
-        <!-- COLUMN 3: ALLIANZ & VERTI INSURER PANEL CALLS -->
-        <div class="flex flex-col space-y-5 w-72">
-          
-          <!-- Allianz Node -->
-          <div id="node-allianz" onclick="selectNode('allianz')" class="node-card cursor-pointer bg-slate-900 border-2 border-slate-700/80 rounded-xl p-3.5 shadow-xl transition-all hover:border-slate-500 relative">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1.5">
-              <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-building-columns text-blue-500"></i>
-                <span class="text-xs font-bold text-blue-200">Allianz Insurer API</span>
-              </div>
-              <span id="badge-allianz" class="px-1.5 py-0.5 text-[10px] rounded font-mono bg-slate-800 text-slate-400">STANDBY</span>
-            </div>
-            <div class="text-[10px] font-mono text-indigo-300 font-semibold mb-1">POST ../CalculateOffers</div>
-            <p class="text-[10px] text-slate-400">Returns Allianz pricing for 3 packages (Liability, Partial, Full)</p>
-            <div class="mt-2 text-[9px] font-mono grid grid-cols-3 gap-1 text-center">
-              <span class="bg-slate-950 p-1 rounded text-slate-300 border border-slate-800">Liab: €38</span>
-              <span class="bg-slate-950 p-1 rounded text-slate-300 border border-slate-800">Part: €55</span>
-              <span class="bg-slate-950 p-1 rounded text-slate-300 border border-slate-800">Full: €84</span>
-            </div>
-          </div>
-
-          <!-- Verti Package 1 -->
-          <div id="node-verti1" onclick="selectNode('verti1')" class="node-card cursor-pointer bg-slate-900 border-2 border-slate-700/80 rounded-xl p-3 shadow-xl transition-all hover:border-slate-500 relative">
+        <!-- RESPONSE NODES -->
+        <div class="flex flex-col justify-center space-y-6 w-48 shrink-0">
+          <!-- Branch A: 200 OK Panel Response -->
+          <div id="node-response-ok" onclick="selectNode('response-ok')" class="node-card cursor-pointer bg-slate-900 border-2 border-emerald-800/60 rounded-xl p-3 shadow-xl transition-all hover:border-emerald-500 relative">
             <div class="flex items-center justify-between border-b border-slate-800 pb-1 mb-1">
-              <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-bolt text-emerald-400"></i>
-                <span class="text-xs font-semibold text-emerald-300">Verti API [Pkg 1]</span>
+              <div class="flex items-center space-x-1.5">
+                <i class="fa-solid fa-circle-check text-emerald-400 text-xs"></i>
+                <span class="text-[10px] font-bold text-emerald-300">200 Panel OK</span>
               </div>
-              <span id="badge-verti1" class="px-1.5 py-0.5 text-[9px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
+              <span id="badge-response-ok" class="px-1 py-0.5 text-[8px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
             </div>
-            <div class="text-[10px] font-mono text-emerald-400">GET ../quote?pkg=liability</div>
-            <div class="text-[10px] text-slate-400">Verti Liability Pricing: €34.50</div>
+            <p class="text-[9px] text-slate-400">Renders comparison grid options in Mobilize UI.</p>
           </div>
 
-          <!-- Verti Package 2 -->
-          <div id="node-verti2" onclick="selectNode('verti2')" class="node-card cursor-pointer bg-slate-900 border-2 border-slate-700/80 rounded-xl p-3 shadow-xl transition-all hover:border-slate-500 relative">
+          <!-- Branch B: Error Response -->
+          <div id="node-response-error" onclick="selectNode('response-error')" class="node-card cursor-pointer bg-slate-900 border-2 border-red-800/60 rounded-xl p-3 shadow-xl transition-all hover:border-red-500 relative">
             <div class="flex items-center justify-between border-b border-slate-800 pb-1 mb-1">
-              <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-bolt text-emerald-400"></i>
-                <span class="text-xs font-semibold text-emerald-300">Verti API [Pkg 2]</span>
+              <div class="flex items-center space-x-1.5">
+                <i class="fa-solid fa-triangle-exclamation text-red-400 text-xs"></i>
+                <span class="text-[10px] font-bold text-red-300">422 / 503 Error</span>
               </div>
-              <span id="badge-verti2" class="px-1.5 py-0.5 text-[9px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
+              <span id="badge-response-error" class="px-1 py-0.5 text-[8px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
             </div>
-            <div class="text-[10px] font-mono text-emerald-400">GET ../quote?pkg=liability_partial</div>
-            <div class="text-[10px] text-slate-400">Verti Partial Casco Pricing: €52.10</div>
+            <p class="text-[9px] text-slate-400">Triggers Mobilize UI underwriting refusal modal.</p>
           </div>
-
-          <!-- Verti Package 3 -->
-          <div id="node-verti3" onclick="selectNode('verti3')" class="node-card cursor-pointer bg-slate-900 border-2 border-slate-700/80 rounded-xl p-3 shadow-xl transition-all hover:border-slate-500 relative">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-1 mb-1">
-              <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-bolt text-emerald-400"></i>
-                <span class="text-xs font-semibold text-emerald-300">Verti API [Pkg 3]</span>
-              </div>
-              <span id="badge-verti3" class="px-1.5 py-0.5 text-[9px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
-            </div>
-            <div class="text-[10px] font-mono text-emerald-400">GET ../quote?pkg=liability_full</div>
-            <div class="text-[10px] text-slate-400">Verti Full Casco Pricing: €78.90</div>
-          </div>
-
-        </div>
-
-        <!-- COLUMN 4: PANEL AGGREGATOR & RULE EVALUATOR -->
-        <div class="flex flex-col space-y-6 w-64">
-          <div id="node-rules" onclick="selectNode('rules')" class="node-card cursor-pointer bg-slate-900 border-2 border-purple-600/70 rounded-xl p-4 shadow-xl transition-all hover:border-purple-400 relative">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
-              <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-shield-halved text-purple-400"></i>
-                <span class="text-xs font-bold text-slate-100 uppercase tracking-wider">Panel Evaluator</span>
-              </div>
-              <span id="badge-rules" class="px-1.5 py-0.5 text-[10px] rounded font-mono bg-purple-950 text-purple-300 border border-purple-800">WAITING</span>
-            </div>
-            <p class="text-[11px] text-slate-300">Filters valid quotes &amp; handles partial outages</p>
-            <div class="mt-2 text-[10px] font-mono space-y-1">
-              <div class="flex justify-between text-slate-400"><span>Active Insurers:</span> <span id="uwInsurersCount" class="text-slate-200 font-bold">- / 2</span></div>
-              <div class="flex justify-between text-slate-400"><span>Resilience Mode:</span> <span class="text-emerald-400 font-bold">Partial OK</span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- COLUMN 5: RESPONSE OUTPUTS -->
-        <div class="flex flex-col space-y-10 w-60">
-          
-          <!-- Branch A: 200 OK Panel Returned -->
-          <div id="node-response-ok" onclick="selectNode('response-ok')" class="node-card cursor-pointer bg-slate-900 border-2 border-emerald-800/60 rounded-xl p-3.5 shadow-xl transition-all hover:border-emerald-500 relative">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1.5">
-              <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-circle-check text-emerald-400"></i>
-                <span class="text-xs font-bold text-emerald-300">200 OK Panel</span>
-              </div>
-              <span id="badge-response-ok" class="px-1.5 py-0.5 text-[9px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
-            </div>
-            <p class="text-[10px] text-slate-400">Delivers active insurer options to frontend comparison grid.</p>
-          </div>
-
-          <!-- Branch B: 422 / 503 Total Failure Error -->
-          <div id="node-response-error" onclick="selectNode('response-error')" class="node-card cursor-pointer bg-slate-900 border-2 border-red-800/60 rounded-xl p-3.5 shadow-xl transition-all hover:border-red-500 relative">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1.5">
-              <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-triangle-exclamation text-red-400"></i>
-                <span class="text-xs font-bold text-red-300">Validation Error</span>
-              </div>
-              <span id="badge-response-error" class="px-1.5 py-0.5 text-[9px] rounded font-mono bg-slate-800 text-slate-400">IDLE</span>
-            </div>
-            <p class="text-[10px] text-slate-400">Triggers UI Rejection Modal when 0 valid insurer quotes available.</p>
-          </div>
-
         </div>
 
       </div>
 
-      <!-- Execution Status Bar Toast Overlay -->
+      <!-- Execution Status Bar Toast -->
       <div id="statusBar" class="absolute bottom-4 left-6 right-6 bg-slate-900/95 border border-slate-800 rounded-xl px-5 py-3 flex items-center justify-between backdrop-blur-md shadow-2xl z-30">
         <div class="flex items-center space-x-3">
           <div id="statusSpinner" class="w-2.5 h-2.5 rounded-full bg-slate-500 animate-pulse"></div>
-          <span id="statusMessage" class="text-xs text-slate-300 font-mono">System Ready. Click "Run API Flow" to test insurer panel resilience.</span>
+          <span id="statusMessage" class="text-xs text-slate-300 font-mono">Qover Engine Ready. Click "Execute Hook" to test node execution flow.</span>
         </div>
         <div class="flex items-center space-x-4 text-xs font-mono text-slate-400">
           <div>Latency: <span id="metricLatency" class="text-slate-200">0ms</span></div>
-          <div>Calls: <span id="metricCalls" class="text-slate-200">0 / 4</span></div>
-          <div>Status: <span id="metricStatus" class="text-slate-200">READY</span></div>
+          <div>Hook Status: <span id="metricStatus" class="text-slate-200">READY</span></div>
         </div>
       </div>
 
     </div>
 
-    <!-- ALTERNATIVE SEQUENCE DIAGRAM VIEW (Hidden by Default) -->
-    <div id="sequenceCanvasContainer" class="hidden flex-1 bg-slate-950 p-8 overflow-y-auto">
+    <!-- ALTERNATIVE QOVER PRODUCT CONFIGURATION JSON VIEW -->
+    <div id="configCanvasContainer" class="hidden flex-1 bg-slate-950 p-8 overflow-y-auto">
       <div class="max-w-4xl mx-auto bg-slate-900 rounded-xl p-6 border border-slate-800 shadow-2xl">
-        <h3 class="text-sm font-bold text-slate-200 mb-4 flex items-center gap-2">
-          <i class="fa-solid fa-timeline text-blue-400"></i> API Call Sequence &amp; Resilient Fan-out Timeline
-        </h3>
-        <div id="sequenceTimeline" class="space-y-3 font-mono text-xs">
-          <!-- Populated dynamically via JS -->
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+          <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+            <i class="fa-solid fa-file-code text-blue-400"></i> Qover Product Config Definition: <span class="font-mono text-blue-300">mobilize-de-motor.json</span>
+          </h3>
+          <span class="px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800 text-[10px] font-mono">v2.1 JSONata JS</span>
         </div>
+        <pre class="bg-slate-950 p-4 rounded-lg border border-slate-800/90 text-[11px] font-mono text-emerald-400 overflow-x-auto leading-relaxed" id="productConfigJson">
+{
+  "id": "mobilize-de-motor",
+  "code": "MO-DE",
+  "lineOfBusiness": "automotive",
+  "hooks": {
+    "quote-bundle": {
+      "condition": { "script": "( $exists(subject.vrn) and $exists(subject.mainDriver) )" },
+      "resolver": {
+        "inline": {
+          "flow": {
+            "nodes": [
+              {
+                "id": "eligibility-check",
+                "resolver": { "inline": { "script": { "code": "/* Validates driver age >= 18 */" } } }
+              },
+              {
+                "id": "allianz-quotebundle-call",
+                "resolver": {
+                  "inline": {
+                    "apiCall": {
+                      "authRef": "allianz-motor-de",
+                      "http": { "method": "HTTP_METHOD_POST", "url": "https://apis.allianz.de/motor/v1/CalculateOffers" }
+                    }
+                  }
+                }
+              },
+              {
+                "id": "verti-liability-call",
+                "resolver": {
+                  "inline": {
+                    "apiCall": { "http": { "method": "HTTP_METHOD_GET", "url": "https://api.verti.de/v1/quote?pkg=liability" } }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
+        </pre>
       </div>
     </div>
 
-    <!-- RIGHT SIDEBAR: NODE INSPECTOR & FRONTEND PREVIEW MODAL -->
+    <!-- RIGHT SIDEBAR: NODE INSPECTOR & MOBILIZE PORTAL PREVIEW -->
     <div class="w-[440px] bg-slate-900/90 border-l border-slate-800 flex flex-col z-30 backdrop-blur-md">
       
       <!-- Tab Headers -->
@@ -381,119 +395,118 @@
         </button>
         <button id="sideTabModal" onclick="switchSideTab('modal')" class="flex-1 py-3 text-xs font-semibold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center justify-center space-x-1.5">
           <i class="fa-solid fa-window-restore text-[11px]"></i>
-          <span>Mobilize Panel UI</span>
+          <span>Mobilize DE Sandbox</span>
         </button>
       </div>
 
-      <!-- SIDE TAB 1: INSPECTOR PANEL -->
+      <!-- SIDE TAB 1: NODE INSPECTOR PANEL -->
       <div id="panelInspect" class="flex-1 flex flex-col overflow-hidden p-4 space-y-4">
         
-        <!-- Node Info Banner -->
+        <!-- Node Header Info -->
         <div class="bg-slate-950 rounded-lg p-3 border border-slate-800 flex items-center justify-between">
           <div>
-            <div class="text-xs font-bold text-slate-200" id="inspectNodeTitle">Qover Platform Orchestrator</div>
-            <div class="text-[10px] text-slate-400 font-mono" id="inspectNodeEndpoint">Internal Hub Routing Engine</div>
+            <div class="text-xs font-bold text-slate-200" id="inspectNodeTitle">eligibility-check Node</div>
+            <div class="text-[10px] text-slate-400 font-mono" id="inspectNodeEndpoint">Internal JSONata Rule Resolver</div>
           </div>
           <span id="inspectNodeStatus" class="px-2 py-0.5 text-[10px] font-mono rounded bg-blue-900/50 text-blue-300 border border-blue-700">IDLE</span>
         </div>
 
-        <!-- Inspector Content: JSON Payload -->
+        <!-- Node Configuration / Script Payload Inspection -->
         <div class="flex-1 flex flex-col overflow-hidden">
-          <div class="flex space-x-2 mb-2 text-xs">
-            <span class="text-slate-400 font-semibold">Active Payload Inspection</span>
+          <div class="flex space-x-2 mb-2 text-xs justify-between items-center">
+            <span class="text-slate-400 font-semibold">Qover Node Spec / JSONata Transformer</span>
+            <span class="text-[9px] font-mono text-blue-400">ENGINE_JSONATA_JS 2.1.0</span>
           </div>
 
-          <!-- JSON Viewer -->
+          <!-- Code / Payload Viewer -->
           <div class="flex-1 bg-slate-950 rounded-lg border border-slate-800/90 p-3 font-mono text-[11px] overflow-y-auto leading-relaxed text-slate-300" id="jsonViewer">
-            <span class="text-slate-500">// Select a node or click "Run API Flow" to view live payloads</span>
+            <span class="text-slate-500">// Select a node to inspect its Qover resolver definition &amp; JSONata transformers</span>
           </div>
         </div>
 
-        <!-- Node Execution Metrics -->
+        <!-- Node Execution Specs -->
         <div class="bg-slate-950 rounded-lg p-3 border border-slate-800 grid grid-cols-2 gap-2 text-[10px] font-mono">
-          <div class="text-slate-400">Method: <span id="inspectMethod" class="text-slate-200">POST</span></div>
-          <div class="text-slate-400">Latency: <span id="inspectLatency" class="text-slate-200">-- ms</span></div>
-          <div class="text-slate-400">HTTP Status: <span id="inspectHttpStatus" class="text-slate-200">--</span></div>
+          <div class="text-slate-400">Auth Ref: <span id="inspectAuthRef" class="text-slate-200">allianz-motor-de</span></div>
+          <div class="text-slate-400">Retry Policy: <span class="text-slate-200">Fixed 3x</span></div>
+          <div class="text-slate-400">Circuit Breaker: <span class="text-slate-200">7000ms</span></div>
           <div class="text-slate-400">Fault Tolerant: <span class="text-emerald-400">ENABLED</span></div>
         </div>
 
       </div>
 
-      <!-- SIDE TAB 2: MOBILIZE GERMANY FRONTEND PREVIEW SIMULATOR -->
+      <!-- SIDE TAB 2: MOBILIZE GERMANY PORTAL SIMULATOR (Matching Screenshot) -->
       <div id="panelModal" class="hidden flex-1 flex flex-col p-4 bg-slate-950 overflow-y-auto">
         <div class="text-xs text-slate-400 mb-2 font-mono flex items-center justify-between">
           <span>Mobilize DE Portal Sandbox</span>
-          <span class="text-emerald-400">Insurer Panel Mode</span>
+          <span class="text-emerald-400">Live Customer UI</span>
         </div>
 
-        <!-- Mock Mobilize Germany App Frame (Matching Screenshot Design) -->
-        <div class="bg-white text-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl relative min-h-[580px] flex flex-col font-sans">
+        <!-- Mobilize Germany Frame (Strictly matching screenshot design) -->
+        <div class="bg-white text-slate-900 border border-slate-200 rounded-xl overflow-hidden shadow-2xl relative min-h-[580px] flex flex-col font-sans">
           
-          <!-- Top Header: Brand Logo -->
+          <!-- Brand Logo Header -->
           <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
             <div class="flex flex-col">
-              <div class="font-black text-slate-900 text-sm tracking-widest uppercase flex items-center gap-1">
-                <span class="text-slate-900 font-extrabold tracking-tighter text-base">MØBILIZE</span>
-              </div>
-              <span class="text-[9px] font-bold tracking-wider text-slate-500 uppercase -mt-0.5">FINANCIAL SERVICES</span>
+              <span class="text-slate-900 font-extrabold tracking-tighter text-sm uppercase">MØBILIZE</span>
+              <span class="text-[8px] font-extrabold tracking-widest text-slate-500 uppercase -mt-0.5">FINANCIAL SERVICES</span>
             </div>
-            <span class="px-2 py-0.5 text-[9px] font-mono font-bold bg-slate-100 text-slate-600 rounded border border-slate-200">GERMANY DE</span>
+            <span class="px-2 py-0.5 text-[8px] font-mono font-bold bg-slate-100 text-slate-600 rounded border border-slate-200">GERMANY DE</span>
           </div>
 
-          <!-- Body Container with Left Stepper + Right Content -->
+          <!-- Body Container with Left Stepper Navigation + Right Content -->
           <div class="flex-1 flex overflow-hidden">
             
-            <!-- LEFT COLUMN: Vertical Stepper Navigation -->
-            <div class="w-32 bg-slate-50 border-r border-slate-100 p-3 flex flex-col space-y-4 shrink-0 text-[11px]">
+            <!-- LEFT COLUMN: Vertical Stepper Navigation (Matches Screenshot Step Timeline) -->
+            <div class="w-32 bg-slate-50 border-r border-slate-100 p-3 flex flex-col space-y-3 shrink-0 text-[11px]">
               
               <!-- Step 1: Vehicle -->
               <div class="flex items-center space-x-2 text-slate-500">
-                <div class="w-5 h-5 rounded-full border border-slate-400 flex items-center justify-center text-[9px] font-semibold text-slate-600">
-                  <i class="fa-solid fa-check text-[8px]"></i>
+                <div class="w-5 h-5 rounded-full border border-slate-400 flex items-center justify-center text-[8px] font-semibold text-slate-600">
+                  <i class="fa-solid fa-check text-[7px]"></i>
                 </div>
-                <span class="text-[10px] font-medium">Fahrzeug</span>
+                <span class="text-[10px]">Fahrzeug</span>
               </div>
-              <div class="w-0.5 h-2 bg-slate-300 ml-2.5 -my-2"></div>
+              <div class="w-0.5 h-1.5 bg-slate-300 ml-2.5 -my-1.5"></div>
 
               <!-- Step 2: Eligibility -->
               <div class="flex items-center space-x-2 text-slate-500">
-                <div class="w-5 h-5 rounded-full border border-slate-400 flex items-center justify-center text-[9px] font-semibold text-slate-600">
-                  <i class="fa-solid fa-check text-[8px]"></i>
+                <div class="w-5 h-5 rounded-full border border-slate-400 flex items-center justify-center text-[8px] font-semibold text-slate-600">
+                  <i class="fa-solid fa-check text-[7px]"></i>
                 </div>
-                <span class="text-[10px] font-medium">Eligibility</span>
+                <span class="text-[10px]">Eligibility</span>
               </div>
-              <div class="w-0.5 h-2 bg-slate-300 ml-2.5 -my-2"></div>
+              <div class="w-0.5 h-1.5 bg-slate-300 ml-2.5 -my-1.5"></div>
 
-              <!-- Step 3: Assurance (ACTIVE STEP) -->
+              <!-- Step 3: Assurance (ACTIVE STEP FROM SCREENSHOT) -->
               <div class="flex items-center space-x-2 font-bold text-slate-900">
                 <div class="w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center text-[9px]">
                   3
                 </div>
                 <span class="text-[10px]">Versicherung</span>
               </div>
-              <div class="w-0.5 h-2 bg-slate-200 ml-2.5 -my-2"></div>
+              <div class="w-0.5 h-1.5 bg-slate-200 ml-2.5 -my-1.5"></div>
 
               <!-- Step 4: Applicant -->
               <div class="flex items-center space-x-2 text-slate-400">
-                <div class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[9px]">
+                <div class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[8px]">
                   4
                 </div>
                 <span class="text-[10px]">Antragsteller</span>
               </div>
-              <div class="w-0.5 h-2 bg-slate-200 ml-2.5 -my-2"></div>
+              <div class="w-0.5 h-1.5 bg-slate-200 ml-2.5 -my-1.5"></div>
 
               <!-- Step 5: Summary -->
               <div class="flex items-center space-x-2 text-slate-400">
-                <div class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[9px]">
+                <div class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[8px]">
                   5
                 </div>
                 <span class="text-[10px]">Übersicht</span>
               </div>
-              <div class="w-0.5 h-2 bg-slate-200 ml-2.5 -my-2"></div>
+              <div class="w-0.5 h-1.5 bg-slate-200 ml-2.5 -my-1.5"></div>
 
               <!-- Step 6: Finalization -->
               <div class="flex items-center space-x-2 text-slate-400">
-                <div class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[9px]">
+                <div class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[8px]">
                   6
                 </div>
                 <span class="text-[10px]">Abschluss</span>
@@ -501,22 +514,22 @@
 
             </div>
 
-            <!-- RIGHT COLUMN: Main Content & Offers -->
+            <!-- RIGHT COLUMN: Main Content Area -->
             <div id="mobilizeUiBody" class="flex-1 p-4 overflow-y-auto flex flex-col justify-between relative bg-white">
               
-              <!-- Title Section -->
+              <!-- NOTRE CONSEIL / UNSERE EMPFEHLUNG Header -->
               <div class="mb-3 text-left">
                 <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">UNSERE EMPFEHLUNG</h3>
-                <p class="text-[10px] text-slate-500">Wählen Sie Ihre Selbstbeteiligung für die Kaskoversicherung</p>
+                <p class="text-[10px] text-slate-500">Wählen Sie Ihre Selbstbeteiligung (Deductible)</p>
               </div>
 
-              <!-- Blue Styled Deductible Selector Box (Matching Screenshot Dropdown) -->
+              <!-- Blue Select Dropdown (Matches Screenshot Styling) -->
               <div class="w-full text-left mb-3">
                 <label for="deductibleSelect" class="block text-[10px] font-medium text-slate-600 mb-1">
-                  Selbstbeteiligung (Deductibles)
+                  Selbstbeteiligung (Kaskoversicherung)
                 </label>
                 <div class="relative">
-                  <select id="deductibleSelect" onchange="onDeductibleChange()" class="w-full bg-white border-2 border-blue-600 text-slate-900 text-xs font-semibold rounded-lg p-2.5 pr-8 focus:outline-none cursor-pointer appearance-none shadow-sm">
+                  <select id="deductibleSelect" onchange="onDeductibleChange()" class="w-full bg-white border-2 border-blue-600 text-slate-900 text-xs font-bold rounded-lg p-2.5 pr-8 focus:outline-none cursor-pointer appearance-none shadow-sm">
                     <option value="fc300_tc150">Vollkasko €300 / Teilkasko €150 (Standard)</option>
                     <option value="fc500_tc150">Vollkasko €500 / Teilkasko €150</option>
                     <option value="fc500_tc300">Vollkasko €500 / Teilkasko €300</option>
@@ -524,30 +537,29 @@
                   </select>
                   <i class="fa-solid fa-chevron-down absolute right-3 top-3.5 text-xs text-blue-600 pointer-events-none"></i>
                 </div>
-                <p class="text-[9px] text-slate-400 mt-1">Die gewählte Kaskoschutz-Stufe bestimmt Ihre monatliche Prämie.</p>
               </div>
 
-              <!-- DEFAULT IDLE VIEW -->
+              <!-- IDLE VIEW -->
               <div id="uiIdle" class="py-8 text-center">
                 <i class="fa-solid fa-calculator text-2xl text-slate-300 mb-2"></i>
-                <h4 class="text-xs font-bold text-slate-700">Multi-Insurer Panel bereit</h4>
-                <p class="text-[10px] text-slate-400 mt-1 max-w-[200px] mx-auto">Klicken Sie oben auf "Run API Flow", um Echtzeit-Angebote abzufragen.</p>
+                <h4 class="text-xs font-bold text-slate-700">Multi-Insurer Panel Bereit</h4>
+                <p class="text-[10px] text-slate-400 mt-1 max-w-[200px] mx-auto">Klicken Sie oben auf "Execute Hook", um den Qover Validation Flow zu starten.</p>
               </div>
 
               <!-- LOADING VIEW -->
               <div id="uiLoading" class="hidden py-10 flex-col items-center justify-center text-center">
                 <div class="w-7 h-7 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-2"></div>
-                <p class="text-xs font-bold text-slate-800">Versicherungsangebote werden ermittelt...</p>
-                <p class="text-[10px] text-slate-400 mt-0.5">Qover fragt parallel Allianz &amp; Verti ab</p>
+                <p class="text-xs font-bold text-slate-800">Qover Hook Executing...</p>
+                <p class="text-[10px] text-slate-400 mt-0.5">Parallel calls to Allianz &amp; Verti</p>
               </div>
 
-              <!-- SUCCESS VIEW: Hero Price Callout + Insurer Offers Breakdown -->
+              <!-- SUCCESS VIEW: Screenshot Hero Price + Comparative Panel -->
               <div id="uiSuccess" class="hidden w-full text-left space-y-3">
                 
-                <!-- Hero Highlight Price Box (Screenshot Style) -->
+                <!-- Hero Highlight Price (Screenshot Style) -->
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                  <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Ab-Preis / Bestes Angebot</div>
-                  <div class="flex items-baseline space-x-1.5 mt-0.5">
+                  <div class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Bestes Angebot / Ab-Preis</div>
+                  <div class="flex items-baseline space-x-1 mt-0.5">
                     <span id="heroBestPrice" class="text-2xl font-black text-slate-900">34,50 €</span>
                     <span class="text-[10px] font-semibold text-slate-500">/Monat inkl. MwSt.</span>
                   </div>
@@ -564,118 +576,65 @@
 
                 <!-- Insurer Comparison Panel Header -->
                 <div class="flex items-center justify-between pt-1">
-                  <span class="text-xs font-black text-slate-900">TARIF-VERGLEICH PANEL:</span>
+                  <span class="text-xs font-black text-slate-900">VERGLEICHSTARIFE PANEL:</span>
                   <span id="uiPanelStatusBadge" class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300">2 Anbieter aktiv</span>
                 </div>
 
-                <!-- Package 1: Haftpflicht -->
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 space-y-1.5">
-                  <div class="text-[11px] font-bold text-slate-800 flex justify-between items-center border-b border-slate-200 pb-1">
+                <!-- Package 1: Liability -->
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 space-y-1">
+                  <div class="text-[10px] font-bold text-slate-800 flex justify-between items-center border-b border-slate-200 pb-1">
                     <span>1. Haftpflicht (Liability)</span>
-                    <span class="text-[9px] text-slate-500 font-normal">Ohne SB</span>
                   </div>
-                  <!-- Allianz Option -->
                   <div id="uiCard-allianz-1" class="flex justify-between items-center p-1.5 rounded bg-white border border-slate-200 text-[10px]">
-                    <div class="flex items-center space-x-1.5">
-                      <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-blue-900 text-white">Allianz</span>
-                      <span class="text-slate-700">Basis Tarif</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                      <span class="font-bold text-slate-900" id="price-allianz-1">€ 38.00 <span class="text-[8px] text-slate-400">/Mo</span></span>
-                      <button class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-white text-[9px] font-bold rounded">Wählen</button>
-                    </div>
+                    <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-blue-900 text-white">Allianz</span>
+                    <span class="font-bold text-slate-900" id="price-allianz-1">€ 38.00 /Mo</span>
                   </div>
-                  <!-- Verti Option -->
                   <div id="uiCard-verti-1" class="flex justify-between items-center p-1.5 rounded bg-white border border-slate-200 text-[10px]">
-                    <div class="flex items-center space-x-1.5">
-                      <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-emerald-600 text-white">Verti</span>
-                      <span class="text-slate-700">Kompakt Tarif</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                      <span class="font-bold text-emerald-700" id="price-verti-1">€ 34.50 <span class="text-[8px] text-slate-400">/Mo</span></span>
-                      <button class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-white text-[9px] font-bold rounded">Wählen</button>
-                    </div>
+                    <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-emerald-600 text-white">Verti</span>
+                    <span class="font-bold text-emerald-700" id="price-verti-1">€ 34.50 /Mo</span>
                   </div>
                 </div>
 
-                <!-- Package 2: Teilkasko -->
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 space-y-1.5">
-                  <div class="text-[11px] font-bold text-slate-800 flex justify-between items-center border-b border-slate-200 pb-1">
+                <!-- Package 2: Partial Casco -->
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 space-y-1">
+                  <div class="text-[10px] font-bold text-slate-800 flex justify-between items-center border-b border-slate-200 pb-1">
                     <span>2. Teilkasko (Partial)</span>
-                    <span id="badge-tc-deductible" class="text-[9px] text-blue-700 font-medium">SB TK: €150</span>
+                    <span id="badge-tc-deductible" class="text-[8px] text-blue-700 font-medium">SB TK: €150</span>
                   </div>
-                  <!-- Allianz Option -->
                   <div id="uiCard-allianz-2" class="flex justify-between items-center p-1.5 rounded bg-white border border-slate-200 text-[10px]">
-                    <div class="flex items-center space-x-1.5">
-                      <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-blue-900 text-white">Allianz</span>
-                      <span class="text-slate-700">Komfort Schutz</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                      <span class="font-bold text-slate-900" id="price-allianz-2">€ 55.00 <span class="text-[8px] text-slate-400">/Mo</span></span>
-                      <button class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-white text-[9px] font-bold rounded">Wählen</button>
-                    </div>
+                    <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-blue-900 text-white">Allianz</span>
+                    <span class="font-bold text-slate-900" id="price-allianz-2">€ 55.00 /Mo</span>
                   </div>
-                  <!-- Verti Option -->
                   <div id="uiCard-verti-2" class="flex justify-between items-center p-1.5 rounded bg-white border border-slate-200 text-[10px]">
-                    <div class="flex items-center space-x-1.5">
-                      <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-emerald-600 text-white">Verti</span>
-                      <span class="text-slate-700">Smart Teilkasko</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                      <span class="font-bold text-emerald-700" id="price-verti-2">€ 52.10 <span class="text-[8px] text-slate-400">/Mo</span></span>
-                      <button class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-white text-[9px] font-bold rounded">Wählen</button>
-                    </div>
+                    <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-emerald-600 text-white">Verti</span>
+                    <span class="font-bold text-emerald-700" id="price-verti-2">€ 52.10 /Mo</span>
                   </div>
                 </div>
 
-                <!-- Package 3: Vollkasko -->
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 space-y-1.5">
-                  <div class="text-[11px] font-bold text-slate-800 flex justify-between items-center border-b border-slate-200 pb-1">
+                <!-- Package 3: Full Casco -->
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 space-y-1">
+                  <div class="text-[10px] font-bold text-slate-800 flex justify-between items-center border-b border-slate-200 pb-1">
                     <span>3. Vollkasko (Full Casco)</span>
-                    <span id="badge-vk-deductible" class="text-[9px] text-purple-700 font-medium">SB VK: €300 / TK: €150</span>
+                    <span id="badge-vk-deductible" class="text-[8px] text-purple-700 font-medium">SB VK: €300 / TK: €150</span>
                   </div>
-                  <!-- Allianz Option -->
                   <div id="uiCard-allianz-3" class="flex justify-between items-center p-1.5 rounded bg-white border border-slate-200 text-[10px]">
-                    <div class="flex items-center space-x-1.5">
-                      <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-blue-900 text-white">Allianz</span>
-                      <span class="text-slate-700">Premium Schutz</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                      <span class="font-bold text-slate-900" id="price-allianz-3">€ 84.00 <span class="text-[8px] text-slate-400">/Mo</span></span>
-                      <button class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-white text-[9px] font-bold rounded">Wählen</button>
-                    </div>
+                    <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-blue-900 text-white">Allianz</span>
+                    <span class="font-bold text-slate-900" id="price-allianz-3">€ 84.00 /Mo</span>
                   </div>
-                  <!-- Verti Option -->
                   <div id="uiCard-verti-3" class="flex justify-between items-center p-1.5 rounded bg-white border border-slate-200 text-[10px]">
-                    <div class="flex items-center space-x-1.5">
-                      <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-emerald-600 text-white">Verti</span>
-                      <span class="text-slate-700">Rundum Vollkasko</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                      <span class="font-bold text-emerald-700" id="price-verti-3">€ 78.90 <span class="text-[8px] text-slate-400">/Mo</span></span>
-                      <button class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-white text-[9px] font-bold rounded">Wählen</button>
-                    </div>
+                    <span class="px-1.5 py-0.5 text-[8px] font-bold rounded bg-emerald-600 text-white">Verti</span>
+                    <span class="font-bold text-emerald-700" id="price-verti-3">€ 78.90 /Mo</span>
                   </div>
                 </div>
 
-                <!-- Benefit Highlights Section (Screenshot style) -->
+                <!-- Benefit Checklist (Screenshot style) -->
                 <div class="border-t border-slate-200 pt-3 space-y-2 text-[10px] text-slate-700">
-                  <div class="font-bold text-slate-900">Inkludierte Vorteile &amp; Leistungen:</div>
-                  
+                  <div class="font-bold text-slate-900">Inkludierte Vorteile:</div>
                   <div class="flex items-start space-x-2">
                     <i class="fa-solid fa-wrench text-slate-700 mt-0.5 text-xs"></i>
                     <div>
                       <div class="font-semibold text-slate-900">Umfassende EV-Batterie Abdeckung</div>
-                      <div class="text-[9px] text-slate-500">Übernahme definierter Bauteile &amp; Pannen bei Elektro- und Hybridfahrzeugen.</div>
-                      <a href="#" onclick="return false;" class="text-blue-600 underline font-medium text-[9px]">Details anzeigen</a>
-                    </div>
-                  </div>
-
-                  <div class="flex items-start space-x-2 pt-1">
-                    <i class="fa-solid fa-shield-halved text-slate-700 mt-0.5 text-xs"></i>
-                    <div>
-                      <div class="font-semibold text-slate-900">Langzeitschutz (bis 150 000 km)</div>
-                      <div class="text-[9px] text-slate-500">Zuverlässiger Versicherungsschutz bis zu 150.000 km Fahrleistung.</div>
+                      <div class="text-[9px] text-slate-500">Übernahme definierter Bauteile bei Elektrofahrzeugen.</div>
                     </div>
                   </div>
                 </div>
@@ -693,7 +652,7 @@
                     Leider stehen aktuell keine Versicherungsangebote zur Verfügung.
                   </p>
                   <div class="mt-3 pt-2 border-t border-slate-100 text-[9px] text-slate-400 font-mono" id="uiErrorCode">
-                    Code: INSURER_PANEL_UNAVAILABLE
+                    _validationErrors: [ AGE_LESS_THAN_18 ]
                   </div>
                   <button onclick="closeModalPreview()" class="mt-3 w-full py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg">
                     Schließen
@@ -716,16 +675,16 @@
     /* GLOBAL STATE & UTILITIES */
     let speed = 1;
     let isRunning = false;
-    let selectedNodeId = 'qover';
+    let selectedNodeId = 'precheck';
     let selectedDeductibleKey = 'fc300_tc150';
 
-    // Canvas Connection Map
+    // SVG Wire Topology
     const connections = [
-      { id: 'path-fe-qover', from: 'node-frontend', to: 'node-qover' },
-      { id: 'path-qover-allianz', from: 'node-qover', to: 'node-allianz' },
-      { id: 'path-qover-verti1', from: 'node-qover', to: 'node-verti1' },
-      { id: 'path-qover-verti2', from: 'node-qover', to: 'node-verti2' },
-      { id: 'path-qover-verti3', from: 'node-qover', to: 'node-verti3' },
+      { id: 'path-fe-precheck', from: 'node-frontend', to: 'node-precheck' },
+      { id: 'path-precheck-allianz', from: 'node-precheck', to: 'node-allianz' },
+      { id: 'path-precheck-verti1', from: 'node-precheck', to: 'node-verti1' },
+      { id: 'path-precheck-verti2', from: 'node-precheck', to: 'node-verti2' },
+      { id: 'path-precheck-verti3', from: 'node-precheck', to: 'node-verti3' },
       { id: 'path-allianz-rules', from: 'node-allianz', to: 'node-rules' },
       { id: 'path-verti1-rules', from: 'node-verti1', to: 'node-rules' },
       { id: 'path-verti2-rules', from: 'node-verti2', to: 'node-rules' },
@@ -734,45 +693,39 @@
       { id: 'path-rules-error', from: 'node-rules', to: 'node-response-error' }
     ];
 
-    // Deductible Configurations Map
+    // Deductible Matrix Map
     const deductibleConfigs = {
       'fc300_tc150': {
         fullCasco: 300,
         partialCasco: 150,
-        label: 'VK €300 / TK €150',
         allianz: { liability: 38.00, partial: 55.00, full: 84.00 },
         verti: { liability: 34.50, partial: 52.10, full: 78.90 }
       },
       'fc500_tc150': {
         fullCasco: 500,
         partialCasco: 150,
-        label: 'VK €500 / TK €150',
         allianz: { liability: 38.00, partial: 55.00, full: 78.50 },
         verti: { liability: 34.50, partial: 52.10, full: 74.20 }
       },
       'fc500_tc300': {
         fullCasco: 500,
         partialCasco: 300,
-        label: 'VK €500 / TK €300',
         allianz: { liability: 38.00, partial: 50.20, full: 73.10 },
         verti: { liability: 34.50, partial: 47.80, full: 69.50 }
       },
       'fc500_tc500': {
         fullCasco: 500,
         partialCasco: 500,
-        label: 'VK €500 / TK €500',
         allianz: { liability: 38.00, partial: 46.50, full: 68.00 },
         verti: { liability: 34.50, partial: 44.00, full: 64.20 }
       }
     };
 
-    // Explicitly define functions at global top-level scope
     function drawConnections() {
       const svg = document.getElementById('svgOverlay');
       const container = document.getElementById('flowCanvasContainer');
       if (!svg || !container) return;
 
-      // Remove existing connection paths (preserving definitions/markers)
       const existingPaths = svg.querySelectorAll('path');
       existingPaths.forEach(p => p.remove());
 
@@ -815,19 +768,19 @@
       node.classList.remove('pulse-glow', 'pulse-glow-error', 'pulse-glow-success', 'pulse-glow-warning', 'border-blue-500', 'border-emerald-500', 'border-red-500', 'border-amber-500');
 
       if (state === 'active') {
-        badge.className = 'px-1.5 py-0.5 text-[10px] rounded font-mono bg-blue-900 text-blue-200 border border-blue-500 animate-pulse';
+        badge.className = 'px-1.5 py-0.5 text-[9px] rounded font-mono bg-blue-900 text-blue-200 border border-blue-500 animate-pulse';
         node.classList.add('pulse-glow', 'border-blue-500');
       } else if (state === 'success') {
-        badge.className = 'px-1.5 py-0.5 text-[10px] rounded font-mono bg-emerald-950 text-emerald-300 border border-emerald-700';
+        badge.className = 'px-1.5 py-0.5 text-[9px] rounded font-mono bg-emerald-950 text-emerald-300 border border-emerald-700';
         node.classList.add('pulse-glow-success', 'border-emerald-500');
       } else if (state === 'error') {
-        badge.className = 'px-1.5 py-0.5 text-[10px] rounded font-mono bg-red-950 text-red-300 border border-red-700';
+        badge.className = 'px-1.5 py-0.5 text-[9px] rounded font-mono bg-red-950 text-red-300 border border-red-700';
         node.classList.add('pulse-glow-error', 'border-red-500');
       } else if (state === 'warning') {
-        badge.className = 'px-1.5 py-0.5 text-[10px] rounded font-mono bg-amber-950 text-amber-300 border border-amber-700';
+        badge.className = 'px-1.5 py-0.5 text-[9px] rounded font-mono bg-amber-950 text-amber-300 border border-amber-700';
         node.classList.add('pulse-glow-warning', 'border-amber-500');
       } else {
-        badge.className = 'px-1.5 py-0.5 text-[10px] rounded font-mono bg-slate-800 text-slate-400';
+        badge.className = 'px-1.5 py-0.5 text-[9px] rounded font-mono bg-slate-800 text-slate-400';
       }
 
       if (selectedNodeId === nodeId) {
@@ -847,9 +800,6 @@
         } else if (color === 'red') {
           wire.setAttribute('stroke', '#ef4444');
           wire.setAttribute('marker-end', 'url(#arrow-error)');
-        } else if (color === 'amber') {
-          wire.setAttribute('stroke', '#f59e0b');
-          wire.setAttribute('marker-end', 'url(#arrow-warning)');
         } else {
           wire.setAttribute('stroke', '#3b82f6');
           wire.setAttribute('marker-end', 'url(#arrow-active)');
@@ -863,58 +813,27 @@
       }
     }
 
-    function addSequenceLog(step, sender, text, type = 'normal') {
-      const timeline = document.getElementById('sequenceTimeline');
-      if (!timeline) return;
-
-      const colors = {
-        normal: 'border-slate-800 bg-slate-950 text-slate-300',
-        success: 'border-emerald-800/80 bg-emerald-950/40 text-emerald-200',
-        warning: 'border-amber-800/80 bg-amber-950/40 text-amber-200',
-        error: 'border-red-800/80 bg-red-950/40 text-red-200'
-      };
-
-      const badgeColors = {
-        normal: 'bg-blue-900/60 text-blue-300 border-blue-700',
-        success: 'bg-emerald-900/60 text-emerald-300 border-emerald-700',
-        warning: 'bg-amber-900/60 text-amber-300 border-amber-700',
-        error: 'bg-red-900/60 text-red-300 border-red-700'
-      };
-
-      const item = document.createElement('div');
-      item.className = `p-3 rounded-lg border flex items-start space-x-3 ${colors[type] || colors.normal}`;
-      item.innerHTML = `
-        <span class="px-2 py-0.5 text-[10px] font-bold rounded border ${badgeColors[type] || badgeColors.normal}">Step ${step}</span>
-        <div class="flex-1">
-          <div class="font-bold text-slate-200 text-xs">${sender}</div>
-          <div class="text-[11px] mt-0.5 font-mono">${text}</div>
-        </div>
-      `;
-      timeline.appendChild(item);
-      timeline.scrollTop = timeline.scrollHeight;
-    }
-
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms / speed));
     }
 
     function switchMainView(view) {
       const flowContainer = document.getElementById('flowCanvasContainer');
-      const seqContainer = document.getElementById('sequenceCanvasContainer');
+      const cfgContainer = document.getElementById('configCanvasContainer');
       const tabFlow = document.getElementById('tabFlow');
-      const tabSequence = document.getElementById('tabSequence');
+      const tabConfig = document.getElementById('tabConfig');
 
       if (view === 'flow') {
         flowContainer.classList.remove('hidden');
-        seqContainer.classList.add('hidden');
+        cfgContainer.classList.add('hidden');
         tabFlow.className = 'px-3 py-1 rounded-md bg-slate-800 text-blue-400 font-medium flex items-center space-x-1';
-        tabSequence.className = 'px-3 py-1 rounded-md hover:bg-slate-900 text-slate-400 font-medium flex items-center space-x-1';
+        tabConfig.className = 'px-3 py-1 rounded-md hover:bg-slate-900 text-slate-400 font-medium flex items-center space-x-1';
         setTimeout(drawConnections, 50);
       } else {
         flowContainer.classList.add('hidden');
-        seqContainer.classList.remove('hidden');
+        cfgContainer.classList.remove('hidden');
         tabFlow.className = 'px-3 py-1 rounded-md hover:bg-slate-900 text-slate-400 font-medium flex items-center space-x-1';
-        tabSequence.className = 'px-3 py-1 rounded-md bg-slate-800 text-blue-400 font-medium flex items-center space-x-1';
+        tabConfig.className = 'px-3 py-1 rounded-md bg-slate-800 text-blue-400 font-medium flex items-center space-x-1';
       }
     }
 
@@ -948,25 +867,23 @@
     function resetSimulation() {
       isRunning = false;
       resetNodeStyles();
-      document.getElementById('sequenceTimeline').innerHTML = '';
       document.getElementById('metricLatency').innerText = '0ms';
-      document.getElementById('metricCalls').innerText = '0 / 4';
       document.getElementById('metricStatus').innerText = 'READY';
-      document.getElementById('statusMessage').innerText = 'System Reset. Select scenario and click "Run API Flow" to execute.';
+      document.getElementById('statusMessage').innerText = 'System Reset. Select scenario and click "Execute Hook" to test.';
       
       document.getElementById('uiIdle').classList.remove('hidden');
       document.getElementById('uiLoading').classList.add('hidden');
       document.getElementById('uiLoading').classList.remove('flex');
       document.getElementById('uiSuccess').classList.add('hidden');
       document.getElementById('uiModalError').classList.add('hidden');
-      selectNode('qover');
+      selectNode('precheck');
     }
 
     function closeModalPreview() {
       document.getElementById('uiModalError').classList.add('hidden');
     }
 
-    // Dynamic Node Payload Generator based on active Deductible selection
+    // Node Definition Map displaying Qover's actual node configurations
     function getActiveNodeData() {
       const ded = deductibleConfigs[selectedDeductibleKey];
 
@@ -974,126 +891,91 @@
         'frontend': {
           title: 'Mobilize DE Frontend',
           endpoint: 'POST /api/v1/quote-request',
-          method: 'POST',
-          payloads: {
+          authRef: 'N/A (FE Client)',
+          qoverNodeSpec: {
             request: {
               vehicle: { brand: "Renault", model: "Megane E-Tech", year: 2023, value: 38000 },
-              driver: { age: 32, postalCode: "80331", claimsPast3Years: 0 },
-              deductibles: {
-                fullCasco: ded.fullCasco,
-                partialCasco: ded.partialCasco
-              },
-              panelRequest: {
-                providers: ["ALLIANZ", "VERTI"],
-                requestedPackages: ["LIABILITY", "PARTIAL_CASCO", "FULL_CASCO"]
+              driver: { age: 32, postalCode: "80331" },
+              deductibles: { fullCasco: ded.fullCasco, partialCasco: ded.partialCasco }
+            }
+          }
+        },
+        'precheck': {
+          title: 'eligibility-check (Pre-script Node)',
+          endpoint: 'Internal JSONata Rule Resolver',
+          authRef: 'Internal Core Engine',
+          qoverNodeSpec: {
+            id: "eligibility-check",
+            type: "RULE_RESOLVER_NODE",
+            resolver: {
+              inline: {
+                script: {
+                  engine: "SCRIPT_ENGINE_JSONATA_JS",
+                  code: "( $age := $ageInYears(policyholder.birthdate); $age < 18 ? [ { 'field': 'policyholder.birthdate', 'code': 'DRIVER_AGE_LESS_THAN_18', 'requiredFor': 'REQUIRED_FOR_PRICING' } ] )"
+                }
               }
             }
           }
         },
-        'qover': {
-          title: 'Qover Platform Orchestrator',
-          endpoint: 'Internal Resilient Hub Core',
-          method: 'ORCHESTRATE',
-          payloads: {
-            flow: "Mobilize DE Resilient Panel Aggregation",
-            deductiblesConfig: { fullCasco: ded.fullCasco, partialCasco: ded.partialCasco },
-            strategy: "Promise.allSettled() across Insurers",
-            resiliencePolicy: {
-              requireMinimumInsurers: 1,
-              allowPartialDegradation: true
+        'allianz': {
+          title: 'allianz-quotebundle-call (API Node)',
+          endpoint: 'POST ../CalculateOffers',
+          authRef: 'allianz-motor-de',
+          qoverNodeSpec: {
+            id: "allianz-quotebundle-call",
+            resolver: {
+              inline: {
+                apiCall: {
+                  authRef: "allianz-motor-de",
+                  http: { method: "HTTP_METHOD_POST", url: "https://apis.allianz.de/motor/v1/CalculateOffers" }
+                },
+                retryPolicy: { maxAttempts: 3, strategy: "RETRY_STRATEGY_FIXED" },
+                circuitBreaker: { resetTimeoutMs: 7000 },
+                inputTransformer: { code: "( { 'body': { 'deductibleFC': ded.fullCasco, 'deductibleTC': ded.partialCasco } } )" }
+              }
             }
           }
         },
-        'allianz': {
-          title: 'Allianz Insurer API',
-          endpoint: 'POST ../CalculateOffers',
-          method: 'POST',
-          payloads: {
-            request: {
-              country: "DE",
-              partnerId: "MOBILIZE_GERMANY",
-              deductibleFC: ded.fullCasco,
-              deductibleTC: ded.partialCasco
-            },
-            responseSuccess: {
-              status: "SUCCESS",
-              insurer: "Allianz DE",
-              offers: [
-                { package: "LIABILITY", monthlyPrice: ded.allianz.liability, deductible: null },
-                { package: "PARTIAL_CASCO", monthlyPrice: ded.allianz.partial, deductibleTC: ded.partialCasco },
-                { package: "FULL_CASCO", monthlyPrice: ded.allianz.full, deductibleFC: ded.fullCasco, deductibleTC: ded.partialCasco }
-              ]
-            },
-            responseFail: { status: 500, error: "Internal Server Error / Service Unavailable" }
-          }
-        },
         'verti1': {
-          title: 'Verti API (Package 1)',
+          title: 'verti-liability-call (API Node)',
           endpoint: 'GET ../quote?package=liability',
-          method: 'GET',
-          payloads: {
-            response: { insurer: "Verti", package: "LIABILITY", totalMonthly: ded.verti.liability, deductible: null }
-          }
+          authRef: 'verti-motor-de',
+          qoverNodeSpec: { id: "verti-liability-call", method: "GET", targetPackage: "LIABILITY", price: ded.verti.liability }
         },
         'verti2': {
-          title: 'Verti API (Package 2)',
+          title: 'verti-partial-call (API Node)',
           endpoint: `GET ../quote?package=liability_partial&deductibleTC=${ded.partialCasco}`,
-          method: 'GET',
-          payloads: {
-            response: { insurer: "Verti", package: "PARTIAL_CASCO", totalMonthly: ded.verti.partial, deductibleTC: ded.partialCasco }
-          }
+          authRef: 'verti-motor-de',
+          qoverNodeSpec: { id: "verti-partial-call", method: "GET", targetPackage: "PARTIAL_CASCO", price: ded.verti.partial }
         },
         'verti3': {
-          title: 'Verti API (Package 3)',
+          title: 'verti-full-call (API Node)',
           endpoint: `GET ../quote?package=liability_full&deductibleFC=${ded.fullCasco}&deductibleTC=${ded.partialCasco}`,
-          method: 'GET',
-          payloads: {
-            response: { insurer: "Verti", package: "FULL_CASCO", totalMonthly: ded.verti.full, deductibleFC: ded.fullCasco, deductibleTC: ded.partialCasco }
-          }
+          authRef: 'verti-motor-de',
+          qoverNodeSpec: { id: "verti-full-call", method: "GET", targetPackage: "FULL_CASCO", price: ded.verti.full }
         },
         'rules': {
-          title: 'Panel Evaluator & Aggregator',
-          endpoint: 'Internal Rules Evaluator',
-          method: 'EVALUATE',
-          payloads: {
-            evaluation: {
-              appliedDeductibles: { VK: ded.fullCasco, TK: ded.partialCasco },
-              allianzStatus: "FULFILLED",
-              vertiStatus: "FULFILLED",
-              acceptedProvidersCount: 2,
-              action: "RENDER_COMPARISON_GRID"
+          title: 'panel-aggregator (Output Transformer)',
+          endpoint: 'quote-bundle Hook Transformer',
+          authRef: 'Internal Core Engine',
+          qoverNodeSpec: {
+            id: "panel-aggregator",
+            outputTransformer: {
+              code: "( $allSettled := [allianzResult, vertiResults]; $activeQuotes := $filter($allSettled, function($q) { $q.status = 200 }); $count($activeQuotes) = 0 ? { 'patch': { '_validationErrors': [ { 'code': 'INSURER_PANEL_UNAVAILABLE' } ] } } : { 'data': $activeQuotes } )"
             }
           }
         },
         'response-ok': {
-          title: '200 OK Panel Response',
-          endpoint: 'HTTP 200 Success',
-          method: 'RESPONSE',
-          payloads: {
-            status: 200,
-            data: {
-              panelSize: 2,
-              deductibles: { fullCasco: ded.fullCasco, partialCasco: ded.partialCasco },
-              packages: [
-                { name: "Liability", offers: [{ insurer: "Verti", price: ded.verti.liability }, { insurer: "Allianz", price: ded.allianz.liability }] },
-                { name: "Partial Casco", offers: [{ insurer: "Verti", price: ded.verti.partial }, { insurer: "Allianz", price: ded.allianz.partial }] },
-                { name: "Full Casco", offers: [{ insurer: "Verti", price: ded.verti.full }, { insurer: "Allianz", price: ded.allianz.full }] }
-              ]
-            }
-          }
+          title: '200 OK Panel Delivered',
+          endpoint: 'HTTP 200 Success Response',
+          authRef: 'N/A',
+          qoverNodeSpec: { status: 200, message: "Valid Insurer Panel Options returned to Frontend." }
         },
         'response-error': {
-          title: 'Validation / Outage Error',
-          endpoint: 'HTTP 422 / 503',
-          method: 'RESPONSE',
-          payloads: {
-            status: 422,
-            error: {
-              code: "NO_INSURER_OFFERS_AVAILABLE",
-              message: "Neither Allianz nor Verti returned valid pricing options.",
-              frontendAction: "DISPLAY_ERROR_MODAL"
-            }
-          }
+          title: '422 / 503 Validation Error',
+          endpoint: 'HTTP Error Response',
+          authRef: 'N/A',
+          qoverNodeSpec: { status: 422, error: { _validationErrors: ["AGE_LESS_THAN_18"] } }
         }
       };
     }
@@ -1106,30 +988,24 @@
       const config = deductibleConfigs[selectedDeductibleKey];
       if (!config) return;
       
-      // Update Badge UI labels
       const badgeTc = document.getElementById('badge-tc-deductible');
       if (badgeTc) badgeTc.innerText = `SB TK: €${config.partialCasco}`;
       
       const badgeVk = document.getElementById('badge-vk-deductible');
       if (badgeVk) badgeVk.innerText = `SB VK: €${config.fullCasco} / TK: €${config.partialCasco}`;
 
-      // Update UI Prices in Mobilize DE Sandbox
-      document.getElementById('price-allianz-1').innerHTML = `€ ${config.allianz.liability.toFixed(2)} <span class="text-[8px] text-slate-400">/Mo</span>`;
-      document.getElementById('price-allianz-2').innerHTML = `€ ${config.allianz.partial.toFixed(2)} <span class="text-[8px] text-slate-400">/Mo</span>`;
-      document.getElementById('price-allianz-3').innerHTML = `€ ${config.allianz.full.toFixed(2)} <span class="text-[8px] text-slate-400">/Mo</span>`;
+      document.getElementById('price-allianz-1').innerText = `€ ${config.allianz.liability.toFixed(2)} /Mo`;
+      document.getElementById('price-allianz-2').innerText = `€ ${config.allianz.partial.toFixed(2)} /Mo`;
+      document.getElementById('price-allianz-3').innerText = `€ ${config.allianz.full.toFixed(2)} /Mo`;
 
-      document.getElementById('price-verti-1').innerHTML = `€ ${config.verti.liability.toFixed(2)} <span class="text-[8px] text-slate-400">/Mo</span>`;
-      document.getElementById('price-verti-2').innerHTML = `€ ${config.verti.partial.toFixed(2)} <span class="text-[8px] text-slate-400">/Mo</span>`;
-      document.getElementById('price-verti-3').innerHTML = `€ ${config.verti.full.toFixed(2)} <span class="text-[8px] text-slate-400">/Mo</span>`;
+      document.getElementById('price-verti-1').innerText = `€ ${config.verti.liability.toFixed(2)} /Mo`;
+      document.getElementById('price-verti-2').innerText = `€ ${config.verti.partial.toFixed(2)} /Mo`;
+      document.getElementById('price-verti-3').innerText = `€ ${config.verti.full.toFixed(2)} /Mo`;
 
-      // Update Screenshot Style Hero Best Price Callout
       const bestPriceVal = Math.min(config.allianz.liability, config.verti.liability);
-      const heroPriceEl = document.getElementById('heroBestPrice');
-      const heroAnnualEl = document.getElementById('heroBestPriceAnnual');
-      if (heroPriceEl) heroPriceEl.innerText = `€ ${bestPriceVal.toFixed(2)}`;
-      if (heroAnnualEl) heroAnnualEl.innerText = `€ ${(bestPriceVal * 12).toFixed(2)}`;
+      document.getElementById('heroBestPrice').innerText = `€ ${bestPriceVal.toFixed(2)}`;
+      document.getElementById('heroBestPriceAnnual').innerText = `€ ${(bestPriceVal * 12).toFixed(2)}`;
 
-      // Refresh inspector view if currently selected
       selectNode(selectedNodeId);
     }
 
@@ -1141,7 +1017,7 @@
 
       document.getElementById('inspectNodeTitle').innerText = data.title;
       document.getElementById('inspectNodeEndpoint').innerText = data.endpoint;
-      document.getElementById('inspectMethod').innerText = data.method;
+      document.getElementById('inspectAuthRef').innerText = data.authRef;
 
       const badge = document.getElementById(`badge-${nodeId}`);
       if (badge) {
@@ -1149,10 +1025,10 @@
       }
 
       const jsonContainer = document.getElementById('jsonViewer');
-      jsonContainer.innerHTML = `<pre class="text-emerald-400 font-mono">${JSON.stringify(data.payloads, null, 2)}</pre>`;
+      jsonContainer.innerHTML = `<pre class="text-emerald-400 font-mono">${JSON.stringify(data.qoverNodeSpec, null, 2)}</pre>`;
 
       document.querySelectorAll('.node-card').forEach(el => {
-        el.classList.remove('ring-2', 'ring-blue-400', 'bg-slate-800');
+        el.classList.remove('ring-2', 'ring-blue-400');
       });
       const currentEl = document.getElementById(`node-${nodeId}`);
       if (currentEl) {
@@ -1160,7 +1036,7 @@
       }
     }
 
-    // MAIN RESILIENT SIMULATION RUNNER
+    // MAIN QOVER HOOK SIMULATION ENGINE
     async function startSimulation() {
       if (isRunning) return;
       isRunning = true;
@@ -1170,12 +1046,10 @@
       const startTime = performance.now();
 
       resetNodeStyles();
-      document.getElementById('sequenceTimeline').innerHTML = '';
-      document.getElementById('metricCalls').innerText = "0 / 4";
-      document.getElementById('metricStatus').innerText = "RUNNING";
-      document.getElementById('statusMessage').innerText = `Starting Panel Orchestration Flow with Deductibles (VK €${dedConfig.fullCasco} / TK €${dedConfig.partialCasco})...`;
+      document.getElementById('metricStatus').innerText = "EXECUTING HOOK";
+      document.getElementById('statusMessage').innerText = "Qover quote-bundle hook triggered...";
 
-      // Reset UI Simulator Views
+      // Reset UI Sandbox Views
       document.getElementById('uiIdle').classList.add('hidden');
       document.getElementById('uiSuccess').classList.add('hidden');
       document.getElementById('uiModalError').classList.add('hidden');
@@ -1183,7 +1057,6 @@
       document.getElementById('uiLoading').classList.remove('hidden');
       document.getElementById('uiLoading').classList.add('flex');
 
-      // Reset Card Visibility
       ['allianz', 'verti'].forEach(ins => {
         [1, 2, 3].forEach(pkg => {
           const card = document.getElementById(`uiCard-${ins}-${pkg}`);
@@ -1191,37 +1064,55 @@
         });
       });
 
-      // STEP 1: Mobilize FE Trigger
+      // STEP 1: FE Request
       selectNode('frontend');
       setNodeStatus('frontend', 'POSTING', 'active');
-      addSequenceLog(1, 'Mobilize FE', `Quote Request initiated (Deductible: VK €${dedConfig.fullCasco}/TK €${dedConfig.partialCasco})`);
-      await sleep(500);
+      await sleep(400);
       setNodeStatus('frontend', 'SENT', 'success');
-      setWireStatus('path-fe-qover', true, 'blue');
+      setWireStatus('path-fe-precheck', true, 'blue');
 
-      // STEP 2: Qover Core Parallel Ingestion
-      selectNode('qover');
-      setNodeStatus('qover', 'FAN-OUT', 'active');
-      document.getElementById('statusMessage').innerText = "Qover executing parallel dispatch (Promise.allSettled) with requested deductibles...";
-      addSequenceLog(2, 'Qover Core', `Executing parallel dispatch across panel with deductibles VK €${dedConfig.fullCasco} / TK €${dedConfig.partialCasco}`);
+      // STEP 2: Pre-check Node (eligibility-check)
+      selectNode('precheck');
+      setNodeStatus('precheck', 'VALIDATING', 'active');
+      document.getElementById('statusMessage').innerText = "Executing eligibility-check JSONata script node...";
       await sleep(500);
 
-      // STEP 3: PARALLEL CALLS TO ALLIANZ & VERTI
-      setWireStatus('path-qover-allianz', true, 'blue');
-      setWireStatus('path-qover-verti1', true, 'blue');
-      setWireStatus('path-qover-verti2', true, 'blue');
-      setWireStatus('path-qover-verti3', true, 'blue');
+      if (scenario === 'uw_reject') {
+        setNodeStatus('precheck', 'FAILED', 'error');
+        selectNode('response-error');
+        setNodeStatus('response-error', '422 REJECT', 'error');
 
-      setNodeStatus('allianz', 'POST Offers', 'active');
-      setNodeStatus('verti1', 'GET Pkg 1', 'active');
-      setNodeStatus('verti2', 'GET Pkg 2', 'active');
-      setNodeStatus('verti3', 'GET Pkg 3', 'active');
-      document.getElementById('metricCalls').innerText = "4 / 4 (Parallel)";
-      addSequenceLog(3, 'Parallel Gateway', `Dispatched 4 requests passing deductibles (VK €${dedConfig.fullCasco}, TK €${dedConfig.partialCasco})`);
+        const totalDuration = Math.round(performance.now() - startTime);
+        document.getElementById('metricLatency').innerText = `${totalDuration}ms`;
+        document.getElementById('metricStatus').innerText = "422 ERROR";
+        document.getElementById('statusMessage').innerText = "Rule Violation: Driver Age < 18. Emitted _validationErrors array.";
+        
+        document.getElementById('uiErrorMessage').innerText = "Aufgrund der Underwriting-Regeln (Mindestalter 18 Jahre) ist aktuell kein Angebot verfügbar.";
+        document.getElementById('uiErrorCode').innerText = "_validationErrors: [ DRIVER_AGE_LESS_THAN_18 ]";
+
+        document.getElementById('uiLoading').classList.add('hidden');
+        document.getElementById('uiModalError').classList.remove('hidden');
+        switchSideTab('modal');
+        isRunning = false;
+        return;
+      }
+
+      setNodeStatus('precheck', 'PASSED', 'success');
+
+      // STEP 3: PARALLEL OUTBOUND API FANOUT
+      setWireStatus('path-precheck-allianz', true, 'blue');
+      setWireStatus('path-precheck-verti1', true, 'blue');
+      setWireStatus('path-precheck-verti2', true, 'blue');
+      setWireStatus('path-precheck-verti3', true, 'blue');
+
+      setNodeStatus('allianz', 'DISPATCH', 'active');
+      setNodeStatus('verti1', 'DISPATCH', 'active');
+      setNodeStatus('verti2', 'DISPATCH', 'active');
+      setNodeStatus('verti3', 'DISPATCH', 'active');
+      document.getElementById('statusMessage').innerText = "Dispatching 4 parallel API Call Nodes across panel...";
 
       await sleep(1000);
 
-      // INSURER OUTAGE BRANCH EVALUATIONS
       let activeInsurers = 2;
 
       if (scenario === 'allianz_down') {
@@ -1234,13 +1125,11 @@
         setWireStatus('path-verti1-rules', true, 'green');
         setWireStatus('path-verti2-rules', true, 'green');
         setWireStatus('path-verti3-rules', true, 'green');
-        addSequenceLog(4, 'Allianz API', 'HTTP 500 Failure. Resilience triggered (Verti fallback active)', 'warning');
 
         [1, 2, 3].forEach(pkg => document.getElementById(`uiCard-allianz-${pkg}`).classList.add('hidden'));
         document.getElementById('uiWarningBanner').classList.remove('hidden');
         document.getElementById('uiWarningText').innerText = "Hinweis: Allianz ist aktuell nicht erreichbar. Nur Verti Angebote stehen zur Verfügung.";
         document.getElementById('uiPanelStatusBadge').innerText = "1 von 2 Anbietern aktiv";
-        document.getElementById('uiPanelStatusBadge').className = "text-[9px] text-amber-400 bg-amber-950 px-1.5 py-0.5 rounded border border-amber-800";
 
       } else if (scenario === 'verti_down') {
         activeInsurers = 1;
@@ -1252,13 +1141,11 @@
         setWireStatus('path-verti1-rules', true, 'red');
         setWireStatus('path-verti2-rules', true, 'red');
         setWireStatus('path-verti3-rules', true, 'red');
-        addSequenceLog(4, 'Verti API', 'HTTP 500 Failure. Resilience triggered (Allianz fallback active)', 'warning');
 
         [1, 2, 3].forEach(pkg => document.getElementById(`uiCard-verti-${pkg}`).classList.add('hidden'));
         document.getElementById('uiWarningBanner').classList.remove('hidden');
         document.getElementById('uiWarningText').innerText = "Hinweis: Verti ist aktuell nicht erreichbar. Nur Allianz Angebote stehen zur Verfügung.";
         document.getElementById('uiPanelStatusBadge').innerText = "1 von 2 Anbietern aktiv";
-        document.getElementById('uiPanelStatusBadge').className = "text-[9px] text-amber-400 bg-amber-950 px-1.5 py-0.5 rounded border border-amber-800";
 
       } else if (scenario === 'both_down') {
         activeInsurers = 0;
@@ -1270,10 +1157,8 @@
         setWireStatus('path-verti1-rules', true, 'red');
         setWireStatus('path-verti2-rules', true, 'red');
         setWireStatus('path-verti3-rules', true, 'red');
-        addSequenceLog(4, 'Panel Outage', 'Both Allianz and Verti returned errors. 0 offers available', 'error');
 
       } else {
-        // Full Success
         setNodeStatus('allianz', '200 OK', 'success');
         setNodeStatus('verti1', '200 OK', 'success');
         setNodeStatus('verti2', '200 OK', 'success');
@@ -1282,39 +1167,29 @@
         setWireStatus('path-verti1-rules', true, 'green');
         setWireStatus('path-verti2-rules', true, 'green');
         setWireStatus('path-verti3-rules', true, 'green');
-        addSequenceLog(4, 'Parallel Gateway', 'Both Allianz and Verti returned valid offers for selected deductibles', 'success');
         document.getElementById('uiPanelStatusBadge').innerText = "2 Anbieter aktiv";
-        document.getElementById('uiPanelStatusBadge').className = "text-[9px] text-emerald-400 bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-800";
       }
 
-      // STEP 4: PANEL EVALUATION & AGGREGATION
+      // STEP 4: Hook Output Transformer Aggregation
       selectNode('rules');
-      setNodeStatus('rules', 'EVALUATING', 'active');
+      setNodeStatus('rules', 'TRANSFORMING', 'active');
       document.getElementById('uwInsurersCount').innerText = `${activeInsurers} / 2`;
-      document.getElementById('statusMessage').innerText = "Aggregating active insurer pricings into panel comparison...";
-      await sleep(800);
+      await sleep(600);
 
-      // DECISION BRANCHING
-      if (scenario === 'both_down' || scenario === 'uw_reject') {
-        setNodeStatus('rules', 'REJECTED', 'error');
+      if (scenario === 'both_down') {
+        setNodeStatus('rules', 'PANEL EMPTY', 'error');
         setWireStatus('path-rules-error', true, 'red');
 
         selectNode('response-error');
-        setNodeStatus('response-error', '422 / 503', 'error');
-        
+        setNodeStatus('response-error', '503 OUTAGE', 'error');
+
         const totalDuration = Math.round(performance.now() - startTime);
         document.getElementById('metricLatency').innerText = `${totalDuration}ms`;
-        document.getElementById('metricStatus').innerText = "ERROR";
+        document.getElementById('metricStatus').innerText = "503 OUTAGE";
+        document.getElementById('statusMessage').innerText = "All downstream APIs failed. Output transformer generated PANEL_OUTAGE_503.";
 
-        if (scenario === 'uw_reject') {
-          document.getElementById('statusMessage').innerText = "Underwriting Rule Validation Error: Driver Age < 18. Returning 422 Error Modal.";
-          document.getElementById('uiErrorMessage').innerText = "Aufgrund der Underwriting-Regeln (Mindestalter 18 Jahre) ist aktuell kein Angebot verfügbar.";
-          document.getElementById('uiErrorCode').innerText = "Error Code: UW_RULE_REJECTION_422";
-        } else {
-          document.getElementById('statusMessage').innerText = "Total Outage: Both Insurers Failed. Returning Service Unavailable Error Modal.";
-          document.getElementById('uiErrorMessage').innerText = "Leider können wir Ihnen aktuell aufgrund einer technischen Störung aller Partner kein Angebot unterbreiten.";
-          document.getElementById('uiErrorCode').innerText = "Error Code: PANEL_ALL_INSURERS_DOWN_503";
-        }
+        document.getElementById('uiErrorMessage').innerText = "Leider können wir Ihnen aktuell aufgrund einer technischen Störung aller Partner kein Angebot unterbreiten.";
+        document.getElementById('uiErrorCode').innerText = "_validationErrors: [ INSURER_PANEL_UNAVAILABLE_503 ]";
 
         document.getElementById('uiLoading').classList.add('hidden');
         document.getElementById('uiModalError').classList.remove('hidden');
@@ -1322,7 +1197,7 @@
 
       } else {
         const isPartial = scenario === 'allianz_down' || scenario === 'verti_down';
-        setNodeStatus('rules', isPartial ? 'PARTIAL PANEL' : 'FULL PANEL', isPartial ? 'warning' : 'success');
+        setNodeStatus('rules', isPartial ? 'PARTIAL PANEL' : 'AGGREGATED', isPartial ? 'warning' : 'success');
         setWireStatus('path-rules-ok', true, isPartial ? 'amber' : 'green');
 
         selectNode('response-ok');
@@ -1331,8 +1206,7 @@
         const totalDuration = Math.round(performance.now() - startTime);
         document.getElementById('metricLatency').innerText = `${totalDuration}ms`;
         document.getElementById('metricStatus').innerText = "200 OK";
-        document.getElementById('statusMessage').innerText = `Panel Orchestration completed in ${totalDuration}ms (${activeInsurers}/2 insurers active)!`;
-        addSequenceLog(5, 'Gateway', `HTTP 200 OK - Delivered Insurer Panel (VK €${dedConfig.fullCasco}/TK €${dedConfig.partialCasco}) with ${activeInsurers} active provider(s)`, isPartial ? 'warning' : 'success');
+        document.getElementById('statusMessage').innerText = `Hook execution finished in ${totalDuration}ms (${activeInsurers}/2 insurers active)!`;
 
         document.getElementById('uiLoading').classList.add('hidden');
         document.getElementById('uiSuccess').classList.remove('hidden');
@@ -1353,7 +1227,7 @@
       document.getElementById('uwInsurersCount').innerText = "- / 2";
     }
 
-    // Ensure window global exports
+    // Window Exports
     window.drawConnections = drawConnections;
     window.startSimulation = startSimulation;
     window.resetSimulation = resetSimulation;
@@ -1369,7 +1243,7 @@
         drawConnections();
       }
       onDeductibleChange();
-      selectNode('qover');
+      selectNode('precheck');
     };
 
     window.onresize = function() {
@@ -1378,3 +1252,5 @@
       }
     };
   </script>
+</body>
+</html>
