@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-900 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Is It Tartiflette Weather? 🧀</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Fredoka', 'sans-serif'],
+                        body: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        cheese: {
+                            100: '#FFFBEB',
+                            300: '#FDE68A',
+                            400: '#FBBF24',
+                            500: '#F59E0B',
+                            600: '#D97706',
+                            700: '#B45309',
+                        },
+                        lardon: {
+                            400: '#FB7185',
+                            500: '#F43F5E',
+                            600: '#E11D48',
+                        }
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-slight': 'bounceSlight 2s infinite',
+                        'wiggle': 'wiggle 0.5s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        bounceSlight: {
+                            '0%, 100%': { transform: 'translateY(-3%)' },
+                            '50%': { transform: 'translateY(0)' },
+                        },
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top center, #1e293b 0%, #0f172a 100%);
+        }
+        h1, h2, h3, .font-display {
+            font-family: 'Fredoka', cursive;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d97706;
+            border-radius: 4px;
+        }
+        .cheese-glow {
+            box-shadow: 0 0 50px -10px rgba(245, 158, 11, 0.3);
+        }
+        .cheese-border {
+            border: 3px solid #f59e0b;
+        }
+        /* Melt effect overlay */
+        #cheeseCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 50;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+    <canvas id="cheeseCanvas"></canvas>
+
+    <header class="w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="location.reload()">
+                <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-slate-900 font-bold text-xl shadow-lg shadow-amber-500/20">
+                    🧀
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-amber-400 leading-tight">Tartiflette-o-Matic</h1>
+                    <p class="text-xs text-slate-400">Official Savoyard Meteorological Bureau</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="playCowbellSound()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 text-sm font-semibold transition border border-slate-700 flex items-center gap-2">
+                    <i class="fa-solid font-bell fa-bell"></i> <span class="hidden sm:inline">Cowbell</span>
+                </button>
+                <button onclick="openGithubModal()" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-bold transition flex items-center gap-2 shadow-md">
+                    <i class="fa-brands fa-github"></i> <span class="hidden sm:inline">Host on GH Pages</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full space-y-8">
+
+        <!-- Top Announcement Banner -->
+        <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-center relative overflow-hidden">
+            <div class="absolute -right-4 -bottom-4 text-6xl opacity-10 font-bold">REBLOCHON</div>
+            <p class="text-amber-300 font-medium text-sm sm:text-base">
+                ⚠️ <strong>SAVOYARD LAW ARTICLE 42:</strong> Tartiflette is allowed 365 days a year. Weather parameters only change the <em>philosophical excuse</em>.
+            </p>
+        </div>
+
+        <!-- Location Search / Weather Auto-Detect Section -->
+        <section class="bg-slate-800/80 rounded-3xl p-6 border border-slate-700 shadow-xl backdrop-blur-sm">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="w-full md:w-1/2 space-y-2">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Where are you starving?</label>
+                    <div class="relative flex items-center">
+                        <i class="fa-solid fa-location-dot absolute left-4 text-amber-500"></i>
+                        <input type="text" id="cityInput" placeholder="Enter city (e.g., Chamonix, London, Tokyo)" 
+                            class="w-full bg-slate-900 text-white rounded-xl py-3 pl-11 pr-24 border border-slate-700 focus:outline-none focus:border-amber-500 font-semibold transition">
+                        <button onclick="searchCity()" class="absolute right-2 bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-1.5 rounded-lg font-bold text-sm transition">
+                            Search
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                    <button onclick="useGeolocation()" class="flex-1 md:flex-none px-4 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-slate-200 font-bold text-sm transition border border-slate-600 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-crosshairs text-amber-400"></i> Auto-Detect My Location
+                    </button>
+                    <button onclick="loadPreset('chamonix')" class="px-3 py-3 bg-slate-900 hover:bg-slate-700 rounded-xl text-amber-400 font-bold text-xs border border-slate-700 transition">
+                        🏔️ Chamonix
+                    </button>
+                    <button onclick="loadPreset('dubai')" class="px-3 py-3 bg-slate-900 hover:bg-slate-700 rounded-xl text-amber-400 font-bold text-xs border border-slate-700 transition">
+                        🔥 Dubai
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+            
+            <!-- Left: Giant Verdict Card -->
+            <div class="md:col-span-7 bg-slate-800/90 border-2 border-amber-500/50 rounded-3xl p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden cheese-glow">
+                
+                <!-- Background decorative icon -->
+                <div class="absolute -right-10 -top-10 text-9xl opacity-5 select-none text-amber-400">🧀</div>
+
+                <div>
+                    <div class="flex items-center justify-between border-b border-slate-700/80 pb-4 mb-6">
+                        <div class="flex items-center space-x-2">
+                            <span id="weatherIcon" class="text-3xl">❄️</span>
+                            <div>
+                                <h2 id="locationName" class="text-lg font-bold text-slate-200">Checking location...</h2>
+                                <p id="weatherDesc" class="text-xs text-slate-400">Analyzing atmospheric Reblochon pressure...</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span id="currentTemp" class="text-3xl font-extrabold text-amber-400">--°C</span>
+                            <div id="feelsLike" class="text-xs text-slate-400">Feels like --°C</div>
+                        </div>
+                    </div>
+
+                    <!-- THE VERDICT -->
+                    <div class="text-center py-4 my-2 bg-slate-900/60 rounded-2xl border border-slate-700/50 p-6">
+                        <span class="text-xs uppercase font-extrabold tracking-widest text-amber-500">Official Verdict</span>
+                        <h2 id="mainVerdict" class="text-5xl sm:text-6xl font-black text-amber-400 tracking-wider my-2 animate-bounce-slight uppercase">
+                            YES!
+                        </h2>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30">
+                            <i class="fa-solid fa-circle-check"></i> <span id="verdictSubtitle">100% FEASIBLE</span>
+                        </div>
+                    </div>
+
+                    <!-- Ridiculous Reason -->
+                    <p id="funnyReason" class="text-slate-300 text-base sm:text-lg font-medium leading-relaxed italic text-center mt-4 bg-amber-500/5 p-4 rounded-xl border border-amber-500/20">
+                        "Loading scientific alpine excuse..."
+                    </p>
+                </div>
+
+                <!-- Emergency Cheese Shower Button -->
+                <div class="mt-6 pt-4 border-t border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <span class="text-xs text-slate-400">Craving reaching critical levels?</span>
+                    <button onclick="triggerCheeseExplosion()" class="w-full sm:w-auto px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm transition shadow-lg flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-fire"></i> Emergency Cheese Melt Splash!
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: Absurd Metrics & Indicators -->
+            <div class="md:col-span-5 bg-slate-800/80 border border-slate-700 rounded-3xl p-6 flex flex-col justify-between space-y-4">
+                <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie"></i> Savoyard Scientific Index
+                </h3>
+
+                <!-- Meter 1: Tartiflette Feasibility Score -->
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-bold">
+                        <span class="text-slate-300">Tartiflette Feasibility</span>
+                        <span id="feasibilityVal" class="text-amber-400">100%</span>
+                    </div>
+                    <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-700">
+                        <div id="feasibilityBar" class="bg-amber-500 h-3 rounded-full transition-all duration-1000" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <!-- Meter 2: Reblochon Viscosity -->
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-bold">
+                        <span class="text-slate-300">Reblochon Meltability</span>
+                        <span id="viscosityVal" class="text-amber-400">Optimal (99.4%)</span>
+                    </div>
+                    <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-700">
+                        <div id="viscosityBar" class="bg-amber-400 h-3 rounded-full transition-all duration-1000" style="width: 95%"></div>
+                    </div>
+                </div>
+
+                <!-- Meter 3: Lardon Aerodynamics -->
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-bold">
+                        <span class="text-slate-300">Lardon Sizzle Energy</span>
+                        <span id="lardonVal" class="text-lardon-400">Max Sizzle</span>
+                    </div>
+                    <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-700">
+                        <div id="lardonBar" class="bg-lardon-500 h-3 rounded-full transition-all duration-1000" style="width: 90%"></div>
+                    </div>
+                </div>
+
+                <!-- Meter 4: Guilt-Free Factor -->
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-bold">
+                        <span class="text-slate-300">Moral Guilt Level</span>
+                        <span class="text-emerald-400">0% (Zero Guilt)</span>
+                    </div>
+                    <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-700">
+                        <div class="bg-emerald-500 h-3 rounded-full w-0"></div>
+                    </div>
+                </div>
+
+                <!-- Quick Soundboard Buttons -->
+                <div class="pt-2">
+                    <label class="block text-xs font-bold text-slate-400 mb-2 uppercase">Savoyard Soundboard</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="playSizzleSound()" class="px-3 py-2 bg-slate-900 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold border border-slate-700 transition flex items-center justify-center gap-1.5">
+                            🥓 Sizzle Lardons
+                        </button>
+                        <button onclick="playAlpineHorn()" class="px-3 py-2 bg-slate-900 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold border border-slate-700 transition flex items-center justify-center gap-1.5">
+                            📯 Alpine Horn
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="bg-slate-800/80 rounded-3xl p-6 border border-slate-700 shadow-lg space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-700 pb-4">
+                <div>
+                    <h3 class="text-xl font-bold text-amber-400">🎛️ Weather God Simulator</h3>
+                    <p class="text-xs text-slate-400">Override real physics to test if Tartiflette is ever inappropriate (Spoilers: It's not).</p>
+                </div>
+                <button onclick="resetWeatherSimulator()" class="self-start sm:self-auto px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold text-slate-200 transition">
+                    <i class="fa-solid fa-rotate-left"></i> Reset to Real Weather
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Temperature Slider -->
+                <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-700/50 space-y-2">
+                    <div class="flex justify-between items-center text-sm font-bold">
+                        <span class="text-slate-300">Temperature</span>
+                        <span id="sliderTempDisplay" class="text-amber-400 font-mono text-base">-5°C</span>
+                    </div>
+                    <input type="range" id="tempSlider" min="-30" max="50" value="-5" oninput="updateSimulatedWeather()"
+                        class="w-full accent-amber-500 cursor-pointer">
+                    <div class="flex justify-between text-[10px] text-slate-500 font-bold">
+                        <span>-30°C (Blizzard)</span>
+                        <span>20°C (Spring)</span>
+                        <span>50°C (Sahara)</span>
+                    </div>
+                </div>
+
+                <!-- Rain / Conditions Slider -->
+                <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-700/50 space-y-2">
+                    <div class="flex justify-between items-center text-sm font-bold">
+                        <span class="text-slate-300">Weather Type</span>
+                        <span id="sliderConditionDisplay" class="text-amber-400 font-semibold text-xs">Snowing</span>
+                    </div>
+                    <input type="range" id="conditionSlider" min="0" max="4" value="0" oninput="updateSimulatedWeather()"
+                        class="w-full accent-amber-500 cursor-pointer">
+                    <div class="flex justify-between text-[10px] text-slate-500 font-bold">
+                        <span>Snow</span>
+                        <span>Rain</span>
+                        <span>Fog</span>
+                        <span>Sun</span>
+                        <span>Heatwave</span>
+                    </div>
+                </div>
+
+                <!-- Altitude Slider -->
+                <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-700/50 space-y-2">
+                    <div class="flex justify-between items-center text-sm font-bold">
+                        <span class="text-slate-300">Altitude</span>
+                        <span id="sliderAltitudeDisplay" class="text-amber-400 font-mono text-base">2,000m</span>
+                    </div>
+                    <input type="range" id="altitudeSlider" min="0" max="4800" step="100" value="2000" oninput="updateSimulatedWeather()"
+                        class="w-full accent-amber-500 cursor-pointer">
+                    <div class="flex justify-between text-[10px] text-slate-500 font-bold">
+                        <span>0m (Sea)</span>
+                        <span>2500m (Resort)</span>
+                        <span>4800m (Mont Blanc)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Excuse Generator Card -->
+            <div class="bg-slate-800/80 rounded-3xl p-6 border border-slate-700 shadow-lg space-y-4 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-amber-400 flex items-center gap-2">
+                        📜 Savoyard Excuse Generator
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">Need to justify eating 1.5kg of cheese to your doctor, partner, or boss?</p>
+
+                    <div class="mt-4 bg-slate-900/80 p-4 rounded-2xl border border-slate-700 min-h-[100px] flex items-center justify-center">
+                        <p id="excuseOutput" class="text-center text-slate-200 font-medium text-sm italic">
+                            "Click below to generate a bulletproof Savoyard justification."
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 pt-2">
+                    <button onclick="generateExcuse()" class="flex-1 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm rounded-xl transition flex items-center justify-center gap-2">
+                        🎲 Generate New Excuse
+                    </button>
+                    <button onclick="copyExcuse()" class="px-4 py-3 bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold text-sm rounded-xl transition">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recipe Validator (With strict Savoyard Police warnings) -->
+            <div class="bg-slate-800/80 rounded-3xl p-6 border border-slate-700 shadow-lg space-y-4">
+                <h3 class="text-xl font-bold text-amber-400 flex items-center gap-2">
+                    👮 Strict Savoyard Recipe Validator
+                </h3>
+                <p class="text-xs text-slate-400">Select what you plan to put in your dish:</p>
+
+                <div class="grid grid-cols-2 gap-2 text-xs font-semibold">
+                    <label class="flex items-center space-x-2 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700 cursor-pointer hover:bg-slate-700/50">
+                        <input type="checkbox" checked id="ing_reblochon" onchange="validateRecipe()" class="accent-amber-500 w-4 h-4">
+                        <span>AOP Reblochon Cheese</span>
+                    </label>
+                    <label class="flex items-center space-x-2 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700 cursor-pointer hover:bg-slate-700/50">
+                        <input type="checkbox" checked id="ing_potatoes" onchange="validateRecipe()" class="accent-amber-500 w-4 h-4">
+                        <span>Potatoes (Firm)</span>
+                    </label>
+                    <label class="flex items-center space-x-2 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700 cursor-pointer hover:bg-slate-700/50">
+                        <input type="checkbox" checked id="ing_lardons" onchange="validateRecipe()" class="accent-amber-500 w-4 h-4">
+                        <span>Lardons (Smoked Bacon)</span>
+                    </label>
+                    <label class="flex items-center space-x-2 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700 cursor-pointer hover:bg-slate-700/50">
+                        <input type="checkbox" checked id="ing_onions" onchange="validateRecipe()" class="accent-amber-500 w-4 h-4">
+                        <span>Onions & Dry White Wine</span>
+                    </label>
+                    <label class="flex items-center space-x-2 bg-red-950/40 border border-red-500/30 p-2.5 rounded-xl cursor-pointer hover:bg-red-900/30 col-span-2">
+                        <input type="checkbox" id="ing_cream" onchange="validateRecipe()" class="accent-red-500 w-4 h-4">
+                        <span class="text-red-300 font-bold">⚠️ Heavy Cream (Créme Fraîche)</span>
+                    </label>
+                </div>
+
+                <div id="recipeFeedback" class="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-xl text-xs text-emerald-300 font-medium">
+                    ✅ <strong>100% Authentic Savoyard Dish!</strong> Pure tradition.
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <div id="githubModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-amber-500/40 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeGithubModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center font-bold">
+                ✕
+            </button>
+
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-brands fa-github"></i>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-amber-400">Host on GitHub Pages</h3>
+                    <p class="text-xs text-slate-400">Deploy this exact website live to the world in 2 minutes!</p>
+                </div>
+            </div>
+
+            <div class="space-y-4 text-sm text-slate-300">
+                <div class="flex items-start space-x-3 bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+                    <span class="bg-amber-500 text-slate-950 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs">1</span>
+                    <div>
+                        <strong class="text-white">Create a Repository:</strong> Go to <a href="https://github.com/new" target="_blank" class="text-amber-400 underline">github.com/new</a> and name it <code>tartiflette-weather</code> (or <code>username.github.io</code>).
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-3 bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+                    <span class="bg-amber-500 text-slate-950 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs">2</span>
+                    <div>
+                        <strong class="text-white">Upload index.html:</strong> Create a file named <code>index.html</code> in the root of your repo and paste this code inside it.
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-3 bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+                    <span class="bg-amber-500 text-slate-950 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs">3</span>
+                    <div>
+                        <strong class="text-white">Enable Pages:</strong> In your GitHub repo, go to <strong>Settings</strong> ➔ <strong>Pages</strong>. Under <em>Build and deployment</em>, set Source to <strong>Deploy from a branch</strong>, select <code>main</code> (or <code>master</code>) branch, and click <strong>Save</strong>!
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-3 bg-emerald-950/40 p-3 rounded-xl border border-emerald-500/30 text-emerald-300">
+                    <i class="fa-solid fa-circle-check text-xl text-emerald-400 shrink-0 mt-0.5"></i>
+                    <p class="text-xs">
+                        Your site will be live at <code>https://yourusername.github.io/tartiflette-weather/</code>!
+                    </p>
+                </div>
+            </div>
+
+            <button onclick="closeGithubModal()" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl transition">
+                Got it, let's eat cheese!
+            </button>
+        </div>
+    </div>
+
+    <footer class="w-full border-t border-slate-800 py-6 mt-12 bg-slate-950/80 text-center text-xs text-slate-500">
+        <p>Made with 🧀 & 🥓 for Savoyard cheese enthusiasts worldwide.</p>
+        <p class="mt-1">Powered by Open-Meteo API • Zero Cream Policy Enforced.</p>
+    </footer>
+
+    <script>
+        let currentWeatherData = {
+            temp: 2,
+            weatherCode: 71,
+            name: "Chamonix-Mont-Blanc",
+            feelsLike: -2,
+            isSimulated: false
+        };
+
+        const excuses = [
+            "My body needs essential calcium and Reblochon is technically a complex multi-vitamin.",
+            "It is scientifically proven that melted cheese forms a protective thermal barrier against existential dread.",
+            "My doctor recommended increasing my daily lardon intake to boost Alpine morale.",
+            "The ambient wind speed creates acoustic vibrations that specifically call for potatoes and wine.",
+            "I am practicing for a potential sudden ice age, which could begin at any moment.",
+            "Global warming or not, indoor air conditioning is cold enough to warrant a warm baking dish.",
+            "Reblochon cheese expires if you don't eat it today. Food waste is a crime against humanity!"
+        ];
+
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioCtx();
+            }
+        }
+
+        // Play Cowbell Sound (FM Synthesis)
+        function playCowbellSound() {
+            initAudio();
+            if (!audioCtx) return;
+
+            const osc1 = audioCtx.createOscillator();
+            const osc2 = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc1.type = 'square';
+            osc2.type = 'square';
+
+            osc1.frequency.setValueAtTime(800, audioCtx.currentTime);
+            osc2.frequency.setValueAtTime(540, audioCtx.currentTime);
+
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc1.start();
+            osc2.start();
+            osc1.stop(audioCtx.currentTime + 0.8);
+            osc2.stop(audioCtx.currentTime + 0.8);
+        }
+
+        // Play Sizzle Lardons Sound (Filtered Noise)
+        function playSizzleSound() {
+            initAudio();
+            if (!audioCtx) return;
+
+            const bufferSize = audioCtx.sampleRate * 1.5;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = 3000;
+
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            noise.start();
+        }
+
+        // Play Alpine Horn Sound
+        function playAlpineHorn() {
+            initAudio();
+            if (!audioCtx) return;
+
+            const notes = [220, 277.18, 329.63, 440]; // Low brassy alpine chord
+            notes.forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (idx * 0.15));
+
+                gain.gain.setValueAtTime(0.001, audioCtx.currentTime + (idx * 0.15));
+                gain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + (idx * 0.15) + 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (idx * 0.15) + 1.2);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(audioCtx.currentTime + (idx * 0.15));
+                osc.stop(audioCtx.currentTime + (idx * 0.15) + 1.2);
+            });
+        }
+
+        async function fetchWeatherByCoords(lat, lon, locationName = "Your Location") {
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code&timezone=auto`;
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                if (data && data.current) {
+                    currentWeatherData = {
+                        temp: Math.round(data.current.temperature_2m),
+                        feelsLike: Math.round(data.current.apparent_temperature),
+                        weatherCode: data.current.weather_code,
+                        name: locationName,
+                        isSimulated: false
+                    };
+                    updateUI();
+                }
+            } catch (err) {
+                console.error("Failed to fetch weather:", err);
+                // Fallback
+                currentWeatherData.name = locationName + " (Offline Mode)";
+                updateUI();
+            }
+        }
+
+        async function searchCity() {
+            const query = document.getElementById('cityInput').value.trim();
+            if (!query) return;
+
+            document.getElementById('locationName').innerText = "Searching...";
+            try {
+                const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`;
+                const res = await fetch(geoUrl);
+                const data = await res.json();
+
+                if (data.results && data.results.length > 0) {
+                    const place = data.results[0];
+                    const name = `${place.name}${place.country ? ', ' + place.country : ''}`;
+                    await fetchWeatherByCoords(place.latitude, place.longitude, name);
+                } else {
+                    alert("Could not find city! Defaulting to Chamonix.");
+                    loadPreset('chamonix');
+                }
+            } catch (err) {
+                alert("Error finding city. Try again!");
+            }
+        }
+
+        function useGeolocation() {
+            if (navigator.geolocation) {
+                document.getElementById('locationName').innerText = "Locating you...";
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude, "Local Coordinates"),
+                    () => {
+                        alert("Geolocation denied or unavailable. Loading Chamonix!");
+                        loadPreset('chamonix');
+                    }
+                );
+            } else {
+                alert("Geolocation not supported by browser.");
+            }
+        }
+
+        function loadPreset(preset) {
+            if (preset === 'chamonix') {
+                fetchWeatherByCoords(45.9237, 6.8694, "Chamonix-Mont-Blanc, France");
+            } else if (preset === 'dubai') {
+                fetchWeatherByCoords(25.2048, 55.2708, "Dubai, UAE");
+            }
+        }
+
+        function getReasonForWeather(temp, code) {
+            // Is it cold / freezing?
+            if (temp <= 0) {
+                return `It is ${temp}°C outside. Freezing temperature renders human survival impossible without a minimum layer of 400g of melted Reblochon.`;
+            } else if (temp > 0 && temp <= 10) {
+                return `At ${temp}°C, humidity will penetrate your bones unless counteracted by the intense caloric radiance of fried lardons.`;
+            } else if (temp > 10 && temp <= 22) {
+                return `A mild ${temp}°C is dangerous: you might be tricked into eating a salad. Protect yourself immediately with double potatoes.`;
+            } else if (temp > 22 && temp <= 32) {
+                return `At ${temp}°C, sweat will help you naturally digest the fat faster. Turn on the AC and bake that dish!`;
+            } else {
+                return `🔥 Extreme Heatwave (${temp}°C)! Fire up the oven to establish thermal equilibrium with the sun. You are invincible!`;
+            }
+        }
+
+        function getWeatherIcon(temp, code) {
+            if (temp <= 0) return "❄️";
+            if (temp > 30) return "🔥";
+            if (code >= 51 && code <= 67) return "🌧️";
+            if (code >= 71 && code <= 77) return "🌨️";
+            if (code >= 95) return "🌩️";
+            return "🌤️";
+        }
+
+        function updateUI() {
+            const { temp, feelsLike, name, weatherCode } = currentWeatherData;
+
+            document.getElementById('locationName').innerText = name;
+            document.getElementById('currentTemp').innerText = `${temp}°C`;
+            document.getElementById('feelsLike').innerText = `Feels like ${feelsLike}°C`;
+            document.getElementById('weatherIcon').innerText = getWeatherIcon(temp, weatherCode);
+
+            // Verdict is ALWAYS YES!
+            document.getElementById('mainVerdict').innerText = "YES!";
+            document.getElementById('funnyReason').innerText = `"${getReasonForWeather(temp, weatherCode)}"`;
+
+            // Calculate absurdity gauges
+            let feasibility = 100;
+            if (temp < -5) feasibility = 120; // 120% necessary
+            if (temp > 35) feasibility = 105; // Extra sweat bonus
+
+            document.getElementById('feasibilityVal').innerText = `${feasibility}% FEASIBLE`;
+            document.getElementById('feasibilityBar').style.width = `${Math.min(100, feasibility)}%`;
+
+            // Reblochon viscosity
+            const viscosity = Math.max(85, 100 - Math.abs(temp - 5));
+            document.getElementById('viscosityVal').innerText = `Optimal (${viscosity}%)`;
+            document.getElementById('viscosityBar').style.width = `${viscosity}%`;
+        }
+
+        function updateSimulatedWeather() {
+            const temp = parseInt(document.getElementById('tempSlider').value);
+            const conditionIdx = parseInt(document.getElementById('conditionSlider').value);
+            const altitude = parseInt(document.getElementById('altitudeSlider').value);
+
+            const conditions = ["Snowing", "Rainy", "Foggy", "Sunny", "Scorching Heatwave"];
+            const codes = [71, 61, 45, 1, 0];
+
+            document.getElementById('sliderTempDisplay').innerText = `${temp}°C`;
+            document.getElementById('sliderConditionDisplay').innerText = conditions[conditionIdx];
+            document.getElementById('sliderAltitudeDisplay').innerText = `${altitude}m`;
+
+            currentWeatherData = {
+                temp: temp,
+                feelsLike: temp - Math.round(altitude / 500),
+                weatherCode: codes[conditionIdx],
+                name: `Custom Simulation (${altitude}m)`,
+                isSimulated: true
+            };
+
+            updateUI();
+        }
+
+        function resetWeatherSimulator() {
+            document.getElementById('tempSlider').value = -5;
+            document.getElementById('conditionSlider').value = 0;
+            document.getElementById('altitudeSlider').value = 2000;
+            loadPreset('chamonix');
+        }
+
+        function generateExcuse() {
+            const random = excuses[Math.floor(Math.random() * excuses.length)];
+            document.getElementById('excuseOutput').innerText = `"${random}"`;
+            playCowbellSound();
+        }
+
+        function copyExcuse() {
+            const text = document.getElementById('excuseOutput').innerText;
+            navigator.clipboard.writeText(text);
+            alert("Copied excuse to clipboard! Send it to your doctor or boss!");
+        }
+
+        function validateRecipe() {
+            const cream = document.getElementById('ing_cream').checked;
+            const reblochon = document.getElementById('ing_reblochon').checked;
+            const feedback = document.getElementById('recipeFeedback');
+
+            if (cream) {
+                feedback.className = "bg-red-500/20 border border-red-500/50 p-3 rounded-xl text-xs text-red-300 font-bold animate-pulse";
+                feedback.innerHTML = "🚨 <strong>SAVOYARD POLICE ALERT!</strong> Cream in Tartiflette is illegal in 14 French regions! Real Tartiflette relies ONLY on Reblochon melting power!";
+                playCowbellSound();
+            } else if (!reblochon) {
+                feedback.className = "bg-amber-500/20 border border-amber-500/50 p-3 rounded-xl text-xs text-amber-300 font-bold";
+                feedback.innerHTML = "⚠️ <strong>MISSING REBLOCHON:</strong> That is just potato gratin. Reblochon is MANDATORY.";
+            } else {
+                feedback.className = "bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-xl text-xs text-emerald-300 font-medium";
+                feedback.innerHTML = "✅ <strong>100% Authentic Savoyard Dish!</strong> Approved by the Haute-Savoie Council.";
+            }
+        }
+
+        const canvas = document.getElementById('cheeseCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class CheeseParticle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = -20;
+                this.size = Math.random() * 20 + 10;
+                this.speedY = Math.random() * 5 + 3;
+                this.speedX = Math.random() * 2 - 1;
+                this.emoji = ['🧀', '🥓', '🥔', '🧀', '❄️'][Math.floor(Math.random() * 5)];
+                this.rotation = Math.random() * 360;
+                this.rotSpeed = Math.random() * 4 - 2;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                this.rotation += this.rotSpeed;
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate((this.rotation * Math.PI) / 180);
+                ctx.font = `${this.size}px serif`;
+                ctx.fillText(this.emoji, 0, 0);
+                ctx.restore();
+            }
+        }
+
+        function triggerCheeseExplosion() {
+            playSizzleSound();
+            for (let i = 0; i < 40; i++) {
+                particles.push(new CheeseParticle());
+            }
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, index) => {
+                p.update();
+                p.draw();
+                if (p.y > canvas.height + 30) {
+                    particles.splice(index, 1);
+                }
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+
+        function openGithubModal() {
+            document.getElementById('githubModal').classList.remove('hidden');
+        }
+        function closeGithubModal() {
+            document.getElementById('githubModal').classList.add('hidden');
+        }
+
+        // Initialize default weather on window load
+        window.onload = function() {
+            loadPreset('chamonix');
+            generateExcuse();
+        };
+    </script>
+</body>
+</html>
