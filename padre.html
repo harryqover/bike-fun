@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-[#07080e] text-slate-100 selection:bg-amber-400 selection:text-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schaerbeek → Maredsous Sound Festival — Expédition Vélo & Padre Guilherme</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                    },
+                    colors: {
+                        festive: {
+                            gold: '#fbbf24',
+                            amber: '#f59e0b',
+                            purple: '#a855f7',
+                            violet: '#7c3aed',
+                            cyan: '#06b6d4',
+                            dark: '#07080e',
+                            card: '#0e111d',
+                            border: '#1e2438'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar and glassmorphism styling aligned with Maredsous Sound Festival */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #07080e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e2438;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a855f7;
+        }
+        .glass-panel {
+            background: rgba(14, 17, 29, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(22, 27, 46, 0.65);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .glow-gold {
+            box-shadow: 0 0 30px -5px rgba(245, 158, 11, 0.3);
+        }
+        .glow-purple {
+            box-shadow: 0 0 35px -5px rgba(168, 85, 247, 0.35);
+        }
+        .soundwave-bg {
+            background-image: radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.15), transparent 70%);
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col font-sans antialiased bg-[#07080e] soundwave-bg text-slate-100">
+
+    <!-- En-tête principal aux couleurs du Maredsous Sound Festival -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-festive-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 via-purple-600 to-cyan-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-purple-500/20">
+                    <i class="fa-solid fa-compact-disc animate-spin" style="animation-duration: 6s;"></i>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-white font-display flex items-center gap-2">
+                        MAREDSOUS <span class="text-amber-400">SOUND FESTIVAL</span> RIDE
+                    </h1>
+                    <p class="text-[11px] text-purple-300 font-medium flex items-center gap-1.5">
+                        <i class="fa-solid fa-bicycle text-cyan-400"></i> Schaerbeek <i class="fa-solid fa-arrow-right text-[9px] text-slate-500"></i> Abbaye de Maredsous
+                    </p>
+                </div>
+            </div>
+
+            <!-- Badges Festival -->
+            <div class="hidden md:flex items-center gap-3">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/15 text-purple-300 border border-purple-500/30">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping mr-2"></span>
+                    Vendredi 28 Août • En Route pour Padre Guilherme
+                </span>
+                <a href="https://maredsous-sound-festival.com/" target="_blank" rel="noopener" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 px-3 py-1 rounded-full border border-amber-500/40 transition-colors flex items-center gap-1.5">
+                    <i class="fa-solid fa-ticket"></i> Site Officiel du Festival
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- Bannière d'Accueil : Maredsous Sound Festival & Padre Guilherme -->
+        <section class="glass-panel rounded-3xl p-6 sm:p-8 relative overflow-hidden glow-purple border border-purple-500/30">
+            <div class="absolute -right-20 -top-20 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-20 -bottom-20 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-900/40 border border-purple-500/40 text-xs font-semibold text-purple-200">
+                        <i class="fa-solid fa-bolt text-amber-400"></i> RIDE & FESTIVAL ELECTRO-SPIRITUEL
+                    </div>
+                    <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight font-display leading-none">
+                        Objectif <span class="bg-gradient-to-r from-amber-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">Padre Guilherme</span> à Maredsous !
+                    </h2>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        Pédalez 100 km depuis Schaerbeek à travers le Brabant Wallon et la vallée de la Meuse pour rejoindre le **Maredsous Sound Festival** dans le cadre unique de l'Abbaye. Le prêtre-DJ portugais **Padre Guilherme** enflammera la scène principale de 21h30 à 23h30 pour un set électro d'anthologie !
+                    </p>
+
+                    <!-- Statut Météo Buienradar synthétique -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                        <div class="bg-festive-dark/80 rounded-2xl p-3 border border-festive-border">
+                            <span class="text-[11px] text-slate-400 block font-medium">Distance Vélo</span>
+                            <span class="text-xl font-bold text-white font-display">~100 km</span>
+                        </div>
+                        <div class="bg-festive-dark/80 rounded-2xl p-3 border border-festive-border">
+                            <span class="text-[11px] text-slate-400 block font-medium">Météo Route</span>
+                            <span class="text-xl font-bold text-emerald-400 font-display">Sec (0-3%)</span>
+                        </div>
+                        <div class="bg-festive-dark/80 rounded-2xl p-3 border border-festive-border">
+                            <span class="text-[11px] text-slate-400 block font-medium">Vent Porteur</span>
+                            <span class="text-xl font-bold text-cyan-400 font-display">SO 3-4 Bft</span>
+                        </div>
+                        <div class="bg-festive-dark/80 rounded-2xl p-3 border border-festive-border">
+                            <span class="text-[11px] text-slate-400 block font-medium">Concert Padre</span>
+                            <span class="text-xl font-bold text-amber-400 font-display">21:30</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte du DJ Set & Compte à Rebours -->
+                <div class="lg:col-span-5 bg-gradient-to-b from-purple-950/80 to-slate-950/90 rounded-2xl p-6 border border-purple-500/30 space-y-4 glow-gold">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
+                            ✨ HEADLINER EXCEPTIONNEL
+                        </span>
+                        <i class="fa-solid fa-music text-purple-400 text-xl"></i>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-black text-white font-display">Padre Guilherme (DJ Set)</h3>
+                        <p class="text-xs text-purple-300">Prêtre le jour, DJ électro la nuit • Scène Esplanade Abbaye</p>
+                    </div>
+
+                    <!-- Timetable rapide du vendredi 28 août -->
+                    <div class="space-y-2 bg-slate-950/80 p-3.5 rounded-xl border border-festive-border text-xs">
+                        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Programme du Vendredi 28 Août :</div>
+                        <div class="flex justify-between text-slate-300">
+                            <span>16h30 – 17h30</span>
+                            <span class="font-semibold text-white">Loutch (Deep / Melodic House)</span>
+                        </div>
+                        <div class="flex justify-between text-slate-300">
+                            <span>17h30 – 18h30</span>
+                            <span class="font-semibold text-white">Phonetikks</span>
+                        </div>
+                        <div class="flex justify-between text-slate-300">
+                            <span>18h30 – 19h30</span>
+                            <span class="font-semibold text-white">Alber-K</span>
+                        </div>
+                        <div class="flex justify-between text-amber-300 font-bold bg-amber-500/10 p-1.5 rounded-lg border border-amber-500/30 mt-1">
+                            <span>21h30 – 23h30</span>
+                            <span>✨ PADRE GUILHERME</span>
+                        </div>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-200 text-center font-medium">
+                        <i class="fa-solid fa-circle-info text-amber-400 mr-1"></i>
+                        Arrivée recommandée à l'Abbaye vers 18h00-19h00 pour profiter de l'ambiance et des stands Cashless !
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Simulateur d'Allure & d'Heures d'Arrivée (ETA) Synchronisé avec le Festival -->
+        <section class="glass-panel rounded-3xl p-6 sm:p-8 space-y-6 border border-festive-border">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-festive-border pb-5">
+                <div>
+                    <h3 class="text-xl font-bold text-white font-display flex items-center gap-2">
+                        <i class="fa-solid fa-stopwatch text-amber-400"></i> Simulateur d'Allure & Arrivée au Festival
+                    </h3>
+                    <p class="text-xs text-slate-400">Ajustez votre départ de Schaerbeek et votre vitesse moyenne pour calculer vos horaires d'étape et la météo Buienradar sur la route.</p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-4">
+                    <!-- Selecteur d'heure de depart -->
+                    <div>
+                        <label class="block text-xs text-slate-400 font-medium mb-1">Départ Schaerbeek (Vendredi)</label>
+                        <select id="departure-time" onchange="updateSimulatedETAs()" class="bg-festive-dark border border-purple-500/40 text-white text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                            <option value="12:00">12:00</option>
+                            <option value="12:30">12:30</option>
+                            <option value="13:00" selected>13:00</option>
+                            <option value="13:30">13:30</option>
+                            <option value="14:00">14:00</option>
+                            <option value="14:30">14:30</option>
+                        </select>
+                    </div>
+
+                    <!-- Slider de Vitesse Moyenne -->
+                    <div>
+                        <div class="flex justify-between text-xs text-slate-400 font-medium mb-1">
+                            <span>Vitesse Moyenne</span>
+                            <span id="speed-val" class="text-amber-400 font-bold">24 km/h</span>
+                        </div>
+                        <input type="range" id="avg-speed" min="18" max="32" value="24" step="1" oninput="updateSimulatedETAs()" class="w-36 sm:w-48 h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-400">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grille des Etapes -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4" id="waypoints-container">
+                <!-- Généré dynamiquement en JS -->
+            </div>
+        </section>
+
+        <!-- Profil d'Altitude & Prévisions Météo -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-8 glass-panel rounded-3xl p-6 sm:p-8 space-y-4 border border-festive-border">
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                        <h3 class="text-lg font-bold text-white font-display flex items-center gap-2">
+                            <i class="fa-solid fa-chart-area text-cyan-400"></i> Profil d'Altitude (D+ 650m) & Pluie Buienradar
+                        </h3>
+                        <p class="text-xs text-slate-400">Visualisation du dénivelé jusqu'à l'Abbaye de Maredsous et des probabilités de pluie.</p>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs">
+                        <span class="flex items-center gap-1 text-purple-400 font-medium"><span class="w-3 h-3 rounded bg-purple-500/30 border border-purple-400 inline-block"></span> Altitude (m)</span>
+                        <span class="flex items-center gap-1 text-cyan-400 font-medium"><span class="w-3 h-3 rounded bg-cyan-500/30 border border-cyan-400 inline-block"></span> Risque Pluie (%)</span>
+                    </div>
+                </div>
+
+                <div class="w-full h-72 relative">
+                    <canvas id="elevationWeatherChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Colonne conseils tactiques vélo & festival -->
+            <div class="lg:col-span-4 glass-panel rounded-3xl p-6 space-y-5 border border-festive-border">
+                <h3 class="text-lg font-bold text-white font-display flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb text-amber-400"></i> Conseils Tactiques Ride & Festival
+                </h3>
+
+                <div class="space-y-3.5 text-xs text-slate-300">
+                    <div class="p-3.5 rounded-2xl bg-festive-dark/80 border border-festive-border flex items-start gap-3">
+                        <div class="p-2 rounded-xl bg-amber-500/10 text-amber-400 mt-0.5">
+                            <i class="fa-solid fa-wind"></i>
+                        </div>
+                        <div>
+                            <strong class="text-white block font-semibold mb-0.5">Vent Trois-Quarts Dos (SO 3-4 Bft)</strong>
+                            <p class="text-slate-400">En pédalant vers le sud-est (160°), le vent du Sud-Ouest vous pousse favorablement de Bruxelles à Namur et Dinant !</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-festive-dark/80 border border-festive-border flex items-start gap-3">
+                        <div class="p-2 rounded-xl bg-purple-500/10 text-purple-400 mt-0.5">
+                            <i class="fa-solid fa-beer-mug-empty"></i>
+                        </div>
+                        <div>
+                            <strong class="text-white block font-semibold mb-0.5">Arrivée & Cashless à l'Abbaye</strong>
+                            <p class="text-slate-400">Des zones de parking vélo sécurisées et de recharge Cashless sont aménagées sur l'esplanade de Maredsous dès l'après-midi.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-festive-dark/80 border border-festive-border flex items-start gap-3">
+                        <div class="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 mt-0.5">
+                            <i class="fa-solid fa-shirt"></i>
+                        </div>
+                        <div>
+                            <strong class="text-white block font-semibold mb-0.5">Tenue de Soirée pour le Set Électro</strong>
+                            <p class="text-slate-400">Prévoyez un pull léger/veste dans vos sacoches. La température baisse vers 16°C pendant le set nocturne de Padre Guilherme à 21h30.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Détail des Prévisions Horaires Buienradar -->
+        <section class="space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <h3 class="text-xl font-bold text-white font-display flex items-center gap-2">
+                        <i class="fa-solid fa-cloud-sun-rain text-cyan-400"></i> Météo Buienradar aux Étapes du Parcours
+                    </h3>
+                    <p class="text-xs text-slate-400">Données Buienradar.be du vendredi après-midi (12h00 – 19h00).</p>
+                </div>
+                <div id="buienradar-sources" class="text-xs text-slate-400 flex flex-wrap gap-2">
+                    <span class="font-semibold text-slate-300">Liens Buienradar :</span>
+                    <a href="https://www.buienradar.be/weer/schaerbeek/be/2787149/5daagse" target="_blank" rel="noopener" class="text-amber-400 hover:underline">Schaerbeek</a> •
+                    <a href="https://www.buienradar.be/weer/gembloux/be/2797713/5daagse" target="_blank" rel="noopener" class="text-amber-400 hover:underline">Gembloux</a> •
+                    <a href="https://www.buienradar.be/weer/namen/be/2790471/5daagse" target="_blank" rel="noopener" class="text-amber-400 hover:underline">Namur</a> •
+                    <a href="https://www.buienradar.be/weer/dinant/be/2799357/5daagse" target="_blank" rel="noopener" class="text-amber-400 hover:underline">Dinant</a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <!-- Carte Étape 1: Schaerbeek -->
+                <div class="glass-card rounded-2xl p-5 border border-festive-border hover:border-purple-500/50 transition-all space-y-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">Km 0 • Départ</span>
+                            <h4 class="text-lg font-bold text-white mt-1 font-display">Schaerbeek</h4>
+                        </div>
+                        <i class="fa-solid fa-building-flag text-slate-500 text-xl"></i>
+                    </div>
+
+                    <div class="flex items-center justify-between bg-festive-dark/80 p-3 rounded-xl">
+                        <div>
+                            <span class="text-xs text-slate-400">Temp. Début</span>
+                            <div class="text-xl font-extrabold text-amber-400 font-display">20°C – 21°C</div>
+                        </div>
+                        <i class="fa-solid fa-sun-cloud text-amber-400 text-2xl"></i>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between text-slate-300">
+                            <span>Risque Pluie :</span>
+                            <span class="font-bold text-emerald-400">2% – 3%</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-emerald-400 h-full w-[3%]"></div>
+                        </div>
+                        <div class="flex justify-between text-slate-300 pt-1">
+                            <span>Vent :</span>
+                            <span class="font-semibold text-cyan-300">SO 3 Bft (15 km/h)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte Étape 2: Gembloux -->
+                <div class="glass-card rounded-2xl p-5 border border-festive-border hover:border-purple-500/50 transition-all space-y-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">Km 42 • Ravitaillement</span>
+                            <h4 class="text-lg font-bold text-white mt-1 font-display">Gembloux</h4>
+                        </div>
+                        <i class="fa-solid fa-wheat-awn text-slate-500 text-xl"></i>
+                    </div>
+
+                    <div class="flex items-center justify-between bg-festive-dark/80 p-3 rounded-xl">
+                        <div>
+                            <span class="text-xs text-slate-400">Temp. Mi-parcours</span>
+                            <div class="text-xl font-extrabold text-amber-400 font-display">20°C – 21°C</div>
+                        </div>
+                        <i class="fa-solid fa-cloud-sun text-amber-400 text-2xl"></i>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between text-slate-300">
+                            <span>Risque Pluie :</span>
+                            <span class="font-bold text-emerald-400">1% – 3%</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-emerald-400 h-full w-[2%]"></div>
+                        </div>
+                        <div class="flex justify-between text-slate-300 pt-1">
+                            <span>Vent :</span>
+                            <span class="font-semibold text-cyan-300">SO 4 Bft (20 km/h)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte Étape 3: Namur -->
+                <div class="glass-card rounded-2xl p-5 border border-festive-border hover:border-purple-500/50 transition-all space-y-4 relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">Km 65 • Vallée Meuse</span>
+                            <h4 class="text-lg font-bold text-white mt-1 font-display">Namur</h4>
+                        </div>
+                        <i class="fa-solid fa-chess-grotto text-slate-500 text-xl"></i>
+                    </div>
+
+                    <div class="flex items-center justify-between bg-festive-dark/80 p-3 rounded-xl">
+                        <div>
+                            <span class="text-xs text-slate-400">Temp. Vallée</span>
+                            <div class="text-xl font-extrabold text-amber-400 font-display">18°C – 19°C</div>
+                        </div>
+                        <i class="fa-solid fa-cloud-sun-rain text-cyan-400 text-2xl"></i>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between text-slate-300">
+                            <span>Risque Pluie :</span>
+                            <span class="font-bold text-amber-400">40% (12-14h) → 2% (15h+)</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-amber-400 h-full w-[40%]"></div>
+                        </div>
+                        <div class="flex justify-between text-slate-300 pt-1">
+                            <span>Vent :</span>
+                            <span class="font-semibold text-cyan-300">SO 4 Bft (22 km/h)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte Étape 4: Abbaye de Maredsous -->
+                <div class="glass-card rounded-2xl p-5 border border-purple-500/40 hover:border-amber-400 transition-all space-y-4 glow-purple">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-purple-300 bg-purple-500/20 px-2 py-0.5 rounded-full border border-purple-500/30">Km 100 • Festival</span>
+                            <h4 class="text-lg font-bold text-white mt-1 font-display">Abbaye Maredsous</h4>
+                        </div>
+                        <i class="fa-solid fa-church text-amber-400 text-xl"></i>
+                    </div>
+
+                    <div class="flex items-center justify-between bg-festive-dark/80 p-3 rounded-xl">
+                        <div>
+                            <span class="text-xs text-slate-400">Temp. Soirée</span>
+                            <div class="text-xl font-extrabold text-amber-400 font-display">16°C – 19°C</div>
+                        </div>
+                        <i class="fa-solid fa-compact-disc text-purple-400 text-2xl animate-spin" style="animation-duration: 8s;"></i>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between text-slate-300">
+                            <span>Risque Pluie Soirée :</span>
+                            <span class="font-bold text-emerald-400">2% – 3%</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-emerald-400 h-full w-[3%]"></div>
+                        </div>
+                        <div class="flex justify-between text-slate-300 pt-1">
+                            <span>DJ Set Padre :</span>
+                            <span class="font-bold text-amber-400">21:30 – 23:30</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Liste de Vérification Bikepacking & Festival -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Check-list Matériel -->
+            <div class="lg:col-span-7 glass-panel rounded-3xl p-6 sm:p-8 space-y-4 border border-festive-border">
+                <div class="flex items-center justify-between border-b border-festive-border pb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-white font-display flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-amber-400"></i> Check-list Vélo & Festival
+                        </h3>
+                        <p class="text-xs text-slate-400">Équipement recommandé pour 100 km de vélo + soirée au Maredsous Sound Festival.</p>
+                    </div>
+                    <span id="checklist-progress" class="text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
+                        0/7 Fait
+                    </span>
+                </div>
+
+                <div class="space-y-2.5 text-sm" id="checklist-items">
+                    <label class="flex items-center gap-3 p-3 rounded-xl bg-festive-dark/60 border border-festive-border cursor-pointer hover:bg-festive-dark transition-colors">
+                        <input type="checkbox" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 bg-slate-950 border-slate-700" onchange="updateChecklistProgress()">
+                        <span class="text-slate-200">Billets du Maredsous Sound Festival (Billetweb) + Pièce d'identité</span>
+                    </label>
+
+                    <label class="flex items-center gap-3 p-3 rounded-xl bg-festive-dark/60 border border-festive-border cursor-pointer hover:bg-festive-dark transition-colors">
+                        <input type="checkbox" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 bg-slate-950 border-slate-700" onchange="updateChecklistProgress()">
+                        <span class="text-slate-200">Recharge Cashless préparée & Smartphone chargé (pour Padre Guilherme!)</span>
+                    </label>
+
+                    <label class="flex items-center gap-3 p-3 rounded-xl bg-festive-dark/60 border border-festive-border cursor-pointer hover:bg-festive-dark transition-colors">
+                        <input type="checkbox" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 bg-slate-950 border-slate-700" onchange="updateChecklistProgress()">
+                        <span class="text-slate-200">Éclairages vélo avant & arrière ultra-puissants (retour nocturne ou déplacement camp)</span>
+                    </label>
+
+                    <label class="flex items-center gap-3 p-3 rounded-xl bg-festive-dark/60 border border-festive-border cursor-pointer hover:bg-festive-dark transition-colors">
+                        <input type="checkbox" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 bg-slate-950 border-slate-700" onchange="updateChecklistProgress()">
+                        <span class="text-slate-200">2x Bidons 750ml + Ravitaillement glucides (~50g/h)</span>
+                    </label>
+
+                    <label class="flex items-center gap-3 p-3 rounded-xl bg-festive-dark/60 border border-festive-border cursor-pointer hover:bg-festive-dark transition-colors">
+                        <input type="checkbox" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 bg-slate-950 border-slate-700" onchange="updateChecklistProgress()">
+                        <span class="text-slate-200">Tenue chaude / doudoune compacte pour la nuit (16°C durant le DJ Set)</span>
+                    </label>
+
+                    <label class="flex items-center gap-3 p-3 rounded-xl bg-festive-dark/60 border border-festive-border cursor-pointer hover:bg-festive-dark transition-colors">
+                        <input type="checkbox" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 bg-slate-950 border-slate-700" onchange="updateChecklistProgress()">
+                        <span class="text-slate-200">Kit de réparation (Chambres à air, mini-pompe, démonte-pneus)</span>
+                    </label>
+
+                    <label class="flex items-center gap-3 p-3 rounded-xl bg-festive-dark/60 border border-festive-border cursor-pointer hover:bg-festive-dark transition-colors">
+                        <input type="checkbox" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 bg-slate-950 border-slate-700" onchange="updateChecklistProgress()">
+                        <span class="text-slate-200">Bouchons d'oreilles concert & Antivol vélo léger</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Récompense & Infos Festival -->
+            <div class="lg:col-span-5 glass-panel rounded-3xl p-6 sm:p-8 space-y-4 border border-purple-500/30 relative overflow-hidden flex flex-col justify-between glow-gold">
+                <div class="space-y-3">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
+                        Expérience Festival & Bière d'Abbaye
+                    </span>
+                    <h3 class="text-2xl font-black text-white font-display">L'Abbaye de Maredsous vous attend</h3>
+                    <p class="text-slate-300 text-xs leading-relaxed">
+                        Célébrez votre exploit de 100 km à vélo au cœur de la communauté monastique. Profitez des concerts, de la bière de Maredsous et du Fromage d'Abbaye avant le grand set électro !
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <div class="bg-festive-dark/80 p-3 rounded-xl border border-festive-border text-center">
+                            <i class="fa-solid fa-beer-mug-empty text-amber-400 text-xl mb-1 block"></i>
+                            <span class="text-xs text-slate-300 font-medium">Bière Maredsous</span>
+                        </div>
+                        <div class="bg-festive-dark/80 p-3 rounded-xl border border-festive-border text-center">
+                            <i class="fa-solid fa-music text-purple-400 text-xl mb-1 block"></i>
+                            <span class="text-xs text-slate-300 font-medium">Concerts Live</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-slate-950/90 border border-festive-border flex items-center justify-between text-xs mt-4">
+                    <div class="flex items-center gap-2 text-slate-300">
+                        <i class="fa-solid fa-train text-cyan-400"></i>
+                        <span>Retour : Gare de Dinant ou Yvoir vers Bruxelles</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Pied de Page -->
+    <footer class="border-t border-festive-border glass-panel mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 space-y-2">
+            <p>Application non-officielle d'itinéraire vélo synchronisée avec les prévisions Buienradar et le Maredsous Sound Festival 2026.</p>
+            <p>© 2026 Schaerbeek to Maredsous Sound Festival • Bon ride et excellent festival avec Padre Guilherme !</p>
+        </div>
+    </footer>
+
+    <script>
+        // Data structure for Waypoints & Buienradar Forecasts
+        const waypoints = [
+            { id: 'schaerbeek', name: 'Schaerbeek', distanceKm: 0, temp: '20°C - 21°C', rainBase: [2, 2, 2, 3, 3, 3, 3], wind: 'SO 3 Bft', icon: 'fa-building-flag' },
+            { id: 'gembloux', name: 'Gembloux', distanceKm: 42, temp: '20°C - 21°C', rainBase: [1, 1, 1, 2, 2, 2, 3], wind: 'SO 4 Bft', icon: 'fa-wheat-awn' },
+            { id: 'namur', name: 'Namur', distanceKm: 65, temp: '18°C - 19°C', rainBase: [40, 45, 43, 2, 2, 2, 2], wind: 'SO 4 Bft', icon: 'fa-chess-grotto' },
+            { id: 'dinant', name: 'Dinant', distanceKm: 88, temp: '19°C - 20°C', rainBase: [2, 2, 3, 3, 3, 2, 2], wind: 'SO 4 Bft', icon: 'fa-monument' },
+            { id: 'maredsous', name: 'Maredsous Festival', distanceKm: 100, temp: '19°C - 20°C', rainBase: [2, 2, 3, 3, 3, 2, 2], wind: 'SO 3 Bft', icon: 'fa-church' }
+        ];
+
+        function parseTimeToMinutes(timeStr) {
+            const [h, m] = timeStr.split(':').map(Number);
+            return h * 60 + m;
+        }
+
+        function formatMinutesToTime(totalMin) {
+            const h = Math.floor(totalMin / 60) % 24;
+            const m = Math.round(totalMin % 60);
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+        }
+
+        function updateSimulatedETAs() {
+            const depTimeStr = document.getElementById('departure-time').value;
+            const avgSpeed = parseInt(document.getElementById('avg-speed').value);
+            document.getElementById('speed-val').innerText = `${avgSpeed} km/h`;
+
+            const depMin = parseTimeToMinutes(depTimeStr);
+            const container = document.getElementById('waypoints-container');
+            container.innerHTML = '';
+
+            waypoints.forEach((wp) => {
+                const travelTimeHours = wp.distanceKm / avgSpeed;
+                const etaMin = depMin + travelTimeHours * 60;
+                const etaStr = formatMinutesToTime(etaMin);
+
+                // Hour index calculation
+                const hourIndex = Math.min(Math.max(Math.floor((etaMin - 720) / 60), 0), 6);
+                const rainProb = wp.rainBase[hourIndex] || 2;
+
+                let statusColor = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+                let rainBadge = '<span class="text-emerald-400 font-bold"><i class="fa-solid fa-droplet-slash mr-1"></i>Sec</span>';
+                
+                if (rainProb > 20) {
+                    statusColor = 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+                    rainBadge = `<span class="text-amber-400 font-bold"><i class="fa-solid fa-cloud-rain mr-1"></i>${rainProb}% Pluie</span>`;
+                }
+
+                // Highlight Maredsous stage arrival
+                let extraTag = '';
+                if (wp.id === 'maredsous') {
+                    extraTag = `<div class="mt-2 text-[10px] font-bold text-amber-300 bg-purple-900/40 p-1.5 rounded-lg border border-purple-500/30 text-center">
+                        <i class="fa-solid fa-star text-amber-400"></i> Padre Guilherme à 21:30
+                    </div>`;
+                }
+
+                const cardHtml = `
+                    <div class="glass-card rounded-2xl p-4 border border-festive-border space-y-3 relative">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Km ${wp.distanceKm}</span>
+                            <span class="text-xs font-bold px-2 py-0.5 rounded-full border ${statusColor}">ETA ${etaStr}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid ${wp.icon} text-amber-400 text-base"></i>
+                            <h4 class="font-bold text-white text-sm font-display">${wp.name}</h4>
+                        </div>
+                        <div class="pt-2 border-t border-festive-border flex items-center justify-between text-xs">
+                            <span class="text-slate-400">Météo :</span>
+                            ${rainBadge}
+                        </div>
+                        ${extraTag}
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            });
+        }
+
+        function updateChecklistProgress() {
+            const checkboxes = document.querySelectorAll('#checklist-items input[type="checkbox"]');
+            let checkedCount = 0;
+            checkboxes.forEach(cb => {
+                if (cb.checked) checkedCount++;
+            });
+            document.getElementById('checklist-progress').innerText = `${checkedCount}/${checkboxes.length} Fait`;
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('elevationWeatherChart').getContext('2d');
+            
+            const routeDistances = [0, 10, 20, 30, 42, 55, 65, 75, 88, 95, 100];
+            const elevationData = [45, 60, 95, 140, 165, 180, 85, 95, 90, 190, 230];
+            const rainData = [2, 2, 2, 2, 2, 10, 40, 15, 2, 3, 3];
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: routeDistances.map(d => `${d} km`),
+                    datasets: [
+                        {
+                            label: 'Altitude (mètres)',
+                            data: elevationData,
+                            borderColor: '#a855f7',
+                            backgroundColor: 'rgba(168, 85, 247, 0.2)',
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'yElevation',
+                            pointBackgroundColor: '#fbbf24',
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Risque de Pluie (%)',
+                            data: rainData,
+                            borderColor: '#06b6d4',
+                            borderDash: [5, 5],
+                            backgroundColor: 'rgba(6, 182, 212, 0.05)',
+                            fill: false,
+                            tension: 0.3,
+                            yAxisID: 'yRain',
+                            pointBackgroundColor: '#06b6d4',
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#07080e',
+                            titleColor: '#fbbf24',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#a855f7',
+                            borderWidth: 1,
+                            padding: 12,
+                            boxPadding: 6
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 11 }
+                            }
+                        },
+                        yElevation: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Altitude (mètres)',
+                                color: '#a855f7',
+                                font: { size: 11, weight: 'bold' }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 10 }
+                            }
+                        },
+                        yRain: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            min: 0,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Risque Pluie (%)',
+                                color: '#06b6d4',
+                                font: { size: 11, weight: 'bold' }
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 10 },
+                                callback: function(value) { return value + '%'; }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        window.onload = function() {
+            updateSimulatedETAs();
+            initChart();
+        };
+    </script>
+</body>
+</html>
