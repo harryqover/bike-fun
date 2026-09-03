@@ -8,7 +8,7 @@
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // Check local storage for theme to prevent FOUC (Flash of Unstyled Content)
+        // Check local storage for theme to prevent FOUC
         if (localStorage.getItem('theme') === 'light') {
             document.documentElement.classList.remove('dark');
         }
@@ -125,6 +125,11 @@
                 <i id="theme-icon" data-lucide="sun" class="w-4 h-4"></i>
             </button>
 
+            <!-- Function Library Button -->
+            <button id="functions-btn" onclick="openFunctionsModal()" class="text-sm text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition flex items-center gap-1.5 bg-gray-100 dark:bg-[#333333] hover:bg-gray-200 dark:hover:bg-darkBorder px-3 py-1.5 rounded border border-gray-300 dark:border-[#4a4a4a]">
+                <i data-lucide="function-square" class="w-4 h-4 text-purple-500"></i> Functions (<span id="func-count-badge">0</span>)
+            </button>
+
             <!-- Examples Dropdown -->
             <div class="relative">
                 <button id="examples-btn" onclick="toggleDropdown()" class="text-sm text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition flex items-center gap-1.5 bg-gray-100 dark:bg-[#333333] hover:bg-gray-200 dark:hover:bg-darkBorder px-3 py-1.5 rounded border border-gray-300 dark:border-[#4a4a4a]">
@@ -181,12 +186,16 @@
             <!-- Top Right: JSONata Expression -->
             <div id="pane-top-right" class="flex flex-col h-full bg-white dark:bg-darkBg overflow-hidden transition-colors">
                 <div class="bg-gray-100 dark:bg-darkPanel p-2 px-4 flex justify-between items-center shrink-0 h-10 border-b border-gray-200 dark:border-transparent">
-                    <h2 class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                        <i data-lucide="code-2" class="w-4 h-4 text-[#007acc]"></i> JSONata Expression
-                    </h2>
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                            <i data-lucide="code-2" class="w-4 h-4 text-[#007acc]"></i> JSONata Expression
+                        </h2>
+                        <!-- Active Functions Tags -->
+                        <div id="active-functions-tags" class="flex gap-1 items-center overflow-x-auto max-w-[250px]"></div>
+                    </div>
                     <div class="flex gap-2">
-                        <button onclick="minifyQuery()" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition p-1 rounded hover:bg-gray-200 dark:hover:bg-darkHover" title="Make 1-Line (Keep \n breaks)">
-                            <i data-lucide="minimize-2" class="w-4 h-4"></i>
+                        <button id="minify-btn" onclick="toggleMinifyQuery()" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition p-1 rounded hover:bg-gray-200 dark:hover:bg-darkHover" title="Toggle 1-Line / Revert">
+                            <i id="minify-icon" data-lucide="minimize-2" class="w-4 h-4"></i>
                         </button>
                         <button onclick="copyEditorContent(queryEditor)" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition p-1 rounded hover:bg-gray-200 dark:hover:bg-darkHover" title="Copy Query">
                             <i data-lucide="copy" class="w-4 h-4"></i>
@@ -219,6 +228,31 @@
         </section>
     </main>
 
+    <!-- Function Library Modal -->
+    <div id="functions-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-darkPanel border border-gray-200 dark:border-darkBorder rounded-lg shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+            <div class="p-4 border-b border-gray-200 dark:border-darkBorder flex justify-between items-center bg-gray-50 dark:bg-darkBg">
+                <h3 class="font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                    <i data-lucide="function-square" class="w-5 h-5 text-purple-500"></i> JSONata Function Library
+                </h3>
+                <button onclick="closeFunctionsModal()" class="text-gray-500 hover:text-black dark:hover:text-white p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-4 flex-1 overflow-y-auto space-y-4" id="functions-list">
+                <!-- Function items rendered dynamically -->
+            </div>
+            <div class="p-4 border-t border-gray-200 dark:border-darkBorder bg-gray-50 dark:bg-darkBg flex justify-between items-center">
+                <button onclick="addNewFunction()" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded text-sm font-medium transition flex items-center gap-1.5">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Add Function
+                </button>
+                <button onclick="closeFunctionsModal()" class="bg-gray-200 dark:bg-darkBorder text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-darkHover px-4 py-1.5 rounded text-sm font-medium transition">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- IDE Status Bar -->
     <footer id="status-bar" class="bg-[#007acc] text-white text-xs px-3 py-1 flex justify-between items-center z-20 shrink-0 transition-colors duration-300">
         <div class="flex items-center gap-4">
@@ -243,6 +277,16 @@
     <script>
         // Google Apps Script Web App URL
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyDjxN1zoLbdXC-NCn26hVof4B9sOretgNnjkSX8vYF12X6eE-obs0hINx1LCEGd5VP5A/exec";
+
+        // --- Default Custom Functions ---
+        const DEFAULT_FUNCTIONS = [
+            {
+                id: 'func_age',
+                name: '$age',
+                code: '$age := function($b, $r) {\n    $floor(($toMillis($r) - $toMillis($b)) / 31556926000)\n};',
+                enabled: true
+            }
+        ];
 
         // --- Theme Logic ---
         let isDark = localStorage.getItem('theme') !== 'light';
@@ -314,6 +358,12 @@
 
         // --- Snippets & Examples Library ---
         const snippetLibrary = {
+            "age": {
+                label: "Custom Age Function ($age)",
+                icon: "user-check",
+                data: { "birthdate": "1995-06-15T00:00:00.000Z", "referenceDate": "2026-01-01T00:00:00.000Z" },
+                query: "/* Calculates age using active custom library function $age(dob, ref) */\n$age(birthdate, referenceDate)"
+            },
             "basic": {
                 label: "Basic Filtering",
                 icon: "filter",
@@ -389,7 +439,114 @@
             return function(...args) { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), wait); };
         }
 
-        // --- Initialize Monaco Editors with Custom Language ---
+        // --- Custom Function Library Storage & UI Logic ---
+        function getCustomFunctions() {
+            const saved = localStorage.getItem('jsonata_custom_functions');
+            if (!saved) {
+                localStorage.setItem('jsonata_custom_functions', JSON.stringify(DEFAULT_FUNCTIONS));
+                return DEFAULT_FUNCTIONS;
+            }
+            try {
+                return JSON.parse(saved);
+            } catch (e) {
+                return DEFAULT_FUNCTIONS;
+            }
+        }
+
+        function saveCustomFunctions(funcs) {
+            localStorage.setItem('jsonata_custom_functions', JSON.stringify(funcs));
+            renderFunctionsUI();
+            evaluate();
+        }
+
+        function renderFunctionsUI() {
+            const funcs = getCustomFunctions();
+            const activeFuncs = funcs.filter(f => f.enabled);
+            
+            // Badge Count
+            const badge = document.getElementById('func-count-badge');
+            if (badge) badge.innerText = activeFuncs.length;
+
+            // Visual Tags
+            const tagsContainer = document.getElementById('active-functions-tags');
+            if (tagsContainer) {
+                tagsContainer.innerHTML = activeFuncs.map(f => 
+                    `<span class="bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-300 text-[10px] font-mono font-medium px-1.5 py-0.5 rounded border border-purple-200 dark:border-purple-700/50 shrink-0" title="Active Custom Function">${f.name || 'fn'}</span>`
+                ).join('');
+            }
+
+            // Modal List
+            const list = document.getElementById('functions-list');
+            if (!list) return;
+
+            if (funcs.length === 0) {
+                list.innerHTML = `<p class="text-sm text-gray-500 dark:text-gray-400 text-center py-6">No custom functions defined. Click "Add Function" to create one.</p>`;
+                return;
+            }
+
+            list.innerHTML = funcs.map((f, index) => `
+                <div class="border border-gray-200 dark:border-darkBorder rounded-lg p-3 bg-gray-50 dark:bg-darkBg flex flex-col gap-2 shadow-sm">
+                    <div class="flex justify-between items-center gap-2">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" ${f.enabled ? 'checked' : ''} onchange="toggleFunctionEnabled(${index})" class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer h-4 w-4">
+                            <input type="text" value="${f.name || ''}" onchange="updateFunctionName(${index}, this.value)" class="bg-white dark:bg-darkPanel border border-gray-300 dark:border-darkBorder rounded px-2 py-0.5 text-xs font-mono font-bold text-purple-600 dark:text-purple-400 focus:outline-none focus:border-purple-500" placeholder="$funcName">
+                        </div>
+                        <button onclick="deleteFunction(${index})" class="text-gray-400 hover:text-red-500 transition p-1" title="Delete Function">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <textarea onchange="updateFunctionCode(${index}, this.value)" rows="3" class="w-full bg-white dark:bg-darkPanel border border-gray-300 dark:border-darkBorder rounded p-2 text-xs font-mono text-gray-800 dark:text-gray-200 focus:outline-none focus:border-purple-500 leading-relaxed">${f.code}</textarea>
+                </div>
+            `).join('');
+
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function toggleFunctionEnabled(index) {
+            const funcs = getCustomFunctions();
+            funcs[index].enabled = !funcs[index].enabled;
+            saveCustomFunctions(funcs);
+        }
+
+        function updateFunctionName(index, val) {
+            const funcs = getCustomFunctions();
+            funcs[index].name = val;
+            saveCustomFunctions(funcs);
+        }
+
+        function updateFunctionCode(index, val) {
+            const funcs = getCustomFunctions();
+            funcs[index].code = val;
+            saveCustomFunctions(funcs);
+        }
+
+        function deleteFunction(index) {
+            const funcs = getCustomFunctions();
+            funcs.splice(index, 1);
+            saveCustomFunctions(funcs);
+        }
+
+        function addNewFunction() {
+            const funcs = getCustomFunctions();
+            funcs.push({
+                id: 'func_' + Date.now(),
+                name: '$customFunc',
+                code: '$customFunc := function($x) {\n    $x\n};',
+                enabled: true
+            });
+            saveCustomFunctions(funcs);
+        }
+
+        function openFunctionsModal() {
+            renderFunctionsUI();
+            document.getElementById('functions-modal').classList.remove('hidden');
+        }
+
+        function closeFunctionsModal() {
+            document.getElementById('functions-modal').classList.add('hidden');
+        }
+
+        // --- Initialize Monaco Editors ---
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' }});
         require(['vs/editor/editor.main'], async function() {
             
@@ -487,6 +644,7 @@
                 ...commonOptions, value: '', language: 'json', readOnly: true, wordWrap: "on"
             });
 
+            renderFunctionsUI();
             await loadState();
 
             jsonEditor.onDidChangeModelContent(debounce(evaluate, 200));
@@ -554,7 +712,16 @@
             }
 
             try {
-                const expression = jsonata(queryText);
+                // Attach enabled custom functions from library
+                const activeFuncs = getCustomFunctions().filter(f => f.enabled && f.code.trim().length > 0);
+                let finalQuery = queryText;
+
+                if (activeFuncs.length > 0) {
+                    const funcsHeader = activeFuncs.map(f => f.code.trim()).join('\n');
+                    finalQuery = `(\n${funcsHeader}\n${queryText}\n)`;
+                }
+
+                const expression = jsonata(finalQuery);
                 const result = await expression.evaluate(data);
                 
                 if (result === undefined) {
@@ -577,7 +744,7 @@
             errorOverlay.classList.remove('hidden');
         }
 
-        // --- New Feature: Reduce JSON based on Expression ---
+        // --- Feature: Reduce JSON based on Expression ---
         function pruneJSONData() {
             if (!jsonEditor || !queryEditor) return;
             const queryStr = queryEditor.getValue();
@@ -619,14 +786,30 @@
             showToast("JSON successfully reduced based on query keys!");
         }
 
-        // --- New Feature: Minify to 1 Line ---
-        function minifyQuery() {
+        // --- Feature: Minify Toggle & Revert ---
+        let unminifiedQueryCache = null;
+
+        function toggleMinifyQuery() {
             if (!queryEditor) return;
-            let query = queryEditor.getValue();
-            query = query.replace(/"/g, '\\"');
-            query = query.replace(/\r?\n/g, '\\n');
-            queryEditor.setValue(query.trim());
-            showToast("Expression condensed to 1 line!");
+            const icon = document.getElementById('minify-icon');
+            
+            if (unminifiedQueryCache !== null) {
+                // Revert to original expression
+                queryEditor.setValue(unminifiedQueryCache);
+                unminifiedQueryCache = null;
+                if (icon) icon.setAttribute('data-lucide', 'minimize-2');
+                showToast("Reverted to original multi-line expression!");
+            } else {
+                // Minify expression to 1 line
+                unminifiedQueryCache = queryEditor.getValue();
+                let query = unminifiedQueryCache;
+                query = query.replace(/"/g, '\\"');
+                query = query.replace(/\r?\n/g, '\\n');
+                queryEditor.setValue(query.trim());
+                if (icon) icon.setAttribute('data-lucide', 'rotate-ccw');
+                showToast("Expression condensed to 1 line! Click again to revert.");
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         async function loadState() {
@@ -777,7 +960,7 @@
             
             const rect = document.getElementById('status-bar').getBoundingClientRect();
             const startY = rect.top;
-            const startX = window.innerWidth - 100; // General area of the version number
+            const startX = window.innerWidth - 100;
 
             for(let i=0; i<60; i++) {
                 const el = document.createElement('div');
@@ -816,7 +999,7 @@
                 let p = eggParticles[i];
                 if (p.opacity > 0) {
                     active = true;
-                    p.vy += 0.4; // gravity
+                    p.vy += 0.4;
                     p.x += p.vx;
                     p.y += p.vy;
                     p.rot += p.vRot;
