@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AG 2026 - Communauté de l'Acier | Le Compte Rendu Officiel</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Space Grotesk & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          },
+          colors: {
+            steel: {
+              50: '#f4f6f8',
+              100: '#e5e9ed',
+              200: '#cbd5e1',
+              500: '#64748b',
+              800: '#1e293b',
+              900: '#0f172a',
+              950: '#020617',
+            },
+            beer: '#f59e0b',
+            neon: '#06b6d4'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbar and subtle glowing gradients */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    .badge-glow {
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.35);
+    }
+    .neon-border {
+      box-shadow: 0 0 20px -5px rgba(6, 182, 212, 0.4);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen antialiased selection:bg-amber-500 selection:text-slate-950">
+
+  <header class="sticky top-0 z-50 backdrop-blur-md bg-slate-950/80 border-b border-slate-800/80">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">⚡</span>
+        <div>
+          <span class="font-display font-bold text-lg text-amber-400 tracking-tight">COMMUNAUTÉ DE L'ACIER</span>
+          <span class="hidden sm:inline-block ml-2 text-xs font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-400">AG Septembre 2026</span>
+        </div>
+      </div>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
+        <a href="#gouvernance" class="hover:text-amber-400 transition-colors">Gouvernance</a>
+        <a href="#talons" class="hover:text-amber-400 transition-colors">Les Talons</a>
+        <a href="#intermezzo" class="hover:text-amber-400 transition-colors">Intermezzo & Rock</a>
+        <a href="#mollets" class="hover:text-amber-400 transition-colors">Les Mollets</a>
+        <a href="#outils" class="hover:text-amber-400 transition-colors">Sondages & Outils</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <button onclick="copierResumeWhatsApp()" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-semibold shadow-lg shadow-emerald-900/30 transition-all hover:scale-105 active:scale-95">
+          <i data-lucide="share-2" class="w-4 h-4"></i>
+          <span>Partager WhatsApp</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-16">
+    
+    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/40 p-8 sm:p-12 border border-slate-800 shadow-2xl">
+      <div class="absolute -right-16 -top-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 text-amber-300 text-xs font-semibold uppercase tracking-wider mb-6 border border-amber-400/20">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+        Procès-Verbal Officiel non censuré
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-display font-extrabold text-white tracking-tight mb-4">
+        L'AG des Notables de l'Acier
+      </h1>
+      <p class="text-slate-400 text-lg sm:text-xl max-w-3xl leading-relaxed mb-8">
+        Rapport solennel des délibérations sportives, houblonnées et stratégiques tenues au domicile de <strong class="text-slate-200">Flambouille (Arnaud)</strong>, précédées du traditionnel tournoi de pétanque sur les graviers du <strong class="text-slate-200">New Terdelt</strong>. Ambiance officielle certifiée : <em>constructive, souriante et enivrante</em>.
+      </p>
+
+      <!-- Alert Box Absentéisme -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <div class="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-4 flex items-start gap-3.5">
+          <div class="p-2.5 bg-rose-500/20 text-rose-400 rounded-xl">
+            <i data-lucide="user-x" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-200">Le Président (Laurent)</h4>
+            <p class="text-xs text-slate-400 mt-1">Déclaré grand absent. Débats légèrement plus anarchiques que la normale.</p>
+          </div>
+        </div>
+
+        <div class="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-4 flex items-start gap-3.5">
+          <div class="p-2.5 bg-amber-500/20 text-amber-400 rounded-xl">
+            <i data-lucide="trophy" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-200">Champions de Pétanque</h4>
+            <p class="text-xs text-slate-400 mt-1">Sacre incontesté de <strong>Pandouille (Arnaud)</strong> & <strong>Alex</strong> sur les graviers du New Terdelt.</p>
+          </div>
+        </div>
+
+        <div class="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-4 flex items-start gap-3.5">
+          <div class="p-2.5 bg-emerald-500/20 text-emerald-400 rounded-xl">
+            <i data-lucide="wine" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-200">Cave de Pandouille</h4>
+            <p class="text-xs text-slate-400 mt-1">Grands crus dégustés. Boissons offertes, lien de paiement toujours en attente.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gouvernance" class="space-y-6">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+            01
+          </div>
+          <div>
+            <h2 class="text-2xl font-display font-bold text-white">Gouvernance, Mercato & Protocole</h2>
+            <p class="text-xs sm:text-sm text-slate-400">Intronisations, nouveaux rôles et jurisprudences historiques</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Kevin Card -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between hover:border-slate-700 transition-all">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold px-2.5 py-1 bg-emerald-500/20 text-emerald-400 rounded-full border border-emerald-500/30">Admis à l'unanimité</span>
+              <span class="text-2xl">🤝</span>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-white">Recrue : Kevin</h3>
+              <p class="text-xs text-slate-400">Intégré au WhatsApp le 10 Septembre</p>
+            </div>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              Accepté sans réserve pour son niveau de <strong>jovialité extrême</strong>, valeur cardinale et non négociable du collectif.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800">
+            <label class="block text-xs font-semibold text-slate-400 mb-1 flex justify-between">
+              <span>Jovialité Requise</span>
+              <span class="text-amber-400 font-mono">100%</span>
+            </label>
+            <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+              <div class="bg-gradient-to-r from-amber-400 to-emerald-400 h-full rounded-full w-full"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Matteo Card -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between hover:border-slate-700 transition-all">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold px-2.5 py-1 bg-indigo-500/20 text-indigo-300 rounded-full border border-indigo-500/30">L'Apparition Célèbre</span>
+              <span class="text-2xl">🚴‍♂️</span>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-white">Matteo</h3>
+              <p class="text-xs text-slate-400">Invité de marque & cycliste en herbe</p>
+            </div>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              Un immense merci à <strong>Matteo</strong> pour sa présence à l'AG ! L'assemblée émet le vœu officiel de le recroiser <em>avant</em> l'AG 2027. Très bon signe : il manifeste déjà un vif intérêt pour le long week-end vélo !
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+            <span>Intérêt WE Vélo 2027</span>
+            <span class="font-bold text-indigo-400">Confirmé 🔥</span>
+          </div>
+        </div>
+
+        <!-- Flipper Card -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between hover:border-slate-700 transition-all">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold px-2.5 py-1 bg-cyan-500/20 text-cyan-400 rounded-full border border-cyan-500/30">Nomination officielle</span>
+              <span class="text-2xl">🐬</span>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-white">Harry alias "Flipper"</h3>
+              <p class="text-xs text-slate-400">Ministre de l'Équipement & Rockeur</p>
+            </div>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              Le surnom de <strong>Flipper</strong> est définitivement acté. Harry pilote l'appel d'offre des maillots. Cahier des charges : <em>Laine bio 100% belge</em> 🐑.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+            <span>Surnom validé</span>
+            <span class="font-bold text-cyan-400">À la majorité absolue</span>
+          </div>
+        </div>
+
+        <!-- Alex Chignon Jurisprudence -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between hover:border-slate-700 transition-all">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold px-2.5 py-1 bg-purple-500/20 text-purple-400 rounded-full border border-purple-500/30">Jurisprudence</span>
+              <span class="text-2xl">💇‍♂️</span>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-white">L'Affaire du Chignon</h3>
+              <p class="text-xs text-slate-400">Alexandre Waeyenbergh</p>
+            </div>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              Face aux interrogations sur les critères d'entrée, Alexandre a rappelé avoir lourdement bossé son chignon à l'époque où la coiffure faisait foi pour être adoubé.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+            <span>Statut capillaire</span>
+            <span class="font-bold text-purple-400">Légendaire</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="talons" class="space-y-6">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+            02
+          </div>
+          <div>
+            <h2 class="text-2xl font-display font-bold text-white">Chapitre 1 : Les Talons 🦶</h2>
+            <p class="text-xs sm:text-sm text-slate-400">Courir vite, souffrir ensemble et marathon post-été 2027</p>
+          </div>
+        </div>
+        <a href="http://harryqover.github.io/bike-fun/agenda-acier.html" target="_blank" class="hidden sm:flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 transition">
+          <i data-lucide="calendar" class="w-4 h-4"></i>
+          Agenda Partagé
+        </a>
+      </div>
+
+      <!-- Action callout agenda -->
+      <div class="bg-gradient-to-r from-amber-500/10 via-slate-900 to-slate-900 border border-amber-500/30 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <div class="p-3 bg-amber-500/20 text-amber-400 rounded-xl">
+            <i data-lucide="bell" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-white text-base">Consigne Importante : Marquez vos présences !</h4>
+            <p class="text-sm text-slate-400">Toutes les dates des sorties de François sont en ligne sur le calendrier partagé.</p>
+          </div>
+        </div>
+        <a href="http://harryqover.github.io/bike-fun/agenda-acier.html" target="_blank" class="w-full sm:w-auto text-center px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition">
+          Ouvrir Agenda-Acier.html →
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Expéditions confirmées -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <i data-lucide="compass" class="w-5 h-5 text-amber-400"></i>
+            Expéditions Officielles Validées (Night Trails)
+          </h3>
+          <ul class="space-y-3">
+            <li class="p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/50 space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-slate-200 flex items-center gap-2">
+                  <span>🌙 Night Trail de Lasne</span>
+                </span>
+                <span class="text-xs px-2.5 py-1 bg-amber-500/20 text-amber-300 font-bold rounded-lg">Vendredi 13/11</span>
+              </div>
+              <p class="text-xs text-slate-400">Sortie nocturne à la frontale dans les sentiers lasnois.</p>
+            </li>
+
+            <li class="p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/50 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-slate-200 flex items-center gap-2">
+                  <span>🌙 Night Trail de Nethen</span>
+                </span>
+                <span class="text-xs px-2.5 py-1 bg-amber-500/20 text-amber-300 font-bold rounded-lg">Vendredi 27/11</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-purple-950/40 border border-purple-500/30 flex items-start gap-2">
+                <span class="text-base">🪩</span>
+                <p class="text-xs text-purple-200 leading-snug">
+                  <strong>After obligatoire :</strong> Directement après le trail, direction la <strong>Soirée des Parents à St-Dominique (St-Do)</strong> pour enflammer le dancefloor jusqu'au bout de la nuit !
+                </p>
+              </div>
+            </li>
+
+            <li class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/50">
+              <div>
+                <span class="font-semibold text-slate-200">Epic Trail Baraque de Fraiture</span>
+                <p class="text-xs text-slate-400">L'épreuve reine ardennaise</p>
+              </div>
+              <span class="text-xs px-2.5 py-1 bg-cyan-500/20 text-cyan-300 font-bold rounded-lg">10/04</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Marathon 2027 Shortlist (No votes) -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between space-y-6">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <i data-lucide="flame" class="w-5 h-5 text-rose-400"></i>
+                Le Chantier Marathon 2027
+              </h3>
+              <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">Décision AG : Après l'été</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-4">
+              L'assemblée générale a <strong>formellement voté et validé</strong> que le calvaire des 42,195 km se déroulera <strong>après l'été 2027</strong>. Les trois villes candidates sont en lice :
+            </p>
+
+            <div class="space-y-3">
+              <div class="p-3.5 rounded-2xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-sm text-slate-200">🇳🇱 Amsterdam (31/10/2027)</div>
+                  <div class="text-xs text-slate-400">Canaux, parcours ultra-plat, ambiance hollandaise garantie</div>
+                </div>
+                <span class="text-xs font-medium px-2 py-1 rounded bg-slate-900 text-amber-400 border border-slate-800">Option 1</span>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-sm text-slate-200">🇧🇪 Bruges</div>
+                  <div class="text-xs text-slate-400">La Venise du Nord, pavés historiques & gaufres post-effort</div>
+                </div>
+                <span class="text-xs font-medium px-2 py-1 rounded bg-slate-900 text-amber-400 border border-slate-800">Option 2</span>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-sm text-slate-200">🇧🇪 Anvers</div>
+                  <div class="text-xs text-slate-400">Port, tunnels de l'Escaut et bières locales De Koninck</div>
+                </div>
+                <span class="text-xs font-medium px-2 py-1 rounded bg-slate-900 text-amber-400 border border-slate-800">Option 3</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-2xl bg-slate-950/60 border border-slate-800 text-center">
+            <span class="text-xs text-slate-400">
+              Arbitrage final de la ville programmé lors de la prochaine concertation officielle.
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="intermezzo" class="space-y-6">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+            03
+          </div>
+          <div>
+            <h2 class="text-2xl font-display font-bold text-white">Intermezzo : Rock, Santé & Diplomatie</h2>
+            <p class="text-xs sm:text-sm text-slate-400">Prescriptions médicales et rockstars de quartier</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Sunday Charmers AB Concert Ticket Card -->
+        <div class="lg:col-span-2 bg-gradient-to-br from-slate-900 via-purple-950/30 to-slate-900 border border-purple-500/30 rounded-3xl p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden">
+          <div class="space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-3 py-1 bg-purple-500/20 border border-purple-500/40 text-purple-300 font-bold text-xs rounded-full">
+                Événement Majeur de la Communauté
+              </span>
+              <span class="text-xs font-mono text-purple-400 font-semibold">Mardi 10 Novembre 2026</span>
+            </div>
+
+            <div class="space-y-2">
+              <h3 class="text-2xl sm:text-3xl font-display font-extrabold text-white">
+                Sunday Charmers à l'Ancienne Belgique (AB)
+              </h3>
+              <p class="text-slate-300 text-sm leading-relaxed">
+                Le groupe d'Alexandre durcit le ton : guitares tranchantes, tension brute et énergie live calibrée pour l'AB ! Présence obligatoire de la Communauté de l'Acier au complet dans la fosse.
+              </p>
+            </div>
+
+            <!-- Countdown -->
+            <div class="grid grid-cols-4 gap-2 sm:gap-4 py-4 text-center">
+              <div class="bg-slate-950/80 border border-purple-900/50 p-3 rounded-2xl">
+                <span id="cd-days" class="block text-xl sm:text-3xl font-display font-extrabold text-amber-400">61</span>
+                <span class="text-[10px] uppercase font-bold text-slate-400">Jours</span>
+              </div>
+              <div class="bg-slate-950/80 border border-purple-900/50 p-3 rounded-2xl">
+                <span id="cd-hours" class="block text-xl sm:text-3xl font-display font-extrabold text-amber-400">03</span>
+                <span class="text-[10px] uppercase font-bold text-slate-400">Heures</span>
+              </div>
+              <div class="bg-slate-950/80 border border-purple-900/50 p-3 rounded-2xl">
+                <span id="cd-mins" class="block text-xl sm:text-3xl font-display font-extrabold text-amber-400">45</span>
+                <span class="text-[10px] uppercase font-bold text-slate-400">Minutes</span>
+              </div>
+              <div class="bg-slate-950/80 border border-purple-900/50 p-3 rounded-2xl">
+                <span id="cd-secs" class="block text-xl sm:text-3xl font-display font-extrabold text-amber-400">22</span>
+                <span class="text-[10px] uppercase font-bold text-slate-400">Secs</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-6 flex flex-col sm:flex-row items-center gap-4">
+            <a href="https://www.abconcerts.be/fr/agenda/sunday-charmers/a10Qw00000GpdSjIAJ" target="_blank" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-950 transition hover:scale-105">
+              <i data-lucide="ticket" class="w-4 h-4"></i>
+              <span>Réserver vos places à l'AB</span>
+            </a>
+            <span class="text-xs text-slate-400 italic">La date sera synchronisée sur l'agenda partagé</span>
+          </div>
+        </div>
+
+        <!-- Bulletin Santé & Potins -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4 flex flex-col justify-between">
+          <div class="space-y-4">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <i data-lucide="stethoscope" class="w-5 h-5 text-rose-400"></i>
+              Cellule Médicale & Diplomatie
+            </h3>
+
+            <div class="p-3.5 bg-slate-800/50 rounded-2xl border border-slate-700/50 space-y-1">
+              <div class="text-xs font-bold text-rose-300">Urgence Blessure d'Alex</div>
+              <p class="text-xs text-slate-400">
+                Pluie de diagnostics improvisés façon Doctissimo. Prescription générale : repos relatif, bière de récupération et retour en forme pour l'AB.
+              </p>
+            </div>
+
+            <div class="p-3.5 bg-slate-800/50 rounded-2xl border border-slate-700/50 space-y-1">
+              <div class="text-xs font-bold text-cyan-300">Projet "Hanche d'Acier"</div>
+              <p class="text-xs text-slate-400">
+                Flipper (Harry) débute officiellement ses cours de rock'n'roll acrobatique. L'AG soutient le déhanché.
+              </p>
+            </div>
+
+            <div class="p-3.5 bg-slate-800/50 rounded-2xl border border-slate-700/50 space-y-1">
+              <div class="text-xs font-bold text-amber-300">Nouvelle Direction St-Do</div>
+              <p class="text-xs text-slate-400">
+                Débat de quartier mené dans un esprit de franche bienveillance et de critiques constructives.
+              </p>
+            </div>
+          </div>
+
+          <div class="text-center pt-2">
+            <button onclick="declencherDoctissimo()" class="text-xs text-slate-400 hover:text-amber-400 underline underline-offset-4 transition">
+              Générer un avis médical fantaisiste pour Alex
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="mollets" class="space-y-6">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+            04
+          </div>
+          <div>
+            <h2 class="text-2xl font-display font-bold text-white">Chapitre 2 : Les Mollets 🚴</h2>
+            <p class="text-xs sm:text-sm text-slate-400">Grand WE 2027, Classiques & Triathlon Olympique</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grand WE 2027 Interactive SWOT Card -->
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 text-xs font-bold text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20 mb-2">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+              Dates Verrouillées : 4 au 6 Juin 2027
+            </div>
+            <h3 class="text-2xl font-display font-bold text-white">Grand Week-End 2027 : La Matrice SWOT</h3>
+            <p class="text-xs sm:text-sm text-slate-400">Le Jura est formellement exclu (trop loin). Voici le comparatif officiel :</p>
+          </div>
+
+          <!-- Destination switcher buttons -->
+          <div class="flex p-1 bg-slate-950 rounded-2xl border border-slate-800 self-start">
+            <button onclick="setSwot('vosges')" id="swot-btn-vosges" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-amber-500 text-slate-950 shadow">Vosges</button>
+            <button onclick="setSwot('eifel')" id="swot-btn-eifel" class="px-4 py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white">Eifel</button>
+            <button onclick="setSwot('spa')" id="swot-btn-spa" class="px-4 py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white">Boucles Spa</button>
+          </div>
+        </div>
+
+        <!-- Dynamic SWOT Display Box -->
+        <div id="swot-content" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Classiques Table Condor (Alberto) -->
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-cyan-400">Dossier Condor (Alberto)</span>
+            <h3 class="text-xl font-display font-bold text-white">Le Menu des Classiques Cyclo</h3>
+            <p class="text-xs text-slate-400">Participation de principe validée par les mollets. En attente des dates officielles.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="text" id="filtre-cyclo" onkeyup="filtrerCyclo()" placeholder="Rechercher une course..." class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3.5 py-2 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400">
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm" id="table-cyclo">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400 text-xs font-semibold uppercase">
+                <th class="py-3 px-4">Période</th>
+                <th class="py-3 px-4">Course</th>
+                <th class="py-3 px-4">Région</th>
+                <th class="py-3 px-4">Distance(s)</th>
+                <th class="py-3 px-4">Dénivelé</th>
+                <th class="py-3 px-4">Spécificité</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60 text-slate-300 text-xs">
+              <tr class="hover:bg-slate-800/40">
+                <td class="py-3 px-4 font-bold text-amber-400">Mars</td>
+                <td class="py-3 px-4 font-semibold text-white">Het Nieuwsblad Cyclo</td>
+                <td class="py-3 px-4">Flandre</td>
+                <td class="py-3 px-4 font-mono">60 - 150 km</td>
+                <td class="py-3 px-4">500 - 1 500 m</td>
+                <td class="py-3 px-4">Côtes & pavés flamands</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="py-3 px-4 font-bold text-amber-400">Mars</td>
+                <td class="py-3 px-4 font-semibold text-white">Cyclo In Flanders Fields</td>
+                <td class="py-3 px-4">Heuvelland</td>
+                <td class="py-3 px-4 font-mono">70 - 225 km</td>
+                <td class="py-3 px-4">500 - 1 500 m</td>
+                <td class="py-3 px-4">Pavés + Kemmelberg 💥</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="py-3 px-4 font-bold text-amber-400">Avril</td>
+                <td class="py-3 px-4 font-semibold text-white">Tour des Flandres Cyclo</td>
+                <td class="py-3 px-4">Oudenaarde</td>
+                <td class="py-3 px-4 font-mono">79 - 247 km</td>
+                <td class="py-3 px-4">800 - 2 500 m</td>
+                <td class="py-3 px-4">Monument absolu</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="py-3 px-4 font-bold text-amber-400">Avril</td>
+                <td class="py-3 px-4 font-semibold text-white">Liège-Bastogne-Liège Challenge</td>
+                <td class="py-3 px-4">Ardennes</td>
+                <td class="py-3 px-4 font-mono">80 - 250 km</td>
+                <td class="py-3 px-4 text-rose-400 font-bold">1 500 - 4 000 m</td>
+                <td class="py-3 px-4">La Doyenne (très vallonné)</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="py-3 px-4 font-bold text-amber-400">Mai</td>
+                <td class="py-3 px-4 font-semibold text-white">Flèche de Wallonie</td>
+                <td class="py-3 px-4">Durbuy</td>
+                <td class="py-3 px-4 font-mono">65 - 160 km</td>
+                <td class="py-3 px-4">1 000 - 3 000 m</td>
+                <td class="py-3 px-4">Murs ardennais</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="py-3 px-4 font-bold text-amber-400">Mai</td>
+                <td class="py-3 px-4 font-semibold text-white">Chouffe Classic</td>
+                <td class="py-3 px-4">Houffalize</td>
+                <td class="py-3 px-4 font-mono">65 - 160 km</td>
+                <td class="py-3 px-4">1 000 - 3 000 m</td>
+                <td class="py-3 px-4">Ardennes & Chouffe finale 🍺</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="py-3 px-4 font-bold text-amber-400">Fin Mai</td>
+                <td class="py-3 px-4 font-semibold text-white">Schleck Gran Fondo</td>
+                <td class="py-3 px-4">Luxembourg</td>
+                <td class="py-3 px-4 font-mono">82 / 164 km</td>
+                <td class="py-3 px-4">1 000 - 2 250 m</td>
+                <td class="py-3 px-4">Vallonné & ultra rapide</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="py-3 px-4 font-bold text-amber-400">Août</td>
+                <td class="py-3 px-4 font-semibold text-white">Vélomédiane Claudy Criquielion</td>
+                <td class="py-3 px-4">Houffalize</td>
+                <td class="py-3 px-4 font-mono">93 - 165 km</td>
+                <td class="py-3 px-4">1 500 - 3 500 m</td>
+                <td class="py-3 px-4">L'épreuve reine d'Ardenne</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40 bg-amber-500/5">
+                <td class="py-3 px-4 font-bold text-rose-400">Fin Juin '27</td>
+                <td class="py-3 px-4 font-semibold text-white">Marmotte Granfondo Alpes</td>
+                <td class="py-3 px-4">Alpes FR</td>
+                <td class="py-3 px-4 font-mono font-bold">177 km</td>
+                <td class="py-3 px-4 text-rose-400 font-extrabold">5 000 m D+</td>
+                <td class="py-3 px-4">Glandon, Télégraphe, Galibier, Alpe d'Huez 🔥</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Triathlon Box -->
+      <div class="bg-gradient-to-r from-cyan-950/40 via-slate-900 to-slate-900 border border-cyan-500/30 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 text-xs font-bold text-cyan-400 bg-cyan-400/10 px-3 py-1 rounded-full border border-cyan-400/20">
+            <i data-lucide="waves" class="w-3.5 h-3.5"></i>
+            Section Triple Effort
+          </div>
+          <h3 class="text-xl sm:text-2xl font-display font-bold text-white">
+            Triathlon Distance Olympique : La Communauté est Bouillante !
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-400 max-w-2xl">
+            Forts du succès du triathlon des <em>Sharks à Couvin</em>, l'objectif d'aligner la communauté sur un format M (1500m swim / 40km bike / 10km run) est voté avec enthousiasme. Lieu et date à fixer !
+          </p>
+        </div>
+        <button onclick="lancerMotivationTriathlon()" class="px-5 py-3 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs uppercase tracking-wider whitespace-nowrap transition shadow-lg shadow-cyan-950">
+          Je suis bouillant 🏊‍♂️🚴‍♂️🏃‍♂️
+        </button>
+      </div>
+    </section>
+
+    <section id="outils" class="space-y-6">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+            05
+          </div>
+          <div>
+            <h2 class="text-2xl font-display font-bold text-white">Outils de l'AG & Règlements de Comptes</h2>
+            <p class="text-xs sm:text-sm text-slate-400">Sondage maillot Flipper et réclamation auprès de Pandouille</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Sondage Flipper Équipement -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <i data-lucide="shirt" class="w-5 h-5 text-cyan-400"></i>
+                Le Grand Sondage T-Shirt de Flipper
+              </h3>
+              <span class="text-[10px] uppercase font-bold text-cyan-400 bg-cyan-400/10 px-2 py-0.5 rounded">Pré-vote</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-4">
+              En attendant le sondage officiel du responsable équipement, donnez la tendance :
+            </p>
+
+            <div class="space-y-2.5" id="flipper-poll">
+              <button onclick="voterTshirt('laine')" class="w-full text-left p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 flex justify-between items-center text-xs transition">
+                <span>🐑 100% Laine Bio Éco-responsable des Ardennes</span>
+                <span id="pct-laine" class="font-mono font-bold text-amber-400">58%</span>
+              </button>
+              <button onclick="voterTshirt('fluo')" class="w-full text-left p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 flex justify-between items-center text-xs transition">
+                <span>⚡ Lycra Fluo Ultra-Aérodynamique anti-vent</span>
+                <span id="pct-fluo" class="font-mono font-bold text-amber-400">27%</span>
+              </button>
+              <button onclick="voterTshirt('coton')" class="w-full text-left p-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 flex justify-between items-center text-xs transition">
+                <span>🍺 Débardeur vintage floqué "Communauté de l'Acier"</span>
+                <span id="pct-coton" class="font-mono font-bold text-amber-400">15%</span>
+              </button>
+            </div>
+          </div>
+          <div id="flipper-msg" class="text-xs text-cyan-400/80 italic text-center">
+            Harry analyse actuellement les moutons du pays.
+          </div>
+        </div>
+
+        <!-- Réclamateur de Dette Pandouille -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <i data-lucide="receipt" class="w-5 h-5 text-amber-400"></i>
+                Le Pandouille-Pay Simulator 🍷🧀
+              </h3>
+              <span class="text-[10px] uppercase font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded">Trésorerie</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-4">
+              Arnaud régale sur les boissons, mais a promis d'envoyer la note apéro & fromage "ASAP". Toujours rien reçu sur Payconiq !
+            </p>
+
+            <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+              <div class="flex justify-between text-xs text-slate-400">
+                <span>Grands vins de la cave</span>
+                <span class="text-emerald-400 font-bold">Offert par Arnaud ❤️</span>
+              </div>
+              <div class="flex justify-between text-xs text-slate-400">
+                <span>Comté affiné & charcuterie</span>
+                <span class="text-slate-200 font-mono">Estimé à 14.50 € / tête</span>
+              </div>
+              <div class="pt-2 border-t border-slate-800 flex justify-between text-sm font-bold text-white">
+                <span>Statut du lien de paiement</span>
+                <span id="statut-pandouille" class="text-rose-400 animate-pulse">404 NOT FOUND</span>
+              </div>
+            </div>
+          </div>
+
+          <button onclick="rappelerPandouille()" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition">
+            Générer une alerte WhatsApp pour Pandouille 🔔
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-4">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h3 class="text-xl font-display font-bold text-white">Texte condensé pour WhatsApp</h3>
+          <p class="text-xs text-slate-400">Le récapitulatif officiel prêt à être collé dans le groupe</p>
+        </div>
+        <button onclick="copierResumeWhatsApp()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-2 transition">
+          <i data-lucide="copy" class="w-4 h-4"></i>
+          <span id="copy-btn-text">Copier le texte</span>
+        </button>
+      </div>
+
+      <textarea id="whatsapp-text" readonly rows="9" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-xs font-mono text-slate-300 focus:outline-none resize-none leading-relaxed">
+⚡ COMPTE RENDU OFFICIEL AG - COMMUNAUTÉ DE L'ACIER ⚡
+Ambiance : constructive, souriante et enivrante !
+
+1. PÉTANQUE, LIEU & INTENDANCE :
+- Tournoi d'ouverture de pétanque au New Terdelt : victoire éclatante de Pandouille/Flambouille (Arnaud) & Alex !
+- Délibérations tenues au domicile de Flambouille (Arnaud). Un immense merci pour son accueil et la dégustation des grands vins de sa cave (boissons offertes). On attend toujours ton lien pour l'apéro/fromage !
+- Pensée pour notre Président (Laurent), grand absent déploré.
+
+2. GOUVERNANCE & RECRUES :
+- Kevin est officiellement validé et intégré au WhatsApp pour son taux de jovialité maximal !
+- Un grand merci à Matteo de s'être joint à nous ! On espère vivement le revoir avant la prochaine AG... Il a d'ailleurs l'air bien chaud pour le long WE à vélo !
+- Flipper (Harry) est nommé Responsable Équipement. Sondage maillots imminent (laine bio belge à l'étude).
+
+3. LES TALONS (RUNNING) :
+- Expéditions Night Trails confirmées : Lasne (13/11) & Nethen (27/11).
+- IMPORTANT : Après le Night Trail de Nethen le 27/11, rendez-vous direct à la Soirée des Parents de St-Dominique (St-Do) pour danser !
+- Autre course confirmée : Epic Trail Baraque de Fraiture (10/04).
+- Marquez vos présences sur le calendrier : http://harryqover.github.io/bike-fun/agenda-acier.html
+- Marathon 2027 : vote acté pour APRÈS L'ÉTÉ (Amsterdam 31/10/27, Bruges ou Anvers).
+
+4. INTERMEZZO & ROCK :
+- Conseils Doctissimo pour la blessure d'Alex.
+- Projet Hanche d'acier : Flipper débute ses cours de rock !
+- Concert des Sunday Charmers à l'AB le mardi 10/11/2026 : venez tous ! Billetterie : https://www.abconcerts.be/fr/agenda/sunday-charmers/a10Qw00000GpdSjIAJ
+
+5. LES MOLLETS (CYCLISME) :
+- Grand WE 2027 bloqué du 4 au 6 juin. Jura écarté. Vosges vs Eifel vs 2 boucles à Spa : matrice SWOT requise !
+- Classiques cyclo : liste partagée par Condor (Alberto) validée sur le principe dès que les dates exactes sortent.
+- Triathlon : La communauté est bouillante pour un Distance Olympique !
+      </textarea>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-slate-900 bg-slate-950/60 py-8 text-center text-xs text-slate-500">
+    <div class="max-w-6xl mx-auto px-4 space-y-2">
+      <p>Communauté de l'Acier • Schaerbeek / Terdelt & Alentours • AG 2026</p>
+      <p class="text-[11px] text-slate-600">Site prêt pour déploiement instantané sur GitHub Pages (100% statique & autonome).</p>
+    </div>
+  </footer>
+
+  <!-- Modal pour messages rigolos -->
+  <div id="modal-box" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between">
+        <h4 id="modal-title" class="font-bold text-amber-400 text-lg">Notification Officielle</h4>
+        <button onclick="fermerModal()" class="text-slate-400 hover:text-white text-xl">✕</button>
+      </div>
+      <p id="modal-body" class="text-sm text-slate-300 leading-relaxed"></p>
+      <button onclick="fermerModal()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition">
+        C'est noté !
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Lucide Icons initialization
+    lucide.createIcons();
+
+    // Data for SWOT Matrix
+    const swotData = {
+      vosges: {
+        titre: "Vosges (Le Choix du Cœur & des Cols)",
+        forces: "Cols mythiques, vraies montées, paysages grandioses.",
+        faiblesses: "6h de route depuis Bruxelles, fatigue du trajet du vendredi.",
+        opportunites: "Repérer des segments pour la Marmotte Granfondo Alpes.",
+        menaces: "Météo capricieuse en altitude et cuisses en feu le samedi soir."
+      },
+      eifel: {
+        titre: "Eifel (L'Option Pragmatique Allemande)",
+        forces: "Très proche (1h45), routes impeccables, relief casse-pattes idéal.",
+        faiblesses: "Moins de prestige alpin, moins de cols très longs.",
+        opportunites: "Départ vendredi midi après le boulot sans stress.",
+        menaces: "Bockwurst et bières locales nuisibles aux watts du lendemain."
+      },
+      spa: {
+        titre: "Boucles à Spa (Le Compromis Ardennais)",
+        forces: "Proximité absolue, logistique simplissime, Côtes mythiques (Rosier, Redoute).",
+        faiblesses: "On connaît déjà chaque nid-de-poule par cœur.",
+        opportunites: "Deux circuits de 130 km aux petits oignons avec bain thermal le soir.",
+        menaces: "Risque qu'un membre rentre dormir chez lui le samedi soir !"
+      }
+    };
+
+    function renderSwot(key) {
+      const data = swotData[key];
+      const container = document.getElementById('swot-content');
+      container.innerHTML = `
+        <div class="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 space-y-1.5">
+          <div class="flex items-center gap-2 text-xs font-bold text-emerald-400">
+            <span>💪 FORCES (Strengths)</span>
+          </div>
+          <p class="text-xs text-slate-300">${data.forces}</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-rose-950/30 border border-rose-500/30 space-y-1.5">
+          <div class="flex items-center gap-2 text-xs font-bold text-rose-400">
+            <span>⚠️ FAIBLESSES (Weaknesses)</span>
+          </div>
+          <p class="text-xs text-slate-300">${data.faiblesses}</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-cyan-950/30 border border-cyan-500/30 space-y-1.5">
+          <div class="flex items-center gap-2 text-xs font-bold text-cyan-400">
+            <span>🚀 OPPORTUNITÉS</span>
+          </div>
+          <p class="text-xs text-slate-300">${data.opportunites}</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-1.5">
+          <div class="flex items-center gap-2 text-xs font-bold text-amber-400">
+            <span>⚡ MENACES (Risques)</span>
+          </div>
+          <p class="text-xs text-slate-300">${data.menaces}</p>
+        </div>
+      `;
+    }
+
+    function setSwot(key) {
+      // Toggle button styles
+      ['vosges', 'eifel', 'spa'].forEach(dest => {
+        const btn = document.getElementById(`swot-btn-${dest}`);
+        if (dest === key) {
+          btn.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-amber-500 text-slate-950 shadow";
+        } else {
+          btn.className = "px-4 py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white";
+        }
+      });
+      renderSwot(key);
+    }
+
+    // Initial SWOT render
+    renderSwot('vosges');
+
+    // Voting T-shirt Flipper Simulation
+    let tVotes = { laine: 12, fluo: 6, coton: 3 };
+    function voterTshirt(type) {
+      tVotes[type]++;
+      const total = tVotes.laine + tVotes.fluo + tVotes.coton;
+      document.getElementById('pct-laine').innerText = `${Math.round((tVotes.laine/total)*100)}%`;
+      document.getElementById('pct-fluo').innerText = `${Math.round((tVotes.fluo/total)*100)}%`;
+      document.getElementById('pct-coton').innerText = `${Math.round((tVotes.coton/total)*100)}%`;
+
+      const msg = document.getElementById('flipper-msg');
+      if (type === 'laine') {
+        msg.innerText = "🐑 Vote enregistré ! Flipper négocie la tonte bio avec une ferme de Wallonie.";
+      } else if (type === 'fluo') {
+        msg.innerText = "⚡ Aérodynamisme validé : Flipper prépare le test en soufflerie !";
+      } else {
+        msg.innerText = "🍺 Débardeur choisi : approuvé pour le ravito et le barbecue de quartier !";
+      }
+    }
+
+    // Countdown for Sunday Charmers (November 10, 2026)
+    function updateCountdown() {
+      const targetDate = new Date("2026-11-10T20:00:00").getTime();
+      const now = new Date().getTime();
+      const diff = targetDate - now;
+
+      if (diff > 0) {
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById('cd-days').innerText = d < 10 ? '0' + d : d;
+        document.getElementById('cd-hours').innerText = h < 10 ? '0' + h : h;
+        document.getElementById('cd-mins').innerText = m < 10 ? '0' + m : m;
+        document.getElementById('cd-secs').innerText = s < 10 ? '0' + s : s;
+      }
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // Table Filter for Cyclo
+    function filtrerCyclo() {
+      const query = document.getElementById('filtre-cyclo').value.toLowerCase();
+      const rows = document.querySelectorAll('#table-cyclo tbody tr');
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+      });
+    }
+
+    // Modal Helper
+    function ouvrirModal(titre, texte) {
+      document.getElementById('modal-title').innerText = titre;
+      document.getElementById('modal-body').innerText = texte;
+      document.getElementById('modal-box').classList.remove('hidden');
+    }
+    function fermerModal() {
+      document.getElementById('modal-box').classList.add('hidden');
+    }
+
+    function declencherDoctissimo() {
+      const conseils = [
+        "Avis n°1 : Application locale d'Arnica mélangée à de la Chimay Bleue.",
+        "Avis n°2 : Trois jours de gainage en chantant les singles des Sunday Charmers.",
+        "Avis n°3 : Ne surtout pas toucher au chignon, c'est là que réside le centre de gravité.",
+        "Avis n°4 : Repos sportif total jusqu'au concert à l'AB pour sauver le rock belge."
+      ];
+      const randomConseil = conseils[Math.floor(Math.random() * conseils.length)];
+      ouvrirModal("Ordonnance Médicale de l'AG pour Alex", randomConseil);
+    }
+
+    function rappelerPandouille() {
+      confetti({ particleCount: 30, spread: 50 });
+      ouvrirModal(
+        "Message envoyé à Pandouille (Arnaud)",
+        "Notification transmise : 'Cher Pandouille, tes quilles de rouge étaient royales, mais le peuple réclame le Payconiq apéro/fromage avant que l'inflation n'explose !'"
+      );
+    }
+
+    function lancerMotivationTriathlon() {
+      confetti({
+        particleCount: 100,
+        spread: 90,
+        origin: { y: 0.6 }
+      });
+      ouvrirModal(
+        "Section Triathlon Validée !",
+        "Félicitations notable ! Les combinaisons néoprène et les prolongateurs de guidon sont commandés. Préviens ta famille, la distance olympique n'attend que toi."
+      );
+    }
+
+    // Copy WhatsApp Summary
+    function copierResumeWhatsApp() {
+      const copyText = document.getElementById("whatsapp-text");
+      copyText.select();
+      copyText.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+
+      const btnSpan = document.getElementById("copy-btn-text");
+      if (btnSpan) {
+        btnSpan.innerText = "Copié dans le presse-papier ! ✅";
+        setTimeout(() => {
+          btnSpan.innerText = "Copier le texte";
+        }, 2500);
+      }
+
+      confetti({
+        particleCount: 50,
+        spread: 70,
+        origin: { y: 0.8 }
+      });
+    }
+  </script>
+</body>
+</html>
