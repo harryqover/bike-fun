@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Bike Insurance Cancellation Portal</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#4f46e5',
+              600: '#4338ca',
+              700: '#3730a3',
+              800: '#312e81',
+              900: '#1e1b4b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Smooth transitions and custom styling */
+    .option-card-radio:checked + div {
+      border-color: #4f46e5;
+      background-color: #f5f7ff;
+      box-shadow: 0 0 0 1.5px #4f46e5;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    @keyframes scanLine {
+      0% { transform: translateY(0%); opacity: 0.8; }
+      50% { opacity: 1; }
+      100% { transform: translateY(180px); opacity: 0.8; }
+    }
+    .scanner-line {
+      animation: scanLine 2s infinite ease-in-out;
+    }
+    @keyframes pulseSoft {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .pulse-soft {
+      animation: pulseSoft 2s infinite;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-800 antialiased font-sans min-h-screen">
+
+  <!-- Top Scenario Switcher (Interactive Demo Console) -->
+  <header class="sticky top-0 z-50 bg-slate-900/95 backdrop-blur border-b border-slate-800 text-white shadow-xl">
+    <div class="max-w-6xl mx-auto px-4 py-3">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div class="flex items-center space-x-3">
+          <span class="inline-flex items-center justify-center p-1.5 bg-indigo-500/20 text-indigo-400 rounded-lg ring-1 ring-indigo-500/30">
+            <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+          </span>
+          <div>
+            <h1 class="text-xs uppercase font-bold tracking-wider text-indigo-400">Simulation Bar</h1>
+            <p class="text-xs text-slate-300">Switch policy context & watch rules react automatically</p>
+          </div>
+        </div>
+        
+        <!-- Live State Badges -->
+        <div class="flex items-center flex-wrap gap-2 text-xs">
+          <span id="badge-contract-age" class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-mono">Age: 180d</span>
+          <span id="badge-country" class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-mono">BE</span>
+          <span id="badge-claim" class="px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-medium">Claim: None</span>
+          <span id="badge-auth" class="px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-medium">Pair: Valid</span>
+        </div>
+      </div>
+
+      <!-- Quick Preset Scenario Buttons -->
+      <div class="mt-3 pt-2 border-t border-slate-800 flex items-center gap-1.5 overflow-x-auto pb-1 custom-scrollbar">
+        <span class="text-[11px] uppercase tracking-wider text-slate-400 whitespace-nowrap mr-1 font-semibold">Presets:</span>
+        
+        <button onclick="applyScenario('cooling_off')" class="scenario-btn px-2.5 py-1.5 rounded-md text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-indigo-400 transition flex items-center space-x-1.5 whitespace-nowrap">
+          <span>⏱️</span>
+          <span>&le;14d Cooling-Off</span>
+        </button>
+
+        <button onclick="applyScenario('cooling_off_fr')" class="scenario-btn px-2.5 py-1.5 rounded-md text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-indigo-400 transition flex items-center space-x-1.5 whitespace-nowrap">
+          <span>🇫🇷</span>
+          <span>FR 28d Cooling-Off</span>
+        </button>
+
+        <button onclick="applyScenario('year1_standard')" class="scenario-btn px-2.5 py-1.5 rounded-md text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-indigo-400 transition flex items-center space-x-1.5 whitespace-nowrap">
+          <span>🔒</span>
+          <span>Year 1 (Push Renewal)</span>
+        </button>
+
+        <button onclick="applyScenario('year1_exception')" class="scenario-btn px-2.5 py-1.5 rounded-md text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-indigo-400 transition flex items-center space-x-1.5 whitespace-nowrap">
+          <span>🤖</span>
+          <span>Year 1 (Sold Bike + AI Doc)</span>
+        </button>
+
+        <button onclick="applyScenario('year2_flexible')" class="scenario-btn px-2.5 py-1.5 rounded-md text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-indigo-400 transition flex items-center space-x-1.5 whitespace-nowrap">
+          <span>✨</span>
+          <span>Year 2+ (Free Auto Cancel)</span>
+        </button>
+
+        <button onclick="applyScenario('active_claim')" class="scenario-btn px-2.5 py-1.5 rounded-md text-xs font-medium bg-amber-950/80 hover:bg-amber-900 text-amber-200 border border-amber-700/80 transition flex items-center space-x-1.5 whitespace-nowrap">
+          <span>⚠️</span>
+          <span>Active Claim (Block & Zendesk)</span>
+        </button>
+
+        <button onclick="applyScenario('auth_error')" class="scenario-btn px-2.5 py-1.5 rounded-md text-xs font-medium bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-700/80 transition flex items-center space-x-1.5 whitespace-nowrap">
+          <span>❌</span>
+          <span>Invalid Email / Contract</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Page Background & Wrapper -->
+  <main class="min-h-[calc(100vh-100px)] py-8 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-900 via-slate-850 to-slate-900">
+    <div class="max-w-2xl mx-auto">
+      
+      <!-- Top Brand Header Mockup -->
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center space-x-2 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 rounded-full text-indigo-300 text-xs font-medium mb-3">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+          <span>Verified Insurance Customer Service</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Bike Insurance Cancellation</h2>
+        <p class="mt-1 text-sm text-slate-400">Review policy termination terms or schedule contract end</p>
+      </div>
+
+      <!-- Notification/Banner Container -->
+      <div id="alerts-container" class="space-y-4 mb-6">
+
+        <!-- Banner 1: Auth Mismatch Blocker -->
+        <div id="banner-auth-error" class="hidden bg-red-950/70 border border-red-800/80 rounded-2xl p-5 text-red-200 shadow-xl shadow-red-950/20">
+          <div class="flex items-start space-x-3.5">
+            <div class="p-2 bg-red-900/60 rounded-xl text-red-300 shrink-0">
+              <i data-lucide="shield-alert" class="w-5 h-5"></i>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-sm font-semibold text-white">Policy Authentication Failed</h3>
+              <p class="mt-1 text-xs text-red-200/90 leading-relaxed">
+                The provided contract ID <span class="font-mono bg-red-900/40 px-1 py-0.5 rounded text-white" id="err-contract-id">BE10345044625</span> does not match our records for <span class="font-mono bg-red-900/40 px-1 py-0.5 rounded text-white" id="err-email">user@example.com</span>.
+              </p>
+              <p class="mt-2 text-xs text-red-300">For security reasons, access to this policy is locked. Please check the link in your welcome email.</p>
+              <div class="mt-3.5 flex items-center space-x-3">
+                <button onclick="applyScenario('year1_standard')" class="px-3 py-1.5 bg-red-800 hover:bg-red-700 text-white rounded-lg text-xs font-medium transition">Try Valid Policy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner 2: Active Claim Blocker -->
+        <div id="banner-active-claim" class="hidden bg-amber-950/60 border border-amber-700/60 rounded-2xl p-5 text-amber-200 shadow-xl shadow-amber-950/20">
+          <div class="flex items-start space-x-3.5">
+            <div class="p-2 bg-amber-900/60 rounded-xl text-amber-300 shrink-0">
+              <i data-lucide="alert-octagon" class="w-5 h-5"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-white">Active Claim in Progress (#CLM-84920)</h3>
+                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-900 text-amber-200">Action Required</span>
+              </div>
+              <p class="mt-1.5 text-xs text-amber-200/90 leading-relaxed">
+                We found an ongoing claim currently being examined by our damage assessment team. Under policy terms, cancellation cannot be finalized until all claims are settled or closed.
+              </p>
+              <div class="mt-4 flex flex-col sm:flex-row gap-2.5">
+                <a href="https://qover.zendesk.com" target="_blank" class="inline-flex items-center justify-center space-x-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold rounded-xl text-xs transition shadow-sm">
+                  <span>Open Zendesk Claim Ticket</span>
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+                <button onclick="resolveClaimSimulation()" class="inline-flex items-center justify-center space-x-1.5 px-3 py-2 bg-amber-900/50 hover:bg-amber-800/60 text-amber-200 rounded-xl text-xs font-medium border border-amber-700/50 transition">
+                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                  <span>Simulate Claim Closure</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner 3: Cooling-Off Notice (Day 0 Cancellation) -->
+        <div id="banner-cooling-off" class="hidden bg-emerald-950/40 border border-emerald-700/50 rounded-2xl p-4 text-emerald-200 shadow-sm">
+          <div class="flex items-start space-x-3">
+            <div class="p-1.5 bg-emerald-900/60 rounded-lg text-emerald-300 shrink-0">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+            </div>
+            <div class="text-xs leading-relaxed">
+              <span class="font-semibold text-white">Eligible for 100% Day 0 Cancellation:</span>
+              <span id="cooling-off-msg"> You are within the statutory 14-day cooling-off window. You can cancel retroactively from inception without notice period or cancellation fee.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Main Form Card -->
+      <div id="main-form-card" class="bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden transition-all duration-300">
+        
+        <!-- Contract Header Summary Bar -->
+        <div class="bg-slate-50 border-b border-slate-100 px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold text-sm">
+              <i data-lucide="bike" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="text-xs font-medium text-slate-500 uppercase tracking-wider">Policyholder</div>
+              <div class="text-sm font-bold text-slate-800" id="display-customer-name">Harry Evrard</div>
+            </div>
+          </div>
+
+          <div class="text-right">
+            <div class="text-xs font-medium text-slate-500 uppercase tracking-wider">Contract ID</div>
+            <div class="text-sm font-mono font-semibold text-indigo-600" id="display-contract-id">BE10345044625</div>
+          </div>
+        </div>
+
+        <form id="cancel-form" onsubmit="handleFormSubmit(event)" class="p-6 sm:p-8 space-y-6">
+
+          <!-- Hidden / Readonly Identity Verification Fields -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-2 border-b border-slate-100">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Contract Number</label>
+              <div class="relative">
+                <input type="text" id="input-cigarid" readonly class="w-full bg-slate-50 border border-slate-200 text-slate-700 font-mono text-xs rounded-xl px-3.5 py-2.5 pr-8 focus:outline-none cursor-not-allowed">
+                <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-400 absolute right-3 top-3"></i>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Registered Email Address</label>
+              <div class="relative">
+                <input type="email" id="input-email" readonly class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3.5 py-2.5 pr-8 focus:outline-none cursor-not-allowed">
+                <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-500 absolute right-3 top-3"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 1: How & When to cancel (UI Push Strategy) -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="block text-sm font-bold text-slate-900">
+                When would you like to cancel? <span class="text-red-500">*</span>
+              </label>
+              <span id="tenure-indicator" class="text-xs px-2 py-0.5 rounded-md font-medium bg-slate-100 text-slate-600">
+                Year 1 Contract
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 mb-4">
+              Select when you would like coverage to conclude.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              
+              <!-- PUSH CARD: Cancel at Renewal (Recommended) -->
+              <label class="relative block cursor-pointer group">
+                <input type="radio" name="cancellation_timing" value="renewal" id="radio-renewal" class="option-card-radio sr-only" checked onchange="handleTimingSelection('renewal')">
+                <div class="h-full border-2 border-indigo-200/90 rounded-2xl p-4 bg-indigo-50/20 hover:border-indigo-500 transition-all duration-200 flex flex-col justify-between relative overflow-hidden">
+                  
+                  <!-- Top Badge -->
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="inline-flex items-center space-x-1 bg-emerald-100 text-emerald-800 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full">
+                      <i data-lucide="sparkle" class="w-3 h-3"></i>
+                      <span>Fastest • No Documents</span>
+                    </span>
+                    <span class="w-5 h-5 rounded-full border border-indigo-300 flex items-center justify-center text-indigo-600 group-hover:border-indigo-600 transition">
+                      <i data-lucide="check" class="w-3 h-3 icon-check"></i>
+                    </span>
+                  </div>
+
+                  <div>
+                    <h4 class="font-bold text-sm text-slate-900">At Next Annual Renewal</h4>
+                    <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                      Stay protected until <strong id="renewal-date-preview" class="text-indigo-700">Oct 24, 2026</strong>. Auto-renew turns off instantly. No justification required.
+                    </p>
+                  </div>
+
+                  <div class="mt-3 pt-3 border-t border-indigo-100/80 flex items-center text-[11px] text-indigo-700 font-medium space-x-1.5">
+                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i>
+                    <span>100% Automated 1-Click Confirmation</span>
+                  </div>
+                </div>
+              </label>
+
+              <!-- SECONDARY CARD: Specific / Custom Date -->
+              <label class="relative block cursor-pointer group">
+                <input type="radio" name="cancellation_timing" value="custom" id="radio-custom" class="option-card-radio sr-only" onchange="handleTimingSelection('custom')">
+                <div class="h-full border-2 border-slate-200 rounded-2xl p-4 bg-white hover:border-slate-300 transition-all duration-200 flex flex-col justify-between">
+                  
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="inline-flex items-center text-[10px] font-bold uppercase text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                      Specific Date
+                    </span>
+                    <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-slate-400 group-hover:border-slate-400 transition">
+                      <i data-lucide="circle" class="w-2.5 h-2.5 icon-circle"></i>
+                    </span>
+                  </div>
+
+                  <div>
+                    <h4 class="font-bold text-sm text-slate-900" id="custom-timing-title">At a specific date</h4>
+                    <p class="text-xs text-slate-500 mt-1 leading-relaxed" id="custom-timing-subtitle">
+                      Subject to legal exceptions or end-of-year terms depending on contract age.
+                    </p>
+                  </div>
+
+                  <div class="mt-3 pt-3 border-t border-slate-100 flex items-center text-[11px] text-slate-500 space-x-1.5">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <span id="custom-req-footnote">May require proof in Year 1</span>
+                  </div>
+                </div>
+              </label>
+
+            </div>
+          </div>
+
+          <!-- STEP 2: Custom Date & Reason Selector (Conditional) -->
+          <div id="section-custom-details" class="hidden space-y-5 pt-4 border-t border-slate-100 transition-all">
+            
+            <!-- Date Picker -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                Requested Termination Date <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <input type="date" id="input-requested-date" onchange="handleDateChange(this.value)" class="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+              </div>
+              <p id="retro-date-note" class="text-[11px] text-amber-600 mt-1.5 hidden flex items-center space-x-1">
+                <i data-lucide="info" class="w-3 h-3"></i>
+                <span>Note: If requested date is in the past, cancellation will take effect <strong>today</strong> immediately.</span>
+              </p>
+            </div>
+
+            <!-- Reason Dropdown -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                Why are you canceling before renewal? <span class="text-red-500">*</span>
+              </label>
+              <select id="select-reason" onchange="handleReasonChange(this.value)" class="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                <option value="" disabled selected>Please select a reason...</option>
+                <option value="sold_bike">🚲 I sold or returned my bicycle (Official proof available)</option>
+                <option value="moving_abroad">✈️ I am moving abroad / relocated permanently</option>
+                <option value="too_expensive">💰 The price is too expensive</option>
+                <option value="not_used">📉 I don't ride my bike frequently anymore</option>
+                <option value="other_insurer">📑 I switched to another insurer</option>
+                <option value="unhappy_service">😕 Poor customer service experience</option>
+                <option value="other">Other reason</option>
+              </select>
+            </div>
+
+            <!-- Lock Notice for Year 1 Non-Exception reasons -->
+            <div id="year1-block-notice" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-4 text-amber-900 text-xs">
+              <div class="flex items-start space-x-3">
+                <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+                <div class="space-y-2">
+                  <p class="font-semibold text-amber-900">First-year commitments cannot be cancelled mid-term for this reason.</p>
+                  <p class="text-amber-800 leading-relaxed">
+                    Under standard European insurance terms, policies in their first year run until their annual renewal date unless you sold/returned the bike or moved abroad.
+                  </p>
+                  <button type="button" onclick="selectRenewalFromNudge()" class="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium transition">
+                    <span>Switch to "Cancel at Next Renewal" (Zero Effort)</span>
+                    <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Proof Upload & Simulated AI Verification (Only for Sold / Moving abroad in Year 1) -->
+            <div id="section-ai-upload" class="hidden space-y-3">
+              <div class="flex items-center justify-between">
+                <label class="block text-xs font-semibold text-slate-700">
+                  Supporting Document for Instant AI Approval <span class="text-red-500">*</span>
+                </label>
+                <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
+                  AI Instant OCR
+                </span>
+              </div>
+              <p class="text-xs text-slate-500">
+                Upload your bill of sale, store return receipt, or proof of foreign residency. Our AI verifies it immediately to approve instant early cancellation.
+              </p>
+
+              <!-- Upload Area / Dropzone -->
+              <div id="dropzone" onclick="triggerFileUpload()" class="border-2 border-dashed border-slate-300 hover:border-indigo-400 bg-slate-50/50 hover:bg-indigo-50/30 rounded-2xl p-6 text-center cursor-pointer transition-all">
+                <input type="file" id="file-input" class="hidden" accept=".pdf,.png,.jpg,.jpeg" onchange="processSimulatedAiUpload(this)">
+                
+                <div id="upload-idle-state" class="space-y-2">
+                  <div class="w-10 h-10 mx-auto rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                    <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+                  </div>
+                  <div class="text-xs font-medium text-slate-700">
+                    <span class="text-indigo-600 font-bold hover:underline">Click to upload</span> or drag and drop
+                  </div>
+                  <p class="text-[11px] text-slate-400">PDF, PNG or JPG (Max. 10MB)</p>
+                  
+                  <!-- Sample shortcut buttons for easy testing -->
+                  <div class="pt-2 flex items-center justify-center gap-2">
+                    <button type="button" onclick="event.stopPropagation(); simulateSampleDoc('sale_bill.pdf')" class="text-[10px] bg-white border border-slate-200 text-slate-600 px-2 py-1 rounded-md hover:bg-slate-100">
+                      📄 Use Mock Bill of Sale
+                    </button>
+                    <button type="button" onclick="event.stopPropagation(); simulateSampleDoc('return_slip.pdf')" class="text-[10px] bg-white border border-slate-200 text-slate-600 px-2 py-1 rounded-md hover:bg-slate-100">
+                      📄 Use Mock Store Return
+                    </button>
+                  </div>
+                </div>
+
+                <!-- AI Scanning Animation State -->
+                <div id="upload-scanning-state" class="hidden space-y-3 py-2">
+                  <div class="relative w-44 h-24 mx-auto bg-slate-100 rounded-lg border border-slate-300 overflow-hidden shadow-inner flex flex-col justify-center items-center">
+                    <div class="scanner-line absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent"></div>
+                    <i data-lucide="file-text" class="w-8 h-8 text-slate-400"></i>
+                    <span id="scan-progress-filename" class="text-[10px] font-mono text-slate-500 mt-1 truncate max-w-[130px]">receipt.pdf</span>
+                  </div>
+                  <div class="flex items-center justify-center space-x-2 text-xs font-semibold text-indigo-600">
+                    <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+                    <span id="ai-status-text">AI analyzing proof of sale...</span>
+                  </div>
+                  <div class="w-48 bg-slate-200 h-1.5 rounded-full mx-auto overflow-hidden">
+                    <div id="ai-progress-bar" class="bg-indigo-600 h-full w-0 transition-all duration-300"></div>
+                  </div>
+                </div>
+
+                <!-- Verified Success State -->
+                <div id="upload-success-state" class="hidden space-y-2 py-1">
+                  <div class="w-10 h-10 mx-auto rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                    <i data-lucide="check-circle" class="w-6 h-6"></i>
+                  </div>
+                  <div class="text-xs font-bold text-emerald-800">
+                    Document Verified by AI &bull; Instant Cancellation Approved
+                  </div>
+                  <p id="ai-extracted-data" class="text-[11px] text-emerald-700 font-mono bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 max-w-sm mx-auto">
+                    Detected: Bike Sale Contract &bull; Confidence 99.4%
+                  </p>
+                  <button type="button" onclick="event.stopPropagation(); resetFileUpload()" class="text-[11px] text-slate-500 underline hover:text-slate-700">
+                    Replace file
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- STEP 3: Summary of Cancellation -->
+          <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200/80 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center space-x-1.5">
+                <i data-lucide="clipboard-list" class="w-4 h-4 text-indigo-600"></i>
+                <span>Summary of Your Request</span>
+              </h4>
+              <span id="summary-badge" class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800">
+                Automated Approval
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-2 text-xs">
+              <div>
+                <span class="text-slate-500">Contract:</span>
+                <span class="font-mono font-medium text-slate-800 ml-1" id="sum-contract">BE10345044625</span>
+              </div>
+              <div>
+                <span class="text-slate-500">Policyholder:</span>
+                <span class="font-medium text-slate-800 ml-1" id="sum-name">Harry Evrard</span>
+              </div>
+              <div>
+                <span class="text-slate-500">Effective Date:</span>
+                <span class="font-semibold text-indigo-700 ml-1" id="sum-effective-date">October 24, 2026 (At Renewal)</span>
+              </div>
+              <div>
+                <span class="text-slate-500">Reason:</span>
+                <span class="font-medium text-slate-800 ml-1" id="sum-reason">Renewal non-continuation</span>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-200/70 text-[11px] text-slate-500 flex items-center space-x-1.5">
+              <i data-lucide="message-square" class="w-3.5 h-3.5 text-slate-400"></i>
+              <span>You will receive an official confirmation SMS & certificate sent to registered mobile number.</span>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-2">
+            <button type="submit" id="btn-submit-cancellation" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-indigo-600/25 active:scale-[0.99] transition-all flex items-center justify-center space-x-2 text-sm">
+              <i data-lucide="check" class="w-4 h-4"></i>
+              <span id="btn-submit-text">Confirm Policy Cancellation</span>
+            </button>
+            <p class="text-center text-[11px] text-slate-400 mt-2">
+              No phone calls or physical letters needed. Instant digital processing.
+            </p>
+          </div>
+
+        </form>
+
+      </div>
+
+      <!-- Success Modal / Confirmation Card -->
+      <div id="cancellation-success-view" class="hidden bg-white rounded-3xl shadow-2xl border border-slate-100 p-8 text-center space-y-5">
+        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+          <i data-lucide="check-circle" class="w-8 h-8"></i>
+        </div>
+        <div>
+          <span class="text-xs uppercase tracking-wider font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">Confirmed &bull; Reference #QVR-CAN-9281</span>
+          <h2 class="text-2xl font-black text-slate-900 mt-3">Cancellation Processed</h2>
+          <p class="text-sm text-slate-600 mt-2 max-w-md mx-auto" id="success-description">
+            Your bike insurance will terminate on <strong class="text-slate-900">October 24, 2026</strong>. No future direct debits will be initiated.
+          </p>
+        </div>
+
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-left text-xs space-y-2 max-w-sm mx-auto font-mono text-slate-700">
+          <div class="flex justify-between"><span>Policy:</span> <span class="font-bold">BE10345044625</span></div>
+          <div class="flex justify-between"><span>Status:</span> <span class="text-emerald-700 font-bold">TERMINATION SCHEDULED</span></div>
+          <div class="flex justify-between"><span>Confirmation SMS:</span> <span>Sent (+32 ••• •• 42)</span></div>
+        </div>
+
+        <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button onclick="window.location.reload()" class="w-full sm:w-auto px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold transition">
+            Start Another Test
+          </button>
+          <a href="https://qover.com" class="w-full sm:w-auto px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition">
+            Back to Customer Portal
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Default dynamic state simulation
+    const state = {
+      user: {
+        firstName: "Harry",
+        lastName: "Evrard",
+        email: "harryevrard@gmail.com",
+        contractId: "BE10345044625",
+        country: "BE", // "BE" or "FR"
+        startDate: "2026-03-21", // 180 days ago
+        renewalDate: "2026-10-24",
+        hasActiveClaim: false,
+        isValidAuth: true
+      },
+      form: {
+        timing: 'renewal', // 'renewal' or 'custom'
+        requestedDate: '',
+        reason: '',
+        isDocUploaded: false,
+        isDocAiVerified: false,
+        effectiveDateCalculated: 'October 24, 2026'
+      }
+    };
+
+    // Calculate contract tenure in days
+    function getDaysSinceInception() {
+      const start = new Date(state.user.startDate);
+      const now = new Date();
+      const diffTime = Math.abs(now - start);
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    // Determine if Year 1
+    function isFirstYear() {
+      return getDaysSinceInception() <= 365;
+    }
+
+    // Determine Cooling-off limit (14 days standard, 30 days in France)
+    function getCoolingOffLimit() {
+      return state.user.country === 'FR' ? 30 : 14;
+    }
+
+    function isWithinCoolingOff() {
+      return getDaysSinceInception() <= getCoolingOffLimit();
+    }
+
+    function applyScenario(scenarioKey) {
+      // Reset form controls
+      document.getElementById('cancel-form').reset();
+      document.getElementById('cancellation-success-view').classList.add('hidden');
+      document.getElementById('main-form-card').classList.remove('hidden');
+      resetFileUpload();
+
+      const today = new Date();
+      const formatYMD = (d) => d.toISOString().split('T')[0];
+
+      switch(scenarioKey) {
+        case 'cooling_off':
+          // Belgium, 6 days after purchase
+          state.user.country = 'BE';
+          state.user.hasActiveClaim = false;
+          state.user.isValidAuth = true;
+          const d6 = new Date(); d6.setDate(today.getDate() - 6);
+          state.user.startDate = formatYMD(d6);
+          state.user.email = "harryevrard@gmail.com";
+          state.user.contractId = "BE10345044625";
+          break;
+
+        case 'cooling_off_fr':
+          // France, 26 days after purchase (allowed because FR is 30 days)
+          state.user.country = 'FR';
+          state.user.hasActiveClaim = false;
+          state.user.isValidAuth = true;
+          const d26 = new Date(); d26.setDate(today.getDate() - 26);
+          state.user.startDate = formatYMD(d26);
+          state.user.email = "harryevrard@gmail.com";
+          state.user.contractId = "FR9948201741";
+          break;
+
+        case 'year1_standard':
+          // 6 months in, Year 1, standard user trying to cancel
+          state.user.country = 'BE';
+          state.user.hasActiveClaim = false;
+          state.user.isValidAuth = true;
+          const d180 = new Date(); d180.setDate(today.getDate() - 180);
+          state.user.startDate = formatYMD(d180);
+          state.user.email = "harryevrard@gmail.com";
+          state.user.contractId = "BE10345044625";
+          break;
+
+        case 'year1_exception':
+          // Year 1, will auto select Sold bike
+          state.user.country = 'BE';
+          state.user.hasActiveClaim = false;
+          state.user.isValidAuth = true;
+          const d200 = new Date(); d200.setDate(today.getDate() - 200);
+          state.user.startDate = formatYMD(d200);
+          state.user.email = "harryevrard@gmail.com";
+          state.user.contractId = "BE10345044625";
+          break;
+
+        case 'year2_flexible':
+          // 480 days after purchase (> 1 year)
+          state.user.country = 'BE';
+          state.user.hasActiveClaim = false;
+          state.user.isValidAuth = true;
+          const d480 = new Date(); d480.setDate(today.getDate() - 480);
+          state.user.startDate = formatYMD(d480);
+          state.user.email = "harryevrard@gmail.com";
+          state.user.contractId = "BE10345044625";
+          break;
+
+        case 'active_claim':
+          state.user.hasActiveClaim = true;
+          state.user.isValidAuth = true;
+          break;
+
+        case 'auth_error':
+          state.user.isValidAuth = false;
+          break;
+      }
+
+      refreshUI();
+
+      // For exception scenario, auto trigger custom option & sold reason for high fidelity preview
+      if (scenarioKey === 'year1_exception') {
+        setTimeout(() => {
+          document.getElementById('radio-custom').checked = true;
+          handleTimingSelection('custom');
+          document.getElementById('select-reason').value = 'sold_bike';
+          handleReasonChange('sold_bike');
+          // Set date to today + 5 days
+          const targetD = new Date(); targetD.setDate(today.getDate() + 5);
+          document.getElementById('input-requested-date').value = formatYMD(targetD);
+          handleDateChange(formatYMD(targetD));
+          // Trigger mock AI upload
+          simulateSampleDoc('bike_bill_of_sale.pdf');
+        }, 100);
+      }
+    }
+
+    function refreshUI() {
+      // 1. Update toolbar badges
+      const days = getDaysSinceInception();
+      document.getElementById('badge-contract-age').innerText = `Age: ${days} days (${isFirstYear() ? 'Year 1' : 'Year 2+'})`;
+      document.getElementById('badge-country').innerText = `${state.user.country} (${state.user.country === 'FR' ? '30d cool-off' : '14d cool-off'})`;
+      
+      const claimBadge = document.getElementById('badge-claim');
+      if (state.user.hasActiveClaim) {
+        claimBadge.className = "px-2.5 py-1 rounded-full bg-amber-950 text-amber-300 border border-amber-800 font-bold animate-pulse";
+        claimBadge.innerText = "Claim: Active (Blocked)";
+      } else {
+        claimBadge.className = "px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-medium";
+        claimBadge.innerText = "Claim: None";
+      }
+
+      const authBadge = document.getElementById('badge-auth');
+      if (!state.user.isValidAuth) {
+        authBadge.className = "px-2.5 py-1 rounded-full bg-rose-950 text-rose-300 border border-rose-800 font-bold";
+        authBadge.innerText = "Pair: Mismatch";
+      } else {
+        authBadge.className = "px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-medium";
+        authBadge.innerText = "Pair: Valid";
+      }
+
+      // 2. Identity inputs
+      document.getElementById('input-cigarid').value = state.user.contractId;
+      document.getElementById('input-email').value = state.user.email;
+      document.getElementById('display-contract-id').innerText = state.user.contractId;
+      document.getElementById('sum-contract').innerText = state.user.contractId;
+
+      // 3. Auth Check Blocker
+      const authBanner = document.getElementById('banner-auth-error');
+      const claimBanner = document.getElementById('banner-active-claim');
+      const formCard = document.getElementById('main-form-card');
+
+      if (!state.user.isValidAuth) {
+        authBanner.classList.remove('hidden');
+        document.getElementById('err-contract-id').innerText = state.user.contractId;
+        document.getElementById('err-email').innerText = "wrong_or_expired@domain.com";
+        formCard.classList.add('opacity-30', 'pointer-events-none', 'grayscale');
+        claimBanner.classList.add('hidden');
+        return;
+      } else {
+        authBanner.classList.add('hidden');
+        formCard.classList.remove('opacity-30', 'pointer-events-none', 'grayscale');
+      }
+
+      // 4. Claim Check Blocker
+      if (state.user.hasActiveClaim) {
+        claimBanner.classList.remove('hidden');
+        formCard.classList.add('opacity-30', 'pointer-events-none', 'grayscale');
+        return;
+      } else {
+        claimBanner.classList.add('hidden');
+        formCard.classList.remove('opacity-30', 'pointer-events-none', 'grayscale');
+      }
+
+      // 5. Cooling off badge & notices
+      const coolingBanner = document.getElementById('banner-cooling-off');
+      if (isWithinCoolingOff()) {
+        coolingBanner.classList.remove('hidden');
+        const limitDays = getCoolingOffLimit();
+        document.getElementById('cooling-off-msg').innerText = ` You purchased this insurance ${days} day(s) ago (${state.user.country} statutory limit: ${limitDays} days). You can cancel immediately with 100% full refund from Day 0.`;
+      } else {
+        coolingBanner.classList.add('hidden');
+      }
+
+      // 6. Year 1 vs Year 2 tenure indicator
+      const tenureTag = document.getElementById('tenure-indicator');
+      const customSub = document.getElementById('custom-timing-subtitle');
+      const customFootnote = document.getElementById('custom-req-footnote');
+
+      if (isFirstYear()) {
+        tenureTag.innerText = "Year 1 Contract";
+        tenureTag.className = "text-xs px-2.5 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-800";
+        customSub.innerText = "Mid-term allowed ONLY for bike sale, return, or moving abroad.";
+        customFootnote.innerText = "Requires Proof Upload & AI Check";
+      } else {
+        tenureTag.innerText = "Year 2+ (Flexible Law)";
+        tenureTag.className = "text-xs px-2.5 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-800";
+        customSub.innerText = "Under consumer protection laws, you can cancel on any date.";
+        customFootnote.innerText = "100% Instant Approval";
+      }
+
+      // Reset selection to renewal by default (push UX)
+      handleTimingSelection(document.querySelector('input[name="cancellation_timing"]:checked')?.value || 'renewal');
+      updateSummary();
+    }
+
+    function handleTimingSelection(timing) {
+      state.form.timing = timing;
+      const customSection = document.getElementById('section-custom-details');
+      
+      if (timing === 'renewal') {
+        customSection.classList.add('hidden');
+        document.getElementById('radio-renewal').checked = true;
+        document.getElementById('year1-block-notice').classList.add('hidden');
+      } else {
+        customSection.classList.remove('hidden');
+        document.getElementById('radio-custom').checked = true;
+        // Default today's date if empty
+        if (!document.getElementById('input-requested-date').value) {
+          const defaultDate = new Date();
+          defaultDate.setDate(defaultDate.getDate() + 7);
+          document.getElementById('input-requested-date').value = defaultDate.toISOString().split('T')[0];
+        }
+      }
+      updateSummary();
+    }
+
+    function selectRenewalFromNudge() {
+      handleTimingSelection('renewal');
+    }
+
+    function resolveClaimSimulation() {
+      state.user.hasActiveClaim = false;
+      refreshUI();
+    }
+
+    function handleReasonChange(reasonVal) {
+      state.form.reason = reasonVal;
+      const blockNotice = document.getElementById('year1-block-notice');
+      const aiUploadSection = document.getElementById('section-ai-upload');
+      const submitBtn = document.getElementById('btn-submit-cancellation');
+
+      if (isFirstYear()) {
+        const isExceptionReason = (reasonVal === 'sold_bike' || reasonVal === 'moving_abroad');
+        
+        if (isExceptionReason) {
+          blockNotice.classList.add('hidden');
+          aiUploadSection.classList.remove('hidden');
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+          // Reason is NOT an exception in Year 1: Block mid-term
+          blockNotice.classList.remove('hidden');
+          aiUploadSection.classList.add('hidden');
+          submitBtn.disabled = true;
+          submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+      } else {
+        // Year 2+: All reasons allowed automatically
+        blockNotice.classList.add('hidden');
+        aiUploadSection.classList.add('hidden');
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+
+      updateSummary();
+    }
+
+    function handleDateChange(dateString) {
+      state.form.requestedDate = dateString;
+      const retroNotice = document.getElementById('retro-date-note');
+      
+      if (dateString) {
+        const selectedDate = new Date(dateString);
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        // If wished date is earlier than requested/today => we cancel "now"
+        if (selectedDate < today) {
+          retroNotice.classList.remove('hidden');
+        } else {
+          retroNotice.classList.add('hidden');
+        }
+      }
+      updateSummary();
+    }
+
+    function triggerFileUpload() {
+      document.getElementById('file-input').click();
+    }
+
+    function processSimulatedAiUpload(input) {
+      if (input.files && input.files[0]) {
+        simulateAiProcessing(input.files[0].name);
+      }
+    }
+
+    function simulateSampleDoc(mockName) {
+      simulateAiProcessing(mockName);
+    }
+
+    function simulateAiProcessing(filename) {
+      const idleState = document.getElementById('upload-idle-state');
+      const scanState = document.getElementById('upload-scanning-state');
+      const successState = document.getElementById('upload-success-state');
+      const progressBar = document.getElementById('ai-progress-bar');
+      const statusText = document.getElementById('ai-status-text');
+
+      idleState.classList.add('hidden');
+      scanState.classList.remove('hidden');
+      successState.classList.add('hidden');
+      document.getElementById('scan-progress-filename').innerText = filename;
+
+      // Progressive simulated scan
+      progressBar.style.width = '20%';
+      statusText.innerText = 'Scanning document layout...';
+
+      setTimeout(() => {
+        progressBar.style.width = '65%';
+        statusText.innerText = 'OCR extracting date & proof of transaction...';
+      }, 700);
+
+      setTimeout(() => {
+        progressBar.style.width = '100%';
+        statusText.innerText = 'Validating authenticity...';
+      }, 1400);
+
+      setTimeout(() => {
+        scanState.classList.add('hidden');
+        successState.classList.remove('hidden');
+        state.form.isDocUploaded = true;
+        state.form.isDocAiVerified = true;
+        
+        // Dynamic feedback
+        if (state.form.reason === 'moving_abroad') {
+          document.getElementById('ai-extracted-data').innerText = 'Verified: Foreign Certificate of Residence (Confidence 99.1%)';
+        } else {
+          document.getElementById('ai-extracted-data').innerText = 'Verified: Official Bicycle Bill of Sale & Transfer (Confidence 99.8%)';
+        }
+
+        updateSummary();
+        lucide.createIcons();
+      }, 2000);
+    }
+
+    function resetFileUpload() {
+      document.getElementById('file-input').value = '';
+      document.getElementById('upload-idle-state').classList.remove('hidden');
+      document.getElementById('upload-scanning-state').classList.add('hidden');
+      document.getElementById('upload-success-state').classList.add('hidden');
+      state.form.isDocUploaded = false;
+      state.form.isDocAiVerified = false;
+      updateSummary();
+    }
+
+    function updateSummary() {
+      const sumEffective = document.getElementById('sum-effective-date');
+      const sumReason = document.getElementById('sum-reason');
+      const sumBadge = document.getElementById('summary-badge');
+      const btnText = document.getElementById('btn-submit-text');
+
+      const isCooling = isWithinCoolingOff();
+
+      if (state.form.timing === 'renewal') {
+        sumEffective.innerText = "October 24, 2026 (At Next Renewal)";
+        sumReason.innerText = "Term termination (Renewal non-continuation)";
+        sumBadge.innerText = "Automated Instant";
+        sumBadge.className = "px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800";
+        btnText.innerText = "Confirm Cancellation at Renewal";
+      } else {
+        // Custom date
+        const rawDate = document.getElementById('input-requested-date').value;
+        const selectedReason = document.getElementById('select-reason').value;
+        
+        let reasonLabel = "Specific date requested";
+        if (selectedReason === 'sold_bike') reasonLabel = "Bike Sold / Returned (Proof Verified)";
+        else if (selectedReason === 'moving_abroad') reasonLabel = "Relocation abroad (Proof Verified)";
+        else if (selectedReason) reasonLabel = document.getElementById('select-reason').options[document.getElementById('select-reason').selectedIndex]?.text.split('(')[0] || selectedReason;
+        
+        sumReason.innerText = reasonLabel;
+
+        if (rawDate) {
+          const selDate = new Date(rawDate);
+          const today = new Date();
+          today.setHours(0,0,0,0);
+
+          if (isCooling) {
+            sumEffective.innerText = "Immediate (Day 0 Cooling-Off Window)";
+            sumBadge.innerText = "Full Refund Inception";
+            sumBadge.className = "px-2 py-0.5 text-[10px] font-bold rounded-full bg-indigo-100 text-indigo-800";
+          } else if (selDate < today) {
+            sumEffective.innerText = `Today (${today.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})}) - Cancelled "Now"`;
+            sumBadge.innerText = "Effective Immediately";
+            sumBadge.className = "px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-800";
+          } else {
+            sumEffective.innerText = selDate.toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
+            sumBadge.innerText = state.form.isDocAiVerified || !isFirstYear() ? "AI Pre-Approved" : "Requires Proof";
+            sumBadge.className = state.form.isDocAiVerified || !isFirstYear() ? "px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800" : "px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-800";
+          }
+        } else {
+          sumEffective.innerText = "Please choose date";
+        }
+
+        btnText.innerText = "Submit Cancellation Request";
+      }
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+
+      if (state.user.hasActiveClaim) {
+        return;
+      }
+      if (!state.user.isValidAuth) {
+        return;
+      }
+
+      // Validate mid-term in Year 1
+      if (state.form.timing === 'custom' && isFirstYear()) {
+        const reason = document.getElementById('select-reason').value;
+        if (reason !== 'sold_bike' && reason !== 'moving_abroad') {
+          // Prevent submit
+          document.getElementById('year1-block-notice').scrollIntoView({ behavior: 'smooth' });
+          return;
+        }
+        if (!state.form.isDocAiVerified) {
+          // Trigger file simulation for pleasant demo testing
+          simulateSampleDoc('auto_verified_proof.pdf');
+          return;
+        }
+      }
+
+      // Show Success Card
+      const effDate = document.getElementById('sum-effective-date').innerText;
+      document.getElementById('main-form-card').classList.add('hidden');
+      document.getElementById('alerts-container').classList.add('hidden');
+      
+      const successView = document.getElementById('cancellation-success-view');
+      successView.classList.remove('hidden');
+      document.getElementById('success-description').innerHTML = `Your bike insurance policy has been scheduled for termination on <strong class="text-slate-900">${effDate}</strong>. Confirmation has been dispatched.`;
+
+      lucide.createIcons();
+    }
+
+    // Initialize on window load
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      refreshUI();
+    });
+  </script>
+</body>
+</html>
