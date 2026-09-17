@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qover Trail Challenge 2026 · Belambra Les Criques</title>
+  
+  <!-- Google Fonts: Inter & Plus Jakarta Sans for Qover aesthetic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            qover: {
+              blue: '#2048E8',
+              blueHover: '#1736BE',
+              dark: '#0B1528',
+              slate: '#475467',
+              lightBg: '#F8FAFC',
+              mint: '#38E1B0',
+              cyan: '#38BDF8',
+              azure: '#E0F2FE',
+            },
+          },
+          boxShadow: {
+            'qover-card': '0 12px 36px -4px rgba(16, 24, 40, 0.08), 0 4px 12px -2px rgba(16, 24, 40, 0.03)',
+            'qover-hover': '0 20px 48px -6px rgba(32, 72, 232, 0.18)',
+            'glow-blue': '0 0 50px -10px rgba(32, 72, 232, 0.25)',
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* Custom Qover-like soft gradient background */
+    .bg-qover-hero {
+      background: radial-gradient(circle at 80% 20%, rgba(199, 245, 255, 0.65) 0%, rgba(224, 242, 254, 0.4) 30%, rgba(243, 232, 255, 0.45) 60%, #ffffff 100%);
+    }
+    
+    .glass-pill {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    /* Subtle pulse animation for start point indicator */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 0.3; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .animate-pulse-ring {
+      animation: pulse-ring 2.5s infinite ease-in-out;
+    }
+    
+    /* Hide scrollbar for tabs */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-[#FBFDFF] text-qover-dark font-sans antialiased selection:bg-qover-blue selection:text-white">
+
+  <!-- Top Utility Bar (Matches Qover site header vibes) -->
+  <div class="bg-[#0A1629] text-white text-xs sm:text-sm py-2 px-4">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center space-x-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-white/10 text-cyan-300">
+          Belambra Les Criques
+        </span>
+        <span class="text-slate-300 hidden sm:inline">Qover Offsite 2026 · Presqu’île de Giens</span>
+      </div>
+      <div class="flex items-center space-x-4 text-slate-300">
+        <span class="flex items-center gap-1.5 font-medium text-white">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Mon, Sept 28 · Waves at 14:00 & 16:00
+        </span>
+        <a href="#padel-spot" class="hover:text-white underline underline-offset-2 transition-colors">
+          Start: Padel Terrain
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Navigation -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-150 border-slate-100 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <!-- Qover Brand Logo -->
+      <a href="#" class="flex items-center space-x-3 group">
+        <div class="flex items-center space-x-1.5">
+          <!-- Stylized Qover Mark -->
+          <svg class="h-7 w-auto text-qover-dark" viewBox="0 0 120 34" fill="currentColor">
+            <text x="0" y="26" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="28" letter-spacing="-1">Qōver</text>
+          </svg>
+          <span class="h-5 w-px bg-slate-200 mx-1.5"></span>
+          <span class="text-xs font-bold uppercase tracking-wider text-qover-blue bg-blue-50 px-2 py-1 rounded-md">Trail Experience</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-600">
+        <a href="#itineraries" class="hover:text-qover-blue transition-colors">Itineraries</a>
+        <a href="#ravito-alert" class="hover:text-qover-blue transition-colors flex items-center gap-1.5 text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-200/60">
+          <span>💧</span> Self-Sufficiency Info
+        </a>
+        <a href="#schedule" class="hover:text-qover-blue transition-colors">Program</a>
+        <a href="#calculator" class="hover:text-qover-blue transition-colors">Pace & Wave Calc</a>
+        <a href="#checklist" class="hover:text-qover-blue transition-colors">Gear Check</a>
+      </nav>
+
+      <!-- CTA -->
+      <div class="flex items-center space-x-3">
+        <a href="#itineraries" class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-qover-blue hover:bg-qover-blueHover rounded-full shadow-sm hover:shadow-qover-hover transition-all duration-200 group">
+          <span>Select your route</span>
+          <svg class="w-4 h-4 ml-1.5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative pt-12 pb-20 overflow-hidden bg-qover-hero border-b border-slate-150/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Hero Left Column -->
+        <div class="lg:col-span-7 space-y-6 text-left">
+          <!-- Tag Pill -->
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-slate-200 shadow-sm text-xs font-semibold text-slate-700">
+            <span class="w-2 h-2 rounded-full bg-qover-blue"></span>
+            <span>Qover Offsite Sports Afternoon · Monday, Sept 28, 2026</span>
+          </div>
+
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-qover-dark leading-[1.12]">
+            Conquering the wild trails of
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-qover-blue via-[#2563eb] to-[#0ea5e9]">
+              Presqu'île de Giens
+            </span>
+          </h1>
+
+          <p class="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl font-normal">
+            Get ready for an epic trail challenge designed for the entire Qover team. 4 curated routes—from gentle seaside loops to the full 22km coastal ridge. Not an official race, but a high-energy shared adventure where camaraderie meets performance.
+          </p>
+
+          <!-- Key Quick Info Pills -->
+          <div class="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-medium text-slate-500">Date & Window</div>
+              <div class="text-base font-bold text-qover-dark mt-0.5">Mon, Sept 28</div>
+            </div>
+            <div class="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-medium text-slate-500">Departures</div>
+              <div class="text-base font-bold text-qover-blue mt-0.5">14h00 & 16h00</div>
+            </div>
+            <div class="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-medium text-slate-500">Meeting Point</div>
+              <div class="text-base font-bold text-slate-800 mt-0.5">Padel Terrain</div>
+            </div>
+            <div class="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-medium text-slate-500">Buffet Dinner</div>
+              <div class="text-base font-bold text-emerald-700 mt-0.5">19:00 Restaurant</div>
+            </div>
+          </div>
+
+          <!-- Hero CTAs -->
+          <div class="pt-4 flex flex-wrap items-center gap-4">
+            <a href="#itineraries" class="px-6 py-3.5 rounded-full text-base font-semibold text-white bg-qover-blue hover:bg-qover-blueHover shadow-md hover:shadow-qover-hover transition-all flex items-center space-x-2">
+              <span>Explore the 4 Loops</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </a>
+            <a href="#ravito-alert" class="px-6 py-3.5 rounded-full text-base font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all flex items-center space-x-2">
+              <span>Hydration & Safety Briefing</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Hero Right Column: Floating Race Card Overview -->
+        <div class="lg:col-span-5 relative">
+          <!-- Background ambient glow -->
+          <div class="absolute -inset-4 bg-gradient-to-tr from-cyan-200 to-blue-200 rounded-3xl filter blur-2xl opacity-50 -z-10"></div>
+          
+          <div class="glass-card rounded-3xl p-6 sm:p-7 shadow-qover-card border border-white relative overflow-hidden">
+            <!-- Header of card -->
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl bg-blue-50 text-qover-blue flex items-center justify-center font-bold text-lg">
+                  🏃‍♂️
+                </div>
+                <div>
+                  <h3 class="text-sm font-bold text-qover-dark">Belambra Les Criques</h3>
+                  <p class="text-xs text-slate-500">Giens Peninsula Coastal Path</p>
+                </div>
+              </div>
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                Official Offsite Track
+              </span>
+            </div>
+
+            <!-- Track Fast Switcher Preview -->
+            <div class="mt-5 space-y-3">
+              <div class="p-3.5 rounded-2xl bg-slate-50 hover:bg-blue-50/60 border border-slate-150 transition cursor-pointer" onclick="switchTour(0)">
+                <div class="flex justify-between items-center">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-purple-600"></span>
+                    <span class="font-bold text-sm text-qover-dark">The Grand Giens Odyssey</span>
+                  </div>
+                  <span class="text-xs font-semibold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">Expert</span>
+                </div>
+                <div class="mt-1 flex items-center gap-4 text-xs text-slate-500">
+                  <span>📏 22.1 km</span>
+                  <span>⛰️ 300m D+</span>
+                  <span>⏱️ ~2h15 - 3h15</span>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-slate-50 hover:bg-blue-50/60 border border-slate-150 transition cursor-pointer" onclick="switchTour(1)">
+                <div class="flex justify-between items-center">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                    <span class="font-bold text-sm text-qover-dark">The Coastal Ridge Explorer</span>
+                  </div>
+                  <span class="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">Challenger</span>
+                </div>
+                <div class="mt-1 flex items-center gap-4 text-xs text-slate-500">
+                  <span>📏 16.0 km</span>
+                  <span>⛰️ 190m D+</span>
+                  <span>⏱️ ~1h35 - 2h15</span>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-slate-50 hover:bg-blue-50/60 border border-slate-150 transition cursor-pointer" onclick="switchTour(2)">
+                <div class="flex justify-between items-center">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-teal-600"></span>
+                    <span class="font-bold text-sm text-qover-dark">The Mediterranean Discovery</span>
+                  </div>
+                  <span class="text-xs font-semibold text-teal-700 bg-teal-100 px-2 py-0.5 rounded-full">Classic</span>
+                </div>
+                <div class="mt-1 flex items-center gap-4 text-xs text-slate-500">
+                  <span>📏 11.4 km</span>
+                  <span>⛰️ 110m D+</span>
+                  <span>⏱️ ~1h05 - 1h35</span>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-slate-50 hover:bg-blue-50/60 border border-slate-150 transition cursor-pointer" onclick="switchTour(3)">
+                <div class="flex justify-between items-center">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                    <span class="font-bold text-sm text-qover-dark">The Riviera Criques Sprint</span>
+                  </div>
+                  <span class="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Accessible</span>
+                </div>
+                <div class="mt-1 flex items-center gap-4 text-xs text-slate-500">
+                  <span>📏 8.4 km</span>
+                  <span>⛰️ 80m D+</span>
+                  <span>⏱️ ~45m - 1h15</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Start Line Callout in Card -->
+            <div id="padel-spot" class="mt-5 p-3 rounded-2xl bg-amber-50/80 border border-amber-200 flex items-center space-x-3 text-xs text-amber-900">
+              <div class="p-2 rounded-xl bg-amber-100 text-amber-800 flex-shrink-0 font-bold">
+                📍 Padel
+              </div>
+              <div>
+                <strong class="font-semibold">Single Departure & Finish:</strong> All loops start beside the <strong>Belambra Padel Terrain</strong> with two departure waves: <strong>14:00</strong> (Long/Moderate) & <strong>16:00</strong> (Short/Express)!
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CRITICAL: NO RAVITO WARNING / SELF-SUFFICIENCY CALLOUT -->
+  <section id="ravito-alert" class="py-12 bg-white relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-amber-500/10 border-2 border-amber-400/40 relative overflow-hidden shadow-sm">
+        
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div class="flex items-start space-x-4">
+            <div class="w-14 h-14 rounded-2xl bg-amber-500 text-white flex items-center justify-center flex-shrink-0 shadow-md">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+              </svg>
+            </div>
+            <div class="space-y-1">
+              <div class="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-md">
+                Strict Trail Rule: Autonomie Totale (No Ravito)
+              </div>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900">
+                No Official Aid Stations or Refreshments along the route!
+              </h2>
+              <p class="text-sm sm:text-base text-slate-700 max-w-3xl leading-relaxed">
+                There will be <strong>NO water stations (ravito)</strong> or food distributions set up along the trails. The Presqu'île coastal paths can be warm, sunny, and exposed. You are required to be <strong>100% self-sufficient</strong> from start to finish.
+              </p>
+            </div>
+          </div>
+
+          <!-- Requirements badge grid -->
+          <div class="flex-shrink-0 w-full md:w-auto grid grid-cols-2 gap-3 pt-2 md:pt-0">
+            <div class="bg-white/90 px-4 py-3 rounded-2xl border border-amber-200 text-center shadow-sm">
+              <div class="text-lg">💧 <strong>1.0L – 1.5L</strong></div>
+              <div class="text-xs text-slate-600 font-medium">Minimum water to carry</div>
+            </div>
+            <div class="bg-white/90 px-4 py-3 rounded-2xl border border-amber-200 text-center shadow-sm">
+              <div class="text-lg">⚡ <strong>Bars & Gels</strong></div>
+              <div class="text-xs text-slate-600 font-medium">Bring your own energy</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN INTERACTIVE SECTION: ITINERARIES -->
+  <section id="itineraries" class="py-16 bg-slate-50/70 border-t border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-10 space-y-3">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-qover-blue">Choose your adventure</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-qover-dark">The 4 Official Itineraries</h2>
+        <p class="text-slate-600 text-base">
+          All routes depart and finish at the <strong>Belambra Padel terrain</strong>. Choose the distance suited to your mood: trail running, fast-packing, or scenic coast jog.
+        </p>
+      </div>
+
+      <!-- Modern Segmented Route Switcher -->
+      <div class="flex justify-center mb-8">
+        <div class="bg-white p-1.5 rounded-full border border-slate-200 shadow-sm flex space-x-1 sm:space-x-2 max-w-full overflow-x-auto no-scrollbar" role="tablist">
+          
+          <button id="tab-btn-0" onclick="switchTour(0)" class="tab-button px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all flex items-center space-x-2 bg-qover-blue text-white shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-white"></span>
+            <span>22.1K · Odyssey</span>
+          </button>
+
+          <button id="tab-btn-1" onclick="switchTour(1)" class="tab-button px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium text-slate-600 hover:text-qover-blue transition-all flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-slate-300"></span>
+            <span>16.0K · Ridge</span>
+          </button>
+
+          <button id="tab-btn-2" onclick="switchTour(2)" class="tab-button px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium text-slate-600 hover:text-qover-blue transition-all flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-slate-300"></span>
+            <span>11.4K · Discovery</span>
+          </button>
+
+          <button id="tab-btn-3" onclick="switchTour(3)" class="tab-button px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium text-slate-600 hover:text-qover-blue transition-all flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-slate-300"></span>
+            <span>8.4K · Sprint</span>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Active Tour Detail Card -->
+      <div class="bg-white rounded-3xl border border-slate-200/80 shadow-qover-card overflow-hidden">
+        
+        <!-- Header with Live Track Metadata -->
+        <div class="p-6 sm:p-8 bg-gradient-to-b from-slate-50/80 to-white border-b border-slate-100">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            
+            <div>
+              <div class="flex items-center space-x-3 mb-2">
+                <span id="track-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-100 text-purple-700">
+                  Expert Challenge
+                </span>
+                <span class="text-xs font-semibold text-slate-500 flex items-center gap-1">
+                  📍 Start: Beside Padel Court
+                </span>
+              </div>
+              <h3 id="track-name" class="text-2xl sm:text-3xl font-extrabold text-qover-dark">
+                The Grand Giens Odyssey
+              </h3>
+              <p id="track-desc" class="text-slate-600 text-sm sm:text-base mt-1.5 max-w-2xl">
+                The ultimate tour of the Presqu'île! Takes you all the way across the panoramic crests, secret coves, and the western coastal paths with 300m elevation gain.
+              </p>
+            </div>
+
+            <!-- Quantitative Stats Badges -->
+            <div class="grid grid-cols-3 gap-3 sm:gap-4 flex-shrink-0">
+              <div class="p-3.5 sm:p-4 rounded-2xl bg-blue-50/60 border border-blue-100 text-center">
+                <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Distance</span>
+                <span id="stat-dist" class="text-xl sm:text-2xl font-black text-qover-blue">22.1 km</span>
+              </div>
+              <div class="p-3.5 sm:p-4 rounded-2xl bg-emerald-50/60 border border-emerald-100 text-center">
+                <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Elevation</span>
+                <span id="stat-elev" class="text-xl sm:text-2xl font-black text-emerald-700">300m D+</span>
+              </div>
+              <div class="p-3.5 sm:p-4 rounded-2xl bg-purple-50/60 border border-purple-100 text-center">
+                <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Est. Duration</span>
+                <span id="stat-time" class="text-xl sm:text-2xl font-black text-purple-700">2h15 - 3h15</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Komoot Embed Responsive Container -->
+        <div class="p-4 sm:p-6 bg-slate-100/50">
+          <div class="relative w-full rounded-2xl overflow-hidden shadow-inner bg-slate-200 min-h-[620px]">
+            
+            <!-- Loading indicator for iframes -->
+            <div id="iframe-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50/90 z-10 transition-opacity duration-300">
+              <div class="w-10 h-10 border-4 border-qover-blue border-t-transparent rounded-full animate-spin"></div>
+              <span class="text-xs font-semibold text-slate-600 mt-3">Loading interactive Komoot tour...</span>
+            </div>
+
+            <!-- Dynamic Komoot Iframe Container -->
+            <div id="komoot-frame-wrapper" class="w-full">
+              <!-- Default initial iframe -->
+              <iframe 
+                id="active-komoot-frame"
+                src="https://www.komoot.com/tour/3289503687/embed?share_token=aY1nLnjBNVDovggz6Qw5hGDXQEwwJQxGCiprAwwENRsJ3wqf5q&layout=classic&profile=1" 
+                width="100%" 
+                height="700" 
+                frameborder="0" 
+                scrolling="no" 
+                allow="fullscreen" 
+                allowfullscreen
+                class="w-full h-[650px] sm:h-[700px] border-0"
+                onload="hideLoader()">
+              </iframe>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Bottom Action Strip inside the route card -->
+        <div class="p-4 sm:p-6 bg-white border-t border-slate-150 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center space-x-2 text-xs text-slate-500">
+            <svg class="w-4 h-4 text-emerald-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <span>GPX available directly inside the Komoot viewer • Download for your Garmin / Apple Watch</span>
+          </div>
+
+          <div class="flex items-center space-x-3 w-full sm:w-auto">
+            <button onclick="openKomootDirect()" class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition flex items-center justify-center space-x-1.5">
+              <span>Open in Komoot App</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SIDE-BY-SIDE ROUTE COMPARISON -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-left mb-10">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-qover-blue">Choose your group</span>
+        <h2 class="text-3xl font-bold text-qover-dark mt-1">Which route should you pick?</h2>
+        <p class="text-slate-600 text-sm mt-1">Check the profile that best matches your fitness level on Saturday afternoon.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Route 1: 22.1K -->
+        <div class="rounded-3xl border border-slate-200 p-6 flex flex-col justify-between hover:shadow-lg transition-all bg-white relative">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700">Loop #1</span>
+              <span class="text-xs font-bold text-slate-400">Hard</span>
+            </div>
+            <h3 class="text-lg font-bold text-qover-dark">The Grand Giens Odyssey</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Full loop of the Giens peninsula. Highly technical coastal singletracks, scenic cliffside climbs, and full exposure.
+            </p>
+            <div class="my-4 py-3 border-y border-slate-100 space-y-1.5 text-xs text-slate-600">
+              <div class="flex justify-between"><span>Distance:</span> <strong class="text-slate-900">22.1 km</strong></div>
+              <div class="flex justify-between"><span>Elevation:</span> <strong class="text-slate-900">300m D+</strong></div>
+              <div class="flex justify-between"><span>Target:</span> <strong class="text-slate-900">Regular Runners</strong></div>
+              <div class="flex justify-between"><span>Water required:</span> <strong class="text-amber-700">1.5 Liters</strong></div>
+            </div>
+          </div>
+          <button onclick="switchTour(0); scrollToItineraries();" class="w-full py-2.5 rounded-xl text-xs font-bold text-qover-blue bg-blue-50 hover:bg-qover-blue hover:text-white transition-colors">
+            View Route Details
+          </button>
+        </div>
+
+        <!-- Route 2: 16.0K -->
+        <div class="rounded-3xl border border-slate-200 p-6 flex flex-col justify-between hover:shadow-lg transition-all bg-white relative">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700">Loop #2</span>
+              <span class="text-xs font-bold text-slate-400">Moderate+</span>
+            </div>
+            <h3 class="text-lg font-bold text-qover-dark">The Coastal Ridge Explorer</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Balanced long run with gorgeous viewpoints above the salt flats and Mediterranean creeks. Pure pleasure without the extreme distance.
+            </p>
+            <div class="my-4 py-3 border-y border-slate-100 space-y-1.5 text-xs text-slate-600">
+              <div class="flex justify-between"><span>Distance:</span> <strong class="text-slate-900">16.0 km</strong></div>
+              <div class="flex justify-between"><span>Elevation:</span> <strong class="text-slate-900">190m D+</strong></div>
+              <div class="flex justify-between"><span>Target:</span> <strong class="text-slate-900">Intermediate Pace</strong></div>
+              <div class="flex justify-between"><span>Water required:</span> <strong class="text-amber-700">1.0 - 1.5 Liters</strong></div>
+            </div>
+          </div>
+          <button onclick="switchTour(1); scrollToItineraries();" class="w-full py-2.5 rounded-xl text-xs font-bold text-qover-blue bg-blue-50 hover:bg-qover-blue hover:text-white transition-colors">
+            View Route Details
+          </button>
+        </div>
+
+        <!-- Route 3: 11.4K -->
+        <div class="rounded-3xl border border-slate-200 p-6 flex flex-col justify-between hover:shadow-lg transition-all bg-white relative">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-700">Loop #3</span>
+              <span class="text-xs font-bold text-slate-400">Moderate</span>
+            </div>
+            <h3 class="text-lg font-bold text-qover-dark">The Mediterranean Discovery</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              The sweet spot for casual runners and brisk walkers who want to soak in the sea spray and pine scents without burning out.
+            </p>
+            <div class="my-4 py-3 border-y border-slate-100 space-y-1.5 text-xs text-slate-600">
+              <div class="flex justify-between"><span>Distance:</span> <strong class="text-slate-900">11.4 km</strong></div>
+              <div class="flex justify-between"><span>Elevation:</span> <strong class="text-slate-900">110m D+</strong></div>
+              <div class="flex justify-between"><span>Target:</span> <strong class="text-slate-900">Social Trail / Jog</strong></div>
+              <div class="flex justify-between"><span>Water required:</span> <strong class="text-amber-700">1.0 Liter</strong></div>
+            </div>
+          </div>
+          <button onclick="switchTour(2); scrollToItineraries();" class="w-full py-2.5 rounded-xl text-xs font-bold text-qover-blue bg-blue-50 hover:bg-qover-blue hover:text-white transition-colors">
+            View Route Details
+          </button>
+        </div>
+
+        <!-- Route 4: 8.4K -->
+        <div class="rounded-3xl border border-slate-200 p-6 flex flex-col justify-between hover:shadow-lg transition-all bg-white relative">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Loop #4</span>
+              <span class="text-xs font-bold text-slate-400">Accessible</span>
+            </div>
+            <h3 class="text-lg font-bold text-qover-dark">The Riviera Criques Sprint</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Quick, scenic, and ultra-accessible. Perfect for enjoying a relaxed jog with colleagues or a fast-paced coastal trek with photo stops.
+            </p>
+            <div class="my-4 py-3 border-y border-slate-100 space-y-1.5 text-xs text-slate-600">
+              <div class="flex justify-between"><span>Distance:</span> <strong class="text-slate-900">8.4 km</strong></div>
+              <div class="flex justify-between"><span>Elevation:</span> <strong class="text-slate-900">80m D+</strong></div>
+              <div class="flex justify-between"><span>Target:</span> <strong class="text-slate-900">All Levels / Walkers</strong></div>
+              <div class="flex justify-between"><span>Water required:</span> <strong class="text-amber-700">0.75 Liter</strong></div>
+            </div>
+          </div>
+          <button onclick="switchTour(3); scrollToItineraries();" class="w-full py-2.5 rounded-xl text-xs font-bold text-qover-blue bg-blue-50 hover:bg-qover-blue hover:text-white transition-colors">
+            View Route Details
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PROGRAM TIMELINE & PADEL TERRAIN MEETING SPOT -->
+  <section id="schedule" class="py-16 bg-slate-50 border-t border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        
+        <div class="lg:col-span-6 space-y-6">
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-widest text-qover-blue">Event Timeline</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-qover-dark mt-1">
+              Monday, Sept 28 Schedule
+            </h2>
+            <p class="text-slate-600 mt-2 text-base">
+              Dedicated afternoon sports window with flexible wave starts, followed by recovery and the evening team dinner.
+            </p>
+          </div>
+
+          <!-- Timeline Items -->
+          <div class="space-y-4 border-l-2 border-slate-200 pl-6 ml-3 relative">
+            
+            <div class="relative">
+              <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-blue-600 border-4 border-white shadow"></div>
+              <span class="text-xs font-bold text-qover-blue uppercase">13:45 · Wave 1 Briefing</span>
+              <h4 class="text-base font-bold text-slate-900">Rendez-vous at the Padel Terrain</h4>
+              <p class="text-xs text-slate-500 mt-0.5">Meet next to the Belambra Padel court. Gear check and hydration verification for early starters.</p>
+            </div>
+
+            <div class="relative">
+              <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-blue-600 border-4 border-white shadow"></div>
+              <span class="text-xs font-bold text-blue-700 uppercase">14:00 · Wave 1 Departure (Long Loops)</span>
+              <h4 class="text-base font-bold text-slate-900">Recommended for 22.1K & 16K (or relaxed 11.4K walkers)</h4>
+              <p class="text-xs text-slate-500 mt-0.5">Gives up to 4 hours on the trails to conquer the grand loops comfortably before the 18:00 finish.</p>
+            </div>
+
+            <div class="relative">
+              <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-teal-500 border-4 border-white shadow"></div>
+              <span class="text-xs font-bold text-teal-600 uppercase">15:45 – 16:00 · Wave 2 Departure (Express Wave)</span>
+              <h4 class="text-base font-bold text-slate-900">Recommended for 11.4K & 8.4K Sprint</h4>
+              <p class="text-xs text-slate-500 mt-0.5">Ideal for those opting for a shorter scenic jog or fast hike during the golden afternoon light.</p>
+            </div>
+
+            <div class="relative">
+              <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-amber-500 border-4 border-white shadow"></div>
+              <span class="text-xs font-bold text-amber-600 uppercase">18:00 · Hard Cutoff & Activity Wrap-Up</span>
+              <h4 class="text-base font-bold text-slate-900">Regroup at Belambra Base · Sea Dip & Showers</h4>
+              <p class="text-xs text-slate-500 mt-0.5">All runners back at base. Quick dip in the Mediterranean, stretch out, shower, and get ready for dinner.</p>
+            </div>
+
+            <div class="relative">
+              <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-emerald-600 border-4 border-white shadow"></div>
+              <span class="text-xs font-bold text-emerald-700 uppercase">19:00 · Evening Feast</span>
+              <h4 class="text-base font-bold text-slate-900">Buffet Dinner at the Main Restaurant 🍽️</h4>
+              <p class="text-xs text-slate-500 mt-0.5">Rejoin the entire Qover offsite team at the Belambra central restaurant for a generous buffet and celebratory drinks!</p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Meeting Point Card with Map Visual Mockup -->
+        <div class="lg:col-span-6">
+          <div class="glass-card rounded-3xl p-7 border border-slate-200/80 shadow-qover-card relative overflow-hidden bg-gradient-to-br from-white to-blue-50/40">
+            
+            <div class="flex items-center justify-between mb-4">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+                <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                Official Start / Finish Line
+              </span>
+              <span class="text-xs text-slate-500 font-medium">Belambra Les Criques</span>
+            </div>
+
+            <h3 class="text-2xl font-bold text-qover-dark mb-2">Padel Terrain Assembly Point</h3>
+            <p class="text-sm text-slate-600 mb-6">
+              All 4 circuits originate exactly beside the Belambra resort padel court. Look for the Qover flags and your teammates warming up!
+            </p>
+
+            <!-- Illustrated mini court visual -->
+            <div class="bg-gradient-to-br from-blue-600 to-blue-900 rounded-2xl p-6 text-white text-center shadow-md relative overflow-hidden">
+              <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+              
+              <div class="text-4xl mb-2">🎾 ➡️ 🏃‍♀️</div>
+              <h4 class="text-lg font-bold">Padel Court Rally Point</h4>
+              <p class="text-xs text-blue-100 max-w-sm mx-auto mt-1">
+                Pin dropped: GPS coordinates Belambra Club Les Criques, Presqu’île de Giens, 83400 Hyères.
+              </p>
+
+              <div class="mt-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 text-xs font-semibold text-white backdrop-blur-md">
+                <span>Coordinates: 43.0362° N, 6.1415° E</span>
+              </div>
+            </div>
+
+            <!-- Practical notes -->
+            <div class="mt-5 grid grid-cols-2 gap-3 text-xs text-slate-600">
+              <div class="p-3 bg-white rounded-xl border border-slate-200">
+                <strong>☀️ Sun Exposure:</strong> Mediterranean heat can be intense. Bring sunscreen and a hat/cap.
+              </div>
+              <div class="p-3 bg-white rounded-xl border border-slate-200">
+                <strong>👟 Trail Footwear:</strong> Uneven coastal rocks and roots require shoes with good grip.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INTERACTIVE TOOL: PACE & CUTOFF ESTIMATOR -->
+  <section id="calculator" class="py-16 bg-white border-t border-slate-200">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center space-y-2 mb-8">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-qover-blue">Smart Planning</span>
+        <h2 class="text-3xl font-extrabold text-qover-dark">Interactive Pace & Finish Estimator</h2>
+        <p class="text-slate-600 text-sm">Select your departure wave (14:00 or 16:00) and trail pace to verify you finish before 18:00 and on time for the 19:00 Buffet Dinner!</p>
+      </div>
+
+      <div class="bg-gradient-to-br from-slate-50 to-blue-50/30 rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          
+          <!-- Select Departure Wave -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Departure Wave</label>
+            <select id="calc-wave" onchange="calculateTime()" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-qover-blue focus:outline-none">
+              <option value="14" selected>Wave 1 · 14:00 (Early Wave)</option>
+              <option value="16">Wave 2 · 16:00 (Express Wave)</option>
+            </select>
+          </div>
+
+          <!-- Select Itinerary -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Select Your Tour</label>
+            <select id="calc-loop" onchange="calculateTime()" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-qover-blue focus:outline-none">
+              <option value="22.1">The Grand Giens Odyssey (22.1 km)</option>
+              <option value="16.0">The Coastal Ridge Explorer (16.0 km)</option>
+              <option value="11.4">The Mediterranean Discovery (11.4 km)</option>
+              <option value="8.4" selected>The Riviera Criques Sprint (8.4 km)</option>
+            </select>
+          </div>
+
+          <!-- Pace Slider -->
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <label class="text-xs font-bold uppercase tracking-wider text-slate-700">Estimated Trail Pace</label>
+              <span id="pace-display" class="text-xs font-bold text-qover-blue bg-blue-100 px-2 py-0.5 rounded">6:30 min/km (~9.2 km/h)</span>
+            </div>
+            <input 
+              id="calc-pace" 
+              type="range" 
+              min="4.5" 
+              max="12.0" 
+              step="0.5" 
+              value="6.5" 
+              oninput="calculateTime()"
+              class="w-full accent-qover-blue cursor-pointer h-2 bg-slate-200 rounded-lg appearance-none mt-2"
+            />
+            <div class="flex justify-between text-[11px] text-slate-400 mt-1">
+              <span>Fast (4:30)</span>
+              <span>Jog (6:30)</span>
+              <span>Hike (12:00)</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Result Box -->
+        <div class="p-5 rounded-2xl bg-white border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <div class="text-xs text-slate-500 font-medium">Estimated Run Duration</div>
+            <div id="calc-result-duration" class="text-2xl sm:text-3xl font-extrabold text-qover-dark">0h 54m</div>
+          </div>
+
+          <div class="sm:text-center">
+            <div class="text-xs text-slate-500 font-medium">Expected Arrival at Padel Base</div>
+            <div id="calc-result-arrival" class="text-2xl sm:text-3xl font-extrabold text-qover-blue">14:54</div>
+          </div>
+
+          <div class="text-center sm:text-right">
+            <div id="cutoff-status" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 text-center mb-1">
+              ✅ Arrives before 18:00 cutoff
+            </div>
+            <div id="dinner-buffer" class="text-[11px] text-slate-500 font-medium">
+              🍽️ 2h06 buffer before 19:00 dinner
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MANDATORY GEAR & SURVIVAL CHECKLIST -->
+  <section id="checklist" class="py-16 bg-slate-50 border-t border-slate-200">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center space-y-2 mb-8">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-qover-blue">Preparation is Key</span>
+        <h2 class="text-3xl font-extrabold text-qover-dark">Participant Self-Reliance Checklist</h2>
+        <p class="text-slate-600 text-sm">Check off every item before departing from the Padel terrain at 14:00.</p>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+        
+        <!-- Checklist Item 1 -->
+        <label class="flex items-start space-x-3.5 p-3 rounded-2xl hover:bg-slate-50 transition cursor-pointer">
+          <input type="checkbox" checked class="mt-1 h-5 w-5 rounded border-slate-300 text-qover-blue focus:ring-qover-blue rounded-md" />
+          <div class="text-sm">
+            <strong class="font-bold text-slate-900 block">Water Flasks / Bladder (Minimum 1L - 1.5L)</strong>
+            <span class="text-slate-500 text-xs">Crucial! Remember there are zero water refill stations on the circuit.</span>
+          </div>
+        </label>
+
+        <!-- Checklist Item 2 -->
+        <label class="flex items-start space-x-3.5 p-3 rounded-2xl hover:bg-slate-50 transition cursor-pointer">
+          <input type="checkbox" checked class="mt-1 h-5 w-5 rounded border-slate-300 text-qover-blue focus:ring-qover-blue rounded-md" />
+          <div class="text-sm">
+            <strong class="font-bold text-slate-900 block">Energy Bars or Dried Fruits</strong>
+            <span class="text-slate-500 text-xs">Fast carbs to avoid hypoglycemia on the ascents and in the Mediterranean sun.</span>
+          </div>
+        </label>
+
+        <!-- Checklist Item 3 -->
+        <label class="flex items-start space-x-3.5 p-3 rounded-2xl hover:bg-slate-50 transition cursor-pointer">
+          <input type="checkbox" checked class="mt-1 h-5 w-5 rounded border-slate-300 text-qover-blue focus:ring-qover-blue rounded-md" />
+          <div class="text-sm">
+            <strong class="font-bold text-slate-900 block">Charged Smartphone with Komoot Offline Tour</strong>
+            <span class="text-slate-500 text-xs">Pre-download the tour on Komoot. Essential in case of poor 4G reception along the cliffs.</span>
+          </div>
+        </label>
+
+        <!-- Checklist Item 4 -->
+        <label class="flex items-start space-x-3.5 p-3 rounded-2xl hover:bg-slate-50 transition cursor-pointer">
+          <input type="checkbox" checked class="mt-1 h-5 w-5 rounded border-slate-300 text-qover-blue focus:ring-qover-blue rounded-md" />
+          <div class="text-sm">
+            <strong class="font-bold text-slate-900 block">Trail Running or Sturdy Running Shoes</strong>
+            <span class="text-slate-500 text-xs">The coastal path has loose rocks, roots, and steep rocky slabs. Avoid slick sneakers.</span>
+          </div>
+        </label>
+
+        <!-- Checklist Item 5 -->
+        <label class="flex items-start space-x-3.5 p-3 rounded-2xl hover:bg-slate-50 transition cursor-pointer">
+          <input type="checkbox" checked class="mt-1 h-5 w-5 rounded border-slate-300 text-qover-blue focus:ring-qover-blue rounded-md" />
+          <div class="text-sm">
+            <strong class="font-bold text-slate-900 block">Sun Protection (Cap & Sunscreen)</strong>
+            <span class="text-slate-500 text-xs">Coastal breeze can disguise high UV radiation in southern France at 2:00 PM.</span>
+          </div>
+        </label>
+
+        <div class="pt-2 text-center text-xs text-slate-400">
+          Tip: Pair up! We strongly recommend running in buddy pairs or small clusters for safety and fun.
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-[#0B1528] text-white py-12 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-slate-800">
+        <div class="flex items-center space-x-3">
+          <span class="text-xs bg-white/10 text-slate-300 px-3 py-1 rounded-full font-semibold">
+            Presqu’île de Giens · Offsite 2026
+          </span>
+          <span class="text-xs text-slate-400">
+            Belambra Les Criques
+          </span>
+        </div>
+        
+        <p class="text-slate-400 text-xs text-center md:text-right max-w-md">
+          Monday, Sept 28, 2026 · Departures: 14:00 & 16:00 · Activity cutoff: 18:00 · Buffet Dinner: 19:00 at the main restaurant. 100% self-reliance, respect nature & leave no trace!
+        </p>
+      </div>
+
+      <div class="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+        <div>
+          &copy; 2026 Qover Offsite Team Adventure.
+        </div>
+        <div class="flex space-x-4">
+          <a href="#itineraries" class="hover:text-white transition">Routes</a>
+          <a href="#ravito-alert" class="hover:text-white transition">Safety Rules</a>
+          <a href="#schedule" class="hover:text-white transition">Schedule</a>
+          <a href="#padel-spot" class="hover:text-white transition">Padel Meeting Point</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT CONTROLLER -->
+  <script>
+    // Tour Data Structure
+    const tours = [
+      {
+        id: 0,
+        name: "The Grand Giens Odyssey",
+        tag: "Expert Challenge",
+        tagClass: "bg-purple-100 text-purple-700",
+        distance: "22.1 km",
+        elevation: "300m D+",
+        duration: "2h15 - 3h15",
+        desc: "The ultimate tour of the Presqu'île! Takes you all the way across panoramic crests, hidden calanques, and technical coastal singletracks. Pure endurance test.",
+        embedUrl: "https://www.komoot.com/tour/3289503687/embed?share_token=aY1nLnjBNVDovggz6Qw5hGDXQEwwJQxGCiprAwwENRsJ3wqf5q&layout=classic&profile=1",
+        directUrl: "https://www.komoot.com/tour/3289503687?share_token=aY1nLnjBNVDovggz6Qw5hGDXQEwwJQxGCiprAwwENRsJ3wqf5q"
+      },
+      {
+        id: 1,
+        name: "The Coastal Ridge Explorer",
+        tag: "Challenger Route",
+        tagClass: "bg-blue-100 text-blue-700",
+        distance: "16.0 km",
+        elevation: "190m D+",
+        duration: "1h35 - 2h15",
+        desc: "The ideal balance between elevation and coastal speed. Explores the wild ridges overlooking the Mediterranean before cutting back through pine groves.",
+        embedUrl: "https://www.komoot.com/tour/3289661962/embed?share_token=a3mLuy8fvmVuAosdqhL5zo68sjtm9QOIm3TzRzlZdQcxxuTZ81&layout=classic&profile=1",
+        directUrl: "https://www.komoot.com/tour/3289661962?share_token=a3mLuy8fvmVuAosdqhL5zo68sjtm9QOIm3TzRzlZdQcxxuTZ81"
+      },
+      {
+        id: 2,
+        name: "The Mediterranean Discovery",
+        tag: "Classic Loop",
+        tagClass: "bg-teal-100 text-teal-700",
+        distance: "11.4 km",
+        elevation: "110m D+",
+        duration: "1h05 - 1h35",
+        desc: "A gorgeous coastal loop with rolling terrain and minimal climbing. Perfect for enthusiastic runners and groups wanting stunning views with time to spare.",
+        embedUrl: "https://www.komoot.com/tour/3289666780/embed?share_token=aPuvmbm4Orsj8wUsympLC1qU6C17a3xKHTtnd1Fowu1F2C0Sgr&layout=classic&profile=1",
+        directUrl: "https://www.komoot.com/tour/3289666780?share_token=aPuvmbm4Orsj8wUsympLC1qU6C17a3xKHTtnd1Fowu1F2C0Sgr"
+      },
+      {
+        id: 3,
+        name: "The Riviera Criques Sprint",
+        tag: "Accessible / Fun Run",
+        tagClass: "bg-emerald-100 text-emerald-700",
+        distance: "8.4 km",
+        elevation: "80m D+",
+        duration: "45m - 1h15",
+        desc: "A fast and scenic loop directly skirting the turquoise waters around Belambra. Accessible to everyone, including joggers and brisk coastal hikers.",
+        embedUrl: "https://www.komoot.com/tour/3289672239/embed?share_token=a0KtxF6Q4dQkJkNcXuFpG2BV8XAVPpDJ5zRooxKlwprNPtY0Hf&layout=classic&profile=1",
+        directUrl: "https://www.komoot.com/tour/3289672239?share_token=a0KtxF6Q4dQkJkNcXuFpG2BV8XAVPpDJ5zRooxKlwprNPtY0Hf"
+      }
+    ];
+
+    let currentTourIndex = 0;
+
+    function hideLoader() {
+      const loader = document.getElementById('iframe-loader');
+      if (loader) {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 300);
+      }
+    }
+
+    function showLoader() {
+      const loader = document.getElementById('iframe-loader');
+      if (loader) {
+        loader.style.display = 'flex';
+        loader.style.opacity = '1';
+      }
+    }
+
+    function switchTour(index) {
+      currentTourIndex = index;
+      const tour = tours[index];
+
+      // Update Tab Styles
+      for (let i = 0; i < 4; i++) {
+        const btn = document.getElementById(`tab-btn-${i}`);
+        if (i === index) {
+          btn.className = 'tab-button px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all flex items-center space-x-2 bg-qover-blue text-white shadow-sm';
+        } else {
+          btn.className = 'tab-button px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium text-slate-600 hover:text-qover-blue transition-all flex items-center space-x-2';
+        }
+      }
+
+      // Update Texts
+      document.getElementById('track-name').textContent = tour.name;
+      document.getElementById('track-desc').textContent = tour.desc;
+      document.getElementById('stat-dist').textContent = tour.distance;
+      document.getElementById('stat-elev').textContent = tour.elevation;
+      document.getElementById('stat-time').textContent = tour.duration;
+      
+      const badge = document.getElementById('track-badge');
+      badge.textContent = tour.tag;
+      badge.className = `px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${tour.tagClass}`;
+
+      // Update Iframe with smooth loader
+      showLoader();
+      const iframe = document.getElementById('active-komoot-frame');
+      iframe.src = tour.embedUrl;
+    }
+
+    function openKomootDirect() {
+      const tour = tours[currentTourIndex];
+      window.open(tour.directUrl, '_blank');
+    }
+
+    function scrollToItineraries() {
+      const element = document.getElementById('itineraries');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function calculateTime() {
+      const distance = parseFloat(document.getElementById('calc-loop').value);
+      const pacePerKm = parseFloat(document.getElementById('calc-pace').value); // in decimal minutes
+      const startHour = parseInt(document.getElementById('calc-wave').value, 10); // 14 or 16
+
+      // Format pace display
+      const paceMinutes = Math.floor(pacePerKm);
+      const paceSeconds = Math.round((pacePerKm - paceMinutes) * 60);
+      const paceSpeed = (60 / pacePerKm).toFixed(1);
+      document.getElementById('pace-display').textContent = `${paceMinutes}:${paceSeconds < 10 ? '0' : ''}${paceSeconds} min/km (~${paceSpeed} km/h)`;
+
+      // Total running minutes
+      const totalMinutes = Math.round(distance * pacePerKm);
+      const hours = Math.floor(totalMinutes / 60);
+      const mins = totalMinutes % 60;
+      document.getElementById('calc-result-duration').textContent = `${hours}h ${mins < 10 ? '0' : ''}${mins}m`;
+
+      // Start time based on selected wave (14h = 840 mins, 16h = 960 mins)
+      const startMin = startHour * 60;
+      const arrivalTotalMin = startMin + totalMinutes;
+      const arrivalHour = Math.floor(arrivalTotalMin / 60);
+      const arrivalMinute = arrivalTotalMin % 60;
+      
+      document.getElementById('calc-result-arrival').textContent = `${arrivalHour}:${arrivalMinute < 10 ? '0' : ''}${arrivalMinute}`;
+
+      // Check against cutoff 18:00 (18:00 = 1080 minutes) and 19:00 dinner (1140 minutes)
+      const statusElement = document.getElementById('cutoff-status');
+      const dinnerBufferElement = document.getElementById('dinner-buffer');
+      const dinnerTotalMin = 19 * 60; // 19:00 = 1140 minutes
+
+      if (arrivalTotalMin <= 1080) {
+        statusElement.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 text-center mb-1';
+        statusElement.textContent = `✅ Arrives before 18:00 cutoff`;
+      } else if (arrivalTotalMin <= 1140) {
+        statusElement.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200 text-center mb-1';
+        statusElement.textContent = `⚠️ Past 18:00 cutoff! Tight turnaround for dinner`;
+      } else {
+        statusElement.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200 text-center mb-1';
+        statusElement.textContent = `🚨 Arrives after 19:00! You will miss dinner!`;
+      }
+
+      // Calculate time left before 19:00 Buffet Dinner
+      const diffToDinner = dinnerTotalMin - arrivalTotalMin;
+      if (diffToDinner > 0) {
+        const dHours = Math.floor(diffToDinner / 60);
+        const dMins = diffToDinner % 60;
+        dinnerBufferElement.textContent = `🍽️ ${dHours > 0 ? dHours + 'h ' : ''}${dMins}m buffer before 19:00 dinner`;
+        dinnerBufferElement.className = 'text-[11px] text-slate-500 font-medium';
+      } else {
+        dinnerBufferElement.textContent = `🍽️ Late for 19:00 dinner by ${Math.abs(diffToDinner)} min!`;
+        dinnerBufferElement.className = 'text-[11px] text-rose-600 font-bold';
+      }
+    }
+
+    // Run initial calculation on load
+    window.addEventListener('DOMContentLoaded', () => {
+      calculateTime();
+    });
+  </script>
+
+</body>
+</html>
