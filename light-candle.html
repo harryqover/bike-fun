@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sanctuary — Light a Virtual Candle</title>
+  <title>Launch Vigil — Insurance Program Go-Live Sanctuary</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
 
   <script>
     tailwind.config = {
@@ -16,15 +16,14 @@
           fontFamily: {
             cinzel: ['Cinzel', 'serif'],
             serif: ['Playfair Display', 'serif'],
-            sans: ['Inter', 'sans-serif'],
+            sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
           },
           colors: {
-            candle: {
-              flame: '#ff9d00',
-              glow: '#ffbe53',
-              amber: '#b45309',
-              dark: '#0a0908',
-            }
+            amberGlow: '#f59e0b',
+            ember: '#ef4444',
+            parchment: '#fef3c7',
+            navyDark: '#080c14',
+            cardBg: '#0f172a'
           }
         }
       }
@@ -32,62 +31,60 @@
   </script>
 
   <style>
-    /* Flame flicker & dynamic glow */
     @keyframes flicker {
       0%, 100% {
         transform: scale(1) rotate(-0.5deg);
-        filter: drop-shadow(0 0 16px rgba(255, 170, 40, 0.95)) drop-shadow(0 -10px 25px rgba(255, 120, 0, 0.7));
+        filter: drop-shadow(0 0 18px rgba(245, 158, 11, 0.95)) drop-shadow(0 -10px 28px rgba(239, 68, 68, 0.75));
       }
       20% {
-        transform: scale(1.04, 0.96) rotate(1deg);
-        filter: drop-shadow(0 0 22px rgba(255, 185, 60, 1)) drop-shadow(0 -14px 30px rgba(255, 140, 10, 0.8));
+        transform: scale(1.05, 0.95) rotate(1.2deg);
+        filter: drop-shadow(0 0 24px rgba(251, 191, 36, 1)) drop-shadow(0 -14px 34px rgba(245, 101, 101, 0.85));
       }
       40% {
-        transform: scale(0.98, 1.05) rotate(-1.5deg);
-        filter: drop-shadow(0 0 14px rgba(255, 150, 20, 0.9)) drop-shadow(0 -8px 20px rgba(240, 90, 0, 0.6));
+        transform: scale(0.96, 1.06) rotate(-1.8deg);
+        filter: drop-shadow(0 0 15px rgba(217, 119, 6, 0.9)) drop-shadow(0 -8px 22px rgba(220, 38, 38, 0.65));
       }
       60% {
-        transform: scale(1.03, 0.98) rotate(1deg);
-        filter: drop-shadow(0 0 20px rgba(255, 180, 50, 0.95)) drop-shadow(0 -12px 28px rgba(255, 130, 0, 0.75));
+        transform: scale(1.04, 0.97) rotate(1deg);
+        filter: drop-shadow(0 0 22px rgba(245, 158, 11, 0.95)) drop-shadow(0 -12px 30px rgba(239, 68, 68, 0.8));
       }
       80% {
         transform: scale(0.97, 1.03) rotate(-0.8deg);
-        filter: drop-shadow(0 0 15px rgba(255, 160, 30, 0.92)) drop-shadow(0 -10px 22px rgba(255, 100, 0, 0.65));
+        filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.9)) drop-shadow(0 -10px 24px rgba(185, 28, 28, 0.7));
       }
+    }
+
+    @keyframes intenseFlicker {
+      0%, 100% { transform: scale(1.15, 1.1) rotate(-1.5deg); filter: drop-shadow(0 0 30px #f59e0b) drop-shadow(0 -15px 35px #ef4444); }
+      30% { transform: scale(1.22, 1.02) rotate(2deg); filter: drop-shadow(0 0 35px #fbbf24) drop-shadow(0 -18px 45px #dc2626); }
+      70% { transform: scale(1.1, 1.2) rotate(-2deg); filter: drop-shadow(0 0 28px #d97706) drop-shadow(0 -12px 30px #b91c1c); }
     }
 
     @keyframes innerFlicker {
       0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.95; }
-      25% { transform: scale(1.08, 0.94) translate(0.5px, -1px); opacity: 1; }
-      50% { transform: scale(0.94, 1.05) translate(-0.5px, 0.5px); opacity: 0.9; }
-      75% { transform: scale(1.05, 0.97) translate(1px, -0.5px); opacity: 0.98; }
-    }
-
-    @keyframes auraBreathe {
-      0%, 100% { opacity: 0.65; transform: scale(1); }
-      50% { opacity: 0.85; transform: scale(1.08); }
+      25% { transform: scale(1.08, 0.92) translate(0.5px, -1px); opacity: 1; }
+      50% { transform: scale(0.92, 1.06) translate(-0.5px, 0.5px); opacity: 0.9; }
+      75% { transform: scale(1.06, 0.96) translate(1px, -0.5px); opacity: 0.98; }
     }
 
     @keyframes smokeDrift {
-      0% {
-        opacity: 0.75;
-        transform: translateY(0) scale(1) translateX(0);
-        filter: blur(1px);
-      }
-      50% {
-        opacity: 0.4;
-        transform: translateY(-40px) scale(1.8) translateX(12px) skewX(6deg);
-        filter: blur(3px);
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(-90px) scale(2.8) translateX(-18px) skewX(-10deg);
-        filter: blur(6px);
-      }
+      0% { opacity: 0.85; transform: translateY(0) scale(1) translateX(0); filter: blur(1px); }
+      50% { opacity: 0.45; transform: translateY(-40px) scale(2) translateX(14px) skewX(8deg); filter: blur(3px); }
+      100% { opacity: 0; transform: translateY(-95px) scale(3.2) translateX(-20px) skewX(-12deg); filter: blur(6px); }
     }
 
-    .flame-active {
+    @keyframes heatPulse {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.08); opacity: 0.95; }
+    }
+
+    .flame-normal {
       animation: flicker 1.8s infinite ease-in-out;
+      transform-origin: bottom center;
+    }
+
+    .flame-urgent {
+      animation: intenseFlicker 0.85s infinite ease-in-out;
       transform-origin: bottom center;
     }
 
@@ -96,437 +93,390 @@
       transform-origin: bottom center;
     }
 
-    .aura-active {
-      animation: auraBreathe 3.5s infinite ease-in-out;
-    }
-
     .smoke-puff {
       animation: smokeDrift 2.4s forwards cubic-bezier(0.1, 0.8, 0.3, 1);
     }
 
-    /* Custom Glassmorphism & Aesthetics */
-    .glass-panel {
-      background: rgba(18, 17, 16, 0.7);
+    .aura-breathe {
+      animation: heatPulse 3.2s infinite ease-in-out;
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 215, 150, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.2);
     }
 
     .glass-input {
-      background: rgba(10, 9, 8, 0.6);
-      border: 1px solid rgba(255, 215, 150, 0.18);
+      background: rgba(8, 12, 20, 0.8);
+      border: 1px solid rgba(245, 158, 11, 0.25);
     }
     .glass-input:focus {
-      border-color: rgba(245, 158, 11, 0.7);
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+      border-color: rgba(245, 158, 11, 0.8);
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
     }
 
     /* Custom scrollbars */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: rgba(15, 15, 15, 0.6);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 215, 150, 0.2);
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 215, 150, 0.4);
-    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(10, 15, 25, 0.6); }
+    ::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.3); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(245, 158, 11, 0.6); }
   </style>
 </head>
-<body class="bg-black text-amber-50 font-sans min-h-screen relative selection:bg-amber-800 selection:text-white overflow-x-hidden flex flex-col justify-between">
+<body class="bg-[#050811] text-amber-50 font-sans min-h-screen relative selection:bg-amber-800 selection:text-white overflow-x-hidden flex flex-col justify-between">
 
-  <!-- Ambient Room Background Glow that dynamically updates with candle flame state -->
-  <div id="roomGlow" class="pointer-events-none fixed inset-0 transition-opacity duration-1000 ease-out z-0 opacity-60"
-       style="background: radial-gradient(circle at 50% 45%, rgba(245, 140, 20, 0.25) 0%, rgba(120, 50, 5, 0.12) 35%, rgba(10, 7, 5, 0.95) 75%, #050403 100%);">
+  <div id="roomGlow" class="pointer-events-none fixed inset-0 transition-opacity duration-1000 ease-out z-0 opacity-70"
+       style="background: radial-gradient(circle at 50% 40%, rgba(245, 158, 11, 0.24) 0%, rgba(220, 38, 38, 0.12) 35%, rgba(10, 14, 25, 0.95) 75%, #04060a 100%);">
   </div>
-
-  <!-- Ambient Floating Dust Particles Canvas -->
   <canvas id="ambientCanvas" class="pointer-events-none fixed inset-0 z-0 opacity-40"></canvas>
+  <canvas id="confettiCanvas" class="pointer-events-none fixed inset-0 z-50"></canvas>
 
-  <!-- Header Bar -->
-  <header class="relative z-10 w-full px-6 py-4 flex items-center justify-between border-b border-amber-500/10 backdrop-blur-sm">
-    <div class="flex items-center space-x-3">
-      <span class="text-2xl text-amber-400">✧</span>
-      <div>
-        <h1 class="font-cinzel tracking-widest text-lg md:text-xl font-bold text-amber-200">SANCTUARY</h1>
-        <p class="text-xs text-amber-300/60 font-serif italic hidden sm:block">A quiet space for contemplation, memory, and hope</p>
+  <header class="relative z-10 w-full px-4 sm:px-8 py-3.5 border-b border-amber-500/20 glass-card">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      
+      <!-- Brand & Program Identity -->
+      <div class="flex items-center space-x-3.5">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-xl shadow-[0_0_15px_rgba(245,158,11,0.5)]">
+          🛡️
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="font-cinzel tracking-wider text-base sm:text-lg font-bold text-amber-200">
+              INSURANCE GO-LIVE VIGIL
+            </h1>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-500/20 text-red-300 border border-red-500/40 animate-pulse">
+              HOT BLOCKERS ACTIVE
+            </span>
+          </div>
+          <p class="text-xs text-amber-300/70 font-sans">
+            Lighting fires under the team so we can launch on time!
+          </p>
+        </div>
       </div>
-    </div>
 
-    <!-- Quick Controls -->
-    <div class="flex items-center space-x-2 sm:space-x-4">
-      <!-- Ambient Audio Toggle -->
-      <button id="audioToggleBtn" class="flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs font-medium glass-panel hover:border-amber-400/40 transition">
-        <svg id="soundIconOff" class="w-4 h-4 text-amber-300/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-        </svg>
-        <svg id="soundIconOn" class="w-4 h-4 text-amber-400 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-        </svg>
-        <span id="audioStatusText" class="text-amber-200/80">Ambient Sound: Off</span>
-      </button>
+      <!-- Live Readiness Bar & Header Controls -->
+      <div class="flex items-center gap-3 sm:gap-6 w-full sm:w-auto justify-between sm:justify-end">
+        <!-- Progress Metric -->
+        <div class="flex flex-col items-end min-w-[150px]">
+          <div class="flex items-center justify-between w-full text-xs font-semibold mb-1">
+            <span class="text-amber-300/80">Launch Readiness</span>
+            <span id="readinessScore" class="text-amber-400 font-cinzel">67%</span>
+          </div>
+          <div class="w-full bg-slate-800/80 rounded-full h-2.5 overflow-hidden border border-amber-400/20">
+            <div id="readinessBar" class="h-full bg-gradient-to-r from-red-500 via-amber-500 to-emerald-400 transition-all duration-700 rounded-full" style="width: 67%;"></div>
+          </div>
+        </div>
 
-      <!-- Vigil Wall Modal Button -->
-      <button id="openWallBtn" class="flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 border border-amber-400/20 transition">
-        <span>🕯️</span>
-        <span class="hidden sm:inline">Candle Wall</span>
-        <span id="wallBadgeCount" class="bg-amber-400/20 text-amber-300 text-[10px] px-1.5 py-0.2 rounded-full">14</span>
-      </button>
+        <!-- Ambient Sound Switch -->
+        <button id="audioToggleBtn" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-900/60 hover:border-amber-400/50 border border-amber-500/20 transition">
+          <span id="soundIcon">🔇</span>
+          <span id="audioStatusText" class="text-amber-200/80 hidden sm:inline">Office Sound: Off</span>
+        </button>
+
+        <!-- New Blocker Button -->
+        <button id="openNewBlockerBtn" class="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-cinzel font-bold text-slate-950 bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.35)] transition">
+          <span>+ Light Candle</span>
+        </button>
+      </div>
+
     </div>
   </header>
 
-  <!-- Main Stage Altar -->
-  <main class="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8 max-w-4xl mx-auto w-full">
+  <main class="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 flex flex-col items-center">
     
-    <!-- Timer & Intention Header Badge -->
-    <div id="statusBadgeContainer" class="mb-4 transition-all duration-500 flex flex-col items-center">
-      <div id="litDurationBadge" class="hidden text-xs uppercase tracking-widest text-amber-300/80 px-4 py-1 rounded-full glass-panel border border-amber-400/20 mb-2">
-        Burning softly • <span id="timerDisplay">00:00</span>
+    <!-- Urgency Banner & Slogan -->
+    <div class="text-center max-w-2xl mb-4">
+      <div id="urgencyAlertBadge" class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-2">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+        </span>
+        <span id="bannerStatusText">This candle stays lit until all department sign-offs are cleared.</span>
       </div>
-      <div id="intentionSnippet" class="hidden text-center max-w-md px-4">
-        <p id="snippetText" class="font-serif italic text-amber-100 text-sm md:text-base drop-shadow-md">"May light guide your quiet paths..."</p>
-        <span id="snippetAuthor" class="text-xs text-amber-400/70 tracking-wider font-cinzel mt-1 block">— Anonymous</span>
-      </div>
-    </div>
-
-    <!-- The Interactive Candle Assembly -->
-    <div class="relative flex flex-col items-center justify-center my-6 group cursor-pointer select-none" id="candleStage" title="Click flame or candle to toggle light">
-      
-      <!-- Ambient Radial Aura Behind Flame -->
-      <div id="candleAura" class="absolute -top-32 w-72 h-72 rounded-full pointer-events-none transition-opacity duration-700 aura-active opacity-70"
-           style="background: radial-gradient(circle, rgba(255, 180, 50, 0.45) 0%, rgba(245, 120, 10, 0.22) 40%, rgba(255, 100, 0, 0) 75%); filter: blur(20px);">
-      </div>
-
-      <!-- Smoke Particle Container -->
-      <div id="smokeContainer" class="absolute -top-24 pointer-events-none w-20 h-32 flex justify-center"></div>
-
-      <!-- Flame Container -->
-      <div id="flameWrapper" class="relative z-20 flex flex-col items-center transition-all duration-500">
-        <!-- SVG Flame Structure for Organic Fluid Aesthetics -->
-        <div id="flame" class="relative w-12 h-24 flame-active origin-bottom">
-          <!-- Outer Flame Glow Body -->
-          <div class="absolute inset-0 rounded-full" 
-               style="background: radial-gradient(ellipse at 50% 85%, #ffffff 0%, #ffe875 22%, #ff9d00 55%, #f94c00 80%, rgba(200, 20, 0, 0) 100%);
-                      border-radius: 50% 50% 35% 35% / 70% 70% 30% 30%;">
-          </div>
-          <!-- Inner Hot Blue Core -->
-          <div class="flame-inner absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-8 rounded-full"
-               style="background: radial-gradient(ellipse at 50% 80%, #ffffff 0%, #bdecff 40%, #0077ff 80%, rgba(0, 50, 200, 0) 100%);
-                      border-radius: 50% 50% 40% 40% / 75% 75% 25% 25%;">
-          </div>
-          <!-- Tiny Wick Tip Glow -->
-          <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-2 bg-amber-100 rounded-full blur-[1px]"></div>
-        </div>
-      </div>
-
-      <!-- The Wick -->
-      <div class="relative z-10 w-1.5 h-5 bg-gradient-to-t from-stone-900 to-amber-900 rounded-t -mt-1 shadow-inner">
-        <!-- Burning ember tip on wick -->
-        <div id="wickEmber" class="w-1.5 h-1.5 rounded-full bg-amber-400 blur-[0.5px]"></div>
-      </div>
-
-      <!-- Candle Wax Column -->
-      <div id="candleBody" class="relative z-10 transition-colors duration-500 shadow-2xl rounded-t-lg flex flex-col items-center overflow-hidden"
-           style="width: 110px; height: 170px; background: linear-gradient(to right, #403b37 0%, #fff7ed 35%, #fed7aa 65%, #9a3412 100%);">
-        
-        <!-- Wax Melt Pool Basin at Top -->
-        <div class="w-full h-4 rounded-full bg-amber-100/50 shadow-inner -mt-1 border-t border-amber-200/40"></div>
-
-        <!-- Dripping Wax Ribs -->
-        <div class="absolute left-3 top-2 w-2.5 h-14 bg-amber-100/70 rounded-full filter drop-shadow"></div>
-        <div class="absolute left-8 top-1 w-2 h-8 bg-amber-100/60 rounded-full"></div>
-        <div class="absolute right-4 top-2 w-3 h-20 bg-amber-100/70 rounded-full filter drop-shadow"></div>
-        <div class="absolute right-9 top-1 w-1.5 h-11 bg-amber-100/50 rounded-full"></div>
-
-        <!-- Candle Wax Core Soft Shading -->
-        <div id="waxGlow" class="absolute inset-0 transition-opacity duration-700 opacity-60"
-             style="background: radial-gradient(ellipse at 50% 0%, rgba(255, 200, 100, 0.6) 0%, rgba(255, 120, 0, 0.15) 50%, rgba(0, 0, 0, 0.4) 100%);">
-        </div>
-      </div>
-
-      <!-- Candle Stand / Glass Plate Base -->
-      <div id="candleBase" class="relative z-0 -mt-3 w-44 h-8 rounded-full transition-all duration-500 flex items-center justify-center border border-amber-400/20"
-           style="background: radial-gradient(ellipse at center, rgba(120, 80, 40, 0.6) 0%, rgba(25, 20, 18, 0.95) 75%); box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.9), 0 0 25px rgba(245, 158, 11, 0.15);">
-        <div class="w-36 h-4 rounded-full border-t border-amber-400/30 bg-amber-950/20"></div>
-      </div>
-
-      <!-- Hint tap label -->
-      <p id="tapHint" class="mt-4 text-xs font-serif italic text-amber-300/50 transition-opacity duration-300 pointer-events-none">
-        Tap the candle to blow out
+      <h2 class="text-2xl sm:text-3xl font-cinzel font-bold text-amber-100 drop-shadow-md">
+        The Flame of Pending Approvals
+      </h2>
+      <p class="text-xs sm:text-sm text-amber-200/70 font-sans mt-1">
+        Someone owes a contract, actuarial rate table, or compliance sign-off? Light a candle in their honor and nudge them.
       </p>
     </div>
 
-    <!-- Action Bar Controls -->
-    <div class="w-full max-w-md flex flex-wrap gap-3 items-center justify-center mt-3 z-20">
+    <!-- Center Interactive Candle Assembly -->
+    <div class="relative flex flex-col items-center justify-center my-4 select-none group cursor-pointer" id="candleStage" title="Click to toggle or nudge the flame">
       
-      <!-- Main Strike / Extinguish Button -->
-      <button id="toggleFlameBtn" class="flex-1 min-w-[170px] py-3 px-6 rounded-xl font-cinzel text-xs tracking-wider uppercase font-semibold text-amber-950 bg-gradient-to-r from-amber-300 via-amber-200 to-amber-400 hover:from-amber-200 hover:to-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.35)] active:scale-[0.98] transition">
-        Blow Out Candle
+      <!-- Radial Aura Behind Flame -->
+      <div id="candleAura" class="absolute -top-32 w-72 h-72 rounded-full pointer-events-none transition-opacity duration-700 aura-breathe opacity-80"
+           style="background: radial-gradient(circle, rgba(245, 158, 11, 0.45) 0%, rgba(220, 38, 38, 0.25) 45%, rgba(245, 158, 11, 0) 75%); filter: blur(22px);">
+      </div>
+
+      <!-- Smoke Particle Container -->
+      <div id="smokeContainer" class="absolute -top-24 pointer-events-none w-24 h-36 flex justify-center"></div>
+
+      <!-- Flame Container -->
+      <div id="flameWrapper" class="relative z-20 flex flex-col items-center transition-all duration-500">
+        <div id="flame" class="relative w-12 h-24 flame-normal origin-bottom">
+          <!-- Outer Flame Body -->
+          <div class="absolute inset-0 rounded-full" 
+               style="background: radial-gradient(ellipse at 50% 85%, #ffffff 0%, #ffed4a 20%, #f59e0b 52%, #ef4444 82%, rgba(200, 20, 0, 0) 100%);
+                      border-radius: 50% 50% 35% 35% / 70% 70% 30% 30%;">
+          </div>
+          <!-- Hot Blue Core (Insurance Power Core) -->
+          <div class="flame-inner absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-8 rounded-full"
+               style="background: radial-gradient(ellipse at 50% 80%, #ffffff 0%, #93c5fd 40%, #2563eb 80%, rgba(37, 99, 235, 0) 100%);
+                      border-radius: 50% 50% 40% 40% / 75% 75% 25% 25%;">
+          </div>
+          <!-- Spark tip -->
+          <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-2 bg-amber-100 rounded-full blur-[0.5px]"></div>
+        </div>
+      </div>
+
+      <!-- Candle Wick -->
+      <div class="relative z-10 w-1.5 h-5 bg-gradient-to-t from-stone-950 to-amber-950 rounded-t -mt-1">
+        <div id="wickEmber" class="w-1.5 h-1.5 rounded-full bg-amber-400 blur-[0.5px]"></div>
+      </div>
+
+      <!-- Candle Wax Body with Department Urgency Stamp -->
+      <div id="candleBody" class="relative z-10 shadow-2xl rounded-t-xl flex flex-col items-center overflow-hidden border-t border-amber-300/30"
+           style="width: 124px; height: 165px; background: linear-gradient(to right, #1e293b 0%, #fef3c7 35%, #fde68a 65%, #78350f 100%);">
+        
+        <!-- Wax Basin Top -->
+        <div class="w-full h-4 rounded-full bg-amber-200/60 shadow-inner -mt-1 border-t border-amber-100/50"></div>
+
+        <!-- Corporate Stencil Stamp on Wax -->
+        <div class="mt-4 px-2 py-1 bg-amber-950/40 rounded border border-amber-400/30 text-[9px] font-cinzel font-bold text-amber-200 uppercase tracking-widest text-center">
+          POLICY VIGIL
+        </div>
+        <div id="candleNudgeCounter" class="text-[10px] font-sans text-amber-900 font-bold mt-1 bg-amber-300/70 px-2 py-0.5 rounded-full">
+          🔥 24 Nudges Sent
+        </div>
+
+        <!-- Wax Drips Down the Sides -->
+        <div class="absolute left-2 top-2 w-3 h-14 bg-amber-100/70 rounded-full"></div>
+        <div class="absolute left-8 top-1 w-2 h-7 bg-amber-100/60 rounded-full"></div>
+        <div class="absolute right-3 top-2 w-3.5 h-20 bg-amber-100/70 rounded-full"></div>
+        <div class="absolute right-9 top-1 w-2 h-10 bg-amber-100/50 rounded-full"></div>
+
+        <!-- Internal glow -->
+        <div id="waxGlow" class="absolute inset-0 transition-opacity duration-700 opacity-60"
+             style="background: radial-gradient(ellipse at 50% 0%, rgba(245, 158, 11, 0.6) 0%, rgba(239, 68, 68, 0.2) 50%, rgba(0, 0, 0, 0.5) 100%);">
+        </div>
+      </div>
+
+      <!-- Stand / Brass Plate Base -->
+      <div id="candleBase" class="relative z-0 -mt-3 w-48 h-8 rounded-full flex items-center justify-center border border-amber-400/30"
+           style="background: radial-gradient(ellipse at center, #78350f 0%, #1e1b18 80%); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(245, 158, 11, 0.2);">
+        <div class="w-40 h-4 rounded-full border-t border-amber-400/30 bg-amber-950/30"></div>
+      </div>
+
+      <p class="mt-3 text-xs font-serif italic text-amber-300/60">
+        Click flame to ignite or extinguish • Tap buttons below to fan the fire
+      </p>
+    </div>
+
+    <!-- Quick Action Bar -->
+    <div class="flex flex-wrap gap-2.5 items-center justify-center mt-2 z-20">
+      <button id="fanFlameBtn" class="px-4 py-2.5 rounded-xl font-cinzel text-xs font-bold uppercase tracking-wider text-amber-950 bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.4)] active:scale-95 transition flex items-center space-x-1.5">
+        <span>💨</span>
+        <span>Fan The Flame (Urgency x2)</span>
       </button>
 
-      <!-- Dedication / Prayer / Intention Modal Trigger -->
-      <button id="openIntentionBtn" class="py-3 px-5 rounded-xl font-cinzel text-xs tracking-wider uppercase font-medium text-amber-200 glass-panel hover:border-amber-400/40 active:scale-[0.98] transition flex items-center space-x-2">
-        <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-        </svg>
-        <span>Set Intention</span>
+      <button id="quickSlackNudgeBtn" class="px-4 py-2.5 rounded-xl font-cinzel text-xs font-bold uppercase tracking-wider text-amber-200 glass-card hover:border-amber-400/60 active:scale-95 transition flex items-center space-x-1.5">
+        <span>💬</span>
+        <span>Quick Slack / Teams Blast</span>
       </button>
 
-      <!-- Customization & Timer Quick Pill -->
-      <button id="openCustomizeBtn" class="py-3 px-4 rounded-xl text-amber-200 glass-panel hover:border-amber-400/40 active:scale-[0.98] transition" title="Customize Candle & Timer">
-        <svg class="w-4 h-4 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-        </svg>
+      <button id="soundGongBtn" class="px-3 py-2.5 rounded-xl text-amber-200 glass-card hover:border-amber-400/50 active:scale-95 transition" title="Sound the Corporate Bell">
+        🔔 Sound Bell
       </button>
     </div>
 
-    <!-- Quick Meditation Timers Bar -->
-    <div class="mt-5 flex items-center space-x-2 text-xs text-amber-200/60 font-serif">
-      <span class="mr-1">Quiet focus:</span>
-      <button class="timer-chip px-2.5 py-1 rounded-md glass-panel hover:text-amber-300 border border-amber-500/10 transition" data-minutes="1">1m</button>
-      <button class="timer-chip px-2.5 py-1 rounded-md glass-panel hover:text-amber-300 border border-amber-500/10 transition" data-minutes="3">3m</button>
-      <button class="timer-chip px-2.5 py-1 rounded-md glass-panel hover:text-amber-300 border border-amber-500/10 transition" data-minutes="5">5m</button>
-      <button class="timer-chip px-2.5 py-1 rounded-md glass-panel hover:text-amber-300 border border-amber-500/10 transition" data-minutes="10">10m</button>
-      <button class="timer-chip px-2.5 py-1 rounded-md glass-panel hover:text-amber-300 border border-amber-500/10 transition active-timer" data-minutes="0">∞ Free</button>
-    </div>
+    <section class="w-full mt-10">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-amber-500/20 gap-3">
+        <div>
+          <h3 class="font-cinzel text-lg sm:text-xl font-bold text-amber-200 flex items-center space-x-2">
+            <span>🕯️</span>
+            <span>Lit Candles for Outstanding Tasks</span>
+          </h3>
+          <p class="text-xs text-amber-300/60 font-sans">
+            Every candle below represents someone holding up the insurance program go-live.
+          </p>
+        </div>
+
+        <!-- Filter Pills -->
+        <div class="flex items-center gap-1.5 overflow-x-auto max-w-full text-xs" id="filterPillsContainer">
+          <button class="filter-pill px-3 py-1 rounded-lg bg-amber-400/20 text-amber-200 border border-amber-400/40" data-dept="all">All (<span id="totalFlamesCount">5</span>)</button>
+          <button class="filter-pill px-3 py-1 rounded-lg glass-card text-amber-300/70 hover:text-amber-100" data-dept="Actuarial">Actuarial</button>
+          <button class="filter-pill px-3 py-1 rounded-lg glass-card text-amber-300/70 hover:text-amber-100" data-dept="Compliance">Compliance & Legal</button>
+          <button class="filter-pill px-3 py-1 rounded-lg glass-card text-amber-300/70 hover:text-amber-100" data-dept="Underwriting">Underwriting</button>
+          <button class="filter-pill px-3 py-1 rounded-lg glass-card text-amber-300/70 hover:text-amber-100" data-dept="IT & APIs">IT & Integrations</button>
+        </div>
+      </div>
+
+      <!-- Cards Grid -->
+      <div id="blockersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
 
   </main>
 
-  <!-- Peaceful Footer -->
-  <footer class="relative z-10 w-full px-6 py-4 border-t border-amber-500/10 text-center text-xs text-amber-400/50 font-serif flex flex-col sm:flex-row items-center justify-between gap-2">
-    <div class="italic">"There isn't enough darkness in all the world to snuff out the light of one little candle."</div>
+  <footer class="relative z-10 w-full px-6 py-4 border-t border-amber-500/20 text-center text-xs text-amber-300/60 font-sans flex flex-col sm:flex-row items-center justify-between gap-2 glass-card">
+    <div class="italic">"A launch is only as fast as its slowest policy wording review."</div>
     <div class="flex items-center space-x-4">
-      <button id="shareCandleBtn" class="hover:text-amber-200 underline decoration-dotted transition">Share Light</button>
+      <button id="copyShareSanctuaryBtn" class="hover:text-amber-200 underline decoration-dotted transition">
+        Share Sanctuary Link
+      </button>
       <span>•</span>
-      <span>Virtual Vigil Sanctuary</span>
+      <span>Insurance Program Launch Command</span>
     </div>
   </footer>
 
-  <!-- Intention & Dedication Modal -->
-  <div id="intentionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
-    <div class="glass-panel w-full max-w-lg rounded-2xl p-6 md:p-8 border border-amber-400/30 relative shadow-2xl">
-      <!-- Close Button -->
-      <button id="closeIntentionModal" class="absolute top-4 right-4 text-amber-300/60 hover:text-amber-200 transition">
+  <div id="blockerModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
+    <div class="glass-card w-full max-w-lg rounded-2xl p-6 border border-amber-400/40 relative shadow-2xl">
+      <button id="closeBlockerModal" class="absolute top-4 right-4 text-amber-300/60 hover:text-amber-200">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
 
       <div class="text-center mb-5">
-        <span class="text-amber-400 text-2xl">🕯️</span>
-        <h2 class="font-cinzel text-xl font-bold text-amber-200 mt-1">Dedicate Your Candle</h2>
-        <p class="text-xs font-serif text-amber-300/70 italic mt-1">Leave an intention, a quiet memory of a loved one, or a wish for peace.</p>
+        <span class="text-2xl">🔥🕯️</span>
+        <h2 class="font-cinzel text-xl font-bold text-amber-200 mt-1">Light a Candle for a Blocker</h2>
+        <p class="text-xs text-amber-300/70 font-sans mt-0.5">
+          Name the person or team whose sign-off we desperately need.
+        </p>
       </div>
 
-      <form id="intentionForm" class="space-y-4">
+      <form id="blockerForm" class="space-y-4">
         <div>
-          <label class="block text-xs font-cinzel tracking-wider uppercase text-amber-300 mb-1.5">Category / Purpose</label>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <label class="cursor-pointer">
-              <input type="radio" name="intentTag" value="Memorial" checked class="peer sr-only">
-              <div class="text-center py-2 px-1 text-xs rounded-lg glass-input text-amber-300/80 peer-checked:bg-amber-400/20 peer-checked:border-amber-400 peer-checked:text-amber-200 transition">
-                🕊️ In Memory
-              </div>
-            </label>
-            <label class="cursor-pointer">
-              <input type="radio" name="intentTag" value="Hope & Healing" class="peer sr-only">
-              <div class="text-center py-2 px-1 text-xs rounded-lg glass-input text-amber-300/80 peer-checked:bg-amber-400/20 peer-checked:border-amber-400 peer-checked:text-amber-200 transition">
-                🌱 Healing
-              </div>
-            </label>
-            <label class="cursor-pointer">
-              <input type="radio" name="intentTag" value="Peace & Comfort" class="peer sr-only">
-              <div class="text-center py-2 px-1 text-xs rounded-lg glass-input text-amber-300/80 peer-checked:bg-amber-400/20 peer-checked:border-amber-400 peer-checked:text-amber-200 transition">
-                🕊️ Peace
-              </div>
-            </label>
-            <label class="cursor-pointer">
-              <input type="radio" name="intentTag" value="Gratitude" class="peer sr-only">
-              <div class="text-center py-2 px-1 text-xs rounded-lg glass-input text-amber-300/80 peer-checked:bg-amber-400/20 peer-checked:border-amber-400 peer-checked:text-amber-200 transition">
-                🙏 Gratitude
-              </div>
-            </label>
-          </div>
+          <label class="block text-xs font-cinzel tracking-wider uppercase text-amber-300 mb-1">Department Responsible</label>
+          <select id="blockerDept" class="w-full px-3.5 py-2.5 rounded-lg glass-input text-sm text-amber-100 focus:outline-none">
+            <option value="Actuarial">📊 Actuarial & Pricing</option>
+            <option value="Compliance">⚖️ Legal & Compliance</option>
+            <option value="Underwriting">📝 Underwriting Authority</option>
+            <option value="IT & APIs">💻 IT & Core Policy Engine</option>
+            <option value="Reinsurance">🤝 Reinsurance Treaty Desk</option>
+            <option value="Claims">📑 Claims SLA Agreement</option>
+          </select>
         </div>
 
         <div>
-          <label for="intentAuthor" class="block text-xs font-cinzel tracking-wider uppercase text-amber-300 mb-1">Your Name or Sign-off (Optional)</label>
-          <input type="text" id="intentAuthor" maxlength="40" placeholder="e.g. Maria, An Old Friend, or Anonymous"
-                 class="w-full px-3.5 py-2.5 rounded-lg glass-input text-sm text-amber-100 placeholder-amber-200/30 focus:outline-none transition">
+          <label class="block text-xs font-cinzel tracking-wider uppercase text-amber-300 mb-1">Who owes this? (Colleague Name or Squad)</label>
+          <input type="text" id="blockerOwner" required placeholder="e.g. Sarah K. or Dev Squad Alpha"
+                 class="w-full px-3.5 py-2.5 rounded-lg glass-input text-sm text-amber-100 placeholder-amber-200/30 focus:outline-none">
         </div>
 
         <div>
-          <label for="intentMessage" class="block text-xs font-cinzel tracking-wider uppercase text-amber-300 mb-1">Your Words / Prayer / Reflection</label>
-          <textarea id="intentMessage" rows="3" required maxlength="240" placeholder="Write what is in your heart..."
-                    class="w-full px-3.5 py-2.5 rounded-lg glass-input text-sm text-amber-100 placeholder-amber-200/30 focus:outline-none transition resize-none"></textarea>
-          <div class="flex justify-between items-center text-[11px] text-amber-400/50 mt-1">
-            <span>Will be visible on the Vigil Wall</span>
-            <span id="charCount">0/240</span>
+          <label class="block text-xs font-cinzel tracking-wider uppercase text-amber-300 mb-1">Required Deliverable / Blocker</label>
+          <textarea id="blockerTask" required rows="2" maxlength="160" placeholder="e.g. Approve rate filing tables so broker quotes can generate..."
+                    class="w-full px-3.5 py-2.5 rounded-lg glass-input text-sm text-amber-100 placeholder-amber-200/30 focus:outline-none resize-none"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-cinzel tracking-wider uppercase text-amber-300 mb-1">Urgency Level</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="cursor-pointer">
+              <input type="radio" name="blockerUrgency" value="Gentle Glow" checked class="peer sr-only">
+              <div class="text-center py-2 rounded-lg glass-input text-xs text-amber-300 peer-checked:bg-amber-400/20 peer-checked:border-amber-400 peer-checked:text-amber-100 font-medium">
+                🟡 Gentle Warmth
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="blockerUrgency" value="Hot Priority" class="peer sr-only">
+              <div class="text-center py-2 rounded-lg glass-input text-xs text-amber-300 peer-checked:bg-orange-500/20 peer-checked:border-orange-400 peer-checked:text-orange-200 font-medium">
+                🟠 Hot Priority
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="blockerUrgency" value="Five-Alarm Fire" class="peer sr-only">
+              <div class="text-center py-2 rounded-lg glass-input text-xs text-amber-300 peer-checked:bg-red-500/20 peer-checked:border-red-400 peer-checked:text-red-200 font-medium">
+                🔴 5-Alarm Inferno
+              </div>
+            </label>
           </div>
         </div>
 
         <div class="pt-2 flex gap-3">
-          <button type="button" id="cancelIntentionBtn" class="flex-1 py-2.5 rounded-xl text-xs font-cinzel tracking-wider uppercase glass-panel hover:border-amber-400/30 text-amber-300 transition">
+          <button type="button" id="cancelBlockerModalBtn" class="flex-1 py-2.5 rounded-xl text-xs font-cinzel tracking-wider uppercase glass-card hover:border-amber-400/40 text-amber-300 transition">
             Cancel
           </button>
-          <button type="submit" class="flex-1 py-2.5 rounded-xl text-xs font-cinzel tracking-wider uppercase font-semibold text-amber-950 bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 shadow-[0_0_15px_rgba(251,191,36,0.3)] transition">
-            Light & Dedicate
+          <button type="submit" class="flex-1 py-2.5 rounded-xl text-xs font-cinzel tracking-wider uppercase font-bold text-slate-950 bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.4)] transition">
+            Light The Candle 🔥
           </button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Customize & Ambiance Drawer / Modal -->
-  <div id="customizeModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
-    <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-amber-400/30 relative shadow-2xl">
-      <button id="closeCustomizeModal" class="absolute top-4 right-4 text-amber-300/60 hover:text-amber-200 transition">
+  <div id="nudgeModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
+    <div class="glass-card w-full max-w-lg rounded-2xl p-6 border border-amber-400/40 relative shadow-2xl">
+      <button id="closeNudgeModal" class="absolute top-4 right-4 text-amber-300/60 hover:text-amber-200">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
 
-      <h2 class="font-cinzel text-lg font-bold text-amber-200 mb-4 flex items-center space-x-2">
-        <span>✨</span>
-        <span>Candle & Atmosphere</span>
-      </h2>
-
-      <!-- Wax Color Selection -->
-      <div class="mb-5">
-        <label class="block text-xs font-cinzel tracking-wider uppercase text-amber-300 mb-2">Candle Wax Tone</label>
-        <div class="flex items-center space-x-3">
-          <button class="wax-color-btn w-9 h-9 rounded-full border-2 border-amber-300 shadow-lg relative active:scale-95 transition"
-                  data-wax="warm-ivory"
-                  title="Warm Ivory"
-                  style="background: linear-gradient(to bottom, #fffbeb, #fed7aa);"></button>
-          <button class="wax-color-btn w-9 h-9 rounded-full border-2 border-transparent hover:border-amber-300/50 shadow-lg relative active:scale-95 transition"
-                  data-wax="pure-white"
-                  title="Pure White"
-                  style="background: linear-gradient(to bottom, #ffffff, #e2e8f0);"></button>
-          <button class="wax-color-btn w-9 h-9 rounded-full border-2 border-transparent hover:border-amber-300/50 shadow-lg relative active:scale-95 transition"
-                  data-wax="deep-terracotta"
-                  title="Terracotta Rose"
-                  style="background: linear-gradient(to bottom, #fca5a5, #b91c1c);"></button>
-          <button class="wax-color-btn w-9 h-9 rounded-full border-2 border-transparent hover:border-amber-300/50 shadow-lg relative active:scale-95 transition"
-                  data-wax="sage-olive"
-                  title="Sacred Sage"
-                  style="background: linear-gradient(to bottom, #bbf7d0, #15803d);"></button>
-          <button class="wax-color-btn w-9 h-9 rounded-full border-2 border-transparent hover:border-amber-300/50 shadow-lg relative active:scale-95 transition"
-                  data-wax="midnight-indigo"
-                  title="Midnight Indigo"
-                  style="background: linear-gradient(to bottom, #818cf8, #1e1b4b);"></button>
-        </div>
+      <div class="text-center mb-4">
+        <span class="text-3xl">🕊️🔥</span>
+        <h2 class="font-cinzel text-xl font-bold text-amber-200 mt-1">Send a "Candle Nudge"</h2>
+        <p class="text-xs text-amber-300/70 font-sans mt-0.5">
+          Copy this polite yet playfully urgent message to Slack, Teams, or Email.
+        </p>
       </div>
 
-      <!-- Flame Glow Intensity Slider -->
-      <div class="mb-5">
-        <div class="flex justify-between text-xs font-cinzel text-amber-300 mb-1">
-          <span>Room Darkness</span>
-          <span id="darknessValue">80%</span>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between text-xs text-amber-300/80 font-cinzel">
+          <span>Message Preview:</span>
+          <span id="nudgeRecipientTag" class="text-amber-400 font-bold">@Sarah K.</span>
         </div>
-        <input id="roomDarknessSlider" type="range" min="20" max="95" value="80"
-               class="w-full accent-amber-400 bg-amber-950/40 rounded-lg cursor-pointer">
-      </div>
+        <div id="nudgeTextPreview" class="p-4 rounded-xl bg-slate-950/80 border border-amber-500/30 text-xs sm:text-sm font-sans text-amber-100 leading-relaxed italic">
+          <!-- Dynamically populated -->
+        </div>
 
-      <!-- Soundscape selector -->
-      <div class="mb-5">
-        <label class="block text-xs font-cinzel tracking-wider uppercase text-amber-300 mb-2">Ambient Audio Tone</label>
         <div class="grid grid-cols-3 gap-2 text-xs">
-          <button class="sound-mode-btn py-2 rounded-lg glass-input text-amber-200 border-amber-400" data-mode="temple">
-            🔔 Temple Bell
+          <button class="nudge-tone-btn py-1.5 rounded-lg border border-amber-400 bg-amber-400/20 text-amber-200" data-tone="friendly">
+            😊 Gentle & Warm
           </button>
-          <button class="sound-mode-btn py-2 rounded-lg glass-input text-amber-300/70" data-mode="hearth">
-            🔥 Hearth Fire
+          <button class="nudge-tone-btn py-1.5 rounded-lg border border-slate-700 glass-card text-amber-300/70" data-tone="urgent">
+            ⏳ Launch Deadline
           </button>
-          <button class="sound-mode-btn py-2 rounded-lg glass-input text-amber-300/70" data-mode="drone">
-            ✨ Pure Om
+          <button class="nudge-tone-btn py-1.5 rounded-lg border border-slate-700 glass-card text-amber-300/70" data-tone="dramatic">
+            🕯️ Solemn Vigil
           </button>
         </div>
-      </div>
 
-      <button id="saveCustomizeBtn" class="w-full py-2.5 rounded-xl text-xs font-cinzel tracking-wider uppercase font-semibold text-amber-950 bg-amber-300 hover:bg-amber-200 transition">
-        Apply Settings
-      </button>
-    </div>
-  </div>
-
-  <!-- Vigil Wall / Global Candle Intentions Modal -->
-  <div id="wallModal" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
-    <div class="glass-panel w-full max-w-4xl max-h-[90vh] rounded-2xl flex flex-col border border-amber-400/30 overflow-hidden shadow-2xl">
-      
-      <!-- Modal Header -->
-      <div class="p-5 border-b border-amber-500/20 flex items-center justify-between">
-        <div>
-          <h2 class="font-cinzel text-lg sm:text-xl font-bold text-amber-200 flex items-center space-x-2">
-            <span>🕊️</span>
-            <span>The Vigil Wall</span>
-          </h2>
-          <p class="text-xs text-amber-300/70 font-serif italic">Every flame lit here represents an intention, prayer, or memorial.</p>
+        <div class="pt-2">
+          <button id="copyNudgeBtn" class="w-full py-3 rounded-xl font-cinzel text-xs uppercase font-bold tracking-wider text-slate-950 bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] active:scale-95 transition flex items-center justify-center space-x-2">
+            <span>📋 Copy Nudge to Clipboard</span>
+          </button>
         </div>
-        <button id="closeWallModal" class="text-amber-300/60 hover:text-amber-200 p-2 transition">
-          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      <!-- Filter Categories -->
-      <div class="px-5 py-3 border-b border-amber-500/10 flex items-center gap-2 overflow-x-auto text-xs">
-        <span class="text-amber-400/60 mr-1 text-[11px] font-cinzel uppercase">Filter:</span>
-        <button class="wall-filter-btn px-3 py-1 rounded-full bg-amber-400/20 text-amber-200 border border-amber-400/40 whitespace-nowrap" data-filter="all">All Flames (<span id="totalFlamesCount">0</span>)</button>
-        <button class="wall-filter-btn px-3 py-1 rounded-full glass-panel text-amber-300/80 hover:text-amber-100 whitespace-nowrap" data-filter="Memorial">🕊️ In Memory</button>
-        <button class="wall-filter-btn px-3 py-1 rounded-full glass-panel text-amber-300/80 hover:text-amber-100 whitespace-nowrap" data-filter="Hope & Healing">🌱 Healing</button>
-        <button class="wall-filter-btn px-3 py-1 rounded-full glass-panel text-amber-300/80 hover:text-amber-100 whitespace-nowrap" data-filter="Peace & Comfort">🕊️ Peace</button>
-        <button class="wall-filter-btn px-3 py-1 rounded-full glass-panel text-amber-300/80 hover:text-amber-100 whitespace-nowrap" data-filter="Gratitude">🙏 Gratitude</button>
-      </div>
-
-      <!-- Wall Grid list of virtual candles -->
-      <div id="wallCardsContainer" class="p-5 flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <!-- Dynamically injected via JavaScript -->
-      </div>
-
-      <!-- Modal Footer -->
-      <div class="p-4 border-t border-amber-500/20 bg-amber-950/20 flex items-center justify-between">
-        <span class="text-xs text-amber-300/60 font-serif italic">Light your own candle to join the vigil</span>
-        <button id="addCandleFromWallBtn" class="px-4 py-2 rounded-xl text-xs font-cinzel tracking-wider uppercase font-semibold text-amber-950 bg-amber-300 hover:bg-amber-200 transition">
-          + Add My Flame
-        </button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Notification -->
-  <div id="toastNotification" class="fixed bottom-16 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-4 transition-all duration-300">
-    <div class="glass-panel px-5 py-2.5 rounded-full border border-amber-400/40 text-xs text-amber-200 font-cinzel tracking-wider shadow-2xl flex items-center space-x-2">
-      <span id="toastIcon">✨</span>
-      <span id="toastMsg">Action completed</span>
+  <div id="toastNotification" class="fixed bottom-14 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-4 transition-all duration-300">
+    <div class="glass-card px-5 py-2.5 rounded-full border border-amber-400/50 text-xs text-amber-200 font-cinzel tracking-wider shadow-2xl flex items-center space-x-2">
+      <span id="toastIcon">🔥</span>
+      <span id="toastMsg">Action recorded</span>
     </div>
   </div>
 
   <script>
-    /* Procedural Web Audio API sound synthesizer (Pure, reliable, no external audio files needed) */
-    class CandleSoundSystem {
+    class LaunchSoundEngine {
       constructor() {
         this.ctx = null;
         this.ambientGain = null;
         this.isPlaying = false;
-        this.currentMode = 'temple'; // 'temple', 'hearth', 'drone'
-        this.activeNoiseNode = null;
-        this.activeDroneOscs = [];
+        this.activeNoise = null;
       }
 
-      initContext() {
+      init() {
         if (!this.ctx) {
           const AudioContext = window.AudioContext || window.webkitAudioContext;
           this.ctx = new AudioContext();
           this.ambientGain = this.ctx.createGain();
-          this.ambientGain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+          this.ambientGain.gain.setValueAtTime(0.2, this.ctx.currentTime);
           this.ambientGain.connect(this.ctx.destination);
         }
         if (this.ctx.state === 'suspended') {
@@ -534,301 +484,255 @@
         }
       }
 
-      /* Realistic Match Strike / Ignition Sound */
-      playStrikeSound() {
+      /* Friction match ignition */
+      playStrike() {
         try {
-          this.initContext();
+          this.init();
           const t = this.ctx.currentTime;
-          
-          // White noise friction burst
           const bufferSize = this.ctx.sampleRate * 0.25;
-          const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-          const output = noiseBuffer.getChannelData(0);
+          const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+          const data = buffer.getChannelData(0);
           for (let i = 0; i < bufferSize; i++) {
-            output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4));
+            data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
           }
-
-          const whiteNoise = this.ctx.createBufferSource();
-          whiteNoise.buffer = noiseBuffer;
-
-          // Bandpass filter for friction scraping
-          const bandpass = this.ctx.createBiquadFilter();
-          bandpass.type = 'bandpass';
-          bandpass.frequency.setValueAtTime(1400, t);
-          bandpass.frequency.exponentialRampToValueAtTime(700, t + 0.25);
-          bandpass.Q.value = 3.0;
+          const noise = this.ctx.createBufferSource();
+          noise.buffer = buffer;
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.frequency.setValueAtTime(1400, t);
+          filter.frequency.exponentialRampToValueAtTime(800, t + 0.25);
+          filter.Q.value = 3;
 
           const gain = this.ctx.createGain();
           gain.gain.setValueAtTime(0.4, t);
           gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
 
-          whiteNoise.connect(bandpass);
-          bandpass.connect(gain);
-          gain.connect(this.ctx.destination);
-
-          whiteNoise.start(t);
-
-          // Deep whoosh hum when flame takes hold
-          const flameOsc = this.ctx.createOscillator();
-          const flameGain = this.ctx.createGain();
-          flameOsc.type = 'sine';
-          flameOsc.frequency.setValueAtTime(95, t + 0.05);
-          flameOsc.frequency.exponentialRampToValueAtTime(55, t + 0.4);
-
-          flameGain.gain.setValueAtTime(0.0, t);
-          flameGain.gain.linearRampToValueAtTime(0.25, t + 0.08);
-          flameGain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
-
-          flameOsc.connect(flameGain);
-          flameGain.connect(this.ctx.destination);
-
-          flameOsc.start(t + 0.05);
-          flameOsc.stop(t + 0.55);
-
-          // Gentle resonant bell chime
-          this.playBellChime(528); // 528Hz Love/Healing frequency
-        } catch (e) {
-          console.warn('Audio playback error', e);
-        }
-      }
-
-      /* Extinguish Breath Sound */
-      playBlowOutSound() {
-        try {
-          this.initContext();
-          const t = this.ctx.currentTime;
-          const bufferSize = this.ctx.sampleRate * 0.45;
-          const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-          const output = noiseBuffer.getChannelData(0);
-          for (let i = 0; i < bufferSize; i++) {
-            output[i] = (Math.random() * 2 - 1);
-          }
-
-          const noise = this.ctx.createBufferSource();
-          noise.buffer = noiseBuffer;
-
-          const filter = this.ctx.createBiquadFilter();
-          filter.type = 'lowpass';
-          filter.frequency.setValueAtTime(900, t);
-          filter.frequency.exponentialRampToValueAtTime(300, t + 0.45);
-
-          const gain = this.ctx.createGain();
-          gain.gain.setValueAtTime(0.01, t);
-          gain.gain.linearRampToValueAtTime(0.35, t + 0.08);
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
-
           noise.connect(filter);
           filter.connect(gain);
           gain.connect(this.ctx.destination);
-
           noise.start(t);
         } catch (e) {
           console.warn(e);
         }
       }
 
-      /* Meditative Tibetan Singing Bowl / Bell Chime */
-      playBellChime(freq = 432) {
+      /* Blowing out breath */
+      playBlowOut() {
         try {
-          this.initContext();
+          this.init();
           const t = this.ctx.currentTime;
-          const harmonics = [1, 2.04, 3.02, 4.2];
-          const decays = [4.5, 3.2, 2.1, 1.4];
-          const volumes = [0.25, 0.12, 0.06, 0.03];
+          const bufferSize = this.ctx.sampleRate * 0.4;
+          const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1);
+          }
+          const noise = this.ctx.createBufferSource();
+          noise.buffer = buffer;
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(800, t);
+          filter.frequency.exponentialRampToValueAtTime(250, t + 0.4);
 
-          harmonics.forEach((h, index) => {
+          const gain = this.ctx.createGain();
+          gain.gain.setValueAtTime(0.3, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(this.ctx.destination);
+          noise.start(t);
+        } catch (e) {}
+      }
+
+      /* Resonant Bell / Gong */
+      playBell(freq = 440) {
+        try {
+          this.init();
+          const t = this.ctx.currentTime;
+          const harmonics = [1, 1.98, 2.76, 3.8];
+          const decays = [3.5, 2.5, 1.8, 1.2];
+          const vols = [0.3, 0.15, 0.08, 0.04];
+
+          harmonics.forEach((h, idx) => {
             const osc = this.ctx.createOscillator();
             const gain = this.ctx.createGain();
             osc.type = 'sine';
             osc.frequency.setValueAtTime(freq * h, t);
 
-            gain.gain.setValueAtTime(0.0001, t);
-            gain.gain.linearRampToValueAtTime(volumes[index], t + 0.03);
-            gain.gain.exponentialRampToValueAtTime(0.0001, t + decays[index]);
+            gain.gain.setValueAtTime(0.001, t);
+            gain.gain.linearRampToValueAtTime(vols[idx], t + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + decays[idx]);
 
             osc.connect(gain);
             gain.connect(this.ctx.destination);
-
             osc.start(t);
-            osc.stop(t + decays[index] + 0.1);
+            osc.stop(t + decays[idx] + 0.1);
           });
-        } catch (e) {
-          console.warn(e);
-        }
+        } catch (e) {}
       }
 
-      /* Continuous Ambient Audio (Hearth fire crackle, Meditation drone, or temple presence) */
-      toggleAmbient(forceState) {
-        this.initContext();
-        if (forceState !== undefined) {
-          this.isPlaying = forceState;
-        } else {
-          this.isPlaying = !this.isPlaying;
-        }
+      /* Celebratory completion chime */
+      playSuccessFanfare() {
+        try {
+          this.init();
+          const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+          notes.forEach((freq, idx) => {
+            setTimeout(() => {
+              this.playBell(freq);
+            }, idx * 120);
+          });
+        } catch (e) {}
+      }
 
+      toggleAmbient() {
+        this.init();
+        this.isPlaying = !this.isPlaying;
         if (this.isPlaying) {
-          this.startAmbient();
-        } else {
-          this.stopAmbient();
-        }
-        return this.isPlaying;
-      }
-
-      startAmbient() {
-        this.stopAmbient();
-        if (this.currentMode === 'temple' || this.currentMode === 'drone') {
-          // Warm harmonic organ drone (C2 + G2 + C3)
-          const baseFreqs = this.currentMode === 'temple' ? [130.81, 196.00, 261.63] : [110, 164.81, 220];
-          baseFreqs.forEach((freq) => {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-
-            gain.gain.setValueAtTime(0.001, this.ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.04, this.ctx.currentTime + 3);
-
-            osc.connect(gain);
-            gain.connect(this.ambientGain);
-            osc.start();
-            this.activeDroneOscs.push({ osc, gain });
-          });
-        } else if (this.currentMode === 'hearth') {
-          // Fire crackle noise loop with sporadic pops
+          // Warm crackle
           const bufferSize = this.ctx.sampleRate * 2;
-          const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-          const output = noiseBuffer.getChannelData(0);
+          const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+          const data = buffer.getChannelData(0);
           for (let i = 0; i < bufferSize; i++) {
-            // gentle low rumble + randomized crackle spikes
-            const rand = Math.random();
-            output[i] = (rand > 0.994) ? (Math.random() * 2 - 1) * 0.8 : (Math.random() * 2 - 1) * 0.04;
+            data[i] = (Math.random() > 0.995) ? (Math.random() * 2 - 1) * 0.7 : (Math.random() * 2 - 1) * 0.02;
           }
-          const noise = this.ctx.createBufferSource();
-          noise.buffer = noiseBuffer;
-          noise.loop = true;
+          this.activeNoise = this.ctx.createBufferSource();
+          this.activeNoise.buffer = buffer;
+          this.activeNoise.loop = true;
 
           const filter = this.ctx.createBiquadFilter();
           filter.type = 'bandpass';
-          filter.frequency.value = 1200;
-          filter.Q.value = 1.2;
+          filter.frequency.value = 1100;
 
-          noise.connect(filter);
+          this.activeNoise.connect(filter);
           filter.connect(this.ambientGain);
-          noise.start();
-          this.activeNoiseNode = noise;
+          this.activeNoise.start();
+        } else if (this.activeNoise) {
+          try { this.activeNoise.stop(); } catch(e){}
+          this.activeNoise = null;
         }
-      }
-
-      stopAmbient() {
-        if (this.activeDroneOscs.length > 0) {
-          const t = this.ctx ? this.ctx.currentTime : 0;
-          this.activeDroneOscs.forEach(({ osc, gain }) => {
-            try {
-              gain.gain.linearRampToValueAtTime(0.0001, t + 0.8);
-              setTimeout(() => osc.stop(), 900);
-            } catch (err) {}
-          });
-          this.activeDroneOscs = [];
-        }
-        if (this.activeNoiseNode) {
-          try {
-            this.activeNoiseNode.stop();
-          } catch(e){}
-          this.activeNoiseNode = null;
-        }
+        return this.isPlaying;
       }
     }
 
-    const soundSystem = new CandleSoundSystem();
+    const soundEngine = new LaunchSoundEngine();
   </script>
 
   <script>
-    // Initial sample intentions for the communal wall
-    const DEFAULT_INTENTIONS = [
+    // Initial blockers specifically tailored for an insurance program launch
+    const DEFAULT_BLOCKERS = [
       {
         id: '1',
-        tag: 'Memorial',
-        author: 'Elena K.',
-        message: 'For my grandmother Sophia, whose kitchen was always warm and full of laughter. Rest peacefully.',
-        date: '10 mins ago',
-        wax: 'warm-ivory'
+        dept: 'Actuarial',
+        owner: 'Marcus & Pricing Team',
+        task: 'Sign off loss cost models and baseline rate tables for commercial liability tiers.',
+        urgency: 'Five-Alarm Fire',
+        nudges: 9,
+        status: 'pending',
+        timeAgo: 'Waiting 3 days'
       },
       {
         id: '2',
-        tag: 'Hope & Healing',
-        author: 'David & Clara',
-        message: 'For little Lucas undergoing surgery tomorrow. May steady hands and complete recovery find him.',
-        date: '28 mins ago',
-        wax: 'sage-olive'
+        dept: 'Compliance',
+        owner: 'Elena Vance (Legal)',
+        task: 'Final regulatory disclosure wording and cancellation policy clauses approval.',
+        urgency: 'Hot Priority',
+        nudges: 5,
+        status: 'pending',
+        timeAgo: 'Waiting 2 days'
       },
       {
         id: '3',
-        tag: 'Peace & Comfort',
-        author: 'A Traveler',
-        message: 'For peace in troubled regions and calm for all anxious minds tonight.',
-        date: '1 hour ago',
-        wax: 'midnight-indigo'
+        dept: 'Underwriting',
+        owner: 'David Zhao (Chief Underwriter)',
+        task: 'Execute delegated binding authority agreement & approved risk exclusions annex.',
+        urgency: 'Five-Alarm Fire',
+        nudges: 7,
+        status: 'pending',
+        timeAgo: 'Waiting 4 days'
       },
       {
         id: '4',
-        tag: 'Gratitude',
-        author: 'Maya S.',
-        message: 'Deep gratitude for another year of breathing, learning, and second chances with those I cherish.',
-        date: '2 hours ago',
-        wax: 'warm-ivory'
+        dept: 'IT & APIs',
+        owner: 'Integration Squad Alpha',
+        task: 'Complete quote-to-bind sandbox payload testing with partner broker portal.',
+        urgency: 'Gentle Glow',
+        nudges: 3,
+        status: 'pending',
+        timeAgo: 'Waiting 1 day'
       },
       {
         id: '5',
-        tag: 'Memorial',
-        author: 'Marcus',
-        message: 'In honor of our dear friend Arthur. We still look for your smile in every sunrise.',
-        date: '3 hours ago',
-        wax: 'deep-terracotta'
+        dept: 'Reinsurance',
+        owner: 'Treaty Operations Desk',
+        task: 'Confirm treaty capacity quota share counter-signature from lead reinsurer.',
+        urgency: 'Hot Priority',
+        nudges: 6,
+        status: 'pending',
+        timeAgo: 'Waiting 2 days'
       }
     ];
 
-    // Main App State
     const AppState = {
       isLit: true,
-      secondsLit: 0,
-      timerInterval: null,
-      countdownTargetSec: 0, // 0 = infinite, >0 = countdown
-      waxColor: 'warm-ivory',
+      isFannedUrgent: false,
+      totalNudges: 24,
       currentFilter: 'all',
-      currentIntention: null,
-      intentions: []
+      blockers: [],
+      selectedBlockerForNudge: null,
+      nudgeTone: 'friendly'
     };
 
-    // Load intentions from localStorage or fallback
-    function loadSavedIntentions() {
+    function loadBlockers() {
       try {
-        const stored = localStorage.getItem('sanctuary_intentions_list');
-        if (stored) {
-          AppState.intentions = JSON.parse(stored);
+        const saved = localStorage.getItem('insurance_launch_blockers_v1');
+        if (saved) {
+          AppState.blockers = JSON.parse(saved);
         } else {
-          AppState.intentions = [...DEFAULT_INTENTIONS];
-          localStorage.setItem('sanctuary_intentions_list', JSON.stringify(AppState.intentions));
+          AppState.blockers = [...DEFAULT_BLOCKERS];
+          saveBlockers();
         }
       } catch (e) {
-        AppState.intentions = [...DEFAULT_INTENTIONS];
+        AppState.blockers = [...DEFAULT_BLOCKERS];
       }
-      updateWallCountBadge();
+      updateReadinessMetrics();
+      renderBlockers();
     }
 
-    function saveIntentions() {
+    function saveBlockers() {
       try {
-        localStorage.setItem('sanctuary_intentions_list', JSON.stringify(AppState.intentions));
-      } catch (e) {
-        console.warn('Unable to save to localStorage', e);
-      }
-      updateWallCountBadge();
+        localStorage.setItem('insurance_launch_blockers_v1', JSON.stringify(AppState.blockers));
+      } catch (e) {}
     }
 
-    function updateWallCountBadge() {
-      const badge = document.getElementById('wallBadgeCount');
-      const totalCount = document.getElementById('totalFlamesCount');
-      if (badge) badge.textContent = AppState.intentions.length;
-      if (totalCount) totalCount.textContent = AppState.intentions.length;
+    function updateReadinessMetrics() {
+      const pending = AppState.blockers.filter(b => b.status === 'pending').length;
+      const total = AppState.blockers.length;
+      const countDisplay = document.getElementById('totalFlamesCount');
+      if (countDisplay) countDisplay.textContent = pending;
+
+      // Readiness score calculation
+      let score = 100;
+      if (total > 0) {
+        const completed = total - pending;
+        score = Math.round((completed / total) * 100);
+      }
+      if (pending === 0) score = 100;
+
+      const scoreEl = document.getElementById('readinessScore');
+      const barEl = document.getElementById('readinessBar');
+      if (scoreEl) scoreEl.textContent = `${score}%`;
+      if (barEl) barEl.style.width = `${score}%`;
+
+      const alertBadge = document.getElementById('urgencyAlertBadge');
+      const alertText = document.getElementById('bannerStatusText');
+      if (pending === 0) {
+        alertBadge.className = 'inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-semibold mb-2';
+        alertText.textContent = '🎉 All department blockers cleared! Ready for insurance program go-live!';
+      } else {
+        alertBadge.className = 'inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-2';
+        alertText.textContent = `${pending} hot blocker${pending > 1 ? 's' : ''} remaining before insurance launch sign-off!`;
+      }
     }
   </script>
 
@@ -840,81 +744,59 @@
     const wickEmber = document.getElementById('wickEmber');
     const waxGlow = document.getElementById('waxGlow');
     const roomGlow = document.getElementById('roomGlow');
-    const toggleFlameBtn = document.getElementById('toggleFlameBtn');
-    const tapHint = document.getElementById('tapHint');
     const smokeContainer = document.getElementById('smokeContainer');
-    const timerDisplay = document.getElementById('timerDisplay');
-    const litDurationBadge = document.getElementById('litDurationBadge');
+    const fanFlameBtn = document.getElementById('fanFlameBtn');
+    const soundGongBtn = document.getElementById('soundGongBtn');
+    const candleNudgeCounter = document.getElementById('candleNudgeCounter');
 
-    function lightCandle(playSound = true) {
+    function lightMainCandle(playSound = true) {
       if (AppState.isLit) return;
       AppState.isLit = true;
 
-      // Visuals
       flameWrapper.classList.remove('scale-0', 'opacity-0');
       flameWrapper.classList.add('scale-100', 'opacity-100');
       candleAura.classList.remove('opacity-0');
-      candleAura.classList.add('opacity-70');
-      wickEmber.classList.remove('bg-stone-800');
+      candleAura.classList.add('opacity-80');
+      wickEmber.classList.remove('bg-stone-900');
       wickEmber.classList.add('bg-amber-400');
       waxGlow.classList.remove('opacity-0');
       waxGlow.classList.add('opacity-60');
-      roomGlow.style.opacity = (document.getElementById('roomDarknessSlider').value / 100).toString();
-
-      toggleFlameBtn.textContent = 'Blow Out Candle';
-      toggleFlameBtn.className = 'flex-1 min-w-[170px] py-3 px-6 rounded-xl font-cinzel text-xs tracking-wider uppercase font-semibold text-amber-950 bg-gradient-to-r from-amber-300 via-amber-200 to-amber-400 hover:from-amber-200 hover:to-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.35)] active:scale-[0.98] transition';
-      tapHint.textContent = 'Tap the candle to blow out';
-
-      litDurationBadge.classList.remove('hidden');
+      roomGlow.style.opacity = '0.7';
 
       if (playSound) {
-        soundSystem.playStrikeSound();
+        soundEngine.playStrike();
+        soundEngine.playBell(528);
       }
-
-      startCandleTimer();
-      showToast('Flame kindled gently', '🕯️');
+      showToast('Sanctuary flame kindled for the insurance launch!', '🔥');
     }
 
-    function blowOutCandle(playSound = true) {
+    function extinguishMainCandle(playSound = true) {
       if (!AppState.isLit) return;
       AppState.isLit = false;
 
-      // Spawn puff of smoke
-      spawnSmokePuff();
-
-      // Visuals
+      spawnSmoke();
       flameWrapper.classList.remove('scale-100', 'opacity-100');
       flameWrapper.classList.add('scale-0', 'opacity-0');
-      candleAura.classList.remove('opacity-70');
+      candleAura.classList.remove('opacity-80');
       candleAura.classList.add('opacity-0');
       wickEmber.classList.remove('bg-amber-400');
-      wickEmber.classList.add('bg-stone-800');
+      wickEmber.classList.add('bg-stone-900');
       waxGlow.classList.remove('opacity-60');
       waxGlow.classList.add('opacity-0');
-      roomGlow.style.opacity = '0.08';
-
-      toggleFlameBtn.textContent = 'Strike Match & Light';
-      toggleFlameBtn.className = 'flex-1 min-w-[170px] py-3 px-6 rounded-xl font-cinzel text-xs tracking-wider uppercase font-semibold text-amber-200 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 shadow-[0_0_15px_rgba(245,158,11,0.2)] active:scale-[0.98] transition';
-      tapHint.textContent = 'Tap to light the candle';
+      roomGlow.style.opacity = '0.1';
 
       if (playSound) {
-        soundSystem.playBlowOutSound();
+        soundEngine.playBlowOut();
       }
-
-      stopCandleTimer();
-      showToast('Candle extinguished. Peace be with you.', '💨');
+      showToast('Candle extinguished. May tasks be finalized swiftly.', '💨');
     }
 
-    function toggleCandleState() {
-      if (AppState.isLit) {
-        blowOutCandle(true);
-      } else {
-        lightCandle(true);
-      }
+    function toggleCandle() {
+      if (AppState.isLit) extinguishMainCandle(true);
+      else lightMainCandle(true);
     }
 
-    /* Smoke particle generation */
-    function spawnSmokePuff() {
+    function spawnSmoke() {
       for (let i = 0; i < 3; i++) {
         setTimeout(() => {
           const wisp = document.createElement('div');
@@ -922,105 +804,290 @@
           const size = 12 + Math.random() * 14;
           wisp.style.width = `${size}px`;
           wisp.style.height = `${size * 1.4}px`;
-          wisp.style.left = `${20 + (Math.random() * 20 - 10)}px`;
+          wisp.style.left = `${24 + (Math.random() * 20 - 10)}px`;
           wisp.style.top = '10px';
           smokeContainer.appendChild(wisp);
 
           setTimeout(() => {
-            if (wisp.parentNode) {
-              wisp.parentNode.removeChild(wisp);
-            }
+            if (wisp.parentNode) wisp.parentNode.removeChild(wisp);
           }, 2400);
         }, i * 180);
       }
     }
 
-    /* Timer Logic */
-    function startCandleTimer() {
-      clearInterval(AppState.timerInterval);
-      AppState.timerInterval = setInterval(() => {
-        if (!AppState.isLit) return;
-        AppState.secondsLit++;
+    candleStage.addEventListener('click', toggleCandle);
 
-        if (AppState.countdownTargetSec > 0) {
-          const remaining = AppState.countdownTargetSec - AppState.secondsLit;
-          if (remaining <= 0) {
-            timerDisplay.textContent = '00:00';
-            soundSystem.playBellChime(432);
-            showToast('Meditation time completed softly.', '🔔');
-            blowOutCandle(false);
-            return;
-          }
-          formatTime(remaining);
-        } else {
-          formatTime(AppState.secondsLit);
+    // Fan the Flame functionality (adds urgency & turns flame intense)
+    fanFlameBtn.addEventListener('click', () => {
+      if (!AppState.isLit) {
+        lightMainCandle(true);
+      }
+      AppState.isFannedUrgent = !AppState.isFannedUrgent;
+      if (AppState.isFannedUrgent) {
+        flame.classList.remove('flame-normal');
+        flame.classList.add('flame-urgent');
+        candleAura.style.background = 'radial-gradient(circle, rgba(239, 68, 68, 0.6) 0%, rgba(245, 158, 11, 0.35) 45%, rgba(245, 158, 11, 0) 75%)';
+        fanFlameBtn.innerHTML = '<span>🔥</span><span>Cool Down Urgency</span>';
+        fanFlameBtn.classList.add('from-red-500', 'to-orange-500', 'text-white');
+        soundEngine.playStrike();
+        showToast('Urgency turned up! Colleagues notified via radiant heat.', '⚡');
+      } else {
+        flame.classList.remove('flame-urgent');
+        flame.classList.add('flame-normal');
+        candleAura.style.background = 'radial-gradient(circle, rgba(245, 158, 11, 0.45) 0%, rgba(220, 38, 38, 0.25) 45%, rgba(245, 158, 11, 0) 75%)';
+        fanFlameBtn.innerHTML = '<span>💨</span><span>Fan The Flame (Urgency x2)</span>';
+        fanFlameBtn.classList.remove('from-red-500', 'to-orange-500', 'text-white');
+        showToast('Flame returned to steady burn.', '🕯️');
+      }
+    });
+
+    soundGongBtn.addEventListener('click', () => {
+      soundEngine.playBell(330);
+      showToast('Gong sounded across the insurance floor!', '🔔');
+    });
+  </script>
+
+  <script>
+    const blockersGrid = document.getElementById('blockersGrid');
+
+    function renderBlockers() {
+      blockersGrid.innerHTML = '';
+      const filter = AppState.currentFilter;
+      const list = filter === 'all' 
+        ? AppState.blockers 
+        : AppState.blockers.filter(b => b.dept === filter);
+
+      if (list.length === 0) {
+        blockersGrid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-amber-300/50 font-sans italic glass-card rounded-2xl p-6">
+            ✨ No pending blockers in this category! The program launch runway is clear here.
+          </div>
+        `;
+        return;
+      }
+
+      list.forEach(item => {
+        const card = document.createElement('div');
+        const isDone = item.status === 'completed';
+        
+        let urgencyColor = 'border-amber-500/30';
+        let badgeColor = 'bg-amber-400/10 text-amber-300 border-amber-400/30';
+        if (item.urgency === 'Five-Alarm Fire') {
+          urgencyColor = 'border-red-500/40 hover:border-red-400';
+          badgeColor = 'bg-red-500/20 text-red-300 border-red-500/40';
+        } else if (item.urgency === 'Hot Priority') {
+          urgencyColor = 'border-orange-500/40 hover:border-orange-400';
+          badgeColor = 'bg-orange-500/20 text-orange-300 border-orange-500/40';
         }
-      }, 1000);
+
+        if (isDone) {
+          card.className = 'glass-card rounded-xl p-5 border border-emerald-500/30 opacity-70 flex flex-col justify-between transition';
+        } else {
+          card.className = `glass-card rounded-xl p-5 border ${urgencyColor} flex flex-col justify-between hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] transition duration-300`;
+        }
+
+        let deptIcon = '📊';
+        if (item.dept === 'Compliance') deptIcon = '⚖️';
+        else if (item.dept === 'Underwriting') deptIcon = '📝';
+        else if (item.dept === 'IT & APIs') deptIcon = '💻';
+        else if (item.dept === 'Reinsurance') deptIcon = '🤝';
+        else if (item.dept === 'Claims') deptIcon = '📑';
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between text-xs mb-2.5">
+              <span class="px-2 py-0.5 rounded-full font-cinzel text-[11px] font-semibold border ${badgeColor}">
+                ${deptIcon} ${escapeHtml(item.dept)}
+              </span>
+              <span class="text-amber-300/60 font-sans text-[11px]">${item.timeAgo}</span>
+            </div>
+
+            <div class="mb-2">
+              <h4 class="text-sm font-bold text-amber-100 flex items-center justify-between">
+                <span>${escapeHtml(item.owner)}</span>
+                ${isDone ? '<span class="text-emerald-400 text-xs font-semibold">✓ SIGNED OFF</span>' : `<span class="text-amber-400/90 text-xs font-mono font-medium">🔥 ${item.nudges} nudges</span>`}
+              </h4>
+              <p class="text-xs text-amber-200/80 font-sans mt-1 leading-relaxed ${isDone ? 'line-through opacity-70' : ''}">
+                "${escapeHtml(item.task)}"
+              </p>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-amber-500/10 mt-3 flex items-center justify-between gap-2">
+            ${isDone ? `
+              <span class="text-xs text-emerald-400/90 font-cinzel font-semibold flex items-center space-x-1">
+                <span>🛡️ Extinguished & Cleared</span>
+              </span>
+              <button onclick="reopenBlocker('${item.id}')" class="text-[11px] text-amber-300/60 hover:text-amber-200 underline">
+                Reopen
+              </button>
+            ` : `
+              <div class="flex items-center space-x-2">
+                <button onclick="openNudgeComposer('${item.id}')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/30 transition flex items-center space-x-1">
+                  <span>💬 Nudge</span>
+                </button>
+                <button onclick="fanIndividualFlame('${item.id}')" class="px-2.5 py-1.5 rounded-lg text-xs font-medium glass-card hover:border-amber-400/50 text-amber-300/90 transition" title="Add another candle of urgency">
+                  🔥 +1 Heat
+                </button>
+              </div>
+
+              <button onclick="resolveBlocker('${item.id}')" class="px-3 py-1.5 rounded-lg text-xs font-cinzel font-bold text-emerald-300 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 transition">
+                ✓ Sign-off!
+              </button>
+            `}
+          </div>
+        `;
+        blockersGrid.appendChild(card);
+      });
     }
 
-    function stopCandleTimer() {
-      clearInterval(AppState.timerInterval);
+    // Filter clicks
+    document.querySelectorAll('.filter-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-pill').forEach(b => {
+          b.className = 'filter-pill px-3 py-1 rounded-lg glass-card text-amber-300/70 hover:text-amber-100';
+        });
+        btn.className = 'filter-pill px-3 py-1 rounded-lg bg-amber-400/20 text-amber-200 border border-amber-400/40';
+        AppState.currentFilter = btn.getAttribute('data-dept');
+        renderBlockers();
+      });
+    });
+
+    // Individual fan flame action
+    window.fanIndividualFlame = function(id) {
+      const item = AppState.blockers.find(b => b.id === id);
+      if (item) {
+        item.nudges++;
+        AppState.totalNudges++;
+        candleNudgeCounter.textContent = `🔥 ${AppState.totalNudges} Nudges Sent`;
+        saveBlockers();
+        renderBlockers();
+        soundEngine.playStrike();
+        showToast(`Lit another candle of urgency for ${item.owner}!`, '🔥');
+      }
+    };
+
+    // Mark blocker resolved
+    window.resolveBlocker = function(id) {
+      const item = AppState.blockers.find(b => b.id === id);
+      if (item) {
+        item.status = 'completed';
+        saveBlockers();
+        updateReadinessMetrics();
+        renderBlockers();
+        soundEngine.playSuccessFanfare();
+        triggerConfetti();
+        showToast(`🎉 ${item.owner} signed off! Launch readiness increased!`, '🛡️');
+      }
+    };
+
+    window.reopenBlocker = function(id) {
+      const item = AppState.blockers.find(b => b.id === id);
+      if (item) {
+        item.status = 'pending';
+        saveBlockers();
+        updateReadinessMetrics();
+        renderBlockers();
+        showToast(`Candle relit for ${item.owner}.`, '🕯️');
+      }
+    };
+  </script>
+
+  <script>
+    const nudgeModal = document.getElementById('nudgeModal');
+    const closeNudgeModal = document.getElementById('closeNudgeModal');
+    const nudgeRecipientTag = document.getElementById('nudgeRecipientTag');
+    const nudgeTextPreview = document.getElementById('nudgeTextPreview');
+    const copyNudgeBtn = document.getElementById('copyNudgeBtn');
+    const quickSlackNudgeBtn = document.getElementById('quickSlackNudgeBtn');
+
+    const NUDGE_TEMPLATES = {
+      friendly: (owner, task, dept) =>
+        `Hey ${owner} 👋 We're lighting a virtual candle for you over at the Insurance Launch Sanctuary! 🕯️ Could you please take a quick peek at: "${task}"? We're counting on ${dept} to help us cross the finish line! Thank you so much! 🙏🚀`,
+      urgent: (owner, task, dept) =>
+        `🚨 *Launch Blocker Alert for ${owner}* 🚨\nThe team is gathering around the Go-Live Candle waiting on: "${task}" for ${dept}. Every hour counts—could you sign off or send your green light ASAP? Let’s launch this program! 🔥⚡`,
+      dramatic: (owner, task, dept) =>
+        `🕯️ *A Solemn Launch Vigil for ${owner}* 🕯️\nIn the quiet halls of our insurance sanctuary, a flame burns bright, sustained solely by hope for your approval of: "${task}". Grant us peace (and launch approval) today. Amen. 🙏✨`
+    };
+
+    function updateNudgePreview() {
+      const item = AppState.selectedBlockerForNudge;
+      if (!item) return;
+      const tmpl = NUDGE_TEMPLATES[AppState.nudgeTone] || NUDGE_TEMPLATES.friendly;
+      nudgeTextPreview.textContent = tmpl(item.owner, item.task, item.dept);
+      nudgeRecipientTag.textContent = `@${item.owner}`;
     }
 
-    function formatTime(totalSec) {
-      const m = Math.floor(totalSec / 60).toString().padStart(2, '0');
-      const s = (totalSec % 60).toString().padStart(2, '0');
-      timerDisplay.textContent = `${m}:${s}`;
+    window.openNudgeComposer = function(id) {
+      const item = AppState.blockers.find(b => b.id === id);
+      if (!item) return;
+      AppState.selectedBlockerForNudge = item;
+      updateNudgePreview();
+      openModal(nudgeModal);
+    };
+
+    quickSlackNudgeBtn.addEventListener('click', () => {
+      // Pick first pending blocker or general
+      const pending = AppState.blockers.find(b => b.status === 'pending');
+      if (pending) {
+        openNudgeComposer(pending.id);
+      } else {
+        showToast('All blockers cleared! No one to nudge right now.', '🎉');
+      }
+    });
+
+    closeNudgeModal.addEventListener('click', () => closeModal(nudgeModal));
+
+    document.querySelectorAll('.nudge-tone-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nudge-tone-btn').forEach(b => {
+          b.className = 'nudge-tone-btn py-1.5 rounded-lg border border-slate-700 glass-card text-amber-300/70';
+        });
+        btn.className = 'nudge-tone-btn py-1.5 rounded-lg border border-amber-400 bg-amber-400/20 text-amber-200';
+        AppState.nudgeTone = btn.getAttribute('data-tone');
+        updateNudgePreview();
+      });
+    });
+
+    // Copy to clipboard using document.execCommand fallback for iframe safety
+    copyNudgeBtn.addEventListener('click', () => {
+      const text = nudgeTextPreview.textContent;
+      copyTextToClipboard(text);
+      if (AppState.selectedBlockerForNudge) {
+        AppState.selectedBlockerForNudge.nudges++;
+        AppState.totalNudges++;
+        candleNudgeCounter.textContent = `🔥 ${AppState.totalNudges} Nudges Sent`;
+        saveBlockers();
+        renderBlockers();
+      }
+      closeModal(nudgeModal);
+      showToast('Nudge copied! Paste into Slack or Teams.', '📋');
+      soundEngine.playBell(587.33);
+    });
+
+    function copyTextToClipboard(text) {
+      const tempInput = document.createElement('textarea');
+      tempInput.style.position = 'fixed';
+      tempInput.style.opacity = '0';
+      tempInput.value = text;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.warn('Copy fallback failed', err);
+      }
+      document.body.removeChild(tempInput);
     }
   </script>
 
   <script>
-    // Elements
-    const audioToggleBtn = document.getElementById('audioToggleBtn');
-    const audioStatusText = document.getElementById('audioStatusText');
-    const soundIconOff = document.getElementById('soundIconOff');
-    const soundIconOn = document.getElementById('soundIconOn');
-    const intentionModal = document.getElementById('intentionModal');
-    const openIntentionBtn = document.getElementById('openIntentionBtn');
-    const closeIntentionModal = document.getElementById('closeIntentionModal');
-    const cancelIntentionBtn = document.getElementById('cancelIntentionBtn');
-    const intentionForm = document.getElementById('intentionForm');
-    const intentionSnippet = document.getElementById('intentionSnippet');
-    const snippetText = document.getElementById('snippetText');
-    const snippetAuthor = document.getElementById('snippetAuthor');
-    const customizeModal = document.getElementById('customizeModal');
-    const openCustomizeBtn = document.getElementById('openCustomizeBtn');
-    const closeCustomizeModal = document.getElementById('closeCustomizeModal');
-    const saveCustomizeBtn = document.getElementById('saveCustomizeBtn');
-    const wallModal = document.getElementById('wallModal');
-    const openWallBtn = document.getElementById('openWallBtn');
-    const closeWallModal = document.getElementById('closeWallModal');
-    const addCandleFromWallBtn = document.getElementById('addCandleFromWallBtn');
-    const wallCardsContainer = document.getElementById('wallCardsContainer');
-    const roomDarknessSlider = document.getElementById('roomDarknessSlider');
-    const darknessValue = document.getElementById('darknessValue');
-    const toast = document.getElementById('toastNotification');
-    const toastMsg = document.getElementById('toastMsg');
-    const toastIcon = document.getElementById('toastIcon');
-    const shareCandleBtn = document.getElementById('shareCandleBtn');
+    const blockerModal = document.getElementById('blockerModal');
+    const openNewBlockerBtn = document.getElementById('openNewBlockerBtn');
+    const closeBlockerModal = document.getElementById('closeBlockerModal');
+    const cancelBlockerModalBtn = document.getElementById('cancelBlockerModalBtn');
+    const blockerForm = document.getElementById('blockerForm');
 
-    // Click handlers
-    candleStage.addEventListener('click', () => toggleCandleState());
-    toggleFlameBtn.addEventListener('click', () => toggleCandleState());
-
-    // Audio toggle
-    audioToggleBtn.addEventListener('click', () => {
-      const active = soundSystem.toggleAmbient();
-      if (active) {
-        soundIconOff.classList.add('hidden');
-        soundIconOn.classList.remove('hidden');
-        audioStatusText.textContent = 'Ambient: On';
-        audioToggleBtn.classList.add('border-amber-400', 'bg-amber-400/10');
-        showToast('Ambient harmony playing', '🎵');
-      } else {
-        soundIconOff.classList.remove('hidden');
-        soundIconOn.classList.add('hidden');
-        audioStatusText.textContent = 'Ambient: Off';
-        audioToggleBtn.classList.remove('border-amber-400', 'bg-amber-400/10');
-      }
-    });
-
-    // Modals helpers
     function openModal(el) {
       el.classList.remove('hidden');
       setTimeout(() => {
@@ -1037,263 +1104,116 @@
       }, 300);
     }
 
-    openIntentionBtn.addEventListener('click', () => openModal(intentionModal));
-    closeIntentionModal.addEventListener('click', () => closeModal(intentionModal));
-    cancelIntentionBtn.addEventListener('click', () => closeModal(intentionModal));
+    openNewBlockerBtn.addEventListener('click', () => openModal(blockerModal));
+    closeBlockerModal.addEventListener('click', () => closeModal(blockerModal));
+    cancelBlockerModalBtn.addEventListener('click', () => closeModal(blockerModal));
 
-    openCustomizeBtn.addEventListener('click', () => openModal(customizeModal));
-    closeCustomizeModal.addEventListener('click', () => closeModal(customizeModal));
-    saveCustomizeBtn.addEventListener('click', () => {
-      closeModal(customizeModal);
-      showToast('Ambiance settings applied', '✨');
-    });
-
-    openWallBtn.addEventListener('click', () => {
-      renderWallGrid();
-      openModal(wallModal);
-    });
-    closeWallModal.addEventListener('click', () => closeModal(wallModal));
-    addCandleFromWallBtn.addEventListener('click', () => {
-      closeModal(wallModal);
-      openModal(intentionModal);
-    });
-
-    // Character counter
-    const intentMessageInput = document.getElementById('intentMessage');
-    const charCount = document.getElementById('charCount');
-    intentMessageInput.addEventListener('input', (e) => {
-      charCount.textContent = `${e.target.value.length}/240`;
-    });
-
-    // Intention submission
-    intentionForm.addEventListener('submit', (e) => {
+    blockerForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const message = intentMessageInput.value.trim();
-      if (!message) return;
+      const dept = document.getElementById('blockerDept').value;
+      const owner = document.getElementById('blockerOwner').value.trim();
+      const task = document.getElementById('blockerTask').value.trim();
+      const urgencyRadio = document.querySelector('input[name="blockerUrgency"]:checked');
+      const urgency = urgencyRadio ? urgencyRadio.value : 'Gentle Glow';
 
-      const author = document.getElementById('intentAuthor').value.trim() || 'Anonymous';
-      const tagElem = document.querySelector('input[name="intentTag"]:checked');
-      const tag = tagElem ? tagElem.value : 'Peace & Comfort';
+      if (!owner || !task) return;
 
       const newEntry = {
         id: Date.now().toString(),
-        tag: tag,
-        author: author,
-        message: message,
-        date: 'Just now',
-        wax: AppState.waxColor
+        dept: dept,
+        owner: owner,
+        task: task,
+        urgency: urgency,
+        nudges: 1,
+        status: 'pending',
+        timeAgo: 'Just lit'
       };
 
-      AppState.intentions.unshift(newEntry);
-      saveIntentions();
+      AppState.blockers.unshift(newEntry);
+      AppState.totalNudges++;
+      candleNudgeCounter.textContent = `🔥 ${AppState.totalNudges} Nudges Sent`;
+      saveBlockers();
+      updateReadinessMetrics();
+      renderBlockers();
 
-      // Display in main hero altar
-      AppState.currentIntention = newEntry;
-      snippetText.textContent = `"${message}"`;
-      snippetAuthor.textContent = `— ${author} • ${tag}`;
-      intentionSnippet.classList.remove('hidden');
-
-      // Light candle if unlit
+      // Ensure central candle is lit
       if (!AppState.isLit) {
-        lightCandle(true);
+        lightMainCandle(false);
+      }
+      soundEngine.playStrike();
+
+      closeModal(blockerModal);
+      blockerForm.reset();
+      showToast(`Candle lit for ${owner} (${dept})!`, '🕯️');
+    });
+
+    // Share link handler
+    document.getElementById('copyShareSanctuaryBtn').addEventListener('click', () => {
+      copyTextToClipboard(window.location.href);
+      showToast('Sanctuary URL copied to clipboard!', '🔗');
+    });
+
+    // Audio toggle
+    const audioToggleBtn = document.getElementById('audioToggleBtn');
+    const audioStatusText = document.getElementById('audioStatusText');
+    const soundIcon = document.getElementById('soundIcon');
+    audioToggleBtn.addEventListener('click', () => {
+      const active = soundEngine.toggleAmbient();
+      if (active) {
+        soundIcon.textContent = '🔊';
+        audioStatusText.textContent = 'Office Hum: On';
+        audioToggleBtn.classList.add('border-amber-400', 'bg-amber-400/10');
+        showToast('Office flame ambiance activated', '🎵');
       } else {
-        soundSystem.playBellChime(528);
-      }
-
-      closeModal(intentionModal);
-      intentionForm.reset();
-      charCount.textContent = '0/240';
-      showToast('Your intention has been dedicated to the light', '🕯️');
-    });
-
-    // Timer chips
-    document.querySelectorAll('.timer-chip').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        document.querySelectorAll('.timer-chip').forEach(b => b.classList.remove('border-amber-400', 'text-amber-300', 'bg-amber-400/20'));
-        btn.classList.add('border-amber-400', 'text-amber-300', 'bg-amber-400/20');
-
-        const mins = parseInt(btn.getAttribute('data-minutes'), 10);
-        AppState.secondsLit = 0;
-        if (mins > 0) {
-          AppState.countdownTargetSec = mins * 60;
-          formatTime(AppState.countdownTargetSec);
-          showToast(`Meditation timer set for ${mins} minute(s)`, '⏳');
-        } else {
-          AppState.countdownTargetSec = 0;
-          formatTime(0);
-          showToast('Free continuous meditation mode', '∞');
-        }
-
-        if (!AppState.isLit) {
-          lightCandle(true);
-        }
-      });
-    });
-
-    // Wax color palettes
-    const WAX_PRESETS = {
-      'warm-ivory': 'linear-gradient(to right, #403b37 0%, #fff7ed 35%, #fed7aa 65%, #9a3412 100%)',
-      'pure-white': 'linear-gradient(to right, #334155 0%, #ffffff 40%, #e2e8f0 70%, #475569 100%)',
-      'deep-terracotta': 'linear-gradient(to right, #450a0a 0%, #fca5a5 35%, #ef4444 65%, #7f1d1d 100%)',
-      'sage-olive': 'linear-gradient(to right, #052e16 0%, #bbf7d0 35%, #4ade80 65%, #14532d 100%)',
-      'midnight-indigo': 'linear-gradient(to right, #0f172a 0%, #c7d2fe 35%, #818cf8 65%, #1e1b4b 100%)',
-    };
-
-    document.querySelectorAll('.wax-color-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.wax-color-btn').forEach(b => b.classList.remove('border-amber-300'));
-        btn.classList.add('border-amber-300');
-        const colorKey = btn.getAttribute('data-wax');
-        AppState.waxColor = colorKey;
-        const candleBody = document.getElementById('candleBody');
-        candleBody.style.background = WAX_PRESETS[colorKey];
-      });
-    });
-
-    // Darkness slider
-    roomDarknessSlider.addEventListener('input', (e) => {
-      const val = e.target.value;
-      darknessValue.textContent = `${val}%`;
-      if (AppState.isLit) {
-        roomGlow.style.opacity = (val / 100).toString();
+        soundIcon.textContent = '🔇';
+        audioStatusText.textContent = 'Office Hum: Off';
+        audioToggleBtn.classList.remove('border-amber-400', 'bg-amber-400/10');
       }
     });
-
-    // Sound mode selection
-    document.querySelectorAll('.sound-mode-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.sound-mode-btn').forEach(b => {
-          b.classList.remove('border-amber-400', 'text-amber-200');
-          b.classList.add('text-amber-300/70');
-        });
-        btn.classList.add('border-amber-400', 'text-amber-200');
-        btn.classList.remove('text-amber-300/70');
-
-        soundSystem.currentMode = btn.getAttribute('data-mode');
-        if (soundSystem.isPlaying) {
-          soundSystem.startAmbient();
-        }
-      });
-    });
-
-    // Wall filter buttons
-    document.querySelectorAll('.wall-filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.wall-filter-btn').forEach(b => {
-          b.classList.remove('bg-amber-400/20', 'text-amber-200', 'border-amber-400/40');
-          b.classList.add('glass-panel', 'text-amber-300/80');
-        });
-        btn.classList.add('bg-amber-400/20', 'text-amber-200', 'border-amber-400/40');
-        btn.classList.remove('glass-panel', 'text-amber-300/80');
-
-        AppState.currentFilter = btn.getAttribute('data-filter');
-        renderWallGrid();
-      });
-    });
-
-    function renderWallGrid() {
-      wallCardsContainer.innerHTML = '';
-      const list = AppState.currentFilter === 'all'
-        ? AppState.intentions
-        : AppState.intentions.filter(item => item.tag === AppState.currentFilter);
-
-      if (list.length === 0) {
-        wallCardsContainer.innerHTML = `
-          <div class="col-span-full py-12 text-center text-amber-300/50 font-serif italic">
-            No candles found in this category yet. Be the first to light one.
-          </div>
-        `;
-        return;
-      }
-
-      list.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'glass-panel rounded-xl p-4 border border-amber-500/20 flex flex-col justify-between hover:border-amber-400/40 transition duration-300 relative group';
-        
-        let tagIcon = '🕯️';
-        if (item.tag === 'Memorial') tagIcon = '🕊️';
-        else if (item.tag === 'Hope & Healing') tagIcon = '🌱';
-        else if (item.tag === 'Peace & Comfort') tagIcon = '🕊️';
-        else if (item.tag === 'Gratitude') tagIcon = '🙏';
-
-        card.innerHTML = `
-          <div>
-            <div class="flex items-center justify-between text-[11px] mb-2">
-              <span class="text-amber-300/80 font-cinzel px-2 py-0.5 rounded-full bg-amber-400/10 border border-amber-400/20">
-                ${tagIcon} ${item.tag}
-              </span>
-              <span class="text-amber-400/50 font-serif italic">${item.date}</span>
-            </div>
-            <p class="font-serif italic text-amber-100 text-sm leading-relaxed mb-3">"${escapeHtml(item.message)}"</p>
-          </div>
-          <div class="flex items-center justify-between border-t border-amber-500/10 pt-2.5 mt-2">
-            <span class="text-xs font-cinzel text-amber-300/90 font-semibold">— ${escapeHtml(item.author)}</span>
-            <span class="text-xs opacity-70 group-hover:opacity-100 transition" title="Burning with reverence">🔥</span>
-          </div>
-        `;
-        wallCardsContainer.appendChild(card);
-      });
-    }
 
     function escapeHtml(str) {
+      if (!str) return '';
       return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
-    // Toast helper
-    let toastTimeout = null;
-    function showToast(text, icon = '✨') {
-      toastMsg.textContent = text;
+    let toastTimer = null;
+    function showToast(msg, icon = '🔥') {
+      const toast = document.getElementById('toastNotification');
+      const toastMsg = document.getElementById('toastMsg');
+      const toastIcon = document.getElementById('toastIcon');
+      toastMsg.textContent = msg;
       toastIcon.textContent = icon;
       toast.classList.remove('opacity-0', 'translate-y-4');
       toast.classList.add('opacity-100', 'translate-y-0');
 
-      clearTimeout(toastTimeout);
-      toastTimeout = setTimeout(() => {
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
         toast.classList.remove('opacity-100', 'translate-y-0');
         toast.classList.add('opacity-0', 'translate-y-4');
-      }, 3200);
+      }, 3000);
     }
-
-    // Share action using document.execCommand('copy')
-    shareCandleBtn.addEventListener('click', () => {
-      const shareUrl = window.location.href;
-      const dummyInput = document.createElement('input');
-      dummyInput.style.position = 'fixed';
-      dummyInput.style.opacity = '0';
-      dummyInput.value = shareUrl;
-      document.body.appendChild(dummyInput);
-      dummyInput.select();
-      try {
-        document.execCommand('copy');
-        showToast('Sanctuary link copied to clipboard', '🔗');
-      } catch (err) {
-        showToast('Bookmark or copy URL from browser address bar', '✨');
-      }
-      document.body.removeChild(dummyInput);
-    });
   </script>
 
   <script>
-    /* Ambient Canvas floating warm embers / dust particles */
-    const canvas = document.getElementById('ambientCanvas');
-    const ctx = canvas.getContext('2d');
+    /* Ambient floating embers canvas */
+    const ambientCanvas = document.getElementById('ambientCanvas');
+    const actx = ambientCanvas.getContext('2d');
     let particles = [];
-    const PARTICLE_COUNT = 38;
+    const EMBER_COUNT = 32;
 
     function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      ambientCanvas.width = window.innerWidth;
+      ambientCanvas.height = window.innerHeight;
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
     }
     window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
 
-    class Particle {
-      constructor() {
-        this.reset();
-      }
+    class EmberParticle {
+      constructor() { this.reset(); }
       reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
+        this.x = Math.random() * ambientCanvas.width;
+        this.y = Math.random() * ambientCanvas.height;
         this.size = Math.random() * 2 + 0.8;
         this.speedY = -(Math.random() * 0.4 + 0.15);
         this.speedX = (Math.random() - 0.5) * 0.3;
@@ -1306,36 +1226,89 @@
         this.life--;
         if (this.y < -10 || this.life <= 0) {
           this.reset();
-          this.y = canvas.height + 10;
+          this.y = ambientCanvas.height + 10;
         }
       }
       draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 200, 100, ${this.opacity * (AppState.isLit ? 1 : 0.2)})`;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = 'rgba(255, 160, 40, 0.8)';
-        ctx.fill();
+        actx.beginPath();
+        actx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        actx.fillStyle = `rgba(245, 158, 11, ${this.opacity * (AppState.isLit ? 1 : 0.2)})`;
+        actx.shadowBlur = 6;
+        actx.shadowColor = 'rgba(239, 68, 68, 0.7)';
+        actx.fill();
       }
     }
 
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      particles.push(new Particle());
+    for (let i = 0; i < EMBER_COUNT; i++) {
+      particles.push(new EmberParticle());
     }
 
-    function animateLoop() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    /* Confetti celebration canvas */
+    const confettiCanvas = document.getElementById('confettiCanvas');
+    const cctx = confettiCanvas.getContext('2d');
+    let confettiPieces = [];
+
+    function triggerConfetti() {
+      confettiPieces = [];
+      const colors = ['#f59e0b', '#ef4444', '#10b981', '#3b82f6', '#fbbf24', '#ffffff'];
+      for (let i = 0; i < 90; i++) {
+        confettiPieces.push({
+          x: confettiCanvas.width / 2 + (Math.random() * 200 - 100),
+          y: confettiCanvas.height / 2 - 50,
+          w: Math.random() * 8 + 4,
+          h: Math.random() * 5 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          vx: (Math.random() - 0.5) * 12,
+          vy: Math.random() * -12 - 4,
+          gravity: 0.35,
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 12,
+          opacity: 1
+        });
+      }
+    }
+
+    function renderConfetti() {
+      cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      for (let i = confettiPieces.length - 1; i >= 0; i--) {
+        const p = confettiPieces[i];
+        p.vy += p.gravity;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rotation += p.rotationSpeed;
+        p.opacity -= 0.009;
+
+        if (p.opacity <= 0 || p.y > confettiCanvas.height) {
+          confettiPieces.splice(i, 1);
+          continue;
+        }
+
+        cctx.save();
+        cctx.translate(p.x, p.y);
+        cctx.rotate((p.rotation * Math.PI) / 180);
+        cctx.globalAlpha = p.opacity;
+        cctx.fillStyle = p.color;
+        cctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        cctx.restore();
+      }
+    }
+
+    function mainAnimationLoop() {
+      actx.clearRect(0, 0, ambientCanvas.width, ambientCanvas.height);
       particles.forEach(p => {
         p.update();
         p.draw();
       });
-      requestAnimationFrame(animateLoop);
+      if (confettiPieces.length > 0) {
+        renderConfetti();
+      }
+      requestAnimationFrame(mainAnimationLoop);
     }
 
-    window.onload = function () {
-      loadSavedIntentions();
-      animateLoop();
-      startCandleTimer();
+    window.onload = function() {
+      resizeCanvas();
+      loadBlockers();
+      mainAnimationLoop();
     };
   </script>
 </body>
