@@ -1,4 +1,4 @@
-console.log("20260922 0839")
+console.log("20260922 0842")
 
 const ENABLE_VEHICLE_TYPE_IN_PRODUCTION = true;
 
@@ -12,6 +12,12 @@ const appId = {
     AT: "iw702hil7q0ejwxkt23hdya8"
   }
 }
+
+// Add partnerId environment mapping here
+const partnerIdMap = {
+  sbx: "67a9f3824ce2c52c73463db6",
+  prd: "67dada5a2f2f754fce03d01c"
+};
 
 //define which SF values don't need previous insurer object
 const sfValuesNoPrevInsurerNeeded = ['SF0', 'NoSFClass', ''];
@@ -1536,7 +1542,7 @@ $("#quoteForm").on("submit", function(e) {
   // Build the payload with only tpl and mod coverages
   const payload = {
     productConfigurationId: "microlino",
-    partnerId: "67dada5a2f2f754fce03d01c",
+    partnerId: isSandbox ? partnerIdMap.sbx : partnerIdMap.prd,
     country: country,
     language: language,
     renewal: {
