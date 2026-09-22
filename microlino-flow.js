@@ -1536,7 +1536,7 @@ $("#quoteForm").on("submit", function(e) {
   // Build the payload with only tpl and mod coverages
   const payload = {
     productConfigurationId: "microlino",
-    //partnerId: "67a9f3824ce2c52c73463db6",
+    partnerId: "67dada5a2f2f754fce03d01c",
     country: country,
     language: language,
     renewal: {
