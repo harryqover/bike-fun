@@ -2,8 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tour du Mont-Rose Express 2028 — Dossier Fastpacking & Plan Allégé (100 Semaines)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Tour du Mont-Rose Express 2028 — Dossier Fastpacking & Plan Mobile</title>
   <style>
     :root {
       --primary: #0f172a;
@@ -19,9 +19,8 @@
       --border: #e2e8f0;
       --success: #16a34a;
       --success-light: #dcfce7;
-      --pink: #db2777;
-      --pink-light: #fce7f3;
       --purple: #7c3aed;
+      --radius: 12px;
     }
 
     * {
@@ -35,14 +34,15 @@
       color: var(--text);
       background-color: var(--bg);
       line-height: 1.5;
-      padding: 30px;
+      padding: 24px 16px;
+      -webkit-font-smoothing: antialiased;
     }
 
     .container {
       max-width: 1040px;
       margin: 0 auto;
       background: var(--card-bg);
-      padding: 40px;
+      padding: 36px;
       border-radius: 16px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
       border: 1px solid var(--border);
@@ -51,12 +51,13 @@
     /* En-tête */
     header {
       border-bottom: 2px solid var(--border);
-      padding-bottom: 24px;
-      margin-bottom: 32px;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
     }
 
     .badge-group {
       display: flex;
+      flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 12px;
     }
@@ -66,10 +67,10 @@
       background: var(--accent-light);
       color: var(--accent);
       font-weight: 700;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 4px 12px;
+      letter-spacing: 0.8px;
+      padding: 4px 10px;
       border-radius: 9999px;
     }
 
@@ -79,64 +80,102 @@
     }
 
     h1 {
-      font-size: 2.3rem;
+      font-size: 2.2rem;
       color: var(--text-dark);
       letter-spacing: -0.5px;
-      line-height: 1.15;
+      line-height: 1.2;
       margin-bottom: 8px;
     }
 
     .subtitle {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: var(--text-muted);
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     /* Grille Métriques */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 32px;
+      gap: 12px;
+      margin-bottom: 24px;
     }
 
     .stat-card {
       background: var(--bg);
       border: 1px solid var(--border);
-      padding: 16px;
-      border-radius: 12px;
+      padding: 14px 10px;
+      border-radius: var(--radius);
       text-align: center;
     }
 
     .stat-val {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 800;
       color: var(--primary);
+      line-height: 1.1;
+      margin-bottom: 4px;
     }
 
     .stat-label {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: var(--text-muted);
       text-transform: uppercase;
       font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* Barre de navigation rapide (Mobile UX) */
+    .quick-nav {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 28px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .quick-nav::-webkit-scrollbar { display: none; }
+
+    .quick-nav a {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 20px;
+      color: var(--text-dark);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .quick-nav a:hover, .quick-nav a:active {
+      background: var(--secondary-light);
+      border-color: var(--secondary);
+      color: var(--secondary);
     }
 
     /* Typographie sections */
     h2 {
-      font-size: 1.35rem;
+      font-size: 1.3rem;
       color: var(--text-dark);
       margin-top: 36px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       padding-bottom: 8px;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     h3 {
       font-size: 1.05rem;
       color: var(--text-dark);
+      margin-top: 20px;
       margin-bottom: 8px;
     }
 
@@ -145,62 +184,71 @@
       font-size: 0.95rem;
     }
 
-    /* Boîtes */
+    /* Boîtes de contenu */
     .pitch-box {
       background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
       border-left: 4px solid var(--secondary);
-      padding: 20px;
-      border-radius: 0 12px 12px 0;
-      margin-bottom: 28px;
-    }
-
-    .message-box {
-      background: linear-gradient(135deg, #fff1f2 0%, #fce7f3 100%);
-      border-left: 4px solid var(--pink);
-      padding: 22px;
-      border-radius: 0 12px 12px 0;
-      margin-bottom: 28px;
+      padding: 18px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin-bottom: 24px;
     }
 
     .light-philosophy-box {
       background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
       border-left: 4px solid var(--success);
-      padding: 20px;
-      border-radius: 0 12px 12px 0;
+      padding: 18px;
+      border-radius: 0 var(--radius) var(--radius) 0;
       margin-bottom: 24px;
     }
 
-    /* Komoot */
+    /* Komoot Responsive */
+    .komoot-container {
+      margin-bottom: 28px;
+    }
+
     .komoot-wrapper {
-      border-radius: 12px;
+      border-radius: var(--radius);
       overflow: hidden;
       border: 1px solid var(--border);
       background: #000;
-      margin-bottom: 32px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .komoot-wrapper iframe {
       display: block;
       width: 100%;
-      height: 650px;
+      height: 600px;
       border: none;
+    }
+
+    .komoot-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 4px 0;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .komoot-bar a {
+      color: var(--secondary);
+      font-weight: 700;
+      text-decoration: none;
     }
 
     /* Cartes Étapes */
     .stages-container {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 16px;
-      margin-bottom: 32px;
+      gap: 14px;
+      margin-bottom: 28px;
     }
 
     .stage-card {
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
+      border-radius: var(--radius);
+      padding: 18px;
       background: #ffffff;
-      position: relative;
     }
 
     .stage-card.queen {
@@ -211,38 +259,43 @@
     .stage-header {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 10px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+      gap: 10px;
     }
 
     .stage-title {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: var(--text-dark);
     }
 
     .stage-metrics {
       display: flex;
-      gap: 14px;
+      flex-wrap: wrap;
+      gap: 8px;
       font-size: 0.85rem;
       font-weight: 700;
       color: var(--secondary);
     }
 
     .queen-badge {
+      display: inline-block;
       background: var(--accent);
       color: white;
-      font-size: 0.7rem;
-      padding: 2px 8px;
-      border-radius: 6px;
+      font-size: 0.68rem;
+      padding: 2px 6px;
+      border-radius: 4px;
       font-weight: 700;
       text-transform: uppercase;
+      margin-left: 6px;
+      vertical-align: middle;
     }
 
     .stage-desc {
       font-size: 0.9rem;
       color: var(--text);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .stage-meta {
@@ -251,26 +304,28 @@
       border-top: 1px dashed var(--border);
       padding-top: 8px;
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
+      gap: 6px;
     }
 
-    /* Paliers */
+    /* Paliers & Cartes Méthode */
     .milestones-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-bottom: 28px;
+      gap: 14px;
+      margin-bottom: 24px;
     }
 
     .milestone-card {
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: var(--radius);
       padding: 16px;
       background: var(--bg);
     }
 
     .milestone-tag {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
       text-transform: uppercase;
       color: var(--success);
@@ -278,27 +333,106 @@
       display: block;
     }
 
-    /* Tableaux */
+    /* Raccourcis de phases d'entraînement */
+    .phase-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 12px 0 16px;
+    }
+
+    .phase-pills a {
+      font-size: 0.75rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .phase-pills a:hover {
+      border-color: var(--secondary);
+      color: var(--secondary);
+    }
+
+    /* Barre d'action Agenda */
+    .calendar-actions-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      margin-bottom: 14px;
+      gap: 12px;
+    }
+
+    .btn-ics-export {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--secondary);
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-ics-export:hover {
+      background: #0369a1;
+    }
+
+    /* Tableaux et UX défilement mobile */
+    .table-scroll-container {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      background: #ffffff;
+    }
+
+    .mobile-scroll-hint {
+      display: none;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-align: right;
+      padding: 4px 8px;
+      font-weight: 600;
+      background: #f1f5f9;
+      border-bottom: 1px solid var(--border);
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 12px;
-      margin-bottom: 24px;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
+      min-width: 580px; /* Garantit que les colonnes ne s'écrasent pas */
     }
 
     th, td {
-      padding: 8px 10px;
+      padding: 9px 12px;
       text-align: left;
       border-bottom: 1px solid var(--border);
       vertical-align: middle;
     }
 
     th {
-      background: var(--bg);
+      background: #f8fafc;
       font-weight: 700;
       color: var(--text-dark);
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -308,11 +442,6 @@
       font-weight: 700;
       color: var(--text-muted);
       white-space: nowrap;
-    }
-
-    /* Styles tableau d'entraînement */
-    .training-table th {
-      background: #f1f5f9;
     }
 
     .training-table td {
@@ -326,7 +455,7 @@
     }
 
     .week-dates {
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       color: var(--text-muted);
       white-space: nowrap;
     }
@@ -334,7 +463,7 @@
     .week-types {
       font-weight: 600;
       color: var(--secondary);
-      font-size: 0.79rem;
+      font-size: 0.78rem;
       white-space: nowrap;
     }
 
@@ -352,7 +481,7 @@
       display: inline-block;
       background: var(--accent);
       color: #fff;
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       font-weight: 800;
       padding: 1px 5px;
       border-radius: 4px;
@@ -364,7 +493,7 @@
       display: inline-block;
       background: var(--purple);
       color: #fff;
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       font-weight: 700;
       padding: 1px 5px;
       border-radius: 4px;
@@ -376,58 +505,29 @@
       color: var(--text-muted);
     }
 
-    /* Bouton d'ajout Google Calendar */
+    /* Bouton d'ajout Google Calendar (Optimisé Tap Target) */
     .cal-btn {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 3px;
       background: #eff6ff;
       color: #1d4ed8;
       border: 1px solid #bfdbfe;
-      padding: 3px 6px;
+      padding: 6px 10px;
       border-radius: 6px;
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       font-weight: 700;
       text-decoration: none;
       white-space: nowrap;
+      min-height: 36px;
+      min-width: 60px;
       transition: all 0.15s ease;
     }
 
-    .cal-btn:hover {
+    .cal-btn:hover, .cal-btn:active {
       background: #1d4ed8;
       color: #ffffff;
-    }
-
-    /* Barre d'action Calendrier */
-    .calendar-actions-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      padding: 12px 16px;
-      border-radius: 10px;
-      margin-bottom: 16px;
-    }
-
-    .btn-ics-export {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--secondary);
-      color: #ffffff;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.15s ease;
-    }
-
-    .btn-ics-export:hover {
-      background: #0369a1;
     }
 
     /* Check-list */
@@ -440,7 +540,7 @@
     }
 
     .checklist li {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       background: var(--bg);
       padding: 10px 14px;
       border-radius: 8px;
@@ -459,7 +559,74 @@
       flex-shrink: 0;
     }
 
-    /* Règles d'impression PDF */
+    /* -------------------------------------------
+       MEDIA QUERIES SMARTPHONE & TABLETTE (UX MOBILE)
+       ------------------------------------------- */
+    @media (max-width: 768px) {
+      body {
+        padding: 8px 6px;
+      }
+
+      .container {
+        padding: 18px 14px;
+        border-radius: 12px;
+      }
+
+      h1 {
+        font-size: 1.65rem;
+      }
+
+      .subtitle {
+        font-size: 0.92rem;
+        margin-bottom: 16px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      .stat-val {
+        font-size: 1.3rem;
+      }
+
+      .stat-label {
+        font-size: 0.7rem;
+      }
+
+      .komoot-wrapper iframe {
+        height: 380px; /* Empêche le verrouillage de l'écran par l'iframe */
+      }
+
+      .milestones-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .stage-header {
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .calendar-actions-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn-ics-export {
+        width: 100%;
+      }
+
+      .mobile-scroll-hint {
+        display: block; /* Informe l'utilisateur mobile qu'il peut swiper */
+      }
+
+      .checklist {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Impression PDF */
     @media print {
       body {
         background: #ffffff;
@@ -474,8 +641,8 @@
         max-width: 100%;
       }
 
-      .calendar-actions-bar {
-        display: none;
+      .quick-nav, .calendar-actions-bar, .phase-pills, .mobile-scroll-hint {
+        display: none !important;
       }
 
       .page-break {
@@ -483,7 +650,7 @@
         break-before: always;
       }
 
-      .stage-card, .milestone-card, .message-box, .light-philosophy-box, table, tr, .komoot-wrapper {
+      .stage-card, .milestone-card, table, tr, .komoot-wrapper {
         page-break-inside: avoid;
         break-inside: avoid;
       }
@@ -501,11 +668,11 @@
   <!-- EN-TÊTE -->
   <header>
     <div class="badge-group">
-      <span class="badge">Projet Trail Alpin • Été 2028</span>
-      <span class="badge light">Formule « Minimum Viable » Famille-Compatible</span>
+      <span class="badge">Expédition Trail • Été 2028</span>
+      <span class="badge light">Formule « Minimum Viable »</span>
     </div>
     <h1>TOUR DU MONT-ROSE EXPRESS</h1>
-    <div class="subtitle">171 km en 4 jours • Fastpacking en refuge • Plan 100 semaines synchronisable Google Calendar</div>
+    <div class="subtitle">171 km en 4 jours • Fastpacking en refuge • Préparation mobile 100 semaines</div>
 
     <div class="stats-grid">
       <div class="stat-card">
@@ -525,10 +692,21 @@
         <div class="stat-label">Sac à dos cible</div>
       </div>
     </div>
+
+    <!-- Navigation Rapide Mobile (Quick Nav) -->
+    <nav class="quick-nav">
+      <a href="#pitch">💡 Le Pitch</a>
+      <a href="#trace">🗺️ Tracé & Carte</a>
+      <a href="#etapes">⛰️ Les 4 Jours</a>
+      <a href="#methode">🎯 Méthode & Paliers</a>
+      <a href="#plan">📅 Plan 100 Semaines</a>
+      <a href="#materiel">🎒 Matériel</a>
+      <a href="#calendrier">⏳ Calendrier</a>
+    </nav>
   </header>
 
-  <!-- LE PITCH -->
-  <section>
+  <!-- SECTION 1 : PITCH -->
+  <section id="pitch">
     <h2>1. Le Pitch : Pourquoi ce Tour ?</h2>
     <div class="pitch-box">
       <strong>Le concept :</strong> Réaliser en 4 jours de trail intensif l'un des circuits alpins les plus majestueux d'Europe, reliant le Valais suisse, la Vallée d'Aoste et le Piémont italien.<br><br>
@@ -536,17 +714,21 @@
     </div>
   </section>
 
-  <!-- CARTE INTERACTIVE KOMOOT -->
-  <section>
+  <!-- SECTION 2 : KOMOOT -->
+  <section id="trace" class="komoot-container">
     <h2>2. Tracé Global & Carte Interactive</h2>
-    <p>Visualisation de l'itinéraire intégral, du profil altimétrique et des segments techniques sur Komoot :</p>
+    <p>Itinéraire intégral, profil altimétrique et segments techniques enregistrés sur Komoot :</p>
     <div class="komoot-wrapper">
-      <iframe src="https://www.komoot.com/tour/789451824/embed?layout=classic&amp;profile=1" width="100%" height="650" frameborder="0" scrolling="no" allow="fullscreen" allowfullscreen></iframe>
+      <iframe src="https://www.komoot.com/tour/789451824/embed?layout=classic&amp;profile=1" width="100%" height="600" frameborder="0" scrolling="no" allow="fullscreen" allowfullscreen></iframe>
+    </div>
+    <div class="komoot-bar">
+      <span>Astuce tactile : faites défiler la page hors de la boîte carte.</span>
+      <a href="https://www.komoot.com/tour/789451824" target="_blank" rel="noopener">Ouvrir sur Komoot ↗</a>
     </div>
   </section>
 
-  <!-- LES 4 ÉTAPES -->
-  <section>
+  <!-- SECTION 3 : LES 4 ÉTAPES -->
+  <section id="etapes">
     <h2>3. La Feuille de Route (4 Jours de Course)</h2>
     <div class="stages-container">
       
@@ -564,7 +746,7 @@
           Descente dans la vallée puis montée raide de 1 100 m D+ vers l'Europaweg. Traversée de la vertigineuse passerelle suspendue Charles Kuonen (494 m de vide) et sentiers panoramiques en balcon face au Cervin.
         </div>
         <div class="stage-meta">
-          <span>Temps estimé : 8 h à 10 h</span>
+          <span>Temps : 8 h à 10 h</span>
           <span>Nuit : Refuge / Gîte à Zermatt ou Täschalp</span>
         </div>
       </div>
@@ -583,7 +765,7 @@
           Départ matinal vers Trockenersteg (2 939 m). Traversée sur le glacier supérieur du Théodule avec micro-crampons. Franchissement du col du Théodule (3 317 m, toit du tour) vers l'Italie, descente sur le Val d'Ayas et bascule sur Gressoney par le Colle di Rothorn.
         </div>
         <div class="stage-meta">
-          <span>Temps estimé : 9 h à 11 h</span>
+          <span>Temps : 9 h à 11 h</span>
           <span>Nuit : Rifugio Ferraro (Resy) ou Staffal / Gressoney</span>
         </div>
       </div>
@@ -599,10 +781,10 @@
           </div>
         </div>
         <div class="stage-desc">
-          Franchissement du Passo dei Salati (2 923 m) puis plongée dans la sauvage Valle d'Otro jusqu'à Alagna (1 180 m). Très longue ascension du Colle del Turlo (2 738 m) par une voie historique pavée de pierres sèches. Arrivée face à la spectaculaire face Est du mont Rose.
+          Franchissement du Passo dei Salati (2 923 m) puis plongée dans la sauvage Valle d'Otro jusqu'à Alagna (1 180 m). Très longue ascension du Colle del Turlo (2 738 m) par une voie historique pavée de pierres sèches. Arrivée face à la paroi Est du mont Rose.
         </div>
         <div class="stage-meta">
-          <span>Temps estimé : 10 h à 12 h</span>
+          <span>Temps : 10 h à 12 h</span>
           <span>Nuit : Auberge / Gîte de montagne à Macugnaga</span>
         </div>
       </div>
@@ -618,10 +800,10 @@
           </div>
         </div>
         <div class="stage-desc">
-          Ascension directe de 1 500 m D+ au Passo Monte Moro (2 853 m) avec rampes et câbles. Descente le long du lac de Mattmark en Suisse, traversée vers Saas-Fee puis balcon exigeant du Balfrin Höhenweg avant la plongée finale sur Grächen.
+          Ascension directe de 1 500 m D+ au Passo Monte Moro (2 853 m) avec rampes et câbles. Descente le long du lac de Mattmark en Suisse, traversée vers Saas-Fee puis balcon aérien du Balfrin Höhenweg avant la plongée finale sur Grächen.
         </div>
         <div class="stage-meta">
-          <span>Temps estimé : 9 h à 11 h</span>
+          <span>Temps : 9 h à 11 h</span>
           <span>Arrivée finale & célébration à Grächen</span>
         </div>
       </div>
@@ -629,15 +811,15 @@
     </div>
   </section>
 
-  <!-- SAUT DE PAGE -->
+  <!-- SAUT DE PAGE PDF -->
   <div class="page-break"></div>
 
-  <!-- LA MÉTHODE ALLÉGÉE & PALIERS -->
-  <section>
+  <!-- SECTION 4 : MÉTHODE & PALIERS -->
+  <section id="methode">
     <h2>4. La Méthode « Minimum Viable » (Famille & Bruxelles)</h2>
     
     <div class="light-philosophy-box">
-      <strong>Le principe d'efficacité maximale :</strong> Sur le Mont-Rose, ce qui détruit le coureur de plaine n'est pas le manque de cardio, mais la fatigue musculaire excentrique des descentes. Inutile d'accumuler 70 km de bitume par semaine ! Nous réduisons à <strong>3 séances ciblées par semaine (3h30 à 4h30 au total)</strong> en chassant tout temps perdu.
+      <strong>Principe d'efficacité :</strong> Sur le Mont-Rose, ce qui fatigue le coureur de plaine n'est pas le manque de cardio, mais la sollicitation musculaire excentrique des descentes. Inutile d'accumuler 70 km de bitume par semaine : nous réduisons le volume à <strong>3 séances ciblées par semaine (3h30 à 4h30 au total)</strong> sans temps perdu.
     </div>
 
     <div class="milestones-grid">
@@ -645,8 +827,8 @@
         <h3>1. Les 3 Séances Clés Hebdomadaires</h3>
         <ul style="padding-left: 18px; font-size: 0.85rem;">
           <li><strong>Midi (45 min) :</strong> Tapis 15 % en salle (800 m D+ sans choc) ou escaliers urbains (Mont des Arts / Cité administrative).</li>
-          <li><strong>Soir (45–60 min) :</strong> Home Trainer à la maison (force à basse cadence 55–60 rpm) une fois les enfants couchés.</li>
-          <li><strong>Week-end (1h45 à 2h30) :</strong> Sortie longue en Forêt de Soignes (marche rapide en côte avec bâtons, course sur le plat).</li>
+          <li><strong>Soir (45–60 min) :</strong> Home Trainer à la maison (force à 55–60 rpm) une fois les enfants couchés.</li>
+          <li><strong>Week-end (1h45 à 2h30) :</strong> Sortie en Forêt de Soignes (marche rapide en côte avec bâtons, course sur le plat).</li>
         </ul>
       </div>
 
@@ -654,9 +836,9 @@
         <h3>2. Micro-Renforcement Invisible</h3>
         <p style="font-size: 0.85rem; margin-bottom: 6px;"><strong>2x 10 minutes par semaine à la maison :</strong></p>
         <ul style="padding-left: 18px; font-size: 0.85rem;">
-          <li><strong>Step-downs lents :</strong> descente sur 3 secondes sur une marche ou chaise.</li>
-          <li><strong>Chaise contre le mur :</strong> 3x 1 min pendant la cuisson du dîner.</li>
-          <li><strong>Zéro déplacement :</strong> protection des genoux sans empiéter sur la soirée.</li>
+          <li><strong>Step-downs lents :</strong> descente contrôlée sur 3 secondes sur une marche.</li>
+          <li><strong>Chaise murale :</strong> 3x 1 min pendant que le dîner cuit.</li>
+          <li><strong>Zéro déplacement :</strong> renforcement des genoux sans empiéter sur la vie familiale.</li>
         </ul>
       </div>
     </div>
@@ -668,7 +850,7 @@
         <span class="milestone-tag">Palier 1 • Avril 2027</span>
         <h3>Epic Trail Baraque de Fraiture</h3>
         <p style="font-size: 0.85rem;">
-          Validation d'un trail ardennais exigeant : test des bâtons, tolérance musculaire au terrain accidenté et récupération sans douleur à 48 heures.
+          Validation d'un trail ardennais exigeant : motricité avec les bâtons, résistance musculaire au relief et zéro douleur tendineuse à 48 heures.
         </p>
       </div>
 
@@ -692,837 +874,861 @@
         <span class="milestone-tag" style="color: var(--accent);">Palier 4 • Juin 2028</span>
         <h3>Crash-Test Week-End Choc</h3>
         <p style="font-size: 0.85rem;">
-          L'unique gros week-end loin de la maison : 2 jours x 35 km / +1 500 m D+ en Ardennes avec sac complet. Repartir le dimanche matin sans blocage musculaire.
+          L'unique gros week-end loin de la maison : 2 jours x 35 km / +1 500 m D+ en Ardennes avec sac complet. Repartir le dimanche sans blocage musculaire.
         </p>
       </div>
 
     </div>
   </section>
 
-  <!-- MESSAGE CONJOINTE -->
-  <section>
-    <h2>5. La « Clause Sérénité Familiale » (À copier-coller)</h2>
-    <div class="message-box">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <strong style="color: var(--pink); font-size: 1rem;">💬 Message WhatsApp prêt à l'envoi pour nos conjointes :</strong>
-        <span style="font-size: 0.72rem; background: var(--pink); color: white; padding: 2px 8px; border-radius: 9999px; font-weight: 700; text-transform: uppercase;">Copier-Coller</span>
-      </div>
-      <p style="font-style: italic; color: var(--text); font-size: 0.92rem; line-height: 1.6; margin-bottom: 0;">
-        « Coucou mon cœur ! Avec les gars, on a un projet un peu fou pour <strong>l'été 2028</strong> (oui, on s'y prend 2 ans à l'avance pour ne pas bousculer le quotidien) : faire le Tour du Mont-Rose en 4 jours en trail léger, en dormant et mangeant au chaud dans de vrais refuges.<br><br>
-        Pour éviter que je disparaisse tous les week-ends, le plan est pensé sur-mesure pour notre vie à Schaerbeek : 90 % de la prépa se fait en micro-séances (gainage dans le salon le soir quand les enfants dorment, escaliers ou tapis le midi).<br><br>
-        Le grand deal : on a fixé <strong>4 paliers stricts de validation</strong> d'ici 2028. Si à un moment le corps coince ou si ça empiète sur la vie de famille, on arrête direct, zéro entêtement inutile.<br><br>
-        Je te montre le dossier complet ce soir ? Promis, ton droit de veto reste absolu ! ❤️ »
-      </p>
-    </div>
-  </section>
-
-  <!-- SAUT DE PAGE -->
+  <!-- SAUT DE PAGE PDF -->
   <div class="page-break"></div>
 
-  <!-- PLAN D'ENTRAÎNEMENT SEMAINE PAR SEMAINE AVEC GOOGLE CALENDAR -->
-  <section>
-    <h2>6. Plan Hebdomadaire Allégé (100 Semaines : 2026 – 2028)</h2>
+  <!-- SECTION 5 : PLAN 100 SEMAINES -->
+  <section id="plan">
+    <h2>5. Plan Hebdomadaire Allégé (100 Semaines)</h2>
     
     <div class="calendar-actions-bar">
       <div>
-        <strong style="color: var(--primary); font-size: 0.9rem;">📅 Synchronisation Agenda :</strong>
-        <span style="font-size: 0.82rem; color: var(--text-muted); margin-left: 6px;">Cliquez sur <strong>+Cal</strong> pour ajouter une semaine, ou exportez tout le bloc d'un coup.</span>
+        <strong style="color: var(--primary); font-size: 0.88rem;">📅 Synchronisation Agenda :</strong>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Ajoutez chaque semaine via <strong>+Cal</strong> ou téléchargez l'ensemble du fichier .ics.</p>
       </div>
       <button class="btn-ics-export" id="exportIcsBtn">
-        📥 Exporter tout le calendrier (.ics - 100 semaines)
+        📥 Exporter tout le calendrier (.ics)
       </button>
     </div>
 
-    <!-- AN 1 - PHASE 1 -->
-    <h3>Phase 1 : Fondation Light & Night Trail de Néthen (Octobre – Décembre 2026)</h3>
-    <table class="training-table">
-      <thead>
-        <tr>
-          <th>Sem.</th>
-          <th>Dates</th>
-          <th>Séances</th>
-          <th>Programme Minimal Efficace</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="week-id">S01</td>
-          <td class="week-dates">05/10 – 11/10/26</td>
-          <td class="week-types">2 Run + 1 HT</td>
-          <td>Run 1 : 40 min Z2 plat. HT : 40 min Z1/Z2 fluide. Run 2 : 50 min Z2. Reprise douce.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S02</td>
-          <td class="week-dates">12/10 – 18/10/26</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 40 min tapis 15 % ou escaliers. HT : 45 min Z2. SL : 1 h 15 Forêt de Soignes.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S03</td>
-          <td class="week-dates">19/10 – 25/10/26</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 45 min escaliers Cité administrative. HT : 45 min force basse cadence. SL : 1 h 30.</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S04</td>
-          <td class="week-dates">26/10 – 01/11/26</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL réduite 1 h 00.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S05</td>
-          <td class="week-dates">02/11 – 08/11/26</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td><span class="early-tag">Frontale 5h30</span> Run 50 min Z2. HT : 45 min force Z3. SL : 1 h 35 Soignes.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S06</td>
-          <td class="week-dates">09/11 – 15/11/26</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 45 min tapis 15 %. HT : 45 min Sweetspot. SL : 1 h 40 avec frontale.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S07</td>
-          <td class="week-dates">16/11 – 22/11/26</td>
-          <td class="week-types">1 Run + 1 HT</td>
-          <td>Affûtage Néthen : Run 35 min Z2 avec 4 accélérations. HT : 35 min très souple.</td>
-        </tr>
-        <tr class="event-row">
-          <td class="week-id">S08</td>
-          <td class="week-dates">23/11 – 29/11/26</td>
-          <td class="week-types">1 Run + Course + 1 HT</td>
-          <td><span class="event-tag">Course</span> <strong>Night Trail de Néthen (Vendredi 27/11/2026)</strong>. Dimanche HT 35 min Z1 décrassage.</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S09</td>
-          <td class="week-dates">30/11 – 06/12/26</td>
-          <td class="week-types">1 Run + 2 HT</td>
-          <td><em>Récupération :</em> 1 footing léger 35 min. HT 2x 35 min Z1 très doux.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S10</td>
-          <td class="week-dates">07/12 – 13/12/26</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 45 min escaliers Mont des Arts. HT : 50 min Z2/Z3. SL : 1 h 30 Soignes.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S11</td>
-          <td class="week-dates">14/12 – 20/12/26</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td><span class="early-tag">Frontale 5h30</span> Run 1 h Z2. HT : 45 min force (60 rpm). SL : 1 h 45 Soignes.</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S12</td>
-          <td class="week-dates">21/12 – 27/12/26</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Semaine fêtes :</em> Run 35 min Z2. HT 40 min Z1/Z2 à la maison. SL 1 h 15 souple.</td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Raccourcis de navigation rapide par phases -->
+    <div class="phase-pills">
+      <a href="#p1">S01-S12 (Néthen)</a>
+      <a href="#p2">S13-S27 (Epic Trail)</a>
+      <a href="#p3">S28-S35 (Vosges)</a>
+      <a href="#p4">S36-S52 (Marathon)</a>
+      <a href="#p5">S53-S68 (Hiver)</a>
+      <a href="#p6">S69-S80 (Palier 3)</a>
+      <a href="#p7">S81-S95 (Ardennes)</a>
+      <a href="#p8">S96-S100 (Mont-Rose)</a>
+    </div>
 
-    <!-- AN 1 - PHASE 2 -->
-    <h3>Phase 2 : Volume Ciblé & Epic Trail (Janvier – Avril 2027)</h3>
-    <table class="training-table">
-      <thead>
-        <tr>
-          <th>Sem.</th>
-          <th>Dates</th>
-          <th>Séances</th>
-          <th>Programme Minimal Efficace</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="week-id">S13</td>
-          <td class="week-dates">28/12 – 03/01/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 45 min tapis 15 %. HT : 45 min Z2. SL : 1 h 45 Forêt de Soignes.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S14</td>
-          <td class="week-dates">04/01 – 10/01/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 45 min escaliers Cité administrative. HT : 50 min Sweetspot. SL : 2 h 00 vallonnée.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S15</td>
-          <td class="week-dates">11/01 – 17/01/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td><span class="early-tag">Frontale 5h30</span> Run 1 h Z2. HT : 50 min force basse cadence. SL : 2 h 15 Soignes.</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S16</td>
-          <td class="week-dates">18/01 – 24/01/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Assimilation :</em> Run 40 min Z2. HT 40 min Z1. SL réduite 1 h 20.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S17</td>
-          <td class="week-dates">25/01 – 31/01/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 50 min tapis 15 % (+750 m D+). HT : 50 min force. SL : 2 h 15 avec bâtons.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S18</td>
-          <td class="week-dates">01/02 – 07/02/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 45 min escaliers Mont des Arts. HT : 50 min Z2/Z3. SL : 2 h 20 Soignes.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S19</td>
-          <td class="week-dates">08/02 – 14/02/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td><span class="early-tag">Frontale 5h30</span> Run 1 h 15 Z2. HT : 50 min Sweetspot. SL : 2 h 30 (boucle talus).</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S20</td>
-          <td class="week-dates">15/02 – 21/02/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Assimilation :</em> Run 40 min Z2. HT 40 min Z1. SL réduite 1 h 20.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S21</td>
-          <td class="week-dates">22/02 – 28/02/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 50 min escaliers (sac 2 kg). HT : 50 min force. SL : 2 h 25 avec bâtons.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S22</td>
-          <td class="week-dates">01/03 – 07/03/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 50 min tapis 15 %. HT : 50 min Z2. SL : 2 h 30 Soignes (test barres/gels).</td>
-        </tr>
-        <tr>
-          <td class="week-id">S23</td>
-          <td class="week-dates">08/03 – 14/03/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td><span class="early-tag">Frontale 5h30</span> SL 2 h 30 le matin à l'aube. HT : 45 min Sweetspot. 1 run midi 40 min.</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S24</td>
-          <td class="week-dates">15/03 – 21/03/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Assimilation :</em> Run 40 min. HT 40 min Z1. SL 1 h 15.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S25</td>
-          <td class="week-dates">22/03 – 28/03/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>Dernier rappel : 45 min tapis 15 %. HT : 45 min force. SL : 2 h 00 dynamique avec bâtons.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S26</td>
-          <td class="week-dates">29/03 – 04/04/27</td>
-          <td class="week-types">1 Run + 1 HT</td>
-          <td>Affûtage Baraque de Fraiture : Run 35 min Z2. HT 35 min très fluide. Repos.</td>
-        </tr>
-        <tr class="event-row">
-          <td class="week-id">S27</td>
-          <td class="week-dates">05/04 – 11/04/27</td>
-          <td class="week-types">Course + 1 HT</td>
-          <td><span class="event-tag">Palier 1</span> <strong>Epic Trail Baraque de Fraiture (Samedi 10/04/2027)</strong>. Dimanche HT 35 min décrassage.</td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- PHASE 1 -->
+    <h3 id="p1">Phase 1 : Fondation Light & Night Trail de Néthen (Octobre – Décembre 2026)</h3>
+    <div class="table-scroll-container">
+      <div class="mobile-scroll-hint">⇄ Faites défiler le tableau horizontalement</div>
+      <table class="training-table">
+        <thead>
+          <tr>
+            <th>Sem.</th>
+            <th>Dates</th>
+            <th>Séances</th>
+            <th>Programme Minimal Efficace</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="week-id">S01</td>
+            <td class="week-dates">05/10 – 11/10/26</td>
+            <td class="week-types">2 Run + 1 HT</td>
+            <td>Run 1 : 40 min Z2 plat. HT : 40 min Z1/Z2 fluide. Run 2 : 50 min Z2. Reprise douce.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S02</td>
+            <td class="week-dates">12/10 – 18/10/26</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 40 min tapis 15 % ou escaliers. HT : 45 min Z2. SL : 1 h 15 Forêt de Soignes.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S03</td>
+            <td class="week-dates">19/10 – 25/10/26</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 45 min escaliers Cité administrative. HT : 45 min force basse cadence. SL : 1 h 30.</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S04</td>
+            <td class="week-dates">26/10 – 01/11/26</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL réduite 1 h 00.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S05</td>
+            <td class="week-dates">02/11 – 08/11/26</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td><span class="early-tag">Frontale 5h30</span> Run 50 min Z2. HT : 45 min force Z3. SL : 1 h 35 Soignes.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S06</td>
+            <td class="week-dates">09/11 – 15/11/26</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 45 min tapis 15 %. HT : 45 min Sweetspot. SL : 1 h 40 avec frontale.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S07</td>
+            <td class="week-dates">16/11 – 22/11/26</td>
+            <td class="week-types">1 Run + 1 HT</td>
+            <td>Affûtage Néthen : Run 35 min Z2 avec 4 accélérations. HT : 35 min très souple.</td>
+          </tr>
+          <tr class="event-row">
+            <td class="week-id">S08</td>
+            <td class="week-dates">23/11 – 29/11/26</td>
+            <td class="week-types">1 Run + Course + 1 HT</td>
+            <td><span class="event-tag">Course</span> <strong>Night Trail de Néthen (Vendredi 27/11/2026)</strong>. Dimanche HT 35 min Z1 décrassage.</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S09</td>
+            <td class="week-dates">30/11 – 06/12/26</td>
+            <td class="week-types">1 Run + 2 HT</td>
+            <td><em>Récupération :</em> 1 footing léger 35 min. HT 2x 35 min Z1 très doux.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S10</td>
+            <td class="week-dates">07/12 – 13/12/26</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 45 min escaliers Mont des Arts. HT : 50 min Z2/Z3. SL : 1 h 30 Soignes.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S11</td>
+            <td class="week-dates">14/12 – 20/12/26</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td><span class="early-tag">Frontale 5h30</span> Run 1 h Z2. HT : 45 min force (60 rpm). SL : 1 h 45 Soignes.</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S12</td>
+            <td class="week-dates">21/12 – 27/12/26</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Semaine fêtes :</em> Run 35 min Z2. HT 40 min Z1/Z2 maison. SL 1 h 15 souple.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <!-- AN 1 - PHASE 3 -->
-    <h3>Phase 3 : Transition Vélo & Week-End Vosges (Avril – Juin 2027)</h3>
-    <table class="training-table">
-      <thead>
-        <tr>
-          <th>Sem.</th>
-          <th>Dates</th>
-          <th>Séances</th>
-          <th>Programme Minimal Efficace</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="recovery-row">
-          <td class="week-id">S28</td>
-          <td class="week-dates">12/04 – 18/04/27</td>
-          <td class="week-types">2 HT + 1 Run</td>
-          <td><em>Récupération :</em> HT 2x 40 min Z1 moulinage. Dimanche footing très doux 30 min.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S29</td>
-          <td class="week-dates">19/04 – 25/04/27</td>
-          <td class="week-types">1 Run + 2 HT</td>
-          <td>Run midi : 45 min Z2. HT 1 : 50 min Sweetspot. HT 2 : 50 min force basse cadence.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S30</td>
-          <td class="week-dates">26/04 – 02/05/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 Vélo</td>
-          <td>Run : 45 min Z2. HT : 50 min seuil vélo. Week-end : sortie vélo route extérieure 2 h 30.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S31</td>
-          <td class="week-dates">03/05 – 09/05/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 Vélo</td>
-          <td><span class="early-tag">Frontale 5h30</span> Run 50 min. HT : 50 min force en côte. Sortie vélo route 3 h.</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S32</td>
-          <td class="week-dates">10/05 – 16/05/27</td>
-          <td class="week-types">1 Run + 2 HT</td>
-          <td><em>Assimilation :</em> Run 35 min Z2. HT 2x 40 min Z1.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S33</td>
-          <td class="week-dates">17/05 – 23/05/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 Vélo</td>
-          <td>Run : 40 min Z2. HT : 50 min Sweetspot. Sortie vélo route 3 h 15 vallonnée.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S34</td>
-          <td class="week-dates">24/05 – 30/05/27</td>
-          <td class="week-types">1 Run + 1 HT</td>
-          <td>Affûtage Vosges : Run 30 min souple. HT 35 min Z2 sans fatigue.</td>
-        </tr>
-        <tr class="event-row">
-          <td class="week-id">S35</td>
-          <td class="week-dates">31/05 – 06/06/27</td>
-          <td class="week-types">Stage Vélo</td>
-          <td><span class="event-tag">Stage</span> <strong>Week-End Vélo dans les Vosges (04 – 06/06/2027)</strong>. Gros volume aérobie en col.</td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- PHASE 2 -->
+    <h3 id="p2">Phase 2 : Volume Ciblé & Epic Trail (Janvier – Avril 2027)</h3>
+    <div class="table-scroll-container">
+      <div class="mobile-scroll-hint">⇄ Faites défiler le tableau horizontalement</div>
+      <table class="training-table">
+        <thead>
+          <tr>
+            <th>Sem.</th>
+            <th>Dates</th>
+            <th>Séances</th>
+            <th>Programme Minimal Efficace</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="week-id">S13</td>
+            <td class="week-dates">28/12 – 03/01/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 45 min tapis 15 %. HT : 45 min Z2. SL : 1 h 45 Forêt de Soignes.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S14</td>
+            <td class="week-dates">04/01 – 10/01/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 45 min escaliers Cité administrative. HT : 50 min Sweetspot. SL : 2 h 00 vallonnée.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S15</td>
+            <td class="week-dates">11/01 – 17/01/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td><span class="early-tag">Frontale 5h30</span> Run 1 h Z2. HT : 50 min force basse cadence. SL : 2 h 15 Soignes.</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S16</td>
+            <td class="week-dates">18/01 – 24/01/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Assimilation :</em> Run 40 min Z2. HT 40 min Z1. SL réduite 1 h 20.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S17</td>
+            <td class="week-dates">25/01 – 31/01/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 50 min tapis 15 % (+750 m D+). HT : 50 min force. SL : 2 h 15 avec bâtons.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S18</td>
+            <td class="week-dates">01/02 – 07/02/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 45 min escaliers Mont des Arts. HT : 50 min Z2/Z3. SL : 2 h 20 Soignes.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S19</td>
+            <td class="week-dates">08/02 – 14/02/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td><span class="early-tag">Frontale 5h30</span> Run 1 h 15 Z2. HT : 50 min Sweetspot. SL : 2 h 30 (boucle talus).</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S20</td>
+            <td class="week-dates">15/02 – 21/02/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Assimilation :</em> Run 40 min Z2. HT 40 min Z1. SL réduite 1 h 20.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S21</td>
+            <td class="week-dates">22/02 – 28/02/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 50 min escaliers (sac 2 kg). HT : 50 min force. SL : 2 h 25 avec bâtons.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S22</td>
+            <td class="week-dates">01/03 – 07/03/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 50 min tapis 15 %. HT : 50 min Z2. SL : 2 h 30 Soignes (test barres/gels).</td>
+          </tr>
+          <tr>
+            <td class="week-id">S23</td>
+            <td class="week-dates">08/03 – 14/03/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td><span class="early-tag">Frontale 5h30</span> SL 2 h 30 le matin avec frontale. HT : 45 min Sweetspot. 1 run midi 40 min.</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S24</td>
+            <td class="week-dates">15/03 – 21/03/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Assimilation :</em> Run 40 min. HT 40 min Z1. SL 1 h 15.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S25</td>
+            <td class="week-dates">22/03 – 28/03/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>Dernier rappel : 45 min tapis 15 %. HT : 45 min force. SL : 2 h 00 dynamique avec bâtons.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S26</td>
+            <td class="week-dates">29/03 – 04/04/27</td>
+            <td class="week-types">1 Run + 1 HT</td>
+            <td>Affûtage Baraque de Fraiture : Run 35 min Z2. HT 35 min très fluide. Repos.</td>
+          </tr>
+          <tr class="event-row">
+            <td class="week-id">S27</td>
+            <td class="week-dates">05/04 – 11/04/27</td>
+            <td class="week-types">Course + 1 HT</td>
+            <td><span class="event-tag">Palier 1</span> <strong>Epic Trail Baraque de Fraiture (Samedi 10/04/2027)</strong>. Dimanche HT 35 min décrassage.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <!-- AN 1 - PHASE 4 -->
-    <h3>Phase 4 : Bloc Marathon d'Automne (Juin – Octobre 2027)</h3>
-    <table class="training-table">
-      <thead>
-        <tr>
-          <th>Sem.</th>
-          <th>Dates</th>
-          <th>Séances</th>
-          <th>Programme Minimal Efficace</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="recovery-row">
-          <td class="week-id">S36</td>
-          <td class="week-dates">07/06 – 13/06/27</td>
-          <td class="week-types">2 HT + 1 Run</td>
-          <td><em>Décrassage Vosges :</em> HT 2x 40 min Z1. Run 35 min Z2 très souple.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S37</td>
-          <td class="week-dates">14/06 – 20/06/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td>Run midi : 45 min Z2. HT : 45 min Z2. SL : 1 h 30 plat/ondulé.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S38</td>
-          <td class="week-dates">21/06 – 27/06/27</td>
-          <td class="week-types">1 Tempo + 1 HT + 1 SL</td>
-          <td>Run : 45 min avec 3x 2 km allure marathon (AS42). HT : 45 min Sweetspot. SL : 1 h 45.</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S39</td>
-          <td class="week-dates">28/06 – 04/07/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 15.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S40</td>
-          <td class="week-dates">05/07 – 11/07/27</td>
-          <td class="week-types">1 Tempo + 1 HT + 1 SL</td>
-          <td><span class="early-tag">Frontale 5h30</span> Run 1 h Z2 à la fraîche. HT : 45 min Z2. SL : 2 h 00 avec 3x 3 km AS42.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S41</td>
-          <td class="week-dates">12/07 – 18/07/27</td>
-          <td class="week-types">1 Fract + 1 HT + 1 SL</td>
-          <td>Run : 45 min avec 8x 400 m dynamiques. HT : 50 min Sweetspot. SL : 2 h 15 régulière.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S42</td>
-          <td class="week-dates">19/07 – 25/07/27</td>
-          <td class="week-types">1 Tempo + 1 HT + 1 SL</td>
-          <td>Run midi : 45 min Z2. HT : 50 min Z2. SL : 2 h 30 (test ravitaillement marathon : 50 g glucides/h).</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S43</td>
-          <td class="week-dates">26/07 – 01/08/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S44</td>
-          <td class="week-dates">02/08 – 08/08/27</td>
-          <td class="week-types">1 Tempo + 1 HT + 1 SL</td>
-          <td><span class="early-tag">Frontale 5h30</span> Run 1 h Z2. HT : 50 min force. SL : 2 h 35 avec 3x 4 km AS42.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S45</td>
-          <td class="week-dates">09/08 – 15/08/27</td>
-          <td class="week-types">1 Seuil + 1 HT + 1 SL</td>
-          <td>Run : 45 min avec 3x 2 000 m au seuil Z4. HT : 50 min Z2. SL : 2 h 40 régulière.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S46</td>
-          <td class="week-dates">16/08 – 22/08/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><strong>Pic Marathon :</strong> Run 45 min Z2. HT 45 min Z2. SL : 2 h 45 (dont 12 km cumulés AS42).</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S47</td>
-          <td class="week-dates">23/08 – 29/08/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S48</td>
-          <td class="week-dates">30/08 – 05/09/27</td>
-          <td class="week-types">1 Tempo + 1 HT + 1 SL</td>
-          <td>Dernier gros bloc : 45 min avec 2x 4 km AS42. HT : 45 min Z2. SL : 2 h 15.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S49</td>
-          <td class="week-dates">06/09 – 12/09/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td>Début affûtage (-20 %) : Run 40 min Z2. HT : 40 min Z1/Z2. SL : 1 h 40.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S50</td>
-          <td class="week-dates">13/09 – 19/09/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td>Affûtage (-40 %) : Run 35 min avec 3x 1 km AS42. HT : 35 min Z1. SL : 1 h 15.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S51</td>
-          <td class="week-dates">20/09 – 26/09/27</td>
-          <td class="week-types">2 Run + 1 HT</td>
-          <td>Affûtage (-60 %) : Footings 30 min très souples. HT 30 min moulinage.</td>
-        </tr>
-        <tr class="event-row">
-          <td class="week-id">S52</td>
-          <td class="week-dates">27/09 – 03/10/27</td>
-          <td class="week-types">Course + 1 HT</td>
-          <td><span class="event-tag">Palier 2</span> <strong>Marathon en Belgique (ex. Bruxelles / Bruges)</strong>. Validation endurance longue.</td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- PHASE 3 -->
+    <h3 id="p3">Phase 3 : Transition Vélo & Week-End Vosges (Avril – Juin 2027)</h3>
+    <div class="table-scroll-container">
+      <div class="mobile-scroll-hint">⇄ Faites défiler le tableau horizontalement</div>
+      <table class="training-table">
+        <thead>
+          <tr>
+            <th>Sem.</th>
+            <th>Dates</th>
+            <th>Séances</th>
+            <th>Programme Minimal Efficace</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="recovery-row">
+            <td class="week-id">S28</td>
+            <td class="week-dates">12/04 – 18/04/27</td>
+            <td class="week-types">2 HT + 1 Run</td>
+            <td><em>Récupération :</em> HT 2x 40 min Z1 moulinage. Dimanche footing doux 30 min.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S29</td>
+            <td class="week-dates">19/04 – 25/04/27</td>
+            <td class="week-types">1 Run + 2 HT</td>
+            <td>Run midi : 45 min Z2. HT 1 : 50 min Sweetspot. HT 2 : 50 min force basse cadence.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S30</td>
+            <td class="week-dates">26/04 – 02/05/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 Vélo</td>
+            <td>Run : 45 min Z2. HT : 50 min seuil vélo. Week-end : sortie vélo route extérieure 2 h 30.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S31</td>
+            <td class="week-dates">03/05 – 09/05/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 Vélo</td>
+            <td><span class="early-tag">Frontale 5h30</span> Run 50 min. HT : 50 min force en côte. Sortie vélo route 3 h.</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S32</td>
+            <td class="week-dates">10/05 – 16/05/27</td>
+            <td class="week-types">1 Run + 2 HT</td>
+            <td><em>Assimilation :</em> Run 35 min Z2. HT 2x 40 min Z1.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S33</td>
+            <td class="week-dates">17/05 – 23/05/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 Vélo</td>
+            <td>Run : 40 min Z2. HT : 50 min Sweetspot. Sortie vélo route 3 h 15 vallonnée.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S34</td>
+            <td class="week-dates">24/05 – 30/05/27</td>
+            <td class="week-types">1 Run + 1 HT</td>
+            <td>Affûtage Vosges : Run 30 min souple. HT 35 min Z2 sans fatigue.</td>
+          </tr>
+          <tr class="event-row">
+            <td class="week-id">S35</td>
+            <td class="week-dates">31/05 – 06/06/27</td>
+            <td class="week-types">Stage Vélo</td>
+            <td><span class="event-tag">Stage</span> <strong>Week-End Vélo dans les Vosges (04 – 06/06/2027)</strong>. Gros volume aérobie en col.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <!-- AN 2 - PHASE 5 -->
-    <h3>Phase 5 : Régénération & Force Hivernale (Octobre 2027 – Janvier 2028)</h3>
-    <table class="training-table">
-      <thead>
-        <tr>
-          <th>Sem.</th>
-          <th>Dates</th>
-          <th>Séances</th>
-          <th>Programme Minimal Efficace</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="recovery-row">
-          <td class="week-id">S53</td>
-          <td class="week-dates">04/10 – 10/10/27</td>
-          <td class="week-types">2 HT doux</td>
-          <td><em>Coupure course :</em> HT 2x 35 min Z1 pour drainer sans aucun impact.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S54</td>
-          <td class="week-dates">11/10 – 17/10/27</td>
-          <td class="week-types">1 Run + 2 HT</td>
-          <td>Reprise herbe Josaphat 30 min. HT : 2x 40 min Z1/Z2.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S55</td>
-          <td class="week-dates">18/10 – 24/10/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td>Run midi : 40 min Z2. HT : 45 min force basse cadence. SL : 1 h 20 Soignes.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S56</td>
-          <td class="week-dates">25/10 – 31/10/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 45 min escaliers. HT : 45 min Sweetspot. SL : 1 h 30 avec bâtons.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S57</td>
-          <td class="week-dates">01/11 – 07/11/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td><span class="early-tag">Frontale 5h30</span> Run 1 h Z2. HT : 50 min force (55 rpm). SL : 1 h 45 Soignes.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S58</td>
-          <td class="week-dates">08/11 – 14/11/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 45 min tapis 15 % (sac 3 kg). HT : 45 min Z2. SL : 2 h 00 vallonnée.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S59</td>
-          <td class="week-dates">15/11 – 21/11/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 45 min côtes Josaphat. HT : 50 min force. SL : 2 h 15 Soignes avec bâtons.</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S60</td>
-          <td class="week-dates">22/11 – 28/11/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 15.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S61</td>
-          <td class="week-dates">29/11 – 05/12/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 45 min escaliers Mont des Arts. HT : 50 min Sweetspot. SL : 2 h 15 avec sac 3 kg.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S62</td>
-          <td class="week-dates">06/12 – 12/12/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td><span class="early-tag">Frontale 5h30</span> Run 1 h 15 Z2. HT : 50 min force. SL : 2 h 30 Soignes avec bâtons.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S63</td>
-          <td class="week-dates">13/12 – 19/12/27</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 50 min tapis 15 % (sac 3 kg). HT : 45 min Z2. SL : 2 h 30 avec bâtons.</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S64</td>
-          <td class="week-dates">20/12 – 26/12/27</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Semaine fêtes :</em> Run 35 min Z2. HT 40 min Z1/Z2. SL 1 h 15 souple.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S65</td>
-          <td class="week-dates">27/12 – 02/01/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 45 min escaliers. HT : 45 min Z2. SL : 2 h 00 Soignes avec bâtons.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S66</td>
-          <td class="week-dates">03/01 – 09/01/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 50 min tapis 15 % (sac 3,5 kg). HT : 50 min force (60 rpm). SL : 2 h 20 vallonnée.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S67</td>
-          <td class="week-dates">10/01 – 16/01/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td><span class="early-tag">Frontale 5h30</span> Run 1 h 15 Z2. HT : 50 min Sweetspot. SL : 2 h 30 (boucle Rouge-Cloître).</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S68</td>
-          <td class="week-dates">17/01 – 23/01/28</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Assimilation :</em> Run 40 min Z2. HT 40 min Z1. SL 1 h 20.</td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- PHASE 4 -->
+    <h3 id="p4">Phase 4 : Bloc Marathon d'Automne (Juin – Octobre 2027)</h3>
+    <div class="table-scroll-container">
+      <div class="mobile-scroll-hint">⇄ Faites défiler le tableau horizontalement</div>
+      <table class="training-table">
+        <thead>
+          <tr>
+            <th>Sem.</th>
+            <th>Dates</th>
+            <th>Séances</th>
+            <th>Programme Minimal Efficace</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="recovery-row">
+            <td class="week-id">S36</td>
+            <td class="week-dates">07/06 – 13/06/27</td>
+            <td class="week-types">2 HT + 1 Run</td>
+            <td><em>Décrassage Vosges :</em> HT 2x 40 min Z1. Run 35 min Z2 très souple.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S37</td>
+            <td class="week-dates">14/06 – 20/06/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td>Run midi : 45 min Z2. HT : 45 min Z2. SL : 1 h 30 plat/ondulé.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S38</td>
+            <td class="week-dates">21/06 – 27/06/27</td>
+            <td class="week-types">1 Tempo + 1 HT + 1 SL</td>
+            <td>Run : 45 min avec 3x 2 km allure marathon (AS42). HT : 45 min Sweetspot. SL : 1 h 45.</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S39</td>
+            <td class="week-dates">28/06 – 04/07/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 15.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S40</td>
+            <td class="week-dates">05/07 – 11/07/27</td>
+            <td class="week-types">1 Tempo + 1 HT + 1 SL</td>
+            <td><span class="early-tag">Frontale 5h30</span> Run 1 h Z2 à la fraîche. HT : 45 min Z2. SL : 2 h 00 avec 3x 3 km AS42.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S41</td>
+            <td class="week-dates">12/07 – 18/07/27</td>
+            <td class="week-types">1 Fract + 1 HT + 1 SL</td>
+            <td>Run : 45 min avec 8x 400 m dynamiques. HT : 50 min Sweetspot. SL : 2 h 15 régulière.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S42</td>
+            <td class="week-dates">19/07 – 25/07/27</td>
+            <td class="week-types">1 Tempo + 1 HT + 1 SL</td>
+            <td>Run midi : 45 min Z2. HT : 50 min Z2. SL : 2 h 30 (test ravitaillement marathon : 50 g glucides/h).</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S43</td>
+            <td class="week-dates">26/07 – 01/08/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S44</td>
+            <td class="week-dates">02/08 – 08/08/27</td>
+            <td class="week-types">1 Tempo + 1 HT + 1 SL</td>
+            <td><span class="early-tag">Frontale 5h30</span> Run 1 h Z2. HT : 50 min force. SL : 2 h 35 avec 3x 4 km AS42.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S45</td>
+            <td class="week-dates">09/08 – 15/08/27</td>
+            <td class="week-types">1 Seuil + 1 HT + 1 SL</td>
+            <td>Run : 45 min avec 3x 2 000 m seuil Z4. HT : 50 min Z2. SL : 2 h 40 régulière.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S46</td>
+            <td class="week-dates">16/08 – 22/08/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><strong>Pic Marathon :</strong> Run 45 min Z2. HT 45 min Z2. SL : 2 h 45 (dont 12 km cumulés AS42).</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S47</td>
+            <td class="week-dates">23/08 – 29/08/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S48</td>
+            <td class="week-dates">30/08 – 05/09/27</td>
+            <td class="week-types">1 Tempo + 1 HT + 1 SL</td>
+            <td>Dernier gros bloc : 45 min avec 2x 4 km AS42. HT : 45 min Z2. SL : 2 h 15.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S49</td>
+            <td class="week-dates">06/09 – 12/09/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td>Début affûtage (-20 %) : Run 40 min Z2. HT : 40 min Z1/Z2. SL : 1 h 40.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S50</td>
+            <td class="week-dates">13/09 – 19/09/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td>Affûtage (-40 %) : Run 35 min avec 3x 1 km AS42. HT : 35 min Z1. SL : 1 h 15.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S51</td>
+            <td class="week-dates">20/09 – 26/09/27</td>
+            <td class="week-types">2 Run + 1 HT</td>
+            <td>Affûtage (-60 %) : Footings 30 min très souples. HT 30 min moulinage.</td>
+          </tr>
+          <tr class="event-row">
+            <td class="week-id">S52</td>
+            <td class="week-dates">27/09 – 03/10/27</td>
+            <td class="week-types">Course + 1 HT</td>
+            <td><span class="event-tag">Palier 2</span> <strong>Marathon en Belgique (ex. Bruxelles / Bruges)</strong>. Validation endurance longue.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <!-- AN 2 - PHASE 6 -->
-    <h3>Phase 6 : Spécifique Dénivelé & Validation Palier 3 (Février – Avril 2028)</h3>
-    <table class="training-table">
-      <thead>
-        <tr>
-          <th>Sem.</th>
-          <th>Dates</th>
-          <th>Séances</th>
-          <th>Programme Minimal Efficace</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="week-id">S69</td>
-          <td class="week-dates">24/01 – 30/01/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 50 min escaliers (sac 3,5 kg). HT : 50 min Z2. SL : 2 h 30 avec bâtons.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S70</td>
-          <td class="week-dates">31/01 – 06/02/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td><span class="early-tag">Frontale 5h30</span> Run 1 h 15 Z2. HT : 50 min force. SL : 2 h 40 avec sac 3,5 kg.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S71</td>
-          <td class="week-dates">07/02 – 13/02/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 1 h tapis 15 % (+800 m D+). HT : 50 min Sweetspot. SL : 2 h 45 avec bâtons.</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S72</td>
-          <td class="week-dates">14/02 – 20/02/28</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S73</td>
-          <td class="week-dates">21/02 – 27/02/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 1 h tapis 15 % (sac 3,5 kg). HT : 50 min force. SL : 2 h 45 Soignes.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S74</td>
-          <td class="week-dates">28/02 – 05/03/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td><span class="early-tag">Frontale 5h30</span> SL 2 h 45 le matin avec frontale (nutrition 60 g/h). HT : 50 min Z2.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S75</td>
-          <td class="week-dates">06/03 – 12/03/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 50 min escaliers Mont des Arts. HT : 50 min Sweetspot. SL : 3 h 00 avec sac réglé.</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S76</td>
-          <td class="week-dates">13/03 – 19/03/28</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S77</td>
-          <td class="week-dates">20/03 – 26/03/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 1 h tapis 15 %. HT : 50 min force en côte. SL : 2 h 45 avec équipement réel.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S78</td>
-          <td class="week-dates">27/03 – 02/04/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td><span class="early-tag">Frontale 5h30</span> Run 1 h 20 Z2. HT : 45 min Sweetspot. SL : 2 h 30 vallonnée.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S79</td>
-          <td class="week-dates">03/04 – 09/04/28</td>
-          <td class="week-types">1 Run + 1 HT</td>
-          <td>Allègement pré-test : Run 35 min Z2. HT 35 min souple. Repos musculaire.</td>
-        </tr>
-        <tr class="event-row">
-          <td class="week-id">S80</td>
-          <td class="week-dates">10/04 – 16/04/28</td>
-          <td class="week-types">Test + 1 HT</td>
-          <td><span class="event-tag">Palier 3</span> <strong>Test des 1 000 m D+ (Tapis 15 % ou escaliers avec sac 3,5 kg) + 10 km plat immédiat</strong>.</td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- PHASE 5 -->
+    <h3 id="p5">Phase 5 : Régénération & Force Hivernale (Octobre 2027 – Janvier 2028)</h3>
+    <div class="table-scroll-container">
+      <div class="mobile-scroll-hint">⇄ Faites défiler le tableau horizontalement</div>
+      <table class="training-table">
+        <thead>
+          <tr>
+            <th>Sem.</th>
+            <th>Dates</th>
+            <th>Séances</th>
+            <th>Programme Minimal Efficace</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="recovery-row">
+            <td class="week-id">S53</td>
+            <td class="week-dates">04/10 – 10/10/27</td>
+            <td class="week-types">2 HT doux</td>
+            <td><em>Coupure course :</em> HT 2x 35 min Z1 pour drainer sans aucun impact.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S54</td>
+            <td class="week-dates">11/10 – 17/10/27</td>
+            <td class="week-types">1 Run + 2 HT</td>
+            <td>Reprise herbe Josaphat 30 min. HT : 2x 40 min Z1/Z2.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S55</td>
+            <td class="week-dates">18/10 – 24/10/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td>Run midi : 40 min Z2. HT : 45 min force basse cadence. SL : 1 h 20 Soignes.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S56</td>
+            <td class="week-dates">25/10 – 31/10/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 45 min escaliers. HT : 45 min Sweetspot. SL : 1 h 30 avec bâtons.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S57</td>
+            <td class="week-dates">01/11 – 07/11/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td><span class="early-tag">Frontale 5h30</span> Run 1 h Z2. HT : 50 min force (55 rpm). SL : 1 h 45 Soignes.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S58</td>
+            <td class="week-dates">08/11 – 14/11/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 45 min tapis 15 % (sac 3 kg). HT : 45 min Z2. SL : 2 h 00 vallonnée.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S59</td>
+            <td class="week-dates">15/11 – 21/11/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 45 min côtes Josaphat. HT : 50 min force. SL : 2 h 15 Soignes avec bâtons.</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S60</td>
+            <td class="week-dates">22/11 – 28/11/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 15.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S61</td>
+            <td class="week-dates">29/11 – 05/12/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 45 min escaliers Mont des Arts. HT : 50 min Sweetspot. SL : 2 h 15 avec sac 3 kg.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S62</td>
+            <td class="week-dates">06/12 – 12/12/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td><span class="early-tag">Frontale 5h30</span> Run 1 h 15 Z2. HT : 50 min force. SL : 2 h 30 Soignes avec bâtons.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S63</td>
+            <td class="week-dates">13/12 – 19/12/27</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 50 min tapis 15 % (sac 3 kg). HT : 45 min Z2. SL : 2 h 30 avec bâtons.</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S64</td>
+            <td class="week-dates">20/12 – 26/12/27</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Semaine fêtes :</em> Run 35 min Z2. HT 40 min Z1/Z2. SL 1 h 15 souple.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S65</td>
+            <td class="week-dates">27/12 – 02/01/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 45 min escaliers. HT : 45 min Z2. SL : 2 h 00 Soignes avec bâtons.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S66</td>
+            <td class="week-dates">03/01 – 09/01/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 50 min tapis 15 % (sac 3,5 kg). HT : 50 min force (60 rpm). SL : 2 h 20 vallonnée.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S67</td>
+            <td class="week-dates">10/01 – 16/01/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td><span class="early-tag">Frontale 5h30</span> Run 1 h 15 Z2. HT : 50 min Sweetspot. SL : 2 h 30 (boucle Rouge-Cloître).</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S68</td>
+            <td class="week-dates">17/01 – 23/01/28</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Assimilation :</em> Run 40 min Z2. HT 40 min Z1. SL 1 h 20.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <!-- AN 2 - PHASE 7 -->
-    <h3>Phase 7 : Le Crash-Test Ardennes & Pic Alpin (Mai – Juillet 2028)</h3>
-    <table class="training-table">
-      <thead>
-        <tr>
-          <th>Sem.</th>
-          <th>Dates</th>
-          <th>Séances</th>
-          <th>Programme Minimal Efficace</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="recovery-row">
-          <td class="week-id">S81</td>
-          <td class="week-dates">17/04 – 23/04/28</td>
-          <td class="week-types">2 HT + 1 Run</td>
-          <td><em>Récupération Palier 3 :</em> HT 2x 40 min Z1. Run 35 min Z2 souple.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S82</td>
-          <td class="week-dates">24/04 – 30/04/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 50 min tapis 15 %. HT : 50 min Sweetspot. SL : 2 h 45 Soignes avec bâtons.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S83</td>
-          <td class="week-dates">01/05 – 07/05/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td><span class="early-tag">Frontale 5h30</span> Run 1 h 15 Z2. HT : 50 min force. SL : 3 h 00 avec sac de fastpacking (3,5 kg).</td>
-        </tr>
-        <tr>
-          <td class="week-id">S84</td>
-          <td class="week-dates">08/05 – 14/05/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 50 min escaliers (sac 3,5 kg). HT : 45 min Z2. SL : 3 h 15 (test matériel et flasques).</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S85</td>
-          <td class="week-dates">15/05 – 21/05/28</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S86</td>
-          <td class="week-dates">22/05 – 28/05/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 45 min tapis 15 %. HT : 45 min force. SL : 2 h 15 dynamique avec bâtons.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S87</td>
-          <td class="week-dates">29/05 – 04/06/28</td>
-          <td class="week-types">1 Run + 1 HT</td>
-          <td>Affûtage avant week-end choc : 2 footings de 25 min très souples. Faire du jus.</td>
-        </tr>
-        <tr class="event-row">
-          <td class="week-id">S88</td>
-          <td class="week-dates">05/06 – 11/06/28</td>
-          <td class="week-types">Stage Ardennes</td>
-          <td><span class="event-tag">Palier 4</span> <strong>Week-End Choc en Ardennes (09 – 11/06/2028)</strong> : 2 jours x 35 km / +1 500 m D+ consécutifs avec sac 3,5 kg.</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S89</td>
-          <td class="week-dates">12/06 – 18/06/28</td>
-          <td class="week-types">2 HT doux</td>
-          <td><em>Régénération post-choc :</em> HT 2x 35 min en Z1 pure. Pas de course à pied.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S90</td>
-          <td class="week-dates">19/06 – 25/06/28</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td>Reprise active : Run 40 min Z2. HT : 45 min force basse cadence. SL : 2 h 00 Soignes.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S91</td>
-          <td class="week-dates">26/06 – 02/07/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td><span class="early-tag">Frontale 5h30</span> Run 1 h 15 Z2. D+ midi : 50 min tapis 15 %. SL : 2 h 45 Soignes.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S92</td>
-          <td class="week-dates">03/07 – 09/07/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>D+ midi : 50 min escaliers (sac 3,5 kg). HT : 50 min force. SL : 3 h 00 avec bâtons.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S93</td>
-          <td class="week-dates">10/07 – 16/07/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td><strong>Dernier Pic :</strong> Tapis 15 % 45 min. HT : 45 min Z2. SL : 3 h 30 (matériel définitif rodé).</td>
-        </tr>
-        <tr class="recovery-row">
-          <td class="week-id">S94</td>
-          <td class="week-dates">17/07 – 23/07/28</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S95</td>
-          <td class="week-dates">24/07 – 30/07/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td>Dernier gros D+ : 50 min tapis 15 % (+750 m D+). HT : 45 min Sweetspot. SL : 2 h 15.</td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- PHASE 6 -->
+    <h3 id="p6">Phase 6 : Spécifique Dénivelé & Validation Palier 3 (Février – Avril 2028)</h3>
+    <div class="table-scroll-container">
+      <div class="mobile-scroll-hint">⇄ Faites défiler le tableau horizontalement</div>
+      <table class="training-table">
+        <thead>
+          <tr>
+            <th>Sem.</th>
+            <th>Dates</th>
+            <th>Séances</th>
+            <th>Programme Minimal Efficace</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="week-id">S69</td>
+            <td class="week-dates">24/01 – 30/01/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 50 min escaliers (sac 3,5 kg). HT : 50 min Z2. SL : 2 h 30 avec bâtons.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S70</td>
+            <td class="week-dates">31/01 – 06/02/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td><span class="early-tag">Frontale 5h30</span> Run 1 h 15 Z2. HT : 50 min force. SL : 2 h 40 avec sac 3,5 kg.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S71</td>
+            <td class="week-dates">07/02 – 13/02/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 1 h tapis 15 % (+800 m D+). HT : 50 min Sweetspot. SL : 2 h 45 avec bâtons.</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S72</td>
+            <td class="week-dates">14/02 – 20/02/28</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S73</td>
+            <td class="week-dates">21/02 – 27/02/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 1 h tapis 15 % (sac 3,5 kg). HT : 50 min force. SL : 2 h 45 Soignes.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S74</td>
+            <td class="week-dates">28/02 – 05/03/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td><span class="early-tag">Frontale 5h30</span> SL 2 h 45 avec frontale (nutrition 60 g/h). HT : 50 min Z2.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S75</td>
+            <td class="week-dates">06/03 – 12/03/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 50 min escaliers Mont des Arts. HT : 50 min Sweetspot. SL : 3 h 00 avec sac réglé.</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S76</td>
+            <td class="week-dates">13/03 – 19/03/28</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S77</td>
+            <td class="week-dates">20/03 – 26/03/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 1 h tapis 15 %. HT : 50 min force en côte. SL : 2 h 45 avec équipement réel.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S78</td>
+            <td class="week-dates">27/03 – 02/04/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td><span class="early-tag">Frontale 5h30</span> Run 1 h 20 Z2. HT : 45 min Sweetspot. SL : 2 h 30 vallonnée.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S79</td>
+            <td class="week-dates">03/04 – 09/04/28</td>
+            <td class="week-types">1 Run + 1 HT</td>
+            <td>Allègement pré-test : Run 35 min Z2. HT 35 min souple. Repos musculaire.</td>
+          </tr>
+          <tr class="event-row">
+            <td class="week-id">S80</td>
+            <td class="week-dates">10/04 – 16/04/28</td>
+            <td class="week-types">Test + 1 HT</td>
+            <td><span class="event-tag">Palier 3</span> <strong>Test des 1 000 m D+ (Tapis 15 % ou escaliers avec sac 3,5 kg) + 10 km plat immédiat</strong>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <!-- AN 2 - PHASE 8 -->
-    <h3>Phase 8 : Affûtage & Tour du Mont-Rose (Août – Septembre 2028)</h3>
-    <table class="training-table">
-      <thead>
-        <tr>
-          <th>Sem.</th>
-          <th>Dates</th>
-          <th>Séances</th>
-          <th>Programme Minimal Efficace</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="week-id">S96</td>
-          <td class="week-dates">31/07 – 06/08/28</td>
-          <td class="week-types">1 D+ + 1 HT + 1 SL</td>
-          <td><em>Affûtage (-20 %) :</em> D+ 35 min tapis 15 %. HT : 35 min Z1/Z2. SL réduite à 1 h 45.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S97</td>
-          <td class="week-dates">07/08 – 13/08/28</td>
-          <td class="week-types">1 Run + 1 HT + 1 SL</td>
-          <td><em>Affûtage (-40 %) :</em> Run 35 min avec 3 accélérations. HT : 30 min souple. SL : 1 h 15.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S98</td>
-          <td class="week-dates">14/08 – 20/08/28</td>
-          <td class="week-types">2 Run très légers</td>
-          <td><em>Affûtage (-60 %) :</em> Footings courts de 25 min Z2. Sommeil prioritaire, zéro fatigue.</td>
-        </tr>
-        <tr>
-          <td class="week-id">S99</td>
-          <td class="week-dates">21/08 – 27/08/28</td>
-          <td class="week-types">Activation douce</td>
-          <td><em>Voyage :</em> 2 footings de 20 min d'activation musculaire. Transfert à Grächen (Suisse).</td>
-        </tr>
-        <tr class="event-row" style="background: #fed7aa !important;">
-          <td class="week-id">S100</td>
-          <td class="week-dates">28/08 – 03/09/28</td>
-          <td class="week-types">EXPÉDITION</td>
-          <td><span class="event-tag" style="background: #c2410c;">JOUR J</span> <strong>TOUR DU MONT-ROSE EXPRESS EN 4 JOURS (171 km / +11 600 m D+) !</strong></td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- PHASE 7 -->
+    <h3 id="p7">Phase 7 : Le Crash-Test Ardennes & Pic Alpin (Mai – Juillet 2028)</h3>
+    <div class="table-scroll-container">
+      <div class="mobile-scroll-hint">⇄ Faites défiler le tableau horizontalement</div>
+      <table class="training-table">
+        <thead>
+          <tr>
+            <th>Sem.</th>
+            <th>Dates</th>
+            <th>Séances</th>
+            <th>Programme Minimal Efficace</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="recovery-row">
+            <td class="week-id">S81</td>
+            <td class="week-dates">17/04 – 23/04/28</td>
+            <td class="week-types">2 HT + 1 Run</td>
+            <td><em>Récupération Palier 3 :</em> HT 2x 40 min Z1. Run 35 min Z2 souple.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S82</td>
+            <td class="week-dates">24/04 – 30/04/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 50 min tapis 15 %. HT : 50 min Sweetspot. SL : 2 h 45 Soignes avec bâtons.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S83</td>
+            <td class="week-dates">01/05 – 07/05/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td><span class="early-tag">Frontale 5h30</span> Run 1 h 15 Z2. HT : 50 min force. SL : 3 h 00 avec sac de fastpacking (3,5 kg).</td>
+          </tr>
+          <tr>
+            <td class="week-id">S84</td>
+            <td class="week-dates">08/05 – 14/05/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 50 min escaliers (sac 3,5 kg). HT : 45 min Z2. SL : 3 h 15 (test matériel et flasques).</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S85</td>
+            <td class="week-dates">15/05 – 21/05/28</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S86</td>
+            <td class="week-dates">22/05 – 28/05/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 45 min tapis 15 %. HT : 45 min force. SL : 2 h 15 dynamique avec bâtons.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S87</td>
+            <td class="week-dates">29/05 – 04/06/28</td>
+            <td class="week-types">1 Run + 1 HT</td>
+            <td>Affûtage avant week-end choc : 2 footings de 25 min très souples. Faire du jus.</td>
+          </tr>
+          <tr class="event-row">
+            <td class="week-id">S88</td>
+            <td class="week-dates">05/06 – 11/06/28</td>
+            <td class="week-types">Stage Ardennes</td>
+            <td><span class="event-tag">Palier 4</span> <strong>Week-End Choc en Ardennes (09 – 11/06/2028)</strong> : 2 jours x 35 km / +1 500 m D+ consécutifs avec sac 3,5 kg.</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S89</td>
+            <td class="week-dates">12/06 – 18/06/28</td>
+            <td class="week-types">2 HT doux</td>
+            <td><em>Régénération post-choc :</em> HT 2x 35 min en Z1 pure. Pas de course à pied.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S90</td>
+            <td class="week-dates">19/06 – 25/06/28</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td>Reprise active : Run 40 min Z2. HT : 45 min force basse cadence. SL : 2 h 00 Soignes.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S91</td>
+            <td class="week-dates">26/06 – 02/07/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td><span class="early-tag">Frontale 5h30</span> Run 1 h 15 Z2. D+ midi : 50 min tapis 15 %. SL : 2 h 45 Soignes.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S92</td>
+            <td class="week-dates">03/07 – 09/07/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>D+ midi : 50 min escaliers (sac 3,5 kg). HT : 50 min force. SL : 3 h 00 avec bâtons.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S93</td>
+            <td class="week-dates">10/07 – 16/07/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td><strong>Dernier Pic :</strong> Tapis 15 % 45 min. HT : 45 min Z2. SL : 3 h 30 (matériel définitif rodé).</td>
+          </tr>
+          <tr class="recovery-row">
+            <td class="week-id">S94</td>
+            <td class="week-dates">17/07 – 23/07/28</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S95</td>
+            <td class="week-dates">24/07 – 30/07/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td>Dernier gros D+ : 50 min tapis 15 % (+750 m D+). HT : 45 min Sweetspot. SL : 2 h 15.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PHASE 8 -->
+    <h3 id="p8">Phase 8 : Affûtage & Tour du Mont-Rose (Août – Septembre 2028)</h3>
+    <div class="table-scroll-container">
+      <div class="mobile-scroll-hint">⇄ Faites défiler le tableau horizontalement</div>
+      <table class="training-table">
+        <thead>
+          <tr>
+            <th>Sem.</th>
+            <th>Dates</th>
+            <th>Séances</th>
+            <th>Programme Minimal Efficace</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="week-id">S96</td>
+            <td class="week-dates">31/07 – 06/08/28</td>
+            <td class="week-types">1 D+ + 1 HT + 1 SL</td>
+            <td><em>Affûtage (-20 %) :</em> D+ 35 min tapis 15 %. HT : 35 min Z1/Z2. SL réduite à 1 h 45.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S97</td>
+            <td class="week-dates">07/08 – 13/08/28</td>
+            <td class="week-types">1 Run + 1 HT + 1 SL</td>
+            <td><em>Affûtage (-40 %) :</em> Run 35 min avec 3 accélérations. HT : 30 min souple. SL : 1 h 15.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S98</td>
+            <td class="week-dates">14/08 – 20/08/28</td>
+            <td class="week-types">2 Run très légers</td>
+            <td><em>Affûtage (-60 %) :</em> Footings courts de 25 min Z2. Sommeil prioritaire, zéro fatigue.</td>
+          </tr>
+          <tr>
+            <td class="week-id">S99</td>
+            <td class="week-dates">21/08 – 27/08/28</td>
+            <td class="week-types">Activation douce</td>
+            <td><em>Voyage :</em> 2 footings de 20 min d'activation musculaire. Transfert à Grächen (Suisse).</td>
+          </tr>
+          <tr class="event-row" style="background: #fed7aa !important;">
+            <td class="week-id">S100</td>
+            <td class="week-dates">28/08 – 03/09/28</td>
+            <td class="week-types">EXPÉDITION</td>
+            <td><span class="event-tag" style="background: #c2410c;">JOUR J</span> <strong>TOUR DU MONT-ROSE EXPRESS EN 4 JOURS (171 km / +11 600 m D+) !</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
-  <!-- MATÉRIEL FASTPACKING -->
-  <section>
-    <h2>7. Liste Matériel Recommandée (Sac cible : 2,6 kg à vide)</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Équipement</th>
-          <th>Spécification conseillée</th>
-          <th class="weight-col">Poids estimé</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Sac à dos</strong></td>
-          <td>Gilet de trail / fastpacking 15 à 20 litres avec maintien pectoral</td>
-          <td class="weight-col">380 g</td>
-        </tr>
-        <tr>
-          <td><strong>Sécurité glacier</strong></td>
-          <td>Micro-crampons de trail acier (passage glacier du Théodule)</td>
-          <td class="weight-col">280 g</td>
-        </tr>
-        <tr>
-          <td><strong>Veste imperméable</strong></td>
-          <td>Membrane technique avec capuche (&gt; 20 000 Schmerber)</td>
-          <td class="weight-col">190 g</td>
-        </tr>
-        <tr>
-          <td><strong>Couche thermique</strong></td>
-          <td>Micro-doudoune synthétique ou polaire active respirante</td>
-          <td class="weight-col">220 g</td>
-        </tr>
-        <tr>
-          <td><strong>Bas & pantalon</strong></td>
-          <td>Surpantalon imperméable léger + collant de repos / secours</td>
-          <td class="weight-col">200 g</td>
-        </tr>
-        <tr>
-          <td><strong>Nuitée refuge</strong></td>
-          <td>Drap de sac en soie léger (obligatoire en refuge alpin)</td>
-          <td class="weight-col">90 g</td>
-        </tr>
-        <tr>
-          <td><strong>Hydratation</strong></td>
-          <td>2 flasques souples 500 ml avec filtre pour boire aux torrents</td>
-          <td class="weight-col">140 g</td>
-        </tr>
-        <tr>
-          <td><strong>Bâtons</strong></td>
-          <td>Bâtons de trail pliables 3 brins en carbone légers</td>
-          <td class="weight-col">260 g</td>
-        </tr>
-        <tr>
-          <td><strong>Sécurité & tech</strong></td>
-          <td>Frontale (&gt; 300 lm), mini powerbank 5 000 mAh, bivouac réutilisable</td>
-          <td class="weight-col">380 g</td>
-        </tr>
-        <tr>
-          <td><strong>Total à vide</strong></td>
-          <td><strong>Matériel emporté hors eau et barres énergétiques</strong></td>
-          <td class="weight-col" style="color: var(--accent);"><strong>~2 140 g</strong></td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- SAUT DE PAGE PDF -->
+  <div class="page-break"></div>
+
+  <!-- SECTION 6 : MATÉRIEL -->
+  <section id="materiel">
+    <h2>6. Liste Matériel Recommandée (Sac cible : 2,6 kg à vide)</h2>
+    <div class="table-scroll-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Équipement</th>
+            <th>Spécification conseillée</th>
+            <th class="weight-col">Poids estimé</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Sac à dos</strong></td>
+            <td>Gilet de trail / fastpacking 15 à 20 litres avec maintien pectoral</td>
+            <td class="weight-col">380 g</td>
+          </tr>
+          <tr>
+            <td><strong>Sécurité glacier</strong></td>
+            <td>Micro-crampons de trail acier (passage glacier du Théodule)</td>
+            <td class="weight-col">280 g</td>
+          </tr>
+          <tr>
+            <td><strong>Veste imperméable</strong></td>
+            <td>Membrane technique avec capuche (&gt; 20 000 Schmerber)</td>
+            <td class="weight-col">190 g</td>
+          </tr>
+          <tr>
+            <td><strong>Couche thermique</strong></td>
+            <td>Micro-doudoune synthétique ou polaire active respirante</td>
+            <td class="weight-col">220 g</td>
+          </tr>
+          <tr>
+            <td><strong>Bas & pantalon</strong></td>
+            <td>Surpantalon imperméable léger + collant de repos / secours</td>
+            <td class="weight-col">200 g</td>
+          </tr>
+          <tr>
+            <td><strong>Nuitée refuge</strong></td>
+            <td>Drap de sac en soie léger (obligatoire en refuge alpin)</td>
+            <td class="weight-col">90 g</td>
+          </tr>
+          <tr>
+            <td><strong>Hydratation</strong></td>
+            <td>2 flasques souples 500 ml avec filtre pour boire aux torrents</td>
+            <td class="weight-col">140 g</td>
+          </tr>
+          <tr>
+            <td><strong>Bâtons</strong></td>
+            <td>Bâtons de trail pliables 3 brins en carbone légers</td>
+            <td class="weight-col">260 g</td>
+          </tr>
+          <tr>
+            <td><strong>Sécurité & tech</strong></td>
+            <td>Frontale (&gt; 300 lm), mini powerbank 5 000 mAh, bivouac réutilisable</td>
+            <td class="weight-col">380 g</td>
+          </tr>
+          <tr>
+            <td><strong>Total à vide</strong></td>
+            <td><strong>Matériel emporté hors eau et barres énergétiques</strong></td>
+            <td class="weight-col" style="color: var(--accent);"><strong>~2 140 g</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
-  <!-- TIMELINE PROJET -->
-  <section>
-    <h2>8. Calendrier de l'Équipe pour 2028</h2>
+  <!-- SECTION 7 : CALENDRIER -->
+  <section id="calendrier">
+    <h2>7. Calendrier de l'Équipe pour 2028</h2>
     <ul class="checklist">
       <li><span class="check-box"></span> <strong>Fin 2026 :</strong> Validation du groupe (2 à 4 coureurs).</li>
       <li><span class="check-box"></span> <strong>Printemps 2027 :</strong> Validation collective du Palier 1 (Epic Trail).</li>
@@ -1534,23 +1740,23 @@
   </section>
 </div>
 
-<!-- SCRIPT DE GÉNÉRATION DES BOUTONS GOOGLE CALENDAR ET DE L'EXPORT .ICS -->
+<!-- SCRIPT GOOGLE CALENDAR & EXPORT .ICS -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const allWeeksData = [];
 
     document.querySelectorAll('.training-table').forEach(table => {
-      // 1. Ajouter la colonne d'en-tête "Agenda"
+      // 1. Ajouter l'en-tête "Agenda"
       const headerRow = table.querySelector('thead tr');
       if (headerRow) {
         const th = document.createElement('th');
         th.textContent = 'Agenda';
-        th.style.width = '70px';
+        th.style.width = '75px';
         th.style.textAlign = 'center';
         headerRow.appendChild(th);
       }
 
-      // 2. Parcourir chaque ligne pour générer le lien Google Calendar
+      // 2. Parcourir les lignes pour créer le bouton Google Calendar
       const rows = table.querySelectorAll('tbody tr');
       rows.forEach(row => {
         const weekIdElem = row.querySelector('.week-id');
@@ -1562,11 +1768,10 @@
         const typesText = row.querySelector('.week-types')?.textContent.trim() || '';
         const programText = row.children[3]?.textContent.trim() || '';
 
-        // Date de début : Lundi 5 octobre 2026 (index JS : mois 9 = octobre)
+        // Date de début : Lundi 5 octobre 2026
         const startDate = new Date(2026, 9, 5);
         startDate.setDate(startDate.getDate() + ((weekNum - 1) * 7));
         
-        // Date de fin (événement sur toute la journée du lundi)
         const endDate = new Date(startDate);
         endDate.setDate(endDate.getDate() + 1);
 
@@ -1587,13 +1792,11 @@
 
         const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${dateParam}&details=${encodeURIComponent(details)}&location=Schaerbeek%2C%20Bruxelles`;
 
-        // Insertion du bouton dans la ligne
         const td = document.createElement('td');
         td.style.textAlign = 'center';
         td.innerHTML = `<a href="${gCalUrl}" target="_blank" rel="noopener" class="cal-btn" title="Ajouter à Google Calendar">📅 +Cal</a>`;
         row.appendChild(td);
 
-        // Sauvegarde pour le générateur .ics global
         allWeeksData.push({
           weekId,
           datesText,
@@ -1607,7 +1810,7 @@
       });
     });
 
-    // 3. Gestion de l'export global en .ICS
+    // 3. Export global .ICS
     const exportBtn = document.getElementById('exportIcsBtn');
     if (exportBtn) {
       exportBtn.addEventListener('click', () => {
