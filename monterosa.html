@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>Tour du Mont-Rose Express 2028 — Dossier Fastpacking & Plan Mobile</title>
+  <title>Tour du Mont-Rose Express 2028 — Dossier Fastpacking & Plan Dynamique</title>
   <style>
     :root {
       --primary: #0f172a;
@@ -20,6 +20,8 @@
       --success: #16a34a;
       --success-light: #dcfce7;
       --purple: #7c3aed;
+      --highlight-bg: #fef08a;
+      --highlight-border: #eab308;
       --radius: 12px;
     }
 
@@ -125,7 +127,7 @@
       letter-spacing: 0.5px;
     }
 
-    /* Barre de navigation rapide (Mobile UX) */
+    /* Barre de navigation rapide (Quick Nav) */
     .quick-nav {
       display: flex;
       gap: 8px;
@@ -137,7 +139,7 @@
     }
     .quick-nav::-webkit-scrollbar { display: none; }
 
-    .quick-nav a {
+    .quick-nav a, .quick-nav button {
       display: inline-flex;
       align-items: center;
       gap: 4px;
@@ -150,13 +152,21 @@
       font-size: 0.8rem;
       font-weight: 600;
       text-decoration: none;
+      cursor: pointer;
       transition: all 0.15s ease;
     }
 
-    .quick-nav a:hover, .quick-nav a:active {
+    .quick-nav a:hover, .quick-nav button:hover {
       background: var(--secondary-light);
       border-color: var(--secondary);
       color: var(--secondary);
+    }
+
+    .nav-today-btn {
+      background: #fef08a !important;
+      border-color: #eab308 !important;
+      color: #854d0e !important;
+      font-weight: 700 !important;
     }
 
     /* Typographie sections */
@@ -184,7 +194,7 @@
       font-size: 0.95rem;
     }
 
-    /* Boîtes de contenu */
+    /* Boîtes d'accroche */
     .pitch-box {
       background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
       border-left: 4px solid var(--secondary);
@@ -309,7 +319,7 @@
       gap: 6px;
     }
 
-    /* Paliers & Cartes Méthode */
+    /* Paliers */
     .milestones-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -333,7 +343,7 @@
       display: block;
     }
 
-    /* Raccourcis de phases d'entraînement */
+    /* Raccourcis de phases */
     .phase-pills {
       display: flex;
       flex-wrap: wrap;
@@ -364,10 +374,45 @@
       align-items: center;
       background: #f8fafc;
       border: 1px solid var(--border);
-      padding: 12px 16px;
+      padding: 14px 16px;
       border-radius: var(--radius);
       margin-bottom: 14px;
       gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .calendar-actions-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .calendar-actions-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-current-week {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--highlight-bg);
+      color: #854d0e;
+      border: 1px solid var(--highlight-border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-current-week:hover {
+      background: #fef9c3;
+      box-shadow: 0 2px 6px rgba(234, 179, 8, 0.2);
     }
 
     .btn-ics-export {
@@ -377,7 +422,7 @@
       gap: 6px;
       background: var(--secondary);
       color: #ffffff;
-      padding: 10px 16px;
+      padding: 8px 14px;
       border-radius: 8px;
       font-size: 0.85rem;
       font-weight: 700;
@@ -392,7 +437,7 @@
       background: #0369a1;
     }
 
-    /* Tableaux et UX défilement mobile */
+    /* Tableaux et UX mobile */
     .table-scroll-container {
       width: 100%;
       overflow-x: auto;
@@ -418,7 +463,7 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 0.86rem;
-      min-width: 580px; /* Garantit que les colonnes ne s'écrasent pas */
+      min-width: 580px;
     }
 
     th, td {
@@ -505,7 +550,41 @@
       color: var(--text-muted);
     }
 
-    /* Bouton d'ajout Google Calendar (Optimisé Tap Target) */
+    /* HIGHLIGHT SEMAINE EN COURS */
+    .current-week-highlight {
+      background: #fef9c3 !important;
+      outline: 3px solid #eab308;
+      outline-offset: -2px;
+      animation: pulseHighlight 2.5s ease-in-out infinite alternate;
+      position: relative;
+    }
+
+    .current-week-highlight td {
+      border-bottom: 1px solid #eab308 !important;
+    }
+
+    .now-badge {
+      display: inline-block;
+      background: #ca8a04;
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      margin-left: 6px;
+    }
+
+    @keyframes pulseHighlight {
+      0% {
+        box-shadow: inset 0 0 0 1px #eab308;
+      }
+      100% {
+        box-shadow: inset 0 0 12px rgba(234, 179, 8, 0.45);
+      }
+    }
+
+    /* Bouton d'ajout Google Calendar */
     .cal-btn {
       display: inline-flex;
       align-items: center;
@@ -559,9 +638,29 @@
       flex-shrink: 0;
     }
 
-    /* -------------------------------------------
-       MEDIA QUERIES SMARTPHONE & TABLETTE (UX MOBILE)
-       ------------------------------------------- */
+    /* Toast notification */
+    .toast-msg {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--primary);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+      z-index: 1000;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* RESPONSIVE MOBILE */
     @media (max-width: 768px) {
       body {
         padding: 8px 6px;
@@ -595,7 +694,7 @@
       }
 
       .komoot-wrapper iframe {
-        height: 380px; /* Empêche le verrouillage de l'écran par l'iframe */
+        height: 380px;
       }
 
       .milestones-grid {
@@ -613,20 +712,30 @@
         align-items: stretch;
       }
 
-      .btn-ics-export {
+      .calendar-actions-buttons {
+        flex-direction: column;
+      }
+
+      .btn-current-week, .btn-ics-export {
         width: 100%;
       }
 
       .mobile-scroll-hint {
-        display: block; /* Informe l'utilisateur mobile qu'il peut swiper */
+        display: block;
       }
 
       .checklist {
         grid-template-columns: 1fr;
       }
+
+      .toast-msg {
+        left: 20px;
+        right: 20px;
+        text-align: center;
+      }
     }
 
-    /* Impression PDF */
+    /* IMPRESSION PDF */
     @media print {
       body {
         background: #ffffff;
@@ -641,7 +750,7 @@
         max-width: 100%;
       }
 
-      .quick-nav, .calendar-actions-bar, .phase-pills, .mobile-scroll-hint {
+      .quick-nav, .calendar-actions-bar, .phase-pills, .mobile-scroll-hint, .toast-msg {
         display: none !important;
       }
 
@@ -693,8 +802,9 @@
       </div>
     </div>
 
-    <!-- Navigation Rapide Mobile (Quick Nav) -->
+    <!-- Navigation Rapide Mobile -->
     <nav class="quick-nav">
+      <button class="nav-today-btn" id="quickNavTodayBtn">📍 Semaine en cours</button>
       <a href="#pitch">💡 Le Pitch</a>
       <a href="#trace">🗺️ Tracé & Carte</a>
       <a href="#etapes">⛰️ Les 4 Jours</a>
@@ -889,16 +999,21 @@
     <h2>5. Plan Hebdomadaire Allégé (100 Semaines)</h2>
     
     <div class="calendar-actions-bar">
-      <div>
-        <strong style="color: var(--primary); font-size: 0.88rem;">📅 Synchronisation Agenda :</strong>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Ajoutez chaque semaine via <strong>+Cal</strong> ou téléchargez l'ensemble du fichier .ics.</p>
+      <div class="calendar-actions-left">
+        <strong style="color: var(--primary); font-size: 0.9rem;">📅 Gestion du Calendrier & Navigation Temporelle :</strong>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Repérez votre semaine du jour ou synchronisez votre agenda Google.</p>
       </div>
-      <button class="btn-ics-export" id="exportIcsBtn">
-        📥 Exporter tout le calendrier (.ics)
-      </button>
+      <div class="calendar-actions-buttons">
+        <button class="btn-current-week" id="actionCurrentWeekBtn">
+          📍 Aller à la semaine en cours
+        </button>
+        <button class="btn-ics-export" id="exportIcsBtn">
+          📥 Exporter (.ics)
+        </button>
+      </div>
     </div>
 
-    <!-- Raccourcis de navigation rapide par phases -->
+    <!-- Raccourcis de navigation par phases -->
     <div class="phase-pills">
       <a href="#p1">S01-S12 (Néthen)</a>
       <a href="#p2">S13-S27 (Epic Trail)</a>
@@ -1740,13 +1855,39 @@
   </section>
 </div>
 
-<!-- SCRIPT GOOGLE CALENDAR & EXPORT .ICS -->
+<!-- Boîte notification Toast -->
+<div id="toast" class="toast-msg"></div>
+
+<!-- SCRIPT : GOOGLE CALENDAR, EXPORT .ICS & NAVIGATION TEMPORELLE DYNAMIQUE -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const allWeeksData = [];
+    const rowsMap = new Map();
 
+    // 1. Détermination de la date de départ : Lundi 5 octobre 2026
+    const PLAN_START_DATE = new Date(2026, 9, 5); // Mois 9 = Octobre (0-indexed)
+
+    function getTargetWeekInfo() {
+      const today = new Date();
+      // On compare à minuit
+      const startZero = new Date(PLAN_START_DATE.getFullYear(), PLAN_START_DATE.getMonth(), PLAN_START_DATE.getDate());
+      const todayZero = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+      const diffMs = todayZero - startZero;
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 0) {
+        return { weekNum: 1, status: 'before', diffDays };
+      }
+      const calculatedWeek = Math.floor(diffDays / 7) + 1;
+      if (calculatedWeek > 100) {
+        return { weekNum: 100, status: 'after', diffDays };
+      }
+      return { weekNum: calculatedWeek, status: 'current', diffDays };
+    }
+
+    // 2. Traitement des tableaux & génération des liens Google Calendar
     document.querySelectorAll('.training-table').forEach(table => {
-      // 1. Ajouter l'en-tête "Agenda"
       const headerRow = table.querySelector('thead tr');
       if (headerRow) {
         const th = document.createElement('th');
@@ -1756,20 +1897,21 @@
         headerRow.appendChild(th);
       }
 
-      // 2. Parcourir les lignes pour créer le bouton Google Calendar
       const rows = table.querySelectorAll('tbody tr');
       rows.forEach(row => {
         const weekIdElem = row.querySelector('.week-id');
         if (!weekIdElem) return;
 
-        const weekId = weekIdElem.textContent.trim();
+        const weekId = weekIdElem.textContent.trim(); // ex: "S01"
         const weekNum = parseInt(weekId.replace('S', ''), 10);
+        rowsMap.set(weekNum, row);
+
         const datesText = row.querySelector('.week-dates')?.textContent.trim() || '';
         const typesText = row.querySelector('.week-types')?.textContent.trim() || '';
         const programText = row.children[3]?.textContent.trim() || '';
 
-        // Date de début : Lundi 5 octobre 2026
-        const startDate = new Date(2026, 9, 5);
+        // Date de début de cette semaine spécifique
+        const startDate = new Date(PLAN_START_DATE);
         startDate.setDate(startDate.getDate() + ((weekNum - 1) * 7));
         
         const endDate = new Date(startDate);
@@ -1810,7 +1952,77 @@
       });
     });
 
-    // 3. Export global .ICS
+    // 3. Fonction d'affichage Toast
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3500);
+    }
+
+    // 4. Fonction pour faire défiler et highlight la semaine cible
+    function scrollToCurrentWeek(showToastNotice = true) {
+      const info = getTargetWeekInfo();
+      const targetRow = rowsMap.get(info.weekNum);
+      if (!targetRow) return;
+
+      // Nettoyage des anciens highlights
+      document.querySelectorAll('.current-week-highlight').forEach(el => {
+        el.classList.remove('current-week-highlight');
+        const badge = el.querySelector('.now-badge');
+        if (badge) badge.remove();
+      });
+
+      // Application du highlight
+      targetRow.classList.add('current-week-highlight');
+
+      const weekIdTd = targetRow.querySelector('.week-id');
+      if (weekIdTd && !weekIdTd.querySelector('.now-badge')) {
+        const badge = document.createElement('span');
+        badge.className = 'now-badge';
+        badge.textContent = info.status === 'current' ? 'Actuelle' : 'Ciblée';
+        weekIdTd.appendChild(badge);
+      }
+
+      // Défilement centré
+      targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      if (showToastNotice) {
+        if (info.status === 'before') {
+          showToast(`Le plan débute le 5 oct. 2026. Affichage de la semaine S01 !`);
+        } else if (info.status === 'after') {
+          showToast(`Le cycle est terminé ! Affichage de la semaine S100 (Mont-Rose).`);
+        } else {
+          showToast(`Semaine S${String(info.weekNum).padStart(2, '0')} ciblée avec succès !`);
+        }
+      }
+    }
+
+    // 5. Boutons de navigation vers la semaine en cours
+    const quickNavBtn = document.getElementById('quickNavTodayBtn');
+    if (quickNavBtn) {
+      quickNavBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        scrollToCurrentWeek(true);
+      });
+    }
+
+    const actionBtn = document.getElementById('actionCurrentWeekBtn');
+    if (actionBtn) {
+      actionBtn.addEventListener('click', () => {
+        scrollToCurrentWeek(true);
+      });
+    }
+
+    // 6. Highlight initial discret au chargement de la page
+    setTimeout(() => {
+      scrollToCurrentWeek(false);
+    }, 400);
+
+    // 7. Export .ICS global
     const exportBtn = document.getElementById('exportIcsBtn');
     if (exportBtn) {
       exportBtn.addEventListener('click', () => {
