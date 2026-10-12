@@ -202,7 +202,8 @@ function goLogin(cigarId, email) {
                 zendeskLang = "nl-be";
             }
             
-            $("[data-var='cancel']").attr("href", "https://forms.qover.com/230021764194349?language="+lang+"&cigarid=" + cigarId + "&email=" + email);
+            //$("[data-var='cancel']").attr("href", "https://forms.qover.com/230021764194349?language="+lang+"&cigarid=" + cigarId + "&email=" + email);
+            $("[data-var='cancel']").attr("href", "https://bike.qover.com/cancel?locale="+lang+"&contract=" + cigarId + "&email=" + email);
             if(devTest == "cancelPopup"){
                 $("[data-var='cancel']").attr("onclick", "buildCancelForm()");
             }
