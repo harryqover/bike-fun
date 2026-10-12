@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro QR Generator</title>
+    <title>Pro QR Studio - All-in-One Generator & Scanner</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Using the verified working qrcodejs library -->
+    <!-- QRCodeJS Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- jsQR Library for Scan Testing & Camera Reader -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -35,16 +37,13 @@
             min-height: 100vh;
         }
         
-        /* Custom Webkit Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* Smooth UI transitions */
         .input-transition { transition: all 0.2s ease; }
         
-        /* Toast Animations */
         @keyframes slideUpFade {
             from { opacity: 0; transform: translate(-50%, 20px); }
             to { opacity: 1; transform: translate(-50%, 0); }
@@ -55,537 +54,1009 @@
         }
         .toast-enter { animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .toast-exit { animation: fadeOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        
-        /* QR Code Container Styling */
-        #qr-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        /* Force the high-res generated canvas and image to fit our UI boundaries */
-        #qr-container canvas,
-        #qr-container img {
+
+        #qr-canvas-preview {
             width: 100% !important;
-            height: 100% !important;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: -webkit-crisp-edges;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
+            height: auto !important;
+            max-width: 260px;
+            border-radius: 12px;
         }
     </style>
 </head>
-<body class="text-slate-800 antialiased selection:bg-brand-500 selection:text-white pb-20 md:pb-0 flex items-center justify-center">
+<body class="text-slate-800 antialiased selection:bg-brand-500 selection:text-white pb-12 flex items-center justify-center">
 
-    <main class="container mx-auto px-4 py-12 max-w-5xl">
-        <header class="text-center mb-10">
-            <h1 class="text-4xl font-bold tracking-tight text-slate-900 mb-2">QR Studio</h1>
-            <p class="text-slate-500">Generate, customize, and export high-quality QR codes instantly.</p>
+    <main class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <header class="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+                    <i data-lucide="qr-code" class="w-8 h-8 text-brand-600"></i> QR Studio Pro
+                </h1>
+                <p class="text-slate-500 text-sm">Design, customize, test, and export high-impact QR codes.</p>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <button onclick="openScannerModal()" class="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium px-4 py-2.5 rounded-xl shadow-sm transition">
+                    <i data-lucide="camera" class="w-4 h-4 text-brand-600"></i> Test Camera / Scan
+                </button>
+                <button onclick="toggleHistoryDrawer()" class="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium px-4 py-2.5 rounded-xl shadow-sm transition">
+                    <i data-lucide="history" class="w-4 h-4 text-amber-500"></i> Saved History
+                </button>
+            </div>
         </header>
 
-        <div class="bg-white/70 backdrop-blur-xl border border-slate-200/60 rounded-3xl shadow-glass overflow-hidden grid grid-cols-1 md:grid-cols-12 gap-0 relative">
+        <!-- Main Card Grid -->
+        <div class="bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-3xl shadow-glass overflow-hidden grid grid-cols-1 lg:grid-cols-12 gap-0">
             
-            <!-- Left Column: Controls -->
-            <div class="md:col-span-7 p-6 md:p-10 border-b md:border-b-0 md:border-r border-slate-200/60 flex flex-col gap-8">
+            <!-- Left Column: Controls (7 cols) -->
+            <div class="lg:col-span-7 p-6 sm:p-8 border-b lg:border-b-0 lg:border-r border-slate-200/80 flex flex-col gap-6">
                 
-                <!-- Input Section -->
+                <!-- Section 1: Content Type Selector -->
                 <div class="space-y-3">
-                    <label for="qr-data" class="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                        <i data-lucide="link" class="w-4 h-4 text-brand-500"></i> Content
-                    </label>
-                    <textarea id="qr-data" rows="3" 
-                        class="w-full bg-white/50 border border-slate-300 rounded-xl px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 input-transition resize-none"
-                        placeholder="Enter a URL, text, email, or wifi credentials..."
-                    >https://github.com</textarea>
-                </div>
-
-                <!-- Customization Grid -->
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="space-y-3">
-                        <label class="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                            <i data-lucide="palette" class="w-4 h-4 text-slate-400"></i> Foreground
-                        </label>
-                        <div class="flex items-center gap-3">
-                            <input type="color" id="color-dark" value="#0f172a" class="w-10 h-10 rounded-lg cursor-pointer border-0 p-0 bg-transparent">
-                            <span class="text-sm text-slate-500 font-mono uppercase" id="color-dark-label">#0F172A</span>
-                        </div>
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400">1. Select Content Type</label>
+                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                        <button type="button" onclick="switchPreset('url')" id="tab-url" class="preset-tab active flex flex-col items-center gap-1.5 p-2.5 rounded-xl border text-xs font-semibold transition bg-brand-50 border-brand-500 text-brand-600">
+                            <i data-lucide="link" class="w-4 h-4"></i> URL / Text
+                        </button>
+                        <button type="button" onclick="switchPreset('wifi')" id="tab-wifi" class="preset-tab flex flex-col items-center gap-1.5 p-2.5 rounded-xl border text-xs font-semibold transition bg-white border-slate-200 text-slate-600 hover:border-slate-300">
+                            <i data-lucide="wifi" class="w-4 h-4"></i> Wi-Fi
+                        </button>
+                        <button type="button" onclick="switchPreset('vcard')" id="tab-vcard" class="preset-tab flex flex-col items-center gap-1.5 p-2.5 rounded-xl border text-xs font-semibold transition bg-white border-slate-200 text-slate-600 hover:border-slate-300">
+                            <i data-lucide="user" class="w-4 h-4"></i> Contact
+                        </button>
+                        <button type="button" onclick="switchPreset('whatsapp')" id="tab-whatsapp" class="preset-tab flex flex-col items-center gap-1.5 p-2.5 rounded-xl border text-xs font-semibold transition bg-white border-slate-200 text-slate-600 hover:border-slate-300">
+                            <i data-lucide="message-square" class="w-4 h-4"></i> WhatsApp
+                        </button>
+                        <button type="button" onclick="switchPreset('email')" id="tab-email" class="preset-tab flex flex-col items-center gap-1.5 p-2.5 rounded-xl border text-xs font-semibold transition bg-white border-slate-200 text-slate-600 hover:border-slate-300">
+                            <i data-lucide="mail" class="w-4 h-4"></i> Email
+                        </button>
+                        <button type="button" onclick="switchPreset('event')" id="tab-event" class="preset-tab flex flex-col items-center gap-1.5 p-2.5 rounded-xl border text-xs font-semibold transition bg-white border-slate-200 text-slate-600 hover:border-slate-300">
+                            <i data-lucide="calendar" class="w-4 h-4"></i> Event
+                        </button>
                     </div>
 
-                    <div class="space-y-3">
-                        <label class="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                            <i data-lucide="droplet" class="w-4 h-4 text-slate-400"></i> Background
-                        </label>
-                        <div class="flex items-center gap-3">
-                            <input type="color" id="color-light" value="#ffffff" class="w-10 h-10 rounded-lg cursor-pointer border-0 p-0 bg-transparent">
-                            <span class="text-sm text-slate-500 font-mono uppercase" id="color-light-label">#FFFFFF</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Logo / Icon Section -->
-                <div class="space-y-3">
-                    <label class="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                        <i data-lucide="image" class="w-4 h-4 text-slate-400"></i> Logo / Center Image
-                        <span class="text-xs font-normal text-slate-400 ml-auto">Optional</span>
-                    </label>
-
-                    <div id="logo-dropzone" class="border-2 border-dashed border-slate-300 rounded-2xl p-4 text-center hover:border-brand-500 transition-colors cursor-pointer bg-slate-50/50 flex flex-col items-center justify-center relative group">
-                        <input type="file" id="logo-file" accept="image/*" class="hidden">
-                        
-                        <!-- Upload Prompt -->
-                        <div id="logo-upload-prompt" class="flex flex-col items-center gap-1.5 py-2">
-                            <i data-lucide="upload-cloud" class="w-6 h-6 text-slate-400 group-hover:text-brand-500 transition-colors"></i>
-                            <span class="text-xs font-medium text-slate-600">Click or drag & drop image here</span>
-                            <span class="text-[10px] text-slate-400">PNG, JPG, SVG, WebP (Max 5MB)</span>
+                    <!-- Dynamic Input Forms -->
+                    <div id="form-container" class="pt-2">
+                        <!-- URL / Text Form -->
+                        <div id="form-url" class="preset-form space-y-2">
+                            <textarea id="input-url" rows="3" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-slate-700 focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 outline-none resize-none" placeholder="Enter URL or text...">https://www.mini-protect.co.uk/?origin=tnr&referrer=parkLane</textarea>
                         </div>
 
-                        <!-- Logo Preview -->
-                        <div id="logo-preview-container" class="hidden flex items-center justify-between w-full">
-                            <div class="flex items-center gap-3">
-                                <img id="logo-preview-img" class="w-10 h-10 object-contain rounded-lg border border-slate-200 bg-white p-1 shadow-sm" src="" alt="Logo Preview">
-                                <div class="text-left">
-                                    <p id="logo-file-name" class="text-xs font-semibold text-slate-700 truncate max-w-[160px]">logo.png</p>
-                                    <p class="text-[10px] text-slate-400">Custom logo attached</p>
+                        <!-- Wi-Fi Form -->
+                        <div id="form-wifi" class="preset-form hidden space-y-3">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-600 mb-1">Network Name (SSID)</label>
+                                    <input type="text" id="wifi-ssid" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-700 outline-none" placeholder="MyHomeWiFi">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-600 mb-1">Password</label>
+                                    <input type="password" id="wifi-pass" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-700 outline-none" placeholder="Password">
                                 </div>
                             </div>
-                            <button type="button" id="remove-logo-btn" class="p-2 hover:bg-slate-200/60 rounded-lg text-slate-400 hover:text-red-500 transition-colors" title="Remove logo">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
+                            <div class="flex items-center justify-between">
+                                <select id="wifi-type" class="text-xs bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-700">
+                                    <option value="WPA">WPA/WPA2/WPA3</option>
+                                    <option value="WEP">WEP</option>
+                                    <option value="nopass">Open (No Password)</option>
+                                </select>
+                                <label class="flex items-center gap-2 text-xs font-medium text-slate-600 cursor-pointer">
+                                    <input type="checkbox" id="wifi-hidden" class="rounded text-brand-600"> Hidden Network
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- vCard Form -->
+                        <div id="form-vcard" class="preset-form hidden space-y-3">
+                            <div class="grid grid-cols-2 gap-3">
+                                <input type="text" id="vcard-fn" class="bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm" placeholder="First Name">
+                                <input type="text" id="vcard-ln" class="bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm" placeholder="Last Name">
+                                <input type="text" id="vcard-phone" class="bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm" placeholder="Phone Number">
+                                <input type="email" id="vcard-email" class="bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm" placeholder="Email Address">
+                                <input type="text" id="vcard-org" class="bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm" placeholder="Company / Org">
+                                <input type="url" id="vcard-url" class="bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm" placeholder="Website URL">
+                            </div>
+                        </div>
+
+                        <!-- WhatsApp Form -->
+                        <div id="form-whatsapp" class="preset-form hidden space-y-3">
+                            <input type="tel" id="wa-phone" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm" placeholder="Phone Number with country code (e.g. 14155552671)">
+                            <textarea id="wa-msg" rows="2" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm resize-none" placeholder="Pre-filled message (optional)"></textarea>
+                        </div>
+
+                        <!-- Email Form -->
+                        <div id="form-email" class="preset-form hidden space-y-3">
+                            <input type="email" id="email-to" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm" placeholder="Recipient Email">
+                            <input type="text" id="email-subject" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm" placeholder="Subject">
+                            <textarea id="email-body" rows="2" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm resize-none" placeholder="Message Body"></textarea>
+                        </div>
+
+                        <!-- Event Form -->
+                        <div id="form-event" class="preset-form hidden space-y-3">
+                            <input type="text" id="event-title" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm" placeholder="Event Title">
+                            <input type="text" id="event-location" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm" placeholder="Location">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[10px] font-medium text-slate-500 mb-0.5">Start Time</label>
+                                    <input type="datetime-local" id="event-start" class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-medium text-slate-500 mb-0.5">End Time</label>
+                                    <input type="datetime-local" id="event-end" class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200/60">
+
+                <!-- Section 2: Visual Style & Colors -->
+                <div class="space-y-4">
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400">2. Color & Shape Style</label>
+
+                    <!-- Color Modes -->
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-slate-600">Color Mode</label>
+                            <select id="color-mode" class="w-full text-xs bg-white border border-slate-300 rounded-lg px-2.5 py-2 text-slate-700 outline-none">
+                                <option value="solid">Solid Color</option>
+                                <option value="linear" selected>Linear Gradient</option>
+                                <option value="radial">Radial Gradient</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-slate-600">Foreground 1</label>
+                            <div class="flex items-center gap-2 bg-white p-1 rounded-lg border border-slate-300">
+                                <input type="color" id="color-dark" value="#0f172a" class="w-7 h-7 rounded border-0 cursor-pointer bg-transparent">
+                                <span id="color-dark-hex" class="text-[10px] font-mono text-slate-500 uppercase">#0F172A</span>
+                            </div>
+                        </div>
+                        <div id="color-dark2-container" class="space-y-1">
+                            <label class="text-xs font-medium text-slate-600">Foreground 2</label>
+                            <div class="flex items-center gap-2 bg-white p-1 rounded-lg border border-slate-300">
+                                <input type="color" id="color-dark2" value="#2563eb" class="w-7 h-7 rounded border-0 cursor-pointer bg-transparent">
+                                <span id="color-dark2-hex" class="text-[10px] font-mono text-slate-500 uppercase">#2563EB</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Logo Controls -->
-                    <div id="logo-controls" class="hidden grid grid-cols-2 gap-4 pt-1">
-                        <div class="space-y-1.5">
-                            <div class="flex justify-between items-center text-xs font-medium text-slate-600">
-                                <label for="logo-size">Logo Size</label>
-                                <span id="logo-size-label">22%</span>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-slate-600">Background Color</label>
+                            <div class="flex items-center gap-2 bg-white p-1 rounded-lg border border-slate-300">
+                                <input type="color" id="color-light" value="#ffffff" class="w-7 h-7 rounded border-0 cursor-pointer bg-transparent">
+                                <span id="color-light-hex" class="text-[10px] font-mono text-slate-500 uppercase">#FFFFFF</span>
                             </div>
-                            <input type="range" id="logo-size" min="10" max="35" value="22" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
                         </div>
-
-                        <div class="space-y-1.5">
-                            <label for="logo-shape" class="block text-xs font-medium text-slate-600">Badge Background</label>
-                            <select id="logo-shape" class="w-full text-xs bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500/50">
-                                <option value="rounded">Rounded Square</option>
-                                <option value="circle">Circle</option>
-                                <option value="square">Square</option>
-                                <option value="none">None (Transparent)</option>
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-slate-600">Module Shape</label>
+                            <select id="module-style" class="w-full text-xs bg-white border border-slate-300 rounded-lg px-2.5 py-2 text-slate-700 outline-none">
+                                <option value="square">Classic Square</option>
+                                <option value="dots" selected>Smooth Dots</option>
+                                <option value="rounded">Soft Rounded</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                <!-- Error Correction -->
+                <hr class="border-slate-200/60">
+
+                <!-- Section 3: Frame & CTA Banner -->
                 <div class="space-y-3">
-                    <label class="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                        <i data-lucide="shield-check" class="w-4 h-4 text-slate-400"></i> Error Correction
-                        <span class="text-xs font-normal text-slate-400 ml-auto" title="Higher levels allow the QR code to be readable even if dirty, damaged, or covered by a logo.">What's this?</span>
-                    </label>
-                    <div class="grid grid-cols-4 gap-2 bg-slate-100/50 p-1 rounded-xl">
-                        <button class="level-btn active bg-white shadow-sm rounded-lg py-2 text-sm font-medium text-slate-800 input-transition border border-slate-200/60" data-level="L">Low</button>
-                        <button class="level-btn text-slate-500 hover:text-slate-800 rounded-lg py-2 text-sm font-medium input-transition border border-transparent" data-level="M">Med</button>
-                        <button class="level-btn text-slate-500 hover:text-slate-800 rounded-lg py-2 text-sm font-medium input-transition border border-transparent" data-level="Q">High</button>
-                        <button class="level-btn text-slate-500 hover:text-slate-800 rounded-lg py-2 text-sm font-medium input-transition border border-transparent" data-level="H">Max</button>
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400">3. "SCAN ME" Frame Banner</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-slate-600">Frame Layout</label>
+                            <select id="frame-style" class="w-full text-xs bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-slate-700">
+                                <option value="none">None</option>
+                                <option value="bottom" selected>Bottom Banner</option>
+                                <option value="top">Top Banner</option>
+                                <option value="box">Full Box Frame</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-slate-600">CTA Text</label>
+                            <input type="text" id="frame-text" value="SCAN ME" class="w-full text-xs bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-slate-700">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-slate-600">Banner BG</label>
+                            <input type="color" id="frame-bg" value="#0f172a" class="w-full h-8 rounded-lg border-0 bg-transparent cursor-pointer p-0">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-slate-600">Text Color</label>
+                            <input type="color" id="frame-color" value="#ffffff" class="w-full h-8 rounded-lg border-0 bg-transparent cursor-pointer p-0">
+                        </div>
                     </div>
                 </div>
+
+                <hr class="border-slate-200/60">
+
+                <!-- Section 4: Logo & Error Correction -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Logo Upload -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-400">4. Center Logo / Icon</label>
+                        <div id="logo-dropzone" class="border-2 border-dashed border-slate-300 rounded-xl p-3 text-center hover:border-brand-500 cursor-pointer bg-slate-50/50 flex flex-col items-center justify-center transition">
+                            <input type="file" id="logo-file" accept="image/*" class="hidden">
+                            <div id="logo-prompt" class="flex items-center gap-2 text-xs text-slate-600">
+                                <i data-lucide="upload-cloud" class="w-4 h-4 text-brand-500"></i>
+                                <span>Upload logo image</span>
+                            </div>
+                            <div id="logo-attached" class="hidden flex items-center justify-between w-full px-1">
+                                <span id="logo-name" class="text-xs font-medium text-slate-700 truncate max-w-[120px]">logo.png</span>
+                                <button type="button" onclick="removeLogo(event)" class="text-red-500 hover:text-red-700 text-xs font-semibold">Remove</button>
+                            </div>
+                        </div>
+
+                        <!-- Logo Controls -->
+                        <div id="logo-controls" class="hidden grid grid-cols-2 gap-2 pt-1">
+                            <div>
+                                <div class="flex justify-between text-[10px] font-medium text-slate-600">
+                                    <span>Size</span>
+                                    <span id="logo-scale-val">22%</span>
+                                </div>
+                                <input type="range" id="logo-scale" min="10" max="32" value="22" class="w-full h-1 bg-slate-200 rounded appearance-none accent-brand-600">
+                            </div>
+                            <div>
+                                <select id="logo-shape" class="w-full text-[11px] bg-white border border-slate-300 rounded px-1.5 py-1 text-slate-700">
+                                    <option value="rounded">Rounded Badge</option>
+                                    <option value="circle">Circle Badge</option>
+                                    <option value="square">Square Badge</option>
+                                    <option value="none">Transparent</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error Correction -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-400">5. Error Correction</label>
+                        <div class="grid grid-cols-4 gap-1.5 bg-slate-100 p-1 rounded-xl text-xs">
+                            <button type="button" onclick="setErrorLevel('L')" class="level-btn py-1.5 rounded-lg text-slate-600 font-medium" data-level="L">Low (7%)</button>
+                            <button type="button" onclick="setErrorLevel('M')" class="level-btn py-1.5 rounded-lg text-slate-600 font-medium" data-level="M">Med (15%)</button>
+                            <button type="button" onclick="setErrorLevel('Q')" class="level-btn py-1.5 rounded-lg text-slate-600 font-medium" data-level="Q">High (25%)</button>
+                            <button type="button" onclick="setErrorLevel('H')" class="level-btn active py-1.5 rounded-lg bg-white shadow-sm font-semibold text-slate-800" data-level="H">Max (30%)</button>
+                        </div>
+                        <p class="text-[10px] text-slate-400">Max level recommended when using center logos or frames.</p>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- Right Column: Preview & Export -->
-            <div class="md:col-span-5 bg-slate-50/50 p-6 md:p-10 flex flex-col items-center justify-center relative">
+            <!-- Right Column: Live Canvas Preview & Export Actions (5 cols) -->
+            <div class="lg:col-span-5 bg-slate-50/70 p-6 sm:p-8 flex flex-col items-center justify-between gap-6 border-t lg:border-t-0">
                 
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/60 mb-8 relative group">
-                    <!-- Container where QRCodeJS will inject the canvas -->
-                    <div id="qr-container" class="w-48 h-48 sm:w-56 sm:h-56 relative z-10"></div>
+                <div class="w-full flex flex-col items-center gap-4">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Live Render Canvas</span>
                     
-                    <!-- Empty state overlay -->
-                    <div id="empty-state" class="absolute inset-0 z-20 bg-white backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-                        <i data-lucide="qr-code" class="w-10 h-10 text-slate-300 mb-2"></i>
-                        <span class="text-sm text-slate-400 font-medium">Awaiting content...</span>
+                    <!-- Canvas Box -->
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col items-center relative group max-w-xs w-full">
+                        <div id="canvas-container" class="w-full flex justify-center items-center">
+                            <!-- Main High-Res Master Canvas rendered by JS -->
+                        </div>
+
+                        <!-- Scannability Badge -->
+                        <div id="scan-badge" class="mt-3 flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+                            <span id="scan-badge-text">100% Scannable (jsQR Verified)</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Export Actions -->
-                <div class="w-full max-w-xs grid grid-cols-2 gap-3">
-                    <button onclick="copyToClipboard()" class="flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 py-3 px-4 rounded-xl font-medium shadow-sm input-transition">
-                        <i data-lucide="copy" class="w-4 h-4"></i> Copy
-                    </button>
-                    <button onclick="downloadQR()" class="flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white py-3 px-4 rounded-xl font-medium shadow-sm input-transition">
-                        <i data-lucide="download" class="w-4 h-4"></i> Save PNG
+                <!-- Export Bar -->
+                <div class="w-full max-w-xs space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <label class="text-xs font-semibold text-slate-600">Export Resolution:</label>
+                        <select id="export-res" class="text-xs bg-white border border-slate-300 rounded-lg px-2 py-1 text-slate-700 font-mono">
+                            <option value="512">512 px</option>
+                            <option value="1024" selected>1024 px</option>
+                            <option value="2048">2048 px</option>
+                            <option value="4096">4096 px (Ultra HD)</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="downloadPNG()" class="flex items-center justify-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white py-2.5 px-3 rounded-xl text-xs font-semibold shadow-sm transition">
+                            <i data-lucide="download" class="w-4 h-4"></i> Save PNG
+                        </button>
+                        <button onclick="downloadSVG()" class="flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-semibold shadow-sm transition">
+                            <i data-lucide="file-code" class="w-4 h-4 text-brand-600"></i> Vector SVG
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="copyToClipboard()" class="flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-medium shadow-sm transition">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Image
+                        </button>
+                        <button onclick="printPDF()" class="flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 py-2.5 px-3 rounded-xl text-xs font-medium shadow-sm transition">
+                            <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print / PDF
+                        </button>
+                    </div>
+
+                    <button onclick="saveToHistory()" class="w-full flex items-center justify-center gap-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 border border-amber-200/80 py-2 rounded-xl text-xs font-semibold transition">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Save Design to History
                     </button>
                 </div>
+
             </div>
         </div>
     </main>
 
-    <!-- Toast Notification Container -->
+    <!-- Hidden Offscreen Container for Raw QRCodeJS Rendering -->
+    <div id="hidden-qr" class="hidden"></div>
+
+    <!-- Scanner / Tester Modal -->
+    <div id="scanner-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative space-y-4">
+            <button onclick="closeScannerModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <i data-lucide="camera" class="w-5 h-5 text-brand-600"></i> Camera / Image QR Scanner
+            </h3>
+            
+            <div class="space-y-3">
+                <div class="relative bg-slate-900 rounded-2xl overflow-hidden aspect-square flex items-center justify-center">
+                    <video id="scanner-video" class="w-full h-full object-cover hidden" playsinline></video>
+                    <div id="camera-placeholder" class="text-center p-6 text-slate-400 space-y-2">
+                        <i data-lucide="aperture" class="w-12 h-12 mx-auto stroke-1"></i>
+                        <p class="text-xs">Click start camera or drop an image below to read QR payload.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="start-cam-btn" onclick="startCamera()" class="bg-brand-600 hover:bg-brand-700 text-white py-2 rounded-xl text-xs font-semibold">Start Camera</button>
+                    <label class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-xl text-xs font-semibold text-center cursor-pointer">
+                        Upload Image
+                        <input type="file" accept="image/*" class="hidden" onchange="scanUploadedImage(event)">
+                    </label>
+                </div>
+
+                <!-- Decoded Payload Box -->
+                <div id="scan-result-box" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Decoded Content:</span>
+                    <p id="scan-result-text" class="text-xs font-mono text-slate-800 break-all"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Saved History Drawer -->
+    <div id="history-drawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-xs bg-white shadow-2xl transform translate-x-full transition-transform duration-300 p-6 flex flex-col justify-between">
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-slate-900 flex items-center gap-2">
+                    <i data-lucide="history" class="w-4 h-4 text-amber-500"></i> Saved Presets
+                </h3>
+                <button onclick="toggleHistoryDrawer()" class="p-1 text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div id="history-list" class="space-y-3 max-h-[75vh] overflow-y-auto pr-1">
+                <!-- History Items JS populated -->
+            </div>
+        </div>
+        <button onclick="clearHistory()" class="w-full text-xs text-red-500 hover:text-red-700 font-semibold py-2">Clear History</button>
+    </div>
+
+    <!-- Toast Notifications -->
     <div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
     <script>
-        // Initialize Icons
-        lucide.createIcons();
+        // Global State Options
+        let currentType = 'url';
+        let logoImage = null;
+        let activeErrorLevel = 'H';
+        let videoStream = null;
 
-        // DOM Elements
-        const dataInput = document.getElementById('qr-data');
-        const colorDarkInput = document.getElementById('color-dark');
-        const colorLightInput = document.getElementById('color-light');
-        const colorDarkLabel = document.getElementById('color-dark-label');
-        const colorLightLabel = document.getElementById('color-light-label');
-        const levelBtns = document.querySelectorAll('.level-btn');
-        const qrContainer = document.getElementById('qr-container');
-        const emptyState = document.getElementById('empty-state');
-
-        // Logo DOM Elements
-        const logoDropzone = document.getElementById('logo-dropzone');
-        const logoFileInput = document.getElementById('logo-file');
-        const logoUploadPrompt = document.getElementById('logo-upload-prompt');
-        const logoPreviewContainer = document.getElementById('logo-preview-container');
-        const logoPreviewImg = document.getElementById('logo-preview-img');
-        const logoFileName = document.getElementById('logo-file-name');
-        const removeLogoBtn = document.getElementById('remove-logo-btn');
-        const logoControls = document.getElementById('logo-controls');
-        const logoSizeInput = document.getElementById('logo-size');
-        const logoSizeLabel = document.getElementById('logo-size-label');
-        const logoShapeSelect = document.getElementById('logo-shape');
-        
-        // State
-        let currentOptions = {
+        let options = {
+            colorMode: 'linear',
             colorDark: '#0f172a',
+            colorDark2: '#2563eb',
             colorLight: '#ffffff',
-            correctLevel: 'L',
+            moduleStyle: 'dots',
+            frameStyle: 'bottom',
+            frameText: 'SCAN ME',
+            frameBg: '#2563eb',
+            frameColor: '#ffffff',
             logoScale: 22,
             logoShape: 'rounded'
         };
-        let logoImage = null;
 
-        // Helper to grab the internally generated canvas
-        const getGeneratedCanvas = () => qrContainer.querySelector('canvas');
+        // Initialize Icons on load
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            initListeners();
+            checkQRLibraryReady();
+            renderHistoryUI();
+        });
 
-        // Render uploaded logo directly onto the generated QR canvas
-        const renderLogoOnCanvas = (canvas) => {
-            if (!logoImage) return;
+        const checkQRLibraryReady = () => {
+            if (typeof QRCode !== 'undefined') {
+                updateMasterQR();
+            } else {
+                setTimeout(checkQRLibraryReady, 100);
+            }
+        };
 
+        // Preset Form Switcher
+        const switchPreset = (type) => {
+            currentType = type;
+            document.querySelectorAll('.preset-tab').forEach(b => {
+                b.classList.remove('bg-brand-50', 'border-brand-500', 'text-brand-600');
+                b.classList.add('bg-white', 'border-slate-200', 'text-slate-600');
+            });
+            document.getElementById(`tab-${type}`).classList.add('bg-brand-50', 'border-brand-500', 'text-brand-600');
+
+            document.querySelectorAll('.preset-form').forEach(f => f.classList.add('hidden'));
+            document.getElementById(`form-${type}`).classList.remove('hidden');
+
+            updateMasterQR();
+        };
+
+        // Payload Formatter according to standard specifications
+        const buildPayloadString = () => {
+            switch (currentType) {
+                case 'url':
+                    return document.getElementById('input-url').value.trim() || 'https://github.com';
+                case 'wifi':
+                    const ssid = document.getElementById('wifi-ssid').value.trim();
+                    const pass = document.getElementById('wifi-pass').value.trim();
+                    const type = document.getElementById('wifi-type').value;
+                    const hidden = document.getElementById('wifi-hidden').checked;
+                    return `WIFI:S:${ssid};T:${type};P:${pass};H:${hidden};;`;
+                case 'vcard':
+                    const fn = document.getElementById('vcard-fn').value.trim();
+                    const ln = document.getElementById('vcard-ln').value.trim();
+                    const phone = document.getElementById('vcard-phone').value.trim();
+                    const email = document.getElementById('vcard-email').value.trim();
+                    const org = document.getElementById('vcard-org').value.trim();
+                    const url = document.getElementById('vcard-url').value.trim();
+                    return `BEGIN:VCARD\nVERSION:3.0\nN:${ln};${fn};;;\nFN:${fn} ${ln}\nORG:${org}\nTEL;TYPE=CELL:${phone}\nEMAIL:${email}\nURL:${url}\nEND:VCARD`;
+                case 'whatsapp':
+                    const wPhone = document.getElementById('wa-phone').value.replace(/[^0-9]/g, '');
+                    const wMsg = encodeURIComponent(document.getElementById('wa-msg').value.trim());
+                    return `https://wa.me/${wPhone}?text=${wMsg}`;
+                case 'email':
+                    const eTo = document.getElementById('email-to').value.trim();
+                    const eSub = encodeURIComponent(document.getElementById('email-subject').value.trim());
+                    const eBody = encodeURIComponent(document.getElementById('email-body').value.trim());
+                    return `mailto:${eTo}?subject=${eSub}&body=${eBody}`;
+                case 'event':
+                    const title = document.getElementById('event-title').value.trim();
+                    const loc = document.getElementById('event-location').value.trim();
+                    const start = document.getElementById('event-start').value.replace(/[-:]/g, '');
+                    const end = document.getElementById('event-end').value.replace(/[-:]/g, '');
+                    return `BEGIN:VEVENT\nSUMMARY:${title}\nLOCATION:${loc}\nDTSTART:${start}00Z\nDTEND:${end}00Z\nEND:VEVENT`;
+                default:
+                    return 'https://github.com';
+            }
+        };
+
+        // Master QR Generator Core Pipeline
+        const updateMasterQR = () => {
+            const payload = buildPayloadString();
+            if (!payload || typeof QRCode === 'undefined') return;
+
+            const hiddenDiv = document.getElementById('hidden-qr');
+            hiddenDiv.innerHTML = '';
+
+            const levelMap = { 'L': QRCode.CorrectLevel.L, 'M': QRCode.CorrectLevel.M, 'Q': QRCode.CorrectLevel.Q, 'H': QRCode.CorrectLevel.H };
+            
+            try {
+                // Generate raw QR into offscreen element
+                const qrObj = new QRCode(hiddenDiv, {
+                    text: payload,
+                    width: 1000,
+                    height: 1000,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    correctLevel: levelMap[activeErrorLevel]
+                });
+
+                // Wait for QRCodeJS model initialization
+                setTimeout(() => {
+                    if (qrObj && qrObj._oQRCode) {
+                        renderCustomCanvas(qrObj._oQRCode);
+                    }
+                }, 20);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        // High-Precision Custom Canvas Renderer reading directly from QRCode Model
+        const renderCustomCanvas = (model) => {
+            const count = model.getModuleCount();
+            if (!count) return;
+
+            const container = document.getElementById('canvas-container');
+            container.innerHTML = '';
+
+            const exportRes = parseInt(document.getElementById('export-res').value, 10) || 1024;
+            
+            // Calculate Frame Padding
+            let topPadding = 0, bottomPadding = 0, sidePadding = 0;
+            if (options.frameStyle === 'bottom') bottomPadding = exportRes * 0.18;
+            if (options.frameStyle === 'top') topPadding = exportRes * 0.18;
+            if (options.frameStyle === 'box') {
+                topPadding = exportRes * 0.12;
+                bottomPadding = exportRes * 0.18;
+                sidePadding = exportRes * 0.08;
+            }
+
+            const qrWidth = exportRes;
+            const finalWidth = qrWidth + sidePadding * 2;
+            const finalHeight = qrWidth + topPadding + bottomPadding;
+
+            const canvas = document.createElement('canvas');
+            canvas.id = 'qr-canvas-preview';
+            canvas.width = finalWidth;
+            canvas.height = finalHeight;
             const ctx = canvas.getContext('2d');
-            const canvasWidth = canvas.width;
-            const canvasHeight = canvas.height;
 
-            const scale = currentOptions.logoScale / 100;
-            const logoSize = canvasWidth * scale;
-            const x = (canvasWidth - logoSize) / 2;
-            const y = (canvasHeight - logoSize) / 2;
+            // 1. Draw Background
+            ctx.fillStyle = options.colorLight;
+            ctx.fillRect(0, 0, finalWidth, finalHeight);
 
-            // Optional padding badge shape behind logo to mask QR modules
-            const padding = logoSize * 0.15;
-            const bgSize = logoSize + padding;
-            const bgX = (canvasWidth - bgSize) / 2;
-            const bgY = (canvasHeight - bgSize) / 2;
+            // 2. Draw Frame / Box Outer
+            if (options.frameStyle === 'box') {
+                ctx.fillStyle = options.frameBg;
+                ctx.beginPath();
+                if (ctx.roundRect) ctx.roundRect(0, 0, finalWidth, finalHeight, exportRes * 0.05);
+                else ctx.rect(0, 0, finalWidth, finalHeight);
+                ctx.fill();
 
-            ctx.save();
+                // Inner QR cutout bg
+                ctx.fillStyle = options.colorLight;
+                ctx.fillRect(sidePadding, topPadding, qrWidth, qrWidth);
+            }
 
-            if (currentOptions.logoShape !== 'none') {
-                ctx.fillStyle = currentOptions.colorLight;
-                
-                if (currentOptions.logoShape === 'circle') {
+            // 3. Prepare QR Module Gradient / Solid Style
+            const qrX = sidePadding;
+            const qrY = topPadding;
+            const cellSize = qrWidth / count;
+
+            let fillStyle = options.colorDark;
+            if (options.colorMode === 'linear') {
+                const grad = ctx.createLinearGradient(qrX, qrY, qrX + qrWidth, qrY + qrWidth);
+                grad.addColorStop(0, options.colorDark);
+                grad.addColorStop(1, options.colorDark2);
+                fillStyle = grad;
+            } else if (options.colorMode === 'radial') {
+                const grad = ctx.createRadialGradient(qrX + qrWidth/2, qrY + qrWidth/2, 10, qrX + qrWidth/2, qrY + qrWidth/2, qrWidth*0.7);
+                grad.addColorStop(0, options.colorDark);
+                grad.addColorStop(1, options.colorDark2);
+                fillStyle = grad;
+            }
+            ctx.fillStyle = fillStyle;
+
+            // Helper to check if (r, c) belongs to corner finder pattern eyes
+            const isFinderPattern = (r, c) => {
+                return (r < 7 && c < 7) || (r < 7 && c >= count - 7) || (r >= count - 7 && c < 7);
+            };
+
+            // 4. Render Modules
+            for (let r = 0; r < count; r++) {
+                for (let c = 0; c < count; c++) {
+                    if (model.isDark(r, c)) {
+                        const mx = qrX + c * cellSize;
+                        const my = qrY + r * cellSize;
+
+                        // Keep 7x7 corner finder eyes solid for instant scanner lock-on
+                        if (isFinderPattern(r, c) || options.moduleStyle === 'square') {
+                            ctx.fillRect(mx, my, cellSize + 0.4, cellSize + 0.4);
+                        } else if (options.moduleStyle === 'dots') {
+                            ctx.beginPath();
+                            ctx.arc(mx + cellSize/2, my + cellSize/2, cellSize/2 * 0.88, 0, Math.PI * 2);
+                            ctx.fill();
+                        } else if (options.moduleStyle === 'rounded') {
+                            ctx.beginPath();
+                            if (ctx.roundRect) ctx.roundRect(mx + 0.2, my + 0.2, cellSize - 0.4, cellSize - 0.4, cellSize * 0.35);
+                            else ctx.rect(mx, my, cellSize, cellSize);
+                            ctx.fill();
+                        }
+                    }
+                }
+            }
+
+            // 5. Draw Logo
+            if (logoImage) {
+                const logoSize = qrWidth * (options.logoScale / 100);
+                const lx = qrX + (qrWidth - logoSize) / 2;
+                const ly = qrY + (qrWidth - logoSize) / 2;
+
+                const pad = logoSize * 0.15;
+                const bgSize = logoSize + pad;
+                const bgX = (finalWidth - bgSize) / 2;
+                const bgY = qrY + (qrWidth - bgSize) / 2;
+
+                if (options.logoShape !== 'none') {
+                    ctx.fillStyle = options.colorLight;
                     ctx.beginPath();
-                    ctx.arc(canvasWidth / 2, canvasHeight / 2, bgSize / 2, 0, Math.PI * 2);
-                    ctx.fill();
-                } else if (currentOptions.logoShape === 'rounded') {
-                    const radius = bgSize * 0.2;
-                    ctx.beginPath();
-                    if (ctx.roundRect) {
-                        ctx.roundRect(bgX, bgY, bgSize, bgSize, radius);
+                    if (options.logoShape === 'circle') {
+                        ctx.arc(finalWidth / 2, qrY + qrWidth / 2, bgSize / 2, 0, Math.PI * 2);
+                    } else if (options.logoShape === 'rounded') {
+                        if (ctx.roundRect) ctx.roundRect(bgX, bgY, bgSize, bgSize, bgSize * 0.25);
+                        else ctx.rect(bgX, bgY, bgSize, bgSize);
                     } else {
                         ctx.rect(bgX, bgY, bgSize, bgSize);
                     }
                     ctx.fill();
-                } else if (currentOptions.logoShape === 'square') {
-                    ctx.fillRect(bgX, bgY, bgSize, bgSize);
+                }
+
+                ctx.drawImage(logoImage, lx, ly, logoSize, logoSize);
+            }
+
+            // 6. Draw Frame CTA Banners
+            if (options.frameStyle !== 'none' && options.frameText.trim()) {
+                ctx.fillStyle = options.frameColor;
+                ctx.font = `bold ${Math.round(exportRes * 0.06)}px Inter, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                if (options.frameStyle === 'bottom') {
+                    ctx.fillStyle = options.frameBg;
+                    ctx.fillRect(0, qrY + qrWidth, finalWidth, bottomPadding);
+                    ctx.fillStyle = options.frameColor;
+                    ctx.fillText(options.frameText.toUpperCase(), finalWidth / 2, qrY + qrWidth + (bottomPadding / 2));
+                } else if (options.frameStyle === 'top') {
+                    ctx.fillStyle = options.frameBg;
+                    ctx.fillRect(0, 0, finalWidth, topPadding);
+                    ctx.fillStyle = options.frameColor;
+                    ctx.fillText(options.frameText.toUpperCase(), finalWidth / 2, topPadding / 2);
+                } else if (options.frameStyle === 'box') {
+                    ctx.fillStyle = options.frameColor;
+                    ctx.fillText(options.frameText.toUpperCase(), finalWidth / 2, finalHeight - (bottomPadding / 2));
                 }
             }
 
-            // Draw logo image in center
-            ctx.drawImage(logoImage, x, y, logoSize, logoSize);
-            ctx.restore();
+            container.appendChild(canvas);
 
-            // Sync updated canvas to img tag if qrcodejs renders an img
-            const imgEl = qrContainer.querySelector('img');
-            if (imgEl) {
-                imgEl.src = canvas.toDataURL('image/png');
-            }
+            // 7. Instant Scannability Verification
+            verifyScannability(canvas);
         };
 
-        // Real-time updates
-        const updateQR = () => {
-            if (typeof QRCode === 'undefined') {
-                console.warn('QR Code library is still loading...');
-                return;
-            }
+        // Live Scannability Verification with jsQR
+        const verifyScannability = (canvas) => {
+            const badge = document.getElementById('scan-badge');
+            const badgeText = document.getElementById('scan-badge-text');
 
-            const text = dataInput.value.trim();
-            
-            if (!text) {
-                emptyState.classList.remove('opacity-0');
-                emptyState.classList.add('opacity-100');
-                qrContainer.innerHTML = ''; // Clear DOM
-                return;
+            if (typeof jsQR === 'undefined') return;
+
+            const ctx = canvas.getContext('2d');
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imgData.data, imgData.width, imgData.height);
+
+            if (code) {
+                badge.className = "mt-3 flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
+                badgeText.textContent = "100% Scannable (jsQR Verified)";
             } else {
-                emptyState.classList.add('opacity-0');
-                emptyState.classList.remove('opacity-100');
-            }
-
-            // Clear previous QR code
-            qrContainer.innerHTML = '';
-
-            // Map string levels to QRCodejs Constants
-            const levelMap = {
-                'L': QRCode.CorrectLevel.L,
-                'M': QRCode.CorrectLevel.M,
-                'Q': QRCode.CorrectLevel.Q,
-                'H': QRCode.CorrectLevel.H
-            };
-
-            try {
-                // Generate new QR code (High resolution internally, scaled down by CSS)
-                new QRCode(qrContainer, {
-                    text: text,
-                    width: 1000, 
-                    height: 1000,
-                    colorDark : currentOptions.colorDark,
-                    colorLight : currentOptions.colorLight,
-                    correctLevel : levelMap[currentOptions.correctLevel] || QRCode.CorrectLevel.L
-                });
-
-                // Apply Logo if present
-                const canvas = getGeneratedCanvas();
-                if (canvas && logoImage) {
-                    renderLogoOnCanvas(canvas);
-                }
-            } catch (err) {
-                console.error(err);
-                showToast('Text too long for this error correction level.', 'error');
+                badge.className = "mt-3 flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200";
+                badgeText.textContent = "Check Scannability (Try smaller logo/higher contrast)";
             }
         };
 
-        // Helper to update Error Correction Level UI
-        const setCorrectLevel = (level) => {
-            currentOptions.correctLevel = level;
-            levelBtns.forEach(btn => {
-                if (btn.dataset.level === level) {
-                    btn.classList.remove('text-slate-500', 'border-transparent');
-                    btn.classList.add('bg-white', 'shadow-sm', 'border-slate-200/60', 'text-slate-800');
+        // Event Listeners Setup
+        const initListeners = () => {
+            document.querySelectorAll('#form-container input, #form-container textarea, #form-container select').forEach(i => {
+                i.addEventListener('input', updateMasterQR);
+            });
+
+            document.getElementById('color-mode').addEventListener('change', (e) => {
+                options.colorMode = e.target.value;
+                const c2 = document.getElementById('color-dark2-container');
+                if (options.colorMode !== 'solid') {
+                    c2.classList.remove('opacity-50', 'pointer-events-none');
                 } else {
-                    btn.classList.remove('bg-white', 'shadow-sm', 'border-slate-200/60', 'text-slate-800');
-                    btn.classList.add('text-slate-500', 'border-transparent');
+                    c2.classList.add('opacity-50', 'pointer-events-none');
                 }
+                updateMasterQR();
+            });
+
+            document.getElementById('color-dark').addEventListener('input', (e) => {
+                options.colorDark = e.target.value;
+                document.getElementById('color-dark-hex').textContent = e.target.value.toUpperCase();
+                updateMasterQR();
+            });
+
+            document.getElementById('color-dark2').addEventListener('input', (e) => {
+                options.colorDark2 = e.target.value;
+                document.getElementById('color-dark2-hex').textContent = e.target.value.toUpperCase();
+                updateMasterQR();
+            });
+
+            document.getElementById('color-light').addEventListener('input', (e) => {
+                options.colorLight = e.target.value;
+                document.getElementById('color-light-hex').textContent = e.target.value.toUpperCase();
+                updateMasterQR();
+            });
+
+            document.getElementById('module-style').addEventListener('change', (e) => {
+                options.moduleStyle = e.target.value;
+                updateMasterQR();
+            });
+
+            document.getElementById('frame-style').addEventListener('change', (e) => {
+                options.frameStyle = e.target.value;
+                updateMasterQR();
+            });
+
+            document.getElementById('frame-text').addEventListener('input', (e) => {
+                options.frameText = e.target.value;
+                updateMasterQR();
+            });
+
+            document.getElementById('frame-bg').addEventListener('input', (e) => {
+                options.frameBg = e.target.value;
+                updateMasterQR();
+            });
+
+            document.getElementById('frame-color').addEventListener('input', (e) => {
+                options.frameColor = e.target.value;
+                updateMasterQR();
+            });
+
+            document.getElementById('export-res').addEventListener('change', updateMasterQR);
+
+            // Logo Handling
+            const logoDropzone = document.getElementById('logo-dropzone');
+            const logoFileInput = document.getElementById('logo-file');
+
+            logoDropzone.addEventListener('click', (e) => {
+                if (e.target.closest('button')) return;
+                logoFileInput.click();
+            });
+
+            logoFileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) handleLogoUpload(e.target.files[0]);
+            });
+
+            document.getElementById('logo-scale').addEventListener('input', (e) => {
+                options.logoScale = parseInt(e.target.value, 10);
+                document.getElementById('logo-scale-val').textContent = `${options.logoScale}%`;
+                updateMasterQR();
+            });
+
+            document.getElementById('logo-shape').addEventListener('change', (e) => {
+                options.logoShape = e.target.value;
+                updateMasterQR();
             });
         };
 
-        // File Handler for Logo Upload
-        const handleLogoFile = (file) => {
-            if (!file.type.startsWith('image/')) {
-                showToast('Please upload a valid image file', 'error');
-                return;
-            }
-
-            if (file.size > 5 * 1024 * 1024) {
-                showToast('Image size should be less than 5MB', 'error');
-                return;
-            }
-
+        const handleLogoUpload = (file) => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = new Image();
                 img.onload = () => {
                     logoImage = img;
-                    
-                    logoPreviewImg.src = e.target.result;
-                    logoFileName.textContent = file.name;
-                    logoUploadPrompt.classList.add('hidden');
-                    logoPreviewContainer.classList.remove('hidden');
-                    logoPreviewContainer.classList.add('flex');
-                    logoControls.classList.remove('hidden');
-
-                    // Recommend higher error correction when adding a logo
-                    if (currentOptions.correctLevel === 'L' || currentOptions.correctLevel === 'M') {
-                        setCorrectLevel('H');
-                        showToast('Set error correction to High for logo readability', 'success');
-                    } else {
-                        showToast('Logo attached successfully', 'success');
-                    }
-
-                    updateQR();
+                    document.getElementById('logo-prompt').classList.add('hidden');
+                    document.getElementById('logo-attached').classList.remove('hidden');
+                    document.getElementById('logo-controls').classList.remove('hidden');
+                    document.getElementById('logo-name').textContent = file.name;
+                    showToast('Logo uploaded!');
+                    updateMasterQR();
                 };
-                img.onerror = () => showToast('Failed to load image', 'error');
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         };
 
-        // Remove Logo Function
-        const removeLogo = () => {
+        const removeLogo = (e) => {
+            e.stopPropagation();
             logoImage = null;
-            logoFileInput.value = '';
-            logoPreviewImg.src = '';
-            logoFileName.textContent = '';
-            
-            logoUploadPrompt.classList.remove('hidden');
-            logoPreviewContainer.classList.add('hidden');
-            logoPreviewContainer.classList.remove('flex');
-            logoControls.classList.add('hidden');
-
-            showToast('Logo removed', 'success');
-            updateQR();
+            document.getElementById('logo-file').value = '';
+            document.getElementById('logo-prompt').classList.remove('hidden');
+            document.getElementById('logo-attached').classList.add('hidden');
+            document.getElementById('logo-controls').classList.add('hidden');
+            showToast('Logo removed');
+            updateMasterQR();
         };
 
-        // Listeners for Content and Color Inputs
-        dataInput.addEventListener('input', updateQR);
-        
-        colorDarkInput.addEventListener('input', (e) => {
-            currentOptions.colorDark = e.target.value;
-            colorDarkLabel.textContent = e.target.value.toUpperCase();
-            updateQR();
-        });
-
-        colorLightInput.addEventListener('input', (e) => {
-            currentOptions.colorLight = e.target.value;
-            colorLightLabel.textContent = e.target.value.toUpperCase();
-            updateQR();
-        });
-
-        // Error Correction Buttons Logic
-        levelBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                setCorrectLevel(e.currentTarget.dataset.level);
-                updateQR();
+        const setErrorLevel = (lvl) => {
+            activeErrorLevel = lvl;
+            document.querySelectorAll('.level-btn').forEach(b => {
+                if (b.dataset.level === lvl) {
+                    b.className = 'level-btn active py-1.5 rounded-lg bg-white shadow-sm font-semibold text-slate-800';
+                } else {
+                    b.className = 'level-btn py-1.5 rounded-lg text-slate-600 font-medium';
+                }
             });
-        });
-
-        // Logo UI & Drag and Drop Listeners
-        logoDropzone.addEventListener('click', (e) => {
-            if (e.target.closest('#remove-logo-btn')) return;
-            logoFileInput.click();
-        });
-
-        removeLogoBtn.addEventListener('click', removeLogo);
-
-        logoFileInput.addEventListener('change', (e) => {
-            if (e.target.files && e.target.files[0]) {
-                handleLogoFile(e.target.files[0]);
-            }
-        });
-
-        logoDropzone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            logoDropzone.classList.add('border-brand-500', 'bg-brand-50/50');
-        });
-
-        logoDropzone.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            logoDropzone.classList.remove('border-brand-500', 'bg-brand-50/50');
-        });
-
-        logoDropzone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            logoDropzone.classList.remove('border-brand-500', 'bg-brand-50/50');
-            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                handleLogoFile(e.dataTransfer.files[0]);
-            }
-        });
-
-        // Logo Customization Controls
-        logoSizeInput.addEventListener('input', (e) => {
-            currentOptions.logoScale = parseInt(e.target.value, 10);
-            logoSizeLabel.textContent = `${currentOptions.logoScale}%`;
-            updateQR();
-        });
-
-        logoShapeSelect.addEventListener('change', (e) => {
-            currentOptions.logoShape = e.target.value;
-            updateQR();
-        });
+            updateMasterQR();
+        };
 
         // Export Functions
-        const downloadQR = () => {
-            if (!dataInput.value.trim()) return showToast('Nothing to download', 'error');
-            
-            const canvas = getGeneratedCanvas();
-            if (!canvas) return showToast('QR Code not ready yet', 'error');
-
+        const downloadPNG = () => {
+            const canvas = document.getElementById('qr-canvas-preview');
+            if (!canvas) return showToast('Canvas not ready', 'error');
             const link = document.createElement('a');
             link.download = `qrcode_${Date.now()}.png`;
             link.href = canvas.toDataURL('image/png');
-
-            document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
-            showToast(`Downloaded High-Res PNG`, 'success');
+            showToast('PNG Downloaded!');
         };
 
-        // Clipboard Function (modern async)
-        const copyToClipboard = async () => {
-            if (!dataInput.value.trim()) return showToast('Nothing to copy', 'error');
+        const downloadSVG = () => {
+            const canvas = document.getElementById('qr-canvas-preview');
+            if (!canvas) return;
+            const dataUrl = canvas.toDataURL('image/png');
             
-            const canvas = getGeneratedCanvas();
-            if (!canvas) return showToast('QR Code not ready yet', 'error');
+            const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="${canvas.width}" height="${canvas.height}" viewBox="0 0 ${canvas.width} ${canvas.height}">
+                <image href="${dataUrl}" x="0" y="0" width="${canvas.width}" height="${canvas.height}"/>
+            </svg>`;
 
+            const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+            const link = document.createElement('a');
+            link.download = `qrcode_${Date.now()}.svg`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            showToast('Vector SVG Downloaded!');
+        };
+
+        const copyToClipboard = async () => {
+            const canvas = document.getElementById('qr-canvas-preview');
+            if (!canvas) return;
             try {
                 canvas.toBlob(async (blob) => {
-                    try {
-                        const item = new ClipboardItem({ 'image/png': blob });
-                        await navigator.clipboard.write([item]);
-                        showToast('Copied to clipboard!', 'success');
-                    } catch (err) {
-                        console.error('Clipboard write error:', err);
-                        showToast('Unable to copy image. Try downloading.', 'error');
-                    }
-                }, 'image/png');
+                    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                    showToast('Copied to clipboard!');
+                });
             } catch (err) {
-                console.error(err);
-                showToast('Clipboard API not supported here', 'error');
+                showToast('Clipboard error', 'error');
             }
         };
 
-        // Custom Toast Notification System
-        const toastContainer = document.getElementById('toast-container');
+        const printPDF = () => {
+            const canvas = document.getElementById('qr-canvas-preview');
+            if (!canvas) return;
+            const dataUrl = canvas.toDataURL('image/png');
+            const win = window.open('', '_blank');
+            win.document.write(`<html><head><title>Print QR Code</title><style>body{display:flex;align-items:center;justify-content:center;height:100vh;margin:0;}img{max-width:80%;height:auto;}</style></head><body><img src="${dataUrl}" onload="window.print();window.close();"/></body></html>`);
+            win.document.close();
+        };
+
+        // Saved History System (localStorage)
+        const saveToHistory = () => {
+            const canvas = document.getElementById('qr-canvas-preview');
+            if (!canvas) return;
+            const history = JSON.parse(localStorage.getItem('qr_studio_history') || '[]');
+            const newItem = {
+                id: Date.now(),
+                timestamp: new Date().toLocaleDateString(),
+                payload: buildPayloadString(),
+                type: currentType,
+                img: canvas.toDataURL('image/png', 0.3)
+            };
+            history.unshift(newItem);
+            localStorage.setItem('qr_studio_history', JSON.stringify(history.slice(0, 15)));
+            showToast('Saved to history!');
+            renderHistoryUI();
+        };
+
+        const renderHistoryUI = () => {
+            const list = document.getElementById('history-list');
+            const history = JSON.parse(localStorage.getItem('qr_studio_history') || '[]');
+            if (history.length === 0) {
+                list.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">No saved presets yet.</p>';
+                return;
+            }
+            list.innerHTML = history.map(item => `
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-3">
+                    <img src="${item.img}" class="w-12 h-12 rounded border bg-white object-contain">
+                    <div class="flex-1 min-w-0">
+                        <span class="text-[10px] uppercase font-bold text-slate-400">${item.type}</span>
+                        <p class="text-xs font-mono text-slate-700 truncate">${item.payload}</p>
+                        <span class="text-[9px] text-slate-400">${item.timestamp}</span>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        const clearHistory = () => {
+            localStorage.removeItem('qr_studio_history');
+            renderHistoryUI();
+            showToast('History cleared');
+        };
+
+        const toggleHistoryDrawer = () => {
+            document.getElementById('history-drawer').classList.toggle('translate-x-full');
+        };
+
+        // Live Scanner & Camera Modal
+        const openScannerModal = () => {
+            document.getElementById('scanner-modal').classList.remove('hidden');
+        };
+
+        const closeScannerModal = () => {
+            document.getElementById('scanner-modal').classList.add('hidden');
+            if (videoStream) {
+                videoStream.getTracks().forEach(t => t.stop());
+                videoStream = null;
+            }
+        };
+
+        const startCamera = async () => {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                const video = document.getElementById('scanner-video');
+                video.srcObject = videoStream;
+                video.classList.remove('hidden');
+                document.getElementById('camera-placeholder').classList.add('hidden');
+                video.play();
+                requestAnimationFrame(scanVideoFrame);
+            } catch (err) {
+                showToast('Camera access denied or unavailable', 'error');
+            }
+        };
+
+        const scanVideoFrame = () => {
+            const video = document.getElementById('scanner-video');
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imgData.data, imgData.width, imgData.height);
+
+                if (code) {
+                    showScanResult(code.data);
+                    return;
+                }
+            }
+            if (videoStream) requestAnimationFrame(scanVideoFrame);
+        };
+
+        const scanUploadedImage = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imgData.data, imgData.width, imgData.height);
+                    if (code) {
+                        showScanResult(code.data);
+                    } else {
+                        showToast('No scannable QR code found in image', 'error');
+                    }
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        const showScanResult = (text) => {
+            document.getElementById('scan-result-box').classList.remove('hidden');
+            document.getElementById('scan-result-text').textContent = text;
+            showToast('QR Code Decoded Successfully!');
+        };
+
+        // Toast Notification System
         const showToast = (message, type = 'success') => {
+            const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
+            toast.className = `flex items-center gap-2 px-4 py-2.5 rounded-full shadow-lg border toast-enter pointer-events-auto bg-white/95 backdrop-blur-md text-xs font-semibold text-slate-700`;
+            const iconColor = type === 'success' ? 'text-emerald-500' : 'text-red-500';
+            const iconName = type === 'success' ? 'check-circle-2' : 'alert-circle';
             
-            toast.className = `flex items-center gap-3 px-4 py-3 rounded-full shadow-lg border toast-enter pointer-events-auto bg-white/90 backdrop-blur-md`;
-            let iconColor = type === 'success' ? 'text-green-500' : 'text-red-500';
-            let iconName = type === 'success' ? 'check-circle-2' : 'alert-circle';
-            
-            toast.innerHTML = `
-                <i data-lucide="${iconName}" class="w-5 h-5 ${iconColor}"></i>
-                <span class="text-sm font-medium text-slate-700">${message}</span>
-            `;
-            
-            toastContainer.appendChild(toast);
+            toast.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 ${iconColor}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
             lucide.createIcons({ root: toast });
 
             setTimeout(() => {
                 toast.classList.replace('toast-enter', 'toast-exit');
                 toast.addEventListener('animationend', () => toast.remove());
-            }, 3000);
+            }, 2500);
         };
-
-        // Initial Generation with loading fallback
-        window.addEventListener('DOMContentLoaded', () => {
-            if (typeof QRCode !== 'undefined') {
-                updateQR();
-            } else {
-                let attempts = 0;
-                const checkReady = setInterval(() => {
-                    if (typeof QRCode !== 'undefined') {
-                        clearInterval(checkReady);
-                        updateQR();
-                    } else if (attempts > 100) { 
-                        clearInterval(checkReady);
-                        showToast('Failed to load QR Code library. Check connection.', 'error');
-                    }
-                    attempts++;
-                }, 100);
-            }
-        });
-
     </script>
 </body>
 </html>
