@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="description" content="Itinéraire interactif de 21 jours au Guatemala et au Belize.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Guatemala Belize">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <title>Guatemala & Belize | Carnet de route</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7faf9;
+      --surface: #ffffff;
+      --surface-soft: #eef7f4;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #dbe7e3;
+      --teal: #0f766e;
+      --teal-dark: #115e59;
+      --teal-soft: #d9efea;
+      --sand: #f4b860;
+      --sand-soft: #fef2d8;
+      --green-soft: #dcfce7;
+      --green-ink: #166534;
+      --orange-soft: #ffedd5;
+      --orange-ink: #9a3412;
+      --shadow: 0 16px 40px rgba(15, 118, 110, .08);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 10% 0%, #e8f5f1 0, transparent 28rem), var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    button { font: inherit; }
+    .shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 42px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 26px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; background: var(--teal); color: white; box-shadow: 0 10px 22px rgba(15,118,110,.2); }
+    .brand-mark svg { width: 22px; height: 22px; }
+    .eyebrow { margin: 0; color: var(--teal); font-size: 11px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+    .brand-title { margin: 1px 0 0; font-weight: 750; letter-spacing: -.02em; }
+    .top-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+    .button { border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); cursor: pointer; padding: 10px 14px; font-size: 13px; font-weight: 700; transition: .2s ease; }
+    .button:hover { border-color: var(--teal); color: var(--teal-dark); transform: translateY(-1px); }
+    .button.primary { border-color: var(--teal); background: var(--teal); color: white; }
+    .button.primary:hover { background: var(--teal-dark); color: white; }
+    .button.hidden { display: none; }
+    .hero { display: grid; grid-template-columns: 1.3fr .7fr; gap: 18px; align-items: stretch; margin-bottom: 18px; }
+    .hero-card, .date-card, .panel { background: rgba(255,255,255,.9); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .hero-card { padding: 30px; background: linear-gradient(135deg, #0b5f59, #0f766e 58%, #169b8d); color: white; position: relative; overflow: hidden; }
+    .hero-card::after { content: ""; width: 230px; height: 230px; border: 1px solid rgba(255,255,255,.22); border-radius: 50%; position: absolute; right: -48px; bottom: -92px; box-shadow: 0 0 0 22px rgba(255,255,255,.07), 0 0 0 44px rgba(255,255,255,.04); }
+    .hero-card .eyebrow { color: #b8eee5; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2 { font-family: Georgia, "Times New Roman", serif; letter-spacing: -.035em; }
+    h1 { font-size: clamp(38px, 6vw, 64px); line-height: .98; margin: 12px 0 14px; max-width: 640px; }
+    .hero-copy { max-width: 620px; color: #e5fffb; font-size: 16px; margin-bottom: 0; }
+    .date-card { padding: 24px; display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(160deg, #fff, #fff8eb); }
+    .date-label { color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    .date-value { font-family: Georgia, "Times New Roman", serif; font-size: 28px; line-height: 1.1; margin: 7px 0 20px; }
+    .date-note { color: var(--muted); font-size: 13px; margin-bottom: 0; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 18px 0; }
+    .stat { border: 1px solid var(--line); background: var(--surface); border-radius: 16px; padding: 14px 16px; }
+    .stat.dark { background: #0f172a; color: white; border-color: #0f172a; }
+    .stat-label { color: var(--muted); font-size: 12px; }
+    .stat.dark .stat-label { color: #cbd5e1; }
+    .stat-value { font-size: 25px; font-weight: 800; margin-top: 4px; }
+    .stat-value small { font-size: 12px; font-weight: 500; color: var(--muted); }
+    .stat.dark .stat-value small { color: #cbd5e1; }
+    .main-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(340px, .92fr); gap: 18px; align-items: start; }
+    .map-panel { overflow: hidden; }
+    .map-heading { padding: 22px 22px 0; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+    .panel-kicker { color: var(--teal); font-size: 11px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+    h2 { font-size: 27px; margin: 5px 0 0; }
+    .map-note { color: var(--muted); font-size: 12px; margin: 0; text-align: right; }
+    .map-wrap { margin: 12px; border-radius: 18px; overflow: hidden; background: var(--surface-soft); border: 1px solid #cbe6df; }
+    .map-embed { display: block; width: 100%; height: 480px; border: 0; background: var(--surface-soft); }
+    .map-land { fill: #d8ebe4; stroke: #9fcabf; stroke-width: 2; }
+    .map-route-under { fill: none; stroke: #f7d9a2; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; opacity: .62; }
+    .map-route { fill: none; stroke: var(--teal); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+    .map-node { cursor: pointer; }
+    .map-node circle { fill: var(--teal); stroke: white; stroke-width: 4; transition: .2s ease; }
+    .map-node text { fill: #164e63; font-size: 11px; font-weight: 600; pointer-events: none; }
+    .map-node.active circle { fill: var(--sand); r: 12; }
+    .map-node.active text { font-weight: 800; }
+    .map-legend { display: flex; gap: 14px; flex-wrap: wrap; padding: 0 22px 20px; color: var(--muted); font-size: 12px; }
+    .legend-item { display: inline-flex; align-items: center; gap: 7px; }
+    .legend-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--teal); }
+    .legend-dot.active { background: var(--sand); }
+    .side-stack { display: grid; gap: 18px; }
+    .panel { padding: 22px; }
+    .selected-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .selected-date { color: var(--muted); font-size: 13px; margin: 5px 0 0; }
+    .pill { border-radius: 999px; display: inline-flex; align-items: center; gap: 5px; padding: 6px 10px; font-size: 11px; font-weight: 800; white-space: nowrap; }
+    .pill.green { background: var(--green-soft); color: var(--green-ink); }
+    .pill.orange { background: var(--orange-soft); color: var(--orange-ink); }
+    .pill.teal { background: var(--teal-soft); color: var(--teal-dark); }
+    .detail-box { display: flex; gap: 10px; margin: 18px 0 13px; padding: 13px; border-radius: 15px; background: var(--surface-soft); color: #334155; font-size: 14px; }
+    .detail-box svg { width: 17px; height: 17px; flex: 0 0 auto; color: var(--teal); margin-top: 2px; }
+    .detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .detail-item { border: 1px solid var(--line); border-radius: 15px; padding: 12px; }
+    .detail-label { color: var(--muted); font-size: 11px; }
+    .detail-value { font-size: 13px; font-weight: 750; margin-top: 4px; }
+    .reserved { display: flex; gap: 7px; align-items: center; color: var(--green-ink); font-size: 13px; font-weight: 750; margin: 14px 0 0; }
+    .reserved svg { width: 16px; height: 16px; }
+    .travel-title { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .travel-list { display: grid; gap: 8px; margin-top: 16px; }
+    .travel-row { display: grid; grid-template-columns: 32px minmax(0,1fr) auto; gap: 10px; align-items: center; border: 1px solid var(--line); border-radius: 14px; padding: 9px 10px; }
+    .mode { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: var(--teal-soft); color: var(--teal-dark); font-size: 13px; font-weight: 900; }
+    .travel-route { font-size: 13px; font-weight: 750; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .travel-mode { color: var(--muted); font-size: 11px; }
+    .travel-time { color: var(--teal-dark); font-size: 11px; font-weight: 850; white-space: nowrap; }
+    .travel-time.confirm { color: #a16207; }
+    .fine-print { color: var(--muted); font-size: 11px; margin: 13px 0 0; }
+    .program { margin-top: 18px; padding: 22px; }
+    .program-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; border-bottom: 1px solid var(--line); padding-bottom: 18px; }
+    .filters { display: flex; flex-wrap: wrap; gap: 7px; justify-content: flex-end; }
+    .filter { border: 0; border-radius: 999px; padding: 8px 11px; background: #eff4f3; color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 800; }
+    .filter:hover { background: var(--teal-soft); color: var(--teal-dark); }
+    .filter.active { background: var(--teal); color: white; }
+    .filter.transfer.active { background: var(--sand); color: #422006; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(285px, 1fr)); gap: 10px; margin-top: 18px; }
+    .day-card { width: 100%; text-align: left; border: 1px solid var(--line); border-radius: 17px; background: var(--surface); color: var(--ink); padding: 15px; cursor: pointer; transition: .2s ease; }
+    .day-card:hover { border-color: #8fc7bc; transform: translateY(-2px); box-shadow: 0 10px 22px rgba(15,118,110,.07); }
+    .day-card.active { border-color: var(--teal); background: var(--surface-soft); box-shadow: 0 10px 22px rgba(15,118,110,.08); }
+    .day-card-head { display: flex; align-items: flex-start; gap: 10px; }
+    .day-pin { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; flex: 0 0 auto; background: #eff4f3; color: var(--teal); font-size: 15px; font-weight: 900; }
+    .day-card.active .day-pin { background: var(--teal); color: white; }
+    .day-card-date { color: var(--muted); font-size: 11px; font-weight: 850; letter-spacing: .07em; text-transform: uppercase; }
+    .day-card-title { font-size: 15px; font-weight: 800; margin-top: 3px; }
+    .day-card-arrow { margin-left: auto; color: var(--muted); }
+    .day-card-copy { color: var(--muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 13px; line-height: 1.45; margin: 10px 0 12px 44px; }
+    .card-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-left: 44px; }
+    .mini-pill { border-radius: 999px; background: #eff4f3; color: var(--muted); padding: 4px 8px; font-size: 10px; font-weight: 800; }
+    .mini-pill.country-guatemala { background: var(--green-soft); color: var(--green-ink); }
+    .mini-pill.country-belize { background: var(--orange-soft); color: var(--orange-ink); }
+    .mini-pill.country-cross { background: var(--sand-soft); color: #92400e; }
+    .empty { color: var(--muted); padding: 30px; text-align: center; background: #f4f7f6; border-radius: 16px; margin-top: 18px; }
+    footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: 11px; padding-top: 16px; }
+    @media (max-width: 820px) {
+      .hero, .main-grid { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .map-note { display: none; }
+    }
+    @media (max-width: 560px) {
+      .shell { width: min(100% - 20px, 1180px); padding-top: 18px; }
+      .topbar { align-items: flex-start; }
+      .top-actions { max-width: 180px; }
+      .hero-card, .date-card, .panel { border-radius: 18px; }
+      .hero-card { padding: 24px; }
+      h1 { font-size: 43px; }
+      .stats { gap: 7px; }
+      .stat { padding: 11px; }
+      .stat-value { font-size: 22px; }
+      .program-head { align-items: flex-start; flex-direction: column; }
+      .filters { justify-content: flex-start; }
+      .travel-row { grid-template-columns: 30px minmax(0,1fr); }
+      .travel-time { grid-column: 2; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.2 7-12A7 7 0 0 0 5 9c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+        <div><p class="eyebrow">Carnet de route</p><div class="brand-title">Guatemala & Belize</div></div>
+      </div>
+      <div class="top-actions">
+        <span id="offline-badge" class="button hidden">Hors ligne</span>
+        <button id="install-button" class="button primary hidden" type="button">Installer l’app</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-card">
+        <p class="eyebrow">Volcans · jungle · Caraïbes</p>
+        <h1>21 jours pour changer de décor.</h1>
+        <p class="hero-copy">Un itinéraire entre villes coloniales, sommets volcaniques, sites mayas et récif caribéen. Sélectionnez une journée pour synchroniser la carte et le détail du programme.</p>
+      </div>
+      <div class="date-card">
+        <div><div class="date-label">Dates du voyage</div><div class="date-value">17 oct. → 6 nov. 2026</div></div>
+        <p class="date-note">Application installable sur mobile et utilisable hors connexion après le premier chargement.</p>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Résumé du voyage">
+      <div class="stat dark"><div class="stat-label">Étapes</div><div class="stat-value">21 <small>jours</small></div></div>
+      <div class="stat"><div class="stat-label">Pays</div><div class="stat-value">2</div></div>
+      <div class="stat"><div class="stat-label">Nuits repères</div><div class="stat-value">9</div></div>
+      <div class="stat"><div class="stat-label">Réservations visibles</div><div class="stat-value">5 <small>confirmées</small></div></div>
+    </section>
+
+    <main>
+      <section class="main-grid">
+        <article class="panel map-panel">
+          <div class="map-heading"><div><div class="panel-kicker">Route principale</div><h2>Volcans, jungle et Caraïbes</h2></div><p class="map-note">Google My Maps<br>carte interactive</p></div>
+          <div class="map-wrap">
+            <iframe class="map-embed" title="Carte interactive de l’itinéraire Guatemala et Belize" src="https://www.google.com/maps/d/embed?mid=1dmptMIkt__Cf-RdwjoG28Qm_p-IuDAQ&amp;hl=en&amp;ehbc=2E312F" loading="lazy" allowfullscreen></iframe>
+          </div>
+          <div class="map-legend"><span class="legend-item"><span class="legend-dot"></span> Carte fournie par Google My Maps</span><span class="legend-item"><span class="legend-dot active"></span> La carte nécessite une connexion</span></div>
+        </article>
+
+        <div class="side-stack">
+          <article class="panel">
+            <div class="selected-top"><div><div class="panel-kicker">Jour sélectionné</div><h2 id="selected-place">Antigua</h2><p id="selected-date" class="selected-date">18 octobre 2026</p></div><span id="selected-country" class="pill green">Guatemala</span></div>
+            <div class="detail-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M5 8h14M5 16h14"/></svg><div id="selected-activity">Matin tranquille, transfert vers Antigua (1h-1h30). Plaza Mayor, Arco de Santa Catalina, rues coloniales, cafés, marché et coucher de soleil.</div></div>
+            <div class="detail-grid"><div class="detail-item"><div class="detail-label">Nuit</div><div id="selected-lodging" class="detail-value">Antigua</div></div><div class="detail-item"><div class="detail-label">Type</div><div id="selected-kind" class="detail-value">Transfert</div></div></div>
+            <div id="selected-booked" class="reserved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4L19 6"/></svg> Logement réservé</div>
+          </article>
+
+          <article class="panel">
+            <div class="travel-title"><div><div class="panel-kicker">Temps de trajet</div><h2>Les transferts clés</h2></div><span class="pill teal">À préparer</span></div>
+            <div id="travel-list" class="travel-list"></div>
+            <p class="fine-print">Les durées non renseignées dans le programme restent à confirmer.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel program">
+        <div class="program-head"><div><div class="panel-kicker">Programme jour par jour</div><h2>Choisir une journée</h2></div><div class="filters"><button class="filter active" data-filter="Tous" type="button">Tous</button><button class="filter" data-filter="Guatemala" type="button">Guatemala</button><button class="filter" data-filter="Belize" type="button">Belize</button><button id="transfer-filter" class="filter transfer" type="button">Transferts</button></div></div>
+        <div id="day-cards" class="cards"></div>
+        <div id="empty-state" class="empty" hidden>Aucune journée ne correspond à ce filtre.</div>
+      </section>
+    </main>
+
+    <footer><span>Programme repris du tableur « Itinéraire Guatemala & Belize ».</span><span>Carte schématique pour préparer le voyage</span></footer>
+  </div>
+
+  <script>
+    const stops = [
+      { id:'gua', date:'17 octobre 2026', shortDate:'17 oct.', country:'Guatemala', place:'Guatemala City', lodging:'Guatemala City', activity:'Arrivée à GUA à 21h36. Récupération des bagages, transfert et dîner léger.', booked:'Logement réservé', x:118, y:290, kind:'Vol / aéroport', kindKey:'flight' },
+      { id:'antigua-1', date:'18 octobre 2026', shortDate:'18 oct.', country:'Guatemala', place:'Guatemala City → Antigua', lodging:'Antigua', activity:'Matin tranquille, transfert vers Antigua (1h-1h30). Plaza Mayor, Arco de Santa Catalina, rues coloniales, cafés, marché et coucher de soleil.', booked:'Logement réservé', x:105, y:310, kind:'Transfert', kindKey:'transfer' },
+      { id:'acatenango', date:'19 octobre 2026', shortDate:'19 oct.', country:'Guatemala', place:'Antigua → Acatenango', lodging:'Campement Acatenango', activity:'Départ tôt pour le trek de l’Acatenango. Montée au campement, vue sur le Fuego, coucher de soleil et observation des éruptions.', booked:'Activité réservée', x:92, y:332, kind:'Aventure', kindKey:'adventure' },
+      { id:'antigua-2', date:'20 octobre 2026', shortDate:'20 oct.', country:'Guatemala', place:'Acatenango → Antigua', lodging:'Antigua', activity:'Lever de soleil, descente et retour à Antigua. Après-midi de repos très tranquille.', booked:'Activité réservée', x:105, y:310, kind:'Aventure', kindKey:'adventure' },
+      { id:'atitlan', date:'21 octobre 2026', shortDate:'21 oct.', country:'Guatemala', place:'Antigua → Lac Atitlán', lodging:'San Pedro / Santa Cruz La Laguna', activity:'Transfert vers Panajachel (2h30-3h), puis bateau vers San Pedro ou Santa Cruz. Installation, baignade, kayak et coucher de soleil.', x:75, y:345, kind:'Transfert', kindKey:'transfer' },
+      { id:'atitlan-day-2', date:'22 octobre 2026', shortDate:'22 oct.', country:'Guatemala', place:'Lac Atitlán', lodging:'San Pedro / Santa Cruz La Laguna', activity:'Randonnée et ascension du volcan San Pedro (~4h de marche) ou autre randonnée autour du lac.', x:75, y:345, kind:'Aventure', kindKey:'adventure' },
+      { id:'atitlan-day-3', date:'23 octobre 2026', shortDate:'23 oct.', country:'Guatemala', place:'Lac Atitlán', lodging:'San Pedro / Santa Cruz La Laguna', activity:'Journée bateau : San Juan, San Marcos et villages du lac. Paddle, kayak, baignade, yoga ou massage.', x:75, y:345, kind:'Aventure', kindKey:'adventure' },
+      { id:'flores', date:'24 octobre 2026', shortDate:'24 oct.', country:'Guatemala', place:'Lac Atitlán → Guatemala City → Flores', lodging:'Flores', activity:'Transfert vers Guatemala City puis vol pour Flores (~1h). Promenade autour du lac Petén Itzá, coucher de soleil et dîner.', x:208, y:168, kind:'Vol / aéroport', kindKey:'flight' },
+      { id:'tikal', date:'25 octobre 2026', shortDate:'25 oct.', country:'Guatemala', place:'Flores (Tikal)', lodging:'Flores', activity:'Départ très tôt pour une journée complète d’exploration guidée du site archéologique de Tikal dans la jungle.', x:208, y:168, kind:'Aventure', kindKey:'adventure' },
+      { id:'flores-day-2', date:'26 octobre 2026', shortDate:'26 oct.', country:'Guatemala', place:'Flores', lodging:'Flores', activity:'Journée plus légère : visite de Flores, bateau sur le lac, réserve naturelle ou deuxième excursion dans le Petén.', x:208, y:168, kind:'Journée douce', kindKey:'stay' },
+      { id:'san-ignacio-transfer', date:'27 octobre 2026', shortDate:'27 oct.', country:'Guatemala / Belize', place:'Flores → San Ignacio', lodging:'San Ignacio', activity:'Transfert vers la frontière Belize (Melchor de Mencos / Benque Viejo), puis San Ignacio. Installation et repos / piscine.', x:278, y:216, kind:'Transfert', kindKey:'transfer' },
+      { id:'san-ignacio', date:'28 octobre 2026', shortDate:'28 oct.', country:'Belize', place:'San Ignacio', lodging:'San Ignacio', activity:'Journée aventure : excursion ATM Cave, marche dans la jungle, passage dans l’eau et grotte maya.', x:278, y:216, kind:'Aventure', kindKey:'adventure' },
+      { id:'caye-transfer', date:'29 octobre 2026', shortDate:'29 oct.', country:'Belize', place:'San Ignacio → Caye Caulker', lodging:'Caye Caulker', activity:'Visite de Xunantunich le matin, après-midi tranquille à San Ignacio, puis transfert du soir vers Caye Caulker.', x:365, y:282, kind:'Transfert', kindKey:'transfer' },
+      { id:'caye-snorkel', date:'30 octobre 2026', shortDate:'30 oct.', country:'Belize', place:'Caye Caulker', lodging:'Caye Caulker', activity:'Excursion snorkeling : Hol Chan Marine Reserve, Shark Ray Alley et récif barrière.', x:365, y:282, kind:'Aventure', kindKey:'adventure' },
+      { id:'caye-free', date:'31 octobre 2026', shortDate:'31 oct.', country:'Belize', place:'Caye Caulker', lodging:'Caye Caulker', activity:'Journée libre : kayak, paddle, vélo, baignade, The Split, plage et coucher de soleil.', x:365, y:282, kind:'Journée douce', kindKey:'stay' },
+      { id:'hopkins-transfer', date:'1 novembre 2026', shortDate:'1 nov.', country:'Belize', place:'Caye Caulker → Hopkins', lodging:'Hopkins', activity:'Matin tranquille puis transfert vers Hopkins, à la découverte de la culture Garifuna et de l’ambiance côte / jungle.', x:315, y:390, kind:'Transfert', kindKey:'transfer' },
+      { id:'hopkins', date:'2 novembre 2026', shortDate:'2 nov.', country:'Belize', place:'Hopkins', lodging:'Hopkins', activity:'Randonnée dans la réserve naturelle Cockscomb Basin : forêt tropicale, cascades, points de vue et faune.', x:315, y:390, kind:'Aventure', kindKey:'adventure' },
+      { id:'return-antigua', date:'3 novembre 2026', shortDate:'3 nov.', country:'Belize / Guatemala', place:'Hopkins → Antigua', lodging:'Antigua', activity:'Journée de transport retour Belize → Guatemala, jusqu’à Antigua.', x:105, y:310, kind:'Transfert', kindKey:'transfer' },
+      { id:'antigua-final', date:'4 novembre 2026', shortDate:'4 nov.', country:'Guatemala', place:'Antigua', lodging:'Antigua', activity:'Journée complète à Antigua : cafés, architecture coloniale, chocolat, cuisine, dégustations, massage et artisanat.', x:105, y:310, kind:'Journée douce', kindKey:'stay' },
+      { id:'antigua-buffer', date:'5 novembre 2026', shortDate:'5 nov.', country:'Guatemala', place:'Antigua', lodging:'Antigua', activity:'Journée tampon / repos à Antigua. Profiter de la ville en toute sérénité.', x:105, y:310, kind:'Journée douce', kindKey:'stay' },
+      { id:'airport', date:'6 novembre 2026', shortDate:'6 nov.', country:'Guatemala', place:'Antigua → Aéroport GUA', lodging:'-', activity:'Départ tôt d’Antigua (vers 10h30-11h00) vers l’aéroport de Guatemala City pour le vol international de 16h17.', x:118, y:290, kind:'Vol / aéroport', kindKey:'flight' }
+    ];
+
+    const segments = [
+      { from:'Guatemala City', to:'Antigua', time:'1h-1h30', mode:'Route', icon:'R' },
+      { from:'Antigua', to:'Lac Atitlán', time:'2h30-3h + bateau', mode:'Route + bateau', icon:'B' },
+      { from:'Guatemala City', to:'Flores', time:'~1h de vol', mode:'Vol', icon:'V' },
+      { from:'Flores', to:'San Ignacio', time:'À confirmer', mode:'Frontière terrestre', icon:'F' },
+      { from:'San Ignacio', to:'Caye Caulker', time:'À confirmer', mode:'Transfert', icon:'T' },
+      { from:'Caye Caulker', to:'Hopkins', time:'À confirmer', mode:'Transfert', icon:'T' },
+      { from:'Hopkins', to:'Antigua', time:'Journée de transport', mode:'Retour international', icon:'R' },
+      { from:'Antigua', to:'Aéroport GUA', time:'Départ 10h30-11h00', mode:'Route + vol 16h17', icon:'V' }
+    ];
+
+    let activeId = 'antigua-1';
+    let activeFilter = 'Tous';
+    let transferOnly = false;
+    let deferredInstallPrompt = null;
+
+    const $ = (selector) => document.querySelector(selector);
+    const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[char]));
+    const countryClass = (country) => country === 'Belize' ? 'country-belize' : country.includes('/') ? 'country-cross' : 'country-guatemala';
+    const countryPillClass = (country) => country === 'Belize' ? 'orange' : country.includes('/') ? 'orange' : 'green';
+    const selectedStop = () => stops.find((stop) => stop.id === activeId) || stops[0];
+
+    function renderMap() {}
+
+    function renderSelected() {
+      const selected = selectedStop();
+      $('#selected-place').textContent = selected.place;
+      $('#selected-date').textContent = selected.date;
+      $('#selected-country').textContent = selected.country;
+      $('#selected-country').className = `pill ${countryPillClass(selected.country)}`;
+      $('#selected-activity').textContent = selected.activity;
+      $('#selected-lodging').textContent = selected.lodging;
+      $('#selected-kind').textContent = selected.kind;
+      $('#selected-booked').innerHTML = selected.booked ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4L19 6"/></svg> ${escapeHtml(selected.booked)}` : '';
+    }
+
+    function renderTravel() {
+      $('#travel-list').innerHTML = segments.map((segment) => `<div class="travel-row"><div class="mode" aria-hidden="true">${segment.icon}</div><div><div class="travel-route">${escapeHtml(segment.from)} <span style="color:var(--muted);font-weight:400">→</span> ${escapeHtml(segment.to)}</div><div class="travel-mode">${escapeHtml(segment.mode)}</div></div><div class="travel-time ${segment.time === 'À confirmer' ? 'confirm' : ''}">${escapeHtml(segment.time)}</div></div>`).join('');
+    }
+
+    function renderCards() {
+      const visible = stops.filter((stop) => {
+        const matchesCountry = activeFilter === 'Tous' || stop.country.includes(activeFilter);
+        const matchesType = !transferOnly || stop.kindKey === 'transfer' || stop.kindKey === 'flight';
+        return matchesCountry && matchesType;
+      });
+      $('#day-cards').innerHTML = visible.map((stop) => `<button type="button" class="day-card ${stop.id === activeId ? 'active' : ''}" data-day-id="${stop.id}"><div class="day-card-head"><div class="day-pin">${stop.shortDate.split(' ')[0]}</div><div style="min-width:0;flex:1"><div class="day-card-date">${escapeHtml(stop.date)}</div><div class="day-card-title">${escapeHtml(stop.place)}</div></div><div class="day-card-arrow">›</div></div><div class="day-card-copy">${escapeHtml(stop.activity)}</div><div class="card-meta"><span class="mini-pill ${countryClass(stop.country)}">${escapeHtml(stop.country)}</span><span class="mini-pill">${escapeHtml(stop.kind)}</span>${stop.booked ? '<span class="mini-pill" style="background:var(--green-soft);color:var(--green-ink)">Réservé</span>' : ''}</div></button>`).join('');
+      $('#empty-state').hidden = visible.length > 0;
+      document.querySelectorAll('[data-day-id]').forEach((card) => card.addEventListener('click', () => { activeId = card.dataset.dayId; render(); document.getElementById('selected-place').scrollIntoView({ behavior: 'smooth', block: 'center' }); }));
+    }
+
+    function render() { renderSelected(); renderMap(); renderCards(); }
+
+    document.querySelectorAll('[data-filter]').forEach((button) => button.addEventListener('click', () => {
+      activeFilter = button.dataset.filter;
+      document.querySelectorAll('[data-filter]').forEach((item) => item.classList.toggle('active', item.dataset.filter === activeFilter));
+      renderCards();
+    }));
+    $('#transfer-filter').addEventListener('click', () => { transferOnly = !transferOnly; $('#transfer-filter').classList.toggle('active', transferOnly); renderCards(); });
+
+    window.addEventListener('beforeinstallprompt', (event) => { event.preventDefault(); deferredInstallPrompt = event; $('#install-button').classList.remove('hidden'); });
+    $('#install-button').addEventListener('click', async () => { if (!deferredInstallPrompt) return; deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt = null; $('#install-button').classList.add('hidden'); });
+    window.addEventListener('appinstalled', () => $('#install-button').classList.add('hidden'));
+
+    function updateOnlineStatus() { $('#offline-badge').classList.toggle('hidden', navigator.onLine); }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
+    if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+    renderTravel();
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "Guatemala & Belize | Carnet de route",
+  "short_name": "Guatemala Belize",
+  "description": "Itinéraire interactif de 21 jours au Guatemala et au Belize.",
+  "lang": "fr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f7faf9",
+  "theme_color": "#0f766e",
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
