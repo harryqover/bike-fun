@@ -1,0 +1,2338 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Tour du Mont Rose 2028 - Carnet de Cordée</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Canvas Confetti & Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-sky-500 selection:text-slate-950">
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- NAVIGATION HEADER -->
+  <header class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 px-4 py-3">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="text-3xl filter drop-shadow">🏔️</span>
+        <div>
+          <h1 class="text-base sm:text-lg font-black tracking-tight bg-gradient-to-r from-sky-400 to-indigo-300 bg-clip-text text-transparent">
+            Mont Rose 2028
+          </h1>
+          <p class="text-[11px] text-slate-400 font-medium hidden sm:block">Objectif 13 000 m D+ • 9 Cols Alpins</p>
+        </div>
+      </div>
+
+      <!-- BOUTONS ACTIONS RAPIDES -->
+      <div class="flex items-center gap-2">
+        <button onclick="openGarminModal()" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-semibold text-slate-200 flex items-center gap-1.5 transition shadow-sm">
+          <span>⌚</span> <span class="hidden md:inline">Garmin</span>
+        </button>
+
+        <button onclick="openWorkoutModal()" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition shadow-lg shadow-sky-500/20">
+          <span>⚡</span> <span>+ Séance</span>
+        </button>
+
+        <!-- Profil / Login -->
+        <div id="authHeaderBlock" class="flex items-center pl-2 border-l border-slate-800">
+          <!-- Injecté dynamiquement par JS -->
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENEUR PRINCIPAL -->
+  <div class="max-w-6xl mx-auto w-full px-4 py-6 flex-1 flex flex-col">
+
+    <!-- BANNIÈRE COMPTE À REBOURS 2028 -->
+    <div class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-slate-900/90 via-slate-900 to-indigo-950/60 border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="p-2.5 rounded-xl bg-sky-500/10 text-sky-400 text-xl border border-sky-500/20">🧭</div>
+        <div>
+          <div class="text-xs uppercase tracking-wider font-bold text-sky-400">Grand Départ • Septembre 2028</div>
+          <div id="countdownDisplay" class="text-sm sm:text-base font-extrabold text-white">Calcul en cours...</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-6 text-xs text-slate-400 font-medium">
+        <div><span class="text-white font-bold">170 km</span> à pied</div>
+        <div class="h-3 w-px bg-slate-800"></div>
+        <div><span class="text-white font-bold">13 000 m</span> D+ pur</div>
+        <div class="h-3 w-px bg-slate-800"></div>
+        <div><span class="text-white font-bold">4 634 m</span> Dufourspitze</div>
+      </div>
+    </div>
+
+    <!-- BANNIÈRE ÉPOPÉE DU MONT ROSE (OBJECTIF INFINI & MULTIPLICATEUR) -->
+    <section class="mb-8 p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 shadow-2xl relative overflow-hidden">
+      <div class="absolute -top-12 -right-12 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/20">
+              Défi Collectif de la Cordée
+            </span>
+            <span id="multiplierBadge" class="text-xs font-black px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              x0.0 Tour
+            </span>
+          </div>
+          <h2 id="currentMilestoneTitle" class="text-xl sm:text-2xl font-black text-white mt-1">
+            En route vers le prochain sommet...
+          </h2>
+        </div>
+
+        <div class="text-left md:text-right">
+          <div class="text-2xl sm:text-3xl font-black text-sky-400" id="totalElevationHeader">0 m D+</div>
+          <div class="text-xs text-slate-400" id="elevationTargetSub">sur l'ensemble de la cordée</div>
+        </div>
+      </div>
+
+      <!-- Jauge de progression -->
+      <div class="w-full bg-slate-950 rounded-full h-4 p-0.5 border border-slate-800 relative overflow-hidden">
+        <div id="collectiveProgressBar" class="h-full rounded-full bg-gradient-to-r from-sky-500 via-indigo-500 to-amber-400 transition-all duration-700" style="width: 0%"></div>
+      </div>
+
+      <div class="flex justify-between items-center text-xs text-slate-400 mt-2 font-medium">
+        <span id="progressPercentText">0% du palier actuel</span>
+        <span id="remainingElevationText">Calcul en cours...</span>
+      </div>
+    </section>
+
+    <!-- ONGLETS DE NAVIGATION -->
+    <nav class="flex items-center gap-2 border-b border-slate-800 pb-3 mb-6 overflow-x-auto text-sm font-semibold custom-scrollbar">
+      <button onclick="switchTab('feed')" id="tabBtn-feed" class="px-4 py-2 rounded-xl bg-sky-500/20 text-sky-400 border border-sky-500/30 transition flex items-center gap-2 whitespace-nowrap">
+        <span>🔥</span> <span>Le Mur de la Cordée</span>
+      </button>
+      <button onclick="switchTab('plan')" id="tabBtn-plan" class="px-4 py-2 rounded-xl bg-slate-900 text-slate-400 hover:text-slate-200 transition flex items-center gap-2 border border-slate-800 whitespace-nowrap">
+        <span>🎯</span> <span>Plan & Guidance 2028</span>
+      </button>
+      <button onclick="switchTab('leaderboard')" id="tabBtn-leaderboard" class="px-4 py-2 rounded-xl bg-slate-900 text-slate-400 hover:text-slate-200 transition flex items-center gap-2 border border-slate-800 whitespace-nowrap">
+        <span>🏆</span> <span>Classement & Défis</span>
+      </button>
+      <button onclick="switchTab('exercises')" id="tabBtn-exercises" class="px-4 py-2 rounded-xl bg-slate-900 text-slate-400 hover:text-slate-200 transition flex items-center gap-2 border border-slate-800 whitespace-nowrap">
+        <span>💪</span> <span>Routines & Renfo</span>
+      </button>
+      <button onclick="switchTab('stats')" id="tabBtn-stats" class="px-4 py-2 rounded-xl bg-slate-900 text-slate-400 hover:text-slate-200 transition flex items-center gap-2 border border-slate-800 whitespace-nowrap">
+        <span>📊</span> <span>Progression 2028</span>
+      </button>
+    </nav>
+
+    <!-- BANNIÈRE EN ATTENTE DE VALIDATION HARRY -->
+    <div id="pendingApprovalBanner" class="hidden mb-6 p-6 rounded-3xl bg-amber-500/10 border-2 border-amber-500/30 text-amber-200 space-y-3">
+      <div class="flex items-start gap-4">
+        <span class="text-3xl">⏳</span>
+        <div class="space-y-1">
+          <h3 class="text-lg font-bold text-amber-300">Compte en attente de validation par Harry</h3>
+          <p class="text-xs text-amber-200/90 leading-relaxed">
+            Bienvenue dans l'équipe ! Ton compte a été créé avec succès et un email a été automatiquement envoyé à <strong class="text-white">harryevrard@gmail.com</strong> pour approuver ton profil.
+            Par respect de la vie privée de la cordée, les entraînements et statistiques seront visibles dès qu'Harry aura coché ta case dans le Google Sheet.
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 pt-2">
+        <button onclick="loadData()" class="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-bold hover:bg-amber-400 transition flex items-center gap-2">
+          <span>🔄</span> <span>Vérifier si Harry a validé</span>
+        </button>
+        <span class="text-[11px] text-amber-300/80">Ta session reste enregistrée sur cet appareil.</span>
+      </div>
+    </div>
+
+    <!-- BANNIÈRE INVITATION CONNEXION -->
+    <div id="guestWelcomeBanner" class="hidden mb-6 p-5 rounded-3xl bg-sky-500/10 border border-sky-500/20 text-sky-200 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">🏔️</span>
+        <div class="text-xs">
+          <p class="font-bold text-sky-300">Espace réservé à la cordée du Mont Rose 2028</p>
+          <p class="text-slate-400">Connecte-toi avec ton email pour accéder aux entraînements et au classement.</p>
+        </div>
+      </div>
+      <button onclick="openAuthModal()" class="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs transition whitespace-nowrap shadow-md">
+        Se connecter
+      </button>
+    </div>
+
+    <!-- CONTENU DES ONGLETS -->
+    <main id="mainAppContent" class="space-y-6">
+
+      <!-- 1. ONGLET FEED (LE MUR) -->
+      <section id="tab-feed" class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/40 p-3 rounded-2xl border border-slate-800/80">
+          <div class="flex items-center gap-2 overflow-x-auto text-xs custom-scrollbar">
+            <button onclick="filterFeed('all')" class="feed-filter-btn px-3 py-1.5 rounded-xl bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30" data-filter="all">Tous</button>
+            <button onclick="filterFeed('renfo')" class="feed-filter-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 hover:text-white border border-slate-800" data-filter="renfo">💪 Renfo</button>
+            <button onclick="filterFeed('trail')" class="feed-filter-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 hover:text-white border border-slate-800" data-filter="trail">⛰️ Trail / Rando</button>
+            <button onclick="filterFeed('bike')" class="feed-filter-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 hover:text-white border border-slate-800" data-filter="bike">🚴 Vélo & HT</button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="triggerGarminSync()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition">
+              <span>🔄</span> <span>Sync Garmin</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Liste des entraînements -->
+        <div id="workoutFeedContainer" class="space-y-3">
+          <div class="p-8 text-center text-slate-500 text-sm">Chargement des séances de la cordée...</div>
+        </div>
+      </section>
+
+      <!-- ONGLET PLAN & GUIDANCE 2028 (100 SEMAINES COMPLÈTES) -->
+      <section id="tab-plan" class="hidden space-y-6">
+        
+        <!-- EN-TÊTE DU PLAN & ACTIONS CALENDRIER -->
+        <div class="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/60 border border-slate-800 shadow-2xl space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-sky-400 bg-sky-500/10 px-2.5 py-0.5 rounded-full border border-sky-500/20">
+                  Planification Officielle
+                </span>
+                <span class="text-xs font-semibold text-slate-400">100 Semaines vers l'Expédition</span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-black text-white mt-1">Le Plan Hebdomadaire Allégé (S01 à S100)</h2>
+              <p class="text-xs text-slate-400 mt-1">Repère ta semaine active, consulte le programme minimal efficace ou synchronise ton agenda.</p>
+            </div>
+
+            <!-- BOUTONS ACTIONS CALENDRIER -->
+            <div class="flex flex-wrap items-center gap-2.5">
+              <button onclick="scrollToCurrentWeek()" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition flex items-center gap-1.5 shadow-lg shadow-emerald-500/20">
+                <span>📍</span> <span>Semaine en cours</span>
+              </button>
+              <button onclick="exportPlanToIcs()" class="px-3.5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs transition flex items-center gap-1.5 shadow-lg shadow-sky-500/20">
+                <span>📥</span> <span>Exporter (.ics)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- PASTILLES DE NAVIGATION PAR PHASES -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs custom-scrollbar">
+            <a href="#p1" class="px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-sky-400 hover:border-sky-500/40 transition whitespace-nowrap">S01-S12 (Néthen)</a>
+            <a href="#p2" class="px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-sky-400 hover:border-sky-500/40 transition whitespace-nowrap">S13-S27 (Epic Trail)</a>
+            <a href="#p3" class="px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-sky-400 hover:border-sky-500/40 transition whitespace-nowrap">S28-S35 (Vosges)</a>
+            <a href="#p4" class="px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-sky-400 hover:border-sky-500/40 transition whitespace-nowrap">S36-S52 (Marathon)</a>
+            <a href="#p5" class="px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-sky-400 hover:border-sky-500/40 transition whitespace-nowrap">S53-S68 (Hiver)</a>
+            <a href="#p6" class="px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-sky-400 hover:border-sky-500/40 transition whitespace-nowrap">S69-S80 (Palier 3)</a>
+            <a href="#p7" class="px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-sky-400 hover:border-sky-500/40 transition whitespace-nowrap">S81-S95 (Ardennes)</a>
+            <a href="#p8" class="px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-sky-400 hover:border-sky-500/40 transition whitespace-nowrap">S96-S100 (Mont-Rose)</a>
+          </div>
+        </div>
+
+        <!-- CONTENEUR DES 8 PHASES -->
+        <div class="space-y-8" id="trainingPlanContainer">
+
+          <!-- PHASE 1 -->
+          <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3" id="p1">
+            <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+              <span class="text-sky-400">Phase 1 :</span> Fondation Light & Night Trail de Néthen (Octobre – Décembre 2026)
+            </h3>
+            <div class="overflow-x-auto custom-scrollbar">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800 bg-slate-950/50">
+                    <th class="py-2.5 px-3 rounded-l-xl">Sem.</th>
+                    <th class="py-2.5 px-3">Dates</th>
+                    <th class="py-2.5 px-3">Séances</th>
+                    <th class="py-2.5 px-3 rounded-r-xl">Programme Minimal Efficace</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/50">
+                  <tr data-start="2026-10-05" data-end="2026-10-11" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S01</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">05/10 – 11/10/26</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">2 Run + 1 HT</td>
+                    <td class="py-3 px-3 text-slate-300">Run 1 : 40 min Z2 plat. HT : 40 min Z1/Z2 fluide. Run 2 : 50 min Z2. Reprise douce.</td>
+                  </tr>
+                  <tr data-start="2026-10-12" data-end="2026-10-18" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S02</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">12/10 – 18/10/26</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 40 min tapis 15 % ou escaliers. HT : 45 min Z2. SL : 1 h 15 Forêt de Soignes.</td>
+                  </tr>
+                  <tr data-start="2026-10-19" data-end="2026-10-25" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S03</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">19/10 – 25/10/26</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 45 min escaliers Cité administrative. HT : 45 min force basse cadence. SL : 1 h 30.</td>
+                  </tr>
+                  <tr data-start="2026-10-26" data-end="2026-11-01" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S04</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">26/10 – 01/11/26</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL réduite 1 h 00.</td>
+                  </tr>
+                  <tr data-start="2026-11-02" data-end="2026-11-08" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S05</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">02/11 – 08/11/26</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> Run 50 min Z2. HT : 45 min force Z3. SL : 1 h 35 Soignes.</td>
+                  </tr>
+                  <tr data-start="2026-11-09" data-end="2026-11-15" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S06</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">09/11 – 15/11/26</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 45 min tapis 15 %. HT : 45 min Sweetspot. SL : 1 h 40 avec frontale.</td>
+                  </tr>
+                  <tr data-start="2026-11-16" data-end="2026-11-22" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S07</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">16/11 – 22/11/26</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 1 HT</td>
+                    <td class="py-3 px-3 text-slate-300">Affûtage Néthen : Run 35 min Z2 avec 4 accélérations. HT : 35 min très souple.</td>
+                  </tr>
+                  <tr data-start="2026-11-23" data-end="2026-11-29" class="plan-week-row bg-amber-950/30 text-amber-200 border-l-2 border-amber-400 font-semibold hover:bg-amber-950/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-amber-300">S08</td>
+                    <td class="py-3 px-3 text-amber-300/80 whitespace-nowrap">23/11 – 29/11/26</td>
+                    <td class="py-3 px-3 whitespace-nowrap">1 Run + Course + 1 HT</td>
+                    <td class="py-3 px-3"><span class="inline-block px-1.5 py-0.5 rounded bg-amber-500/30 text-amber-300 text-[10px] font-bold mr-1">🏆 Course</span> <strong>Night Trail de Néthen (Vendredi 27/11/2026)</strong>. Dimanche HT 35 min Z1 décrassage.</td>
+                  </tr>
+                  <tr data-start="2026-11-30" data-end="2026-12-06" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S09</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">30/11 – 06/12/26</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 2 HT</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Récupération :</em> 1 footing léger 35 min. HT 2x 35 min Z1 très doux.</td>
+                  </tr>
+                  <tr data-start="2026-12-07" data-end="2026-12-13" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S10</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">07/12 – 13/12/26</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 45 min escaliers Mont des Arts. HT : 50 min Z2/Z3. SL : 1 h 30 Soignes.</td>
+                  </tr>
+                  <tr data-start="2026-12-14" data-end="2026-12-20" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S11</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">14/12 – 20/12/26</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> Run 1 h Z2. HT : 45 min force (60 rpm). SL : 1 h 45 Soignes.</td>
+                  </tr>
+                  <tr data-start="2026-12-21" data-end="2026-12-27" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S12</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">21/12 – 27/12/26</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Semaine fêtes :</em> Run 35 min Z2. HT 40 min Z1/Z2 maison. SL 1 h 15 souple.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PHASE 2 -->
+          <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3" id="p2">
+            <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+              <span class="text-sky-400">Phase 2 :</span> Volume Ciblé & Epic Trail (Janvier – Avril 2027)
+            </h3>
+            <div class="overflow-x-auto custom-scrollbar">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800 bg-slate-950/50">
+                    <th class="py-2.5 px-3 rounded-l-xl">Sem.</th>
+                    <th class="py-2.5 px-3">Dates</th>
+                    <th class="py-2.5 px-3">Séances</th>
+                    <th class="py-2.5 px-3 rounded-r-xl">Programme Minimal Efficace</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/50">
+                  <tr data-start="2026-12-28" data-end="2027-01-03" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S13</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">28/12 – 03/01/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 45 min tapis 15 %. HT : 45 min Z2. SL : 1 h 45 Forêt de Soignes.</td>
+                  </tr>
+                  <tr data-start="2027-01-04" data-end="2027-01-10" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S14</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">04/01 – 10/01/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 45 min escaliers Cité administrative. HT : 50 min Sweetspot. SL : 2 h 00 vallonnée.</td>
+                  </tr>
+                  <tr data-start="2027-01-11" data-end="2027-01-17" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S15</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">11/01 – 17/01/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> Run 1 h Z2. HT : 50 min force basse cadence. SL : 2 h 15 Soignes.</td>
+                  </tr>
+                  <tr data-start="2027-01-18" data-end="2027-01-24" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S16</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">18/01 – 24/01/27</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Assimilation :</em> Run 40 min Z2. HT 40 min Z1. SL réduite 1 h 20.</td>
+                  </tr>
+                  <tr data-start="2027-01-25" data-end="2027-01-31" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S17</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">25/01 – 31/01/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 50 min tapis 15 % (+750 m D+). HT : 50 min force. SL : 2 h 15 avec bâtons.</td>
+                  </tr>
+                  <tr data-start="2027-02-01" data-end="2027-02-07" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S18</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">01/02 – 07/02/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 45 min escaliers Mont des Arts. HT : 50 min Z2/Z3. SL : 2 h 20 Soignes.</td>
+                  </tr>
+                  <tr data-start="2027-02-08" data-end="2027-02-14" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S19</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">08/02 – 14/02/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> Run 1 h 15 Z2. HT : 50 min Sweetspot. SL : 2 h 30 (boucle talus).</td>
+                  </tr>
+                  <tr data-start="2027-02-15" data-end="2027-02-21" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S20</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">15/02 – 21/02/27</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Assimilation :</em> Run 40 min Z2. HT 40 min Z1. SL réduite 1 h 20.</td>
+                  </tr>
+                  <tr data-start="2027-02-22" data-end="2027-02-28" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S21</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">22/02 – 28/02/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 50 min escaliers (sac 2 kg). HT : 50 min force. SL : 2 h 25 avec bâtons.</td>
+                  </tr>
+                  <tr data-start="2027-03-01" data-end="2027-03-07" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S22</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">01/03 – 07/03/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 50 min tapis 15 %. HT : 50 min Z2. SL : 2 h 30 Soignes (test barres/gels).</td>
+                  </tr>
+                  <tr data-start="2027-03-08" data-end="2027-03-14" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S23</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">08/03 – 14/03/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> SL 2 h 30 le matin avec frontale. HT : 45 min Sweetspot. 1 run midi 40 min.</td>
+                  </tr>
+                  <tr data-start="2027-03-15" data-end="2027-03-21" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S24</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">15/03 – 21/03/27</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Assimilation :</em> Run 40 min. HT 40 min Z1. SL 1 h 15.</td>
+                  </tr>
+                  <tr data-start="2027-03-22" data-end="2027-03-28" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S25</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">22/03 – 28/03/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">Dernier rappel : 45 min tapis 15 %. HT : 45 min force. SL : 2 h 00 dynamique avec bâtons.</td>
+                  </tr>
+                  <tr data-start="2027-03-29" data-end="2027-04-04" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S26</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">29/03 – 04/04/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 1 HT</td>
+                    <td class="py-3 px-3 text-slate-300">Affûtage Baraque de Fraiture : Run 35 min Z2. HT 35 min très fluide. Repos.</td>
+                  </tr>
+                  <tr data-start="2027-04-05" data-end="2027-04-11" class="plan-week-row bg-amber-950/30 text-amber-200 border-l-2 border-amber-400 font-semibold hover:bg-amber-950/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-amber-300">S27</td>
+                    <td class="py-3 px-3 text-amber-300/80 whitespace-nowrap">05/04 – 11/04/27</td>
+                    <td class="py-3 px-3 whitespace-nowrap">Course + 1 HT</td>
+                    <td class="py-3 px-3"><span class="inline-block px-1.5 py-0.5 rounded bg-amber-500/30 text-amber-300 text-[10px] font-bold mr-1">🏆 Palier 1</span> <strong>Epic Trail Baraque de Fraiture (Samedi 10/04/2027)</strong>. Dimanche HT 35 min décrassage.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PHASE 3 -->
+          <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3" id="p3">
+            <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+              <span class="text-sky-400">Phase 3 :</span> Transition Vélo & Week-End Vosges (Avril – Juin 2027)
+            </h3>
+            <div class="overflow-x-auto custom-scrollbar">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800 bg-slate-950/50">
+                    <th class="py-2.5 px-3 rounded-l-xl">Sem.</th>
+                    <th class="py-2.5 px-3">Dates</th>
+                    <th class="py-2.5 px-3">Séances</th>
+                    <th class="py-2.5 px-3 rounded-r-xl">Programme Minimal Efficace</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/50">
+                  <tr data-start="2027-04-12" data-end="2027-04-18" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S28</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">12/04 – 18/04/27</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">2 HT + 1 Run</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Récupération :</em> HT 2x 40 min Z1 moulinage. Dimanche footing doux 30 min.</td>
+                  </tr>
+                  <tr data-start="2027-04-19" data-end="2027-04-25" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S29</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">19/04 – 25/04/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 2 HT</td>
+                    <td class="py-3 px-3 text-slate-300">Run midi : 45 min Z2. HT 1 : 50 min Sweetspot. HT 2 : 50 min force basse cadence.</td>
+                  </tr>
+                  <tr data-start="2027-04-26" data-end="2027-05-02" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S30</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">26/04 – 02/05/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 1 HT + 1 Vélo</td>
+                    <td class="py-3 px-3 text-slate-300">Run : 45 min Z2. HT : 50 min seuil vélo. Week-end : sortie vélo route extérieure 2 h 30.</td>
+                  </tr>
+                  <tr data-start="2027-05-03" data-end="2027-05-09" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S31</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">03/05 – 09/05/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 1 HT + 1 Vélo</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> Run 50 min. HT : 50 min force en côte. Sortie vélo route 3 h.</td>
+                  </tr>
+                  <tr data-start="2027-05-10" data-end="2027-05-16" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S32</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">10/05 – 16/05/27</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 2 HT</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Assimilation :</em> Run 35 min Z2. HT 2x 40 min Z1.</td>
+                  </tr>
+                  <tr data-start="2027-05-17" data-end="2027-05-23" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S33</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">17/05 – 23/05/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 1 HT + 1 Vélo</td>
+                    <td class="py-3 px-3 text-slate-300">Run : 40 min Z2. HT : 50 min Sweetspot. Sortie vélo route 3 h 15 vallonnée.</td>
+                  </tr>
+                  <tr data-start="2027-05-24" data-end="2027-05-30" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S34</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">24/05 – 30/05/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 1 HT</td>
+                    <td class="py-3 px-3 text-slate-300">Affûtage Vosges : Run 30 min souple. HT 35 min Z2 sans fatigue.</td>
+                  </tr>
+                  <tr data-start="2027-05-31" data-end="2027-06-06" class="plan-week-row bg-amber-950/30 text-amber-200 border-l-2 border-amber-400 font-semibold hover:bg-amber-950/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-amber-300">S35</td>
+                    <td class="py-3 px-3 text-amber-300/80 whitespace-nowrap">31/05 – 06/06/27</td>
+                    <td class="py-3 px-3 whitespace-nowrap">Stage Vélo</td>
+                    <td class="py-3 px-3"><span class="inline-block px-1.5 py-0.5 rounded bg-amber-500/30 text-amber-300 text-[10px] font-bold mr-1">🏔️ Stage</span> <strong>Week-End Vélo dans les Vosges (04 – 06/06/2027)</strong>. Gros volume aérobie en col.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PHASE 4 -->
+          <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3" id="p4">
+            <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+              <span class="text-sky-400">Phase 4 :</span> Bloc Marathon d'Automne (Juin – Octobre 2027)
+            </h3>
+            <div class="overflow-x-auto custom-scrollbar">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800 bg-slate-950/50">
+                    <th class="py-2.5 px-3 rounded-l-xl">Sem.</th>
+                    <th class="py-2.5 px-3">Dates</th>
+                    <th class="py-2.5 px-3">Séances</th>
+                    <th class="py-2.5 px-3 rounded-r-xl">Programme Minimal Efficace</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/50">
+                  <tr data-start="2027-06-07" data-end="2027-06-13" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S36</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">07/06 – 13/06/27</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">2 HT + 1 Run</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Décrassage Vosges :</em> HT 2x 40 min Z1. Run 35 min Z2 très souple.</td>
+                  </tr>
+                  <tr data-start="2027-06-14" data-end="2027-06-20" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S37</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">14/06 – 20/06/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">Run midi : 45 min Z2. HT : 45 min Z2. SL : 1 h 30 plat/ondulé.</td>
+                  </tr>
+                  <tr data-start="2027-06-21" data-end="2027-06-27" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S38</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">21/06 – 27/06/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Tempo + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">Run : 45 min avec 3x 2 km allure marathon (AS42). HT : 45 min Sweetspot. SL : 1 h 45.</td>
+                  </tr>
+                  <tr data-start="2027-06-28" data-end="2027-07-04" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S39</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">28/06 – 04/07/27</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 15.</td>
+                  </tr>
+                  <tr data-start="2027-07-05" data-end="2027-07-11" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S40</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">05/07 – 11/07/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Tempo + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> Run 1 h Z2 à la fraîche. HT : 45 min Z2. SL : 2 h 00 avec 3x 3 km AS42.</td>
+                  </tr>
+                  <tr data-start="2027-07-12" data-end="2027-07-18" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S41</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">12/07 – 18/07/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Fract + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">Run : 45 min avec 8x 400 m dynamiques. HT : 50 min Sweetspot. SL : 2 h 15 régulière.</td>
+                  </tr>
+                  <tr data-start="2027-07-19" data-end="2027-07-25" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S42</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">19/07 – 25/07/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Tempo + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">Run midi : 45 min Z2. HT : 50 min Z2. SL : 2 h 30 (test ravitaillement marathon : 50 g glucides/h).</td>
+                  </tr>
+                  <tr data-start="2027-07-26" data-end="2027-08-01" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S43</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">26/07 – 01/08/27</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
+                  </tr>
+                  <tr data-start="2027-08-02" data-end="2027-08-08" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S44</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">02/08 – 08/08/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Tempo + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> Run 1 h Z2. HT : 50 min force. SL : 2 h 35 avec 3x 4 km AS42.</td>
+                  </tr>
+                  <tr data-start="2027-08-09" data-end="2027-08-15" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S45</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">09/08 – 15/08/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Seuil + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">Run : 45 min avec 3x 2 000 m seuil Z4. HT : 50 min Z2. SL : 2 h 40 régulière.</td>
+                  </tr>
+                  <tr data-start="2027-08-16" data-end="2027-08-22" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S46</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">16/08 – 22/08/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><strong class="text-amber-400">Pic Marathon :</strong> Run 45 min Z2. HT 45 min Z2. SL : 2 h 45 (dont 12 km cumulés AS42).</td>
+                  </tr>
+                  <tr data-start="2027-08-23" data-end="2027-08-29" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S47</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">23/08 – 29/08/27</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
+                  </tr>
+                  <tr data-start="2027-08-30" data-end="2027-09-05" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S48</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">30/08 – 05/09/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Tempo + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">Dernier gros bloc : 45 min avec 2x 4 km AS42. HT : 45 min Z2. SL : 2 h 15.</td>
+                  </tr>
+                  <tr data-start="2027-09-06" data-end="2027-09-12" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S49</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">06/09 – 12/09/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">Début affûtage (-20 %) : Run 40 min Z2. HT : 40 min Z1/Z2. SL : 1 h 40.</td>
+                  </tr>
+                  <tr data-start="2027-09-13" data-end="2027-09-19" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S50</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">13/09 – 19/09/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">Affûtage (-40 %) : Run 35 min avec 3x 1 km AS42. HT : 35 min Z1. SL : 1 h 15.</td>
+                  </tr>
+                  <tr data-start="2027-09-20" data-end="2027-09-26" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S51</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">20/09 – 26/09/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">2 Run + 1 HT</td>
+                    <td class="py-3 px-3 text-slate-300">Affûtage (-60 %) : Footings 30 min très souples. HT 30 min moulinage.</td>
+                  </tr>
+                  <tr data-start="2027-09-27" data-end="2027-10-03" class="plan-week-row bg-amber-950/30 text-amber-200 border-l-2 border-amber-400 font-semibold hover:bg-amber-950/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-amber-300">S52</td>
+                    <td class="py-3 px-3 text-amber-300/80 whitespace-nowrap">27/09 – 03/10/27</td>
+                    <td class="py-3 px-3 whitespace-nowrap">Course + 1 HT</td>
+                    <td class="py-3 px-3"><span class="inline-block px-1.5 py-0.5 rounded bg-amber-500/30 text-amber-300 text-[10px] font-bold mr-1">🏆 Palier 2</span> <strong>Marathon en Belgique (ex. Bruxelles / Bruges)</strong>. Validation endurance longue.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PHASE 5 -->
+          <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3" id="p5">
+            <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+              <span class="text-sky-400">Phase 5 :</span> Régénération & Force Hivernale (Octobre 2027 – Janvier 2028)
+            </h3>
+            <div class="overflow-x-auto custom-scrollbar">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800 bg-slate-950/50">
+                    <th class="py-2.5 px-3 rounded-l-xl">Sem.</th>
+                    <th class="py-2.5 px-3">Dates</th>
+                    <th class="py-2.5 px-3">Séances</th>
+                    <th class="py-2.5 px-3 rounded-r-xl">Programme Minimal Efficace</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/50">
+                  <tr data-start="2027-10-04" data-end="2027-10-10" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S53</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">04/10 – 10/10/27</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">2 HT doux</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Coupure course :</em> HT 2x 35 min Z1 pour drainer sans aucun impact.</td>
+                  </tr>
+                  <tr data-start="2027-10-11" data-end="2027-10-17" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S54</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">11/10 – 17/10/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 2 HT</td>
+                    <td class="py-3 px-3 text-slate-300">Reprise herbe Josaphat 30 min. HT : 2x 40 min Z1/Z2.</td>
+                  </tr>
+                  <tr data-start="2027-10-18" data-end="2027-10-24" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S55</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">18/10 – 24/10/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">Run midi : 40 min Z2. HT : 45 min force basse cadence. SL : 1 h 20 Soignes.</td>
+                  </tr>
+                  <tr data-start="2027-10-25" data-end="2027-10-31" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S56</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">25/10 – 31/10/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 45 min escaliers. HT : 45 min Sweetspot. SL : 1 h 30 avec bâtons.</td>
+                  </tr>
+                  <tr data-start="2027-11-01" data-end="2027-11-07" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S57</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">01/11 – 07/11/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> Run 1 h Z2. HT : 50 min force (55 rpm). SL : 1 h 45 Soignes.</td>
+                  </tr>
+                  <tr data-start="2027-11-08" data-end="2027-11-14" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S58</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">08/11 – 14/11/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 45 min tapis 15 % (sac 3 kg). HT : 45 min Z2. SL : 2 h 00 vallonnée.</td>
+                  </tr>
+                  <tr data-start="2027-11-15" data-end="2027-11-21" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S59</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">15/11 – 21/11/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 45 min côtes Josaphat. HT : 50 min force. SL : 2 h 15 Soignes avec bâtons.</td>
+                  </tr>
+                  <tr data-start="2027-11-22" data-end="2027-11-28" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S60</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">22/11 – 28/11/27</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 15.</td>
+                  </tr>
+                  <tr data-start="2027-11-29" data-end="2027-12-05" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S61</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">29/11 – 05/12/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 45 min escaliers Mont des Arts. HT : 50 min Sweetspot. SL : 2 h 15 avec sac 3 kg.</td>
+                  </tr>
+                  <tr data-start="2027-12-06" data-end="2027-12-12" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S62</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">06/12 – 12/12/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> Run 1 h 15 Z2. HT : 50 min force. SL : 2 h 30 Soignes avec bâtons.</td>
+                  </tr>
+                  <tr data-start="2027-12-13" data-end="2027-12-19" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S63</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">13/12 – 19/12/27</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 50 min tapis 15 % (sac 3 kg). HT : 45 min Z2. SL : 2 h 30 avec bâtons.</td>
+                  </tr>
+                  <tr data-start="2027-12-20" data-end="2027-12-26" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S64</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">20/12 – 26/12/27</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Semaine fêtes :</em> Run 35 min Z2. HT 40 min Z1/Z2. SL 1 h 15 souple.</td>
+                  </tr>
+                  <tr data-start="2027-12-27" data-end="2028-01-02" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S65</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">27/12 – 02/01/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 45 min escaliers. HT : 45 min Z2. SL : 2 h 00 Soignes avec bâtons.</td>
+                  </tr>
+                  <tr data-start="2028-01-03" data-end="2028-01-09" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S66</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">03/01 – 09/01/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 50 min tapis 15 % (sac 3,5 kg). HT : 50 min force (60 rpm). SL : 2 h 20 vallonnée.</td>
+                  </tr>
+                  <tr data-start="2028-01-10" data-end="2028-01-16" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S67</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">10/01 – 16/01/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> Run 1 h 15 Z2. HT : 50 min Sweetspot. SL : 2 h 30 (boucle Rouge-Cloître).</td>
+                  </tr>
+                  <tr data-start="2028-01-17" data-end="2028-01-23" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S68</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">17/01 – 23/01/28</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Assimilation :</em> Run 40 min Z2. HT 40 min Z1. SL 1 h 20.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PHASE 6 -->
+          <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3" id="p6">
+            <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+              <span class="text-sky-400">Phase 6 :</span> Spécifique Dénivelé & Validation Palier 3 (Février – Avril 2028)
+            </h3>
+            <div class="overflow-x-auto custom-scrollbar">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800 bg-slate-950/50">
+                    <th class="py-2.5 px-3 rounded-l-xl">Sem.</th>
+                    <th class="py-2.5 px-3">Dates</th>
+                    <th class="py-2.5 px-3">Séances</th>
+                    <th class="py-2.5 px-3 rounded-r-xl">Programme Minimal Efficace</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/50">
+                  <tr data-start="2028-01-24" data-end="2028-01-30" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S69</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">24/01 – 30/01/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 50 min escaliers (sac 3,5 kg). HT : 50 min Z2. SL : 2 h 30 avec bâtons.</td>
+                  </tr>
+                  <tr data-start="2028-01-31" data-end="2028-02-06" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S70</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">31/01 – 06/02/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> Run 1 h 15 Z2. HT : 50 min force. SL : 2 h 40 avec sac 3,5 kg.</td>
+                  </tr>
+                  <tr data-start="2028-02-07" data-end="2028-02-13" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S71</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">07/02 – 13/02/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 1 h tapis 15 % (+800 m D+). HT : 50 min Sweetspot. SL : 2 h 45 avec bâtons.</td>
+                  </tr>
+                  <tr data-start="2028-02-14" data-end="2028-02-20" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S72</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">14/02 – 20/02/28</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
+                  </tr>
+                  <tr data-start="2028-02-21" data-end="2028-02-27" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S73</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">21/02 – 27/02/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 1 h tapis 15 % (sac 3,5 kg). HT : 50 min force. SL : 2 h 45 Soignes.</td>
+                  </tr>
+                  <tr data-start="2028-02-28" data-end="2028-03-05" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S74</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">28/02 – 05/03/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> SL 2 h 45 avec frontale (nutrition 60 g/h). HT : 50 min Z2.</td>
+                  </tr>
+                  <tr data-start="2028-03-06" data-end="2028-03-12" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S75</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">06/03 – 12/03/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 50 min escaliers Mont des Arts. HT : 50 min Sweetspot. SL : 3 h 00 avec sac réglé.</td>
+                  </tr>
+                  <tr data-start="2028-03-13" data-end="2028-03-19" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S76</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">13/03 – 19/03/28</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
+                  </tr>
+                  <tr data-start="2028-03-20" data-end="2028-03-26" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S77</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">20/03 – 26/03/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 1 h tapis 15 %. HT : 50 min force en côte. SL : 2 h 45 avec équipement réel.</td>
+                  </tr>
+                  <tr data-start="2028-03-27" data-end="2028-04-02" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S78</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">27/03 – 02/04/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> Run 1 h 20 Z2. HT : 45 min Sweetspot. SL : 2 h 30 vallonnée.</td>
+                  </tr>
+                  <tr data-start="2028-04-03" data-end="2028-04-09" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S79</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">03/04 – 09/04/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 1 HT</td>
+                    <td class="py-3 px-3 text-slate-300">Allègement pré-test : Run 35 min Z2. HT 35 min souple. Repos musculaire.</td>
+                  </tr>
+                  <tr data-start="2028-04-10" data-end="2028-04-16" class="plan-week-row bg-amber-950/30 text-amber-200 border-l-2 border-amber-400 font-semibold hover:bg-amber-950/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-amber-300">S80</td>
+                    <td class="py-3 px-3 text-amber-300/80 whitespace-nowrap">10/04 – 16/04/28</td>
+                    <td class="py-3 px-3 whitespace-nowrap">Test + 1 HT</td>
+                    <td class="py-3 px-3"><span class="inline-block px-1.5 py-0.5 rounded bg-amber-500/30 text-amber-300 text-[10px] font-bold mr-1">🏆 Palier 3</span> <strong>Test des 1 000 m D+ (Tapis 15 % ou escaliers avec sac 3,5 kg) + 10 km plat immédiat</strong>.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PHASE 7 -->
+          <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3" id="p7">
+            <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+              <span class="text-sky-400">Phase 7 :</span> Le Crash-Test Ardennes & Pic Alpin (Mai – Juillet 2028)
+            </h3>
+            <div class="overflow-x-auto custom-scrollbar">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800 bg-slate-950/50">
+                    <th class="py-2.5 px-3 rounded-l-xl">Sem.</th>
+                    <th class="py-2.5 px-3">Dates</th>
+                    <th class="py-2.5 px-3">Séances</th>
+                    <th class="py-2.5 px-3 rounded-r-xl">Programme Minimal Efficace</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/50">
+                  <tr data-start="2028-04-17" data-end="2028-04-23" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S81</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">17/04 – 23/04/28</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">2 HT + 1 Run</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Récupération Palier 3 :</em> HT 2x 40 min Z1. Run 35 min Z2 souple.</td>
+                  </tr>
+                  <tr data-start="2028-04-24" data-end="2028-04-30" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S82</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">24/04 – 30/04/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 50 min tapis 15 %. HT : 50 min Sweetspot. SL : 2 h 45 Soignes avec bâtons.</td>
+                  </tr>
+                  <tr data-start="2028-05-01" data-end="2028-05-07" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S83</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">01/05 – 07/05/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> Run 1 h 15 Z2. HT : 50 min force. SL : 3 h 00 avec sac de fastpacking (3,5 kg).</td>
+                  </tr>
+                  <tr data-start="2028-05-08" data-end="2028-05-14" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S84</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">08/05 – 14/05/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 50 min escaliers (sac 3,5 kg). HT : 45 min Z2. SL : 3 h 15 (test matériel et flasques).</td>
+                  </tr>
+                  <tr data-start="2028-05-15" data-end="2028-05-21" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S85</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">15/05 – 21/05/28</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
+                  </tr>
+                  <tr data-start="2028-05-22" data-end="2028-05-28" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S86</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">22/05 – 28/05/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 45 min tapis 15 %. HT : 45 min force. SL : 2 h 15 dynamique avec bâtons.</td>
+                  </tr>
+                  <tr data-start="2028-05-29" data-end="2028-06-04" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S87</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">29/05 – 04/06/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 1 HT</td>
+                    <td class="py-3 px-3 text-slate-300">Affûtage avant week-end choc : 2 footings de 25 min très souples. Faire du jus.</td>
+                  </tr>
+                  <tr data-start="2028-06-05" data-end="2028-06-11" class="plan-week-row bg-amber-950/30 text-amber-200 border-l-2 border-amber-400 font-semibold hover:bg-amber-950/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-amber-300">S88</td>
+                    <td class="py-3 px-3 text-amber-300/80 whitespace-nowrap">05/06 – 11/06/28</td>
+                    <td class="py-3 px-3 whitespace-nowrap">Stage Ardennes</td>
+                    <td class="py-3 px-3"><span class="inline-block px-1.5 py-0.5 rounded bg-amber-500/30 text-amber-300 text-[10px] font-bold mr-1">🏆 Palier 4</span> <strong>Week-End Choc en Ardennes (09 – 11/06/2028)</strong> : 2 jours x 35 km / +1 500 m D+ consécutifs avec sac 3,5 kg.</td>
+                  </tr>
+                  <tr data-start="2028-06-12" data-end="2028-06-18" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S89</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">12/06 – 18/06/28</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">2 HT doux</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Régénération post-choc :</em> HT 2x 35 min en Z1 pure. Pas de course à pied.</td>
+                  </tr>
+                  <tr data-start="2028-06-19" data-end="2028-06-25" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S90</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">19/06 – 25/06/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">Reprise active : Run 40 min Z2. HT : 45 min force basse cadence. SL : 2 h 00 Soignes.</td>
+                  </tr>
+                  <tr data-start="2028-06-26" data-end="2028-07-02" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S91</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">26/06 – 02/07/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><span class="inline-block px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold mr-1">🔦 Frontale 5h30</span> Run 1 h 15 Z2. D+ midi : 50 min tapis 15 %. SL : 2 h 45 Soignes.</td>
+                  </tr>
+                  <tr data-start="2028-07-03" data-end="2028-07-09" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S92</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">03/07 – 09/07/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">D+ midi : 50 min escaliers (sac 3,5 kg). HT : 50 min force. SL : 3 h 00 avec bâtons.</td>
+                  </tr>
+                  <tr data-start="2028-07-10" data-end="2028-07-16" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S93</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">10/07 – 16/07/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><strong class="text-amber-400">Dernier Pic :</strong> Tapis 15 % 45 min. HT : 45 min Z2. SL : 3 h 30 (matériel définitif rodé).</td>
+                  </tr>
+                  <tr data-start="2028-07-17" data-end="2028-07-23" class="plan-week-row bg-sky-950/20 text-sky-200 border-l-2 border-sky-400/60 hover:bg-sky-950/30 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-300">S94</td>
+                    <td class="py-3 px-3 text-sky-300/80 whitespace-nowrap">17/07 – 23/07/28</td>
+                    <td class="py-3 px-3 font-semibold whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3"><em class="text-sky-400 font-semibold">Assimilation :</em> Run 35 min Z2. HT 35 min Z1. SL 1 h 20.</td>
+                  </tr>
+                  <tr data-start="2028-07-24" data-end="2028-07-30" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S95</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">24/07 – 30/07/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300">Dernier gros D+ : 50 min tapis 15 % (+750 m D+). HT : 45 min Sweetspot. SL : 2 h 15.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PHASE 8 -->
+          <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3" id="p8">
+            <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+              <span class="text-sky-400">Phase 8 :</span> Affûtage & Tour du Mont-Rose (Août – Septembre 2028)
+            </h3>
+            <div class="overflow-x-auto custom-scrollbar">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800 bg-slate-950/50">
+                    <th class="py-2.5 px-3 rounded-l-xl">Sem.</th>
+                    <th class="py-2.5 px-3">Dates</th>
+                    <th class="py-2.5 px-3">Séances</th>
+                    <th class="py-2.5 px-3 rounded-r-xl">Programme Minimal Efficace</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/50">
+                  <tr data-start="2028-07-31" data-end="2028-08-06" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S96</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">31/07 – 06/08/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 D+ + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><em class="text-sky-400">Affûtage (-20 %) :</em> D+ 35 min tapis 15 %. HT : 35 min Z1/Z2. SL réduite à 1 h 45.</td>
+                  </tr>
+                  <tr data-start="2028-08-07" data-end="2028-08-13" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S97</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">07/08 – 13/08/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">1 Run + 1 HT + 1 SL</td>
+                    <td class="py-3 px-3 text-slate-300"><em class="text-sky-400">Affûtage (-40 %) :</em> Run 35 min avec 3 accélérations. HT : 30 min souple. SL : 1 h 15.</td>
+                  </tr>
+                  <tr data-start="2028-08-14" data-end="2028-08-20" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S98</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">14/08 – 20/08/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">2 Run très légers</td>
+                    <td class="py-3 px-3 text-slate-300"><em class="text-sky-400">Affûtage (-60 %) :</em> Footings courts de 25 min Z2. Sommeil prioritaire, zéro fatigue.</td>
+                  </tr>
+                  <tr data-start="2028-08-21" data-end="2028-08-27" class="plan-week-row hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-mono font-bold text-sky-400">S99</td>
+                    <td class="py-3 px-3 text-slate-400 whitespace-nowrap">21/08 – 27/08/28</td>
+                    <td class="py-3 px-3 font-semibold text-slate-300 whitespace-nowrap">Activation douce</td>
+                    <td class="py-3 px-3 text-slate-300"><em class="text-sky-400">Voyage :</em> 2 footings de 20 min d'activation musculaire. Transfert à Grächen (Suisse).</td>
+                  </tr>
+                  <tr data-start="2028-08-28" data-end="2028-09-03" class="plan-week-row bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 border-l-4 border-amber-400 font-bold text-white hover:bg-amber-500/30 transition">
+                    <td class="py-4 px-3 font-mono text-amber-300 text-sm">S100</td>
+                    <td class="py-4 px-3 text-amber-200 whitespace-nowrap">28/08 – 03/09/28</td>
+                    <td class="py-4 px-3 text-amber-300 uppercase whitespace-nowrap">EXPÉDITION</td>
+                    <td class="py-4 px-3"><span class="inline-block px-2 py-0.5 rounded bg-orange-600 text-white text-[11px] font-extrabold mr-2">🏔️ JOUR J</span> <strong>TOUR DU MONT-ROSE EXPRESS EN 4 JOURS (171 km / +11 600 m D+) !</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 2. ONGLET CLASSEMENT & DÉFIS -->
+      <section id="tab-leaderboard" class="hidden space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="podiumContainer">
+          <!-- Injecté dynamiquement -->
+        </div>
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 shadow-xl">
+          <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+            <span>📊</span> <span>Tableau de bord de la Cordée</span>
+          </h3>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="text-[11px] uppercase tracking-wider text-slate-500 border-b border-slate-800">
+                <tr>
+                  <th class="py-3 px-3">Rang</th>
+                  <th class="py-3 px-3">Grimpeur</th>
+                  <th class="py-3 px-3">Points</th>
+                  <th class="py-3 px-3">D+ Total</th>
+                  <th class="py-3 px-3">Aptitude Mont Rose (13k)</th>
+                  <th class="py-3 px-3">Renfo (min)</th>
+                  <th class="py-3 px-3">Séances</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboardTableBody" class="divide-y divide-slate-800/60 font-medium">
+                <!-- Injecté dynamiquement -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. ONGLET EXERCICES & ROUTINES -->
+      <section id="tab-exercises" class="hidden space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-bold text-white">Bibliothèque de Renforcement Alpin</h2>
+            <p class="text-xs text-slate-400">Routines spécifiques pour encaisser les descentes raides et le sac lourd</p>
+          </div>
+          <button onclick="openCreateExerciseModal()" class="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs transition flex items-center gap-1.5 shadow-md">
+            <span>✨</span> <span>+ Créer un entraînement</span>
+          </button>
+        </div>
+
+        <!-- Filtres catégories -->
+        <div class="flex items-center gap-2 overflow-x-auto custom-scrollbar text-xs">
+          <button onclick="filterExercises('all')" class="ex-filter-btn px-3 py-1.5 rounded-xl bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30" data-cat="all">Tous</button>
+          <button onclick="filterExercises('Genoux')" class="ex-filter-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800" data-cat="Genoux">🛡️ Genoux & Quadriceps</button>
+          <button onclick="filterExercises('Chevilles')" class="ex-filter-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800" data-cat="Chevilles">🐐 Chevilles & Proprio</button>
+          <button onclick="filterExercises('Tronc')" class="ex-filter-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800" data-cat="Tronc">🎒 Gainage & Sac Lourd</button>
+        </div>
+
+        <!-- Grille des cartes d'exercices -->
+        <div id="exercisesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Injecté dynamiquement -->
+        </div>
+      </section>
+
+      <!-- 4. ONGLET PROGRESSION 2028 (STATS) -->
+      <section id="tab-stats" class="hidden space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800">
+            <span class="text-xs text-slate-400 font-bold uppercase">Ascensions Tour Eiffel</span>
+            <div id="statEiffelCount" class="text-2xl font-black text-amber-400 mt-1">0</div>
+            <p class="text-[11px] text-slate-500 mt-1">Équivalent à 300 m D+ chacune</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800">
+            <span class="text-xs text-slate-400 font-bold uppercase">Ascensions Everest</span>
+            <div id="statEverestCount" class="text-2xl font-black text-emerald-400 mt-1">0</div>
+            <p class="text-[11px] text-slate-500 mt-1">Équivalent à 8 848 m d'altitude</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800">
+            <span class="text-xs text-slate-400 font-bold uppercase">Heures sous tension</span>
+            <div id="statTotalHours" class="text-2xl font-black text-sky-400 mt-1">0 h</div>
+            <p class="text-[11px] text-slate-500 mt-1">Cumul total d'effort de la cordée</p>
+          </div>
+        </div>
+
+        <!-- Graphique d'évolution -->
+        <div class="p-6 rounded-3xl bg-slate-900/60 border border-slate-800">
+          <h3 class="text-sm font-bold text-white mb-4">Volume D+ Mensuel de la Cordée</h3>
+          <div class="h-64">
+            <canvas id="monthlyElevationChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ============================================================================== -->
+  <!-- MODALS -->
+  <!-- ============================================================================== -->
+
+  <!-- 1. MODAL AUTHENTIFICATION (EMAIL + OTP) -->
+  <div id="authModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl relative">
+      <button onclick="closeModal('authModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+      <div class="text-center mb-6">
+        <span class="text-4xl">🏔️</span>
+        <h3 class="text-xl font-black text-white mt-2">Rejoindre la Cordée</h3>
+        <p class="text-xs text-slate-400 mt-1">Sans mot de passe : reçois un code à 6 chiffres par email.</p>
+      </div>
+
+      <!-- Étape 1 : Demande de code -->
+      <form id="formRequestOtp" onsubmit="handleRequestOtpSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Ton Prénom</label>
+          <input type="text" id="authNameInput" required placeholder="Ex : Harry" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-sky-500">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Ton Adresse Email</label>
+          <input type="email" id="authEmailInput" required placeholder="nom@exemple.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-sky-500">
+        </div>
+        <button type="submit" id="btnRequestOtp" class="w-full py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-sky-500/20">
+          Recevoir mon code par email
+        </button>
+      </form>
+
+      <!-- Étape 2 : Vérification du code -->
+      <form id="formVerifyOtp" onsubmit="handleVerifyOtpSubmit(event)" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Code à 6 chiffres</label>
+          <input type="text" id="otpInput" maxlength="6" pattern="[0-9]{6}" required placeholder="123456" class="w-full px-4 py-3 text-center tracking-widest text-xl font-mono rounded-xl bg-slate-950 border border-slate-800 text-sky-400 focus:outline-none focus:border-sky-500">
+          <p class="text-[11px] text-slate-500 mt-1 text-center">Vérifie aussi tes courriers indésirables / spams.</p>
+        </div>
+        <button type="submit" id="btnVerifyOtp" class="w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 text-slate-950 font-bold text-xs uppercase tracking-wider transition shadow-lg">
+          Valider et se connecter
+        </button>
+        <button type="button" onclick="backToStep1Otp()" class="w-full text-center text-xs text-slate-400 hover:text-white">
+          Modifier l'adresse email
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. MODAL ENREGISTRER UNE SÉANCE -->
+  <div id="workoutModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <button onclick="closeModal('workoutModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+      <div class="mb-5">
+        <h3 class="text-lg font-black text-white">⚡ Enregistrer un entraînement</h3>
+        <p class="text-xs text-slate-400">Chaque mètre de dénivelé et minute de gainage compte pour 2028 !</p>
+      </div>
+
+      <form id="formAddWorkout" onsubmit="handleSaveWorkout(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 uppercase mb-1">Discipline</label>
+          <select id="wType" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-sky-500">
+            <option value="Renforcement">💪 Renforcement Spécifique Montagne</option>
+            <option value="Trail">⛰️ Trail Running</option>
+            <option value="Course à pied">🏃 Course à pied (Route/Piste)</option>
+            <option value="Vélo">🚴 Vélo de Route / Gravel</option>
+            <option value="Home Trainer">🚴 Home Trainer / Zwift</option>
+            <option value="Rando">🎒 Randonnée avec D+ / Sac lourd</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 uppercase mb-1">Titre de la sortie</label>
+          <input type="text" id="wTitle" required placeholder="Ex : 4x1000m D+ ou Routine Genoux de Fer" class="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-sky-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 uppercase mb-1">Date</label>
+            <input type="date" id="wDate" required class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-sky-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 uppercase mb-1">Durée (minutes)</label>
+            <input type="number" id="wDuration" min="1" required placeholder="45" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-sky-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 uppercase mb-1">Dénivelé Positif D+ (m)</label>
+            <input type="number" id="wElevation" min="0" placeholder="0" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-sky-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 uppercase mb-1">Distance (km)</label>
+            <input type="number" step="0.1" id="wDistance" min="0" placeholder="0" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-sky-500">
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="font-bold text-slate-300 uppercase">Intensité Perçue (RPE 1 à 10)</label>
+            <span id="rpeDisplayVal" class="text-sky-400 font-bold">5 - Modéré</span>
+          </div>
+          <input type="range" id="wRpe" min="1" max="10" value="5" oninput="updateRpeDisplay(this.value)" class="w-full accent-sky-500">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 uppercase mb-1">Sensations / Notes pour la cordée</label>
+          <textarea id="wNotes" rows="2" placeholder="Sensations dans les cuisses, poids du sac, météo..." class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-sky-500"></textarea>
+        </div>
+
+        <button type="submit" id="btnSubmitWorkout" class="w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-slate-950 font-bold text-xs uppercase tracking-wider transition shadow-lg">
+          Valider la séance
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. MODAL GARMIN CONNECT (AVEC GUIDE SIMPLE ET CLÉ API) -->
+  <div id="garminModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <button onclick="closeModal('garminModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-3xl">⌚</span>
+        <div>
+          <h3 class="text-lg font-black text-white">Connexion Garmin Connect</h3>
+          <p class="text-xs text-slate-400">Import automatique de vos sorties Trail, Running et Vélo</p>
+        </div>
+      </div>
+
+      <!-- Tuto Simple pour non-geeks -->
+      <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3 mb-5 text-xs text-slate-300">
+        <p class="font-bold text-sky-400 text-sm">Comment obtenir ta clé en 3 clics :</p>
+        <ol class="list-decimal list-inside space-y-2 leading-relaxed">
+          <li>
+            Ouvre la page officielle : 
+            <a href="https://connect.garmin.com/app/settings/personalApiToken" target="_blank" class="text-sky-400 underline font-semibold">
+              Garmin Personal API Token ↗
+            </a>
+          </li>
+          <li>Connecte-toi avec tes identifiants Garmin.</li>
+          <li>
+            Clique sur <strong>« Generate Token »</strong> et choisis 
+            <span class="text-amber-300 font-bold underline">1 an (365 jours)</span> de validité.
+          </li>
+          <li>Copie la clé (commençant par <code class="text-sky-300 bg-slate-900 px-1 py-0.5 rounded">GCDC_...</code>) et colle-la ci-dessous.</li>
+        </ol>
+      </div>
+
+      <form id="formGarminKey" onsubmit="handleSaveGarminKey(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Clé API Personnelle Garmin</label>
+          <div class="relative">
+            <input type="password" id="garminApiKeyInput" placeholder="GCDC_xxxxxxxxxxxxxxxxxxxx" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono pr-10 focus:outline-none focus:border-sky-500">
+            <button type="button" onclick="togglePasswordVisibility('garminApiKeyInput')" class="absolute right-3 top-2.5 text-slate-400 hover:text-white text-xs">👁️</button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button type="submit" id="btnSaveGarminKey" class="flex-1 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs uppercase transition shadow-md">
+            Enregistrer la clé
+          </button>
+          <button type="button" onclick="triggerGarminSync()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition">
+            🔄 Importer maintenant
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. MODAL CRÉER UN EXERCICE DE RENFO -->
+  <div id="createExerciseModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <button onclick="closeModal('createExerciseModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+
+      <div class="mb-4">
+        <h3 class="text-lg font-black text-white">💪 Partager une routine avec l'équipe</h3>
+        <p class="text-xs text-slate-400">Propose un exercice efficace pour blinder le corps avant le Mont Rose</p>
+      </div>
+
+      <form id="formCreateExercise" onsubmit="handleSaveExercise(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 uppercase mb-1">Nom du Circuit / Exercice</label>
+          <input type="text" id="exTitle" required placeholder="Ex : Fentes bulgares excentriques" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-sky-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 uppercase mb-1">Cible Musculaire</label>
+            <select id="exCategory" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-sky-500">
+              <option value="Genoux">🛡️ Genoux & Quadriceps</option>
+              <option value="Chevilles">🐐 Chevilles & Proprioception</option>
+              <option value="Tronc">🎒 Gainage & Sac Lourd</option>
+              <option value="Cardio">⚡ Escalier & D+ explosif</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 uppercase mb-1">Durée Conseillée</label>
+            <input type="text" id="exDuration" required placeholder="Ex : 25 min" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-sky-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 uppercase mb-1">Séries et Répétitions</label>
+          <textarea id="exSetsReps" required rows="3" placeholder="Ex : 4 séries de 12 répétitions par jambe avec tempo 3s de descente..." class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-sky-500"></textarea>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 uppercase mb-1">Conseils d'exécution & Posture</label>
+          <textarea id="exTips" rows="2" placeholder="Ex : Garder le dos bien droit, genou aligné avec la pointe du pied..." class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-sky-500"></textarea>
+        </div>
+
+        <button type="submit" id="btnSubmitExercise" class="w-full py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition shadow-lg">
+          Publier pour la cordée
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT APPLICATION -->
+  <script>
+    // ==============================================================================
+    // CONFIGURATION & ÉTAT GLOBAL
+    // ==============================================================================
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw0tyPocvVDdssJJz6y4bgpS2boez6jwcdMGWpjNabqBJyoDwuaVTtFZHT9lHlT1hlS/exec";
+
+    const MONT_ROSE_ELEVATION = 13000;
+    const MILESTONES = [
+      { name: "Refuge Torino", alt: 3375, emoji: "🛖" },
+      { name: "Dufourspitze (Toit du Mont Rose)", alt: 4634, emoji: "🏔️" },
+      { name: "Mont Blanc", alt: 4809, emoji: "❄️" },
+      { name: "Everest", alt: 8848, emoji: "👑" },
+      { name: "1er Tour du Mont Rose Complet", alt: 13000, emoji: "🏆" },
+      { name: "Olympus Mons (Mars)", alt: 21287, emoji: "🚀" },
+      { name: "Grand Chelem de la Cordée", alt: 65000, emoji: "🌌" },
+      { name: "Frontière de l'Espace", alt: 100000, emoji: "✨" }
+    ];
+
+    const DEFAULT_EXERCISES = [
+      {
+        id: "mb-1",
+        title: "Fentes Bulgares Alpin 5x5 (Mathieu Blanchard)",
+        category: "Genoux",
+        target_time: "20 min",
+        author_name: "Mathieu Blanchard",
+        video_url: "https://youtu.be/4Rnl-qb3HTo?t=331",
+        sets_reps: "5 séries de 5 répétitions par jambe. 30s à 60s de repos. Pied arrière surélevé sur un banc ou rocher. Descente contrôlée, buste fier.",
+        tips: "Recommandé par Mathieu Blanchard : l'exercice roi pour encaisser les 1 800 m de descente cassante vers Macugnaga sans flinguer les genoux."
+      },
+      {
+        id: "mb-2",
+        title: "Single Leg Deadlift - Soulevé de Terre Unilatéral",
+        category: "Chevilles",
+        target_time: "15 min",
+        author_name: "Mathieu Blanchard",
+        video_url: "https://youtu.be/4Rnl-qb3HTo?t=331",
+        sets_reps: "4 séries de 8 à 10 répétitions par jambe. Buste penché vers l'avant en bascule, jambe opposée tendue en arrière jusqu'à frôler la chaussure.",
+        tips: "Renforce toute la chaîne postérieure (ischio-fessiers) et la proprioception de cheville pour être stable sur les pierriers instables."
+      },
+      {
+        id: "mb-3",
+        title: "Extensions de Mollets Excentriques (Descente Lente)",
+        category: "Genoux",
+        target_time: "15 min",
+        author_name: "Mathieu Blanchard",
+        video_url: "https://youtu.be/4Rnl-qb3HTo?t=331",
+        sets_reps: "4 séries de 15 répétitions. Montée explosive sur pointes de pieds, descente lente et freinée sur 3 secondes complètes, talon sous le niveau de la marche.",
+        tips: "Blindage du tendon d'Achille et des mollets indispensable pour gravir les 9 cols alpins sans crampes."
+      },
+      {
+        id: "pyr-1",
+        title: "Le Défi Pyramide 10 à 1 Aller-Retour (110 Pompes & Squats)",
+        category: "Tronc",
+        target_time: "20 min",
+        author_name: "La Cordée",
+        sets_reps: "10 pompes + 10 squats, puis 9/9, 8/8... jusqu'à 1/1, puis on remonte 2/2, 3/3... jusqu'à 10/10 ! Total : 110 pompes et 110 squats au poids de corps.",
+        tips: "Zéro matériel requis. Enchaîner avec un minimum de pause pour travailler le gainage, les cuisses et le mental d'acier."
+      }
+    ];
+
+    let currentUser = null;
+    let pendingEmail = "";
+    let globalWorkouts = [];
+    let globalLeaderboard = [];
+    let globalExercises = [];
+    let monthlyChartInstance = null;
+
+    // ==============================================================================
+    // INITIALISATION
+    // ==============================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log("🚀 Lancement de l'application Tour du Mont Rose 2028");
+      
+      // Récupération de la session locale (1 an)
+      const stored = localStorage.getItem("tmr_user_v2");
+      if (stored) {
+        try {
+          currentUser = JSON.parse(stored);
+        } catch (e) {
+          currentUser = null;
+        }
+      }
+
+      startCountdown();
+      updateAuthUI();
+      document.getElementById('wDate').valueAsDate = new Date();
+
+      // Prise en charge des ancres directes (#plan, #exercises...)
+      if (window.location.hash) {
+        const targetTab = window.location.hash.replace('#', '');
+        if (['feed', 'plan', 'leaderboard', 'exercises', 'stats'].includes(targetTab)) {
+          switchTab(targetTab);
+        }
+      }
+
+      highlightCurrentWeek();
+      loadData();
+    });
+
+    // ==============================================================================
+    // GESTION ET NAVIGATION DANS LE PLAN DES 100 SEMAINES
+    // ==============================================================================
+    function highlightCurrentWeek() {
+      const now = new Date();
+      const todayIso = now.toISOString().substring(0, 10);
+      const rows = document.querySelectorAll('.plan-week-row');
+
+      let currentFound = false;
+
+      rows.forEach(row => {
+        const start = row.getAttribute('data-start');
+        const end = row.getAttribute('data-end');
+
+        // Retirer ancien highlight
+        row.classList.remove('ring-2', 'ring-emerald-400', 'bg-emerald-500/20');
+        const oldBadge = row.querySelector('.current-week-badge');
+        if (oldBadge) oldBadge.remove();
+
+        if (start && end && todayIso >= start && todayIso <= end) {
+          currentFound = true;
+          row.classList.add('ring-2', 'ring-emerald-400', 'bg-emerald-500/20');
+          row.id = "activeWeekRow";
+
+          const weekCell = row.querySelector('td');
+          if (weekCell) {
+            const badge = document.createElement('span');
+            badge.className = "current-week-badge ml-1.5 px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-500 text-slate-950 inline-block uppercase tracking-wider animate-pulse";
+            badge.innerText = "Cette semaine";
+            weekCell.appendChild(badge);
+          }
+        }
+      });
+
+      // Si aucune semaine exacte trouvée (ex: avant le 05/10/2026), on cible S01 par défaut
+      if (!currentFound && rows.length > 0) {
+        rows[0].id = "activeWeekRow";
+      }
+    }
+
+    function scrollToCurrentWeek() {
+      highlightCurrentWeek();
+      const activeRow = document.getElementById('activeWeekRow');
+      if (activeRow) {
+        activeRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        activeRow.classList.add('animate-pulse');
+        setTimeout(() => activeRow.classList.remove('animate-pulse'), 2500);
+        showToast("📍 Semaine active localisée !");
+      } else {
+        showToast("Navigation vers le plan...");
+      }
+    }
+
+    function exportPlanToIcs() {
+      const rows = document.querySelectorAll('.plan-week-row');
+      if (!rows || rows.length === 0) {
+        showToast("Aucune semaine à exporter");
+        return;
+      }
+
+      let icsContent = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Mont Rose 2028//Plan 100 Semaines//FR",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        "X-WR-CALNAME:Tour du Mont Rose 2028 - Entrainement"
+      ];
+
+      rows.forEach(r => {
+        const start = r.getAttribute('data-start'); // YYYY-MM-DD
+        const end = r.getAttribute('data-end');     // YYYY-MM-DD
+        if (!start || !end) return;
+
+        const cells = r.querySelectorAll('td');
+        const semId = cells[0]?.innerText?.replace('Cette semaine', '')?.trim() || "Séance";
+        const datesStr = cells[1]?.innerText?.trim() || "";
+        const typeStr = cells[2]?.innerText?.trim() || "";
+        const progStr = cells[3]?.innerText?.trim() || "";
+
+        const dtStart = start.replace(/-/g, '') + "T060000Z";
+        const dtEnd = end.replace(/-/g, '') + "T200000Z";
+        const uid = `tmr-${semId}-${start}@montrose2028`;
+
+        icsContent.push("BEGIN:VEVENT");
+        icsContent.push(`UID:${uid}`);
+        icsContent.push(`DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').substring(0, 15)}Z`);
+        icsContent.push(`DTSTART:${dtStart}`);
+        icsContent.push(`DTEND:${dtEnd}`);
+        icsContent.push(`SUMMARY:🏔️ [${semId}] ${typeStr}`);
+        icsContent.push(`DESCRIPTION:Dates: ${datesStr}\\nProgramme: ${progStr.replace(/\n/g, ' ')}\\nTour du Mont Rose 2028`);
+        icsContent.push("STATUS:CONFIRMED");
+        icsContent.push("END:VEVENT");
+      });
+
+      icsContent.push("END:VCALENDAR");
+
+      const blob = new Blob([icsContent.join("\r\n")], { type: "text/calendar;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "Plan_Mont_Rose_100_Semaines.ics";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      showToast("Fichier calendrier (.ics) téléchargé avec succès ! 📥");
+    }
+
+    function switchTab(tabId) {
+      ['feed', 'plan', 'leaderboard', 'exercises', 'stats'].forEach(t => {
+        const el = document.getElementById(`tab-${t}`);
+        const btn = document.getElementById(`tabBtn-${t}`);
+        if (t === tabId) {
+          el?.classList.remove('hidden');
+          btn?.classList.add('bg-sky-500/20', 'text-sky-400', 'border-sky-500/30');
+          btn?.classList.remove('bg-slate-900', 'text-slate-400', 'border-slate-800');
+          if (t === 'plan') {
+            highlightCurrentWeek();
+          }
+        } else {
+          el?.classList.add('hidden');
+          btn?.classList.remove('bg-sky-500/20', 'text-sky-400', 'border-sky-500/30');
+          btn?.classList.add('bg-slate-900', 'text-slate-400', 'border-slate-800');
+        }
+      });
+    }
+
+    // ==============================================================================
+    // COMMUNICATION API POST
+    // ==============================================================================
+    async function apiPost(action, payload = {}) {
+      const body = { action: action, ...payload };
+      console.groupCollapsed(`🌐 [API Request] action="${action}"`);
+      console.log("Payload:", body);
+
+      try {
+        const resp = await fetch(GAS_WEBAPP_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(body)
+        });
+        const data = await resp.json();
+        console.log("Response:", data);
+        console.groupEnd();
+        return data;
+      } catch (err) {
+        console.error("Erreur Fetch:", err);
+        console.groupEnd();
+        showToast("Erreur de connexion au serveur ⚠️");
+        return { success: false, message: err.toString() };
+      }
+    }
+
+    // ==============================================================================
+    // CHARGEMENT DES DONNÉES
+    // ==============================================================================
+    async function loadData() {
+      const pendingBanner = document.getElementById('pendingApprovalBanner');
+      const guestBanner = document.getElementById('guestWelcomeBanner');
+      const mainContent = document.getElementById('mainAppContent');
+
+      let data = null;
+      if (currentUser && currentUser.token) {
+        data = await apiPost("get_data", { token: currentUser.token });
+      } else {
+        data = await apiPost("get_data", {});
+      }
+
+      // 1. Cas : En attente de validation par Harry
+      if (data && data.pending_approval) {
+        if (pendingBanner) pendingBanner.classList.remove('hidden');
+        if (guestBanner) guestBanner.classList.add('hidden');
+        if (mainContent) mainContent.classList.add('opacity-40', 'pointer-events-none');
+        showToast("Compte en attente de validation par Harry ⏳");
+        return;
+      } else {
+        if (pendingBanner) pendingBanner.classList.add('hidden');
+      }
+
+      // 2. Cas : Invité non connecté
+      if (data && data.require_auth) {
+        if (!currentUser) {
+          if (guestBanner) guestBanner.classList.remove('hidden');
+          if (mainContent) mainContent.classList.add('opacity-40', 'pointer-events-none');
+        }
+        return;
+      } else {
+        if (guestBanner) guestBanner.classList.add('hidden');
+        if (mainContent) mainContent.classList.remove('opacity-40', 'pointer-events-none');
+      }
+
+      if (data && data.success) {
+        globalWorkouts = data.workouts || [];
+        globalLeaderboard = data.leaderboard || [];
+        globalExercises = (data.exercises && data.exercises.length > 0) ? data.exercises : DEFAULT_EXERCISES;
+      }
+
+      updateElevationHero();
+      renderFeed();
+      renderLeaderboard();
+      renderExercises();
+      renderStats();
+    }
+
+    // ==============================================================================
+    // RENDU DU HERO STATS & PALIERS INFINIS
+    // ==============================================================================
+    function updateElevationHero() {
+      const totalDPlus = globalWorkouts.reduce((acc, w) => acc + (Number(w.elevation_m || w.elevation_gain_m || w.elevation) || 0), 0);
+
+      document.getElementById('totalElevationHeader').innerText = `+${totalDPlus.toLocaleString()} m D+`;
+
+      // Multiplicateur de Tours complets
+      const toursCount = (totalDPlus / MONT_ROSE_ELEVATION).toFixed(1);
+      document.getElementById('multiplierBadge').innerText = `🏆 x${toursCount} Tours du Mont Rose`;
+
+      // Trouver le prochain palier
+      let currentMilestone = MILESTONES[0];
+      let prevAlt = 0;
+
+      for (let m of MILESTONES) {
+        if (totalDPlus < m.alt) {
+          currentMilestone = m;
+          break;
+        }
+        prevAlt = m.alt;
+        currentMilestone = m;
+      }
+
+      document.getElementById('currentMilestoneTitle').innerText = `${currentMilestone.emoji} Cap sur : ${currentMilestone.name} (${currentMilestone.alt.toLocaleString()} m)`;
+
+      const span = currentMilestone.alt - prevAlt;
+      const progressInSpan = Math.max(0, totalDPlus - prevAlt);
+      const percent = Math.min(100, Math.round((progressInSpan / span) * 100));
+
+      document.getElementById('collectiveProgressBar').style.width = `${percent}%`;
+      document.getElementById('progressPercentText').innerText = `${percent}% accompli`;
+
+      const remaining = Math.max(0, currentMilestone.alt - totalDPlus);
+      document.getElementById('remainingElevationText').innerText = remaining > 0 ? `Encore +${remaining.toLocaleString()} m D+ pour atteindre ce sommet !` : "Sommet conquis ! 🎉";
+    }
+
+    // ==============================================================================
+    // RENDU DU FEED (LE MUR)
+    // ==============================================================================
+    let currentFeedFilter = "all";
+
+    function filterFeed(type) {
+      currentFeedFilter = type;
+      document.querySelectorAll('.feed-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-filter') === type) {
+          btn.className = "feed-filter-btn px-3 py-1.5 rounded-xl bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30";
+        } else {
+          btn.className = "feed-filter-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 hover:text-white border border-slate-800";
+        }
+      });
+      renderFeed();
+    }
+
+    function renderFeed() {
+      const container = document.getElementById('workoutFeedContainer');
+      if (!container) return;
+
+      let filtered = globalWorkouts;
+      if (currentFeedFilter === "renfo") {
+        filtered = filtered.filter(w => (w.type || "").toLowerCase().includes("renfo"));
+      } else if (currentFeedFilter === "trail") {
+        filtered = filtered.filter(w => (w.type || "").toLowerCase().includes("trail") || (w.type || "").toLowerCase().includes("rando"));
+      } else if (currentFeedFilter === "bike") {
+        filtered = filtered.filter(w => (w.type || "").toLowerCase().includes("vélo") || (w.type || "").toLowerCase().includes("home"));
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="p-12 text-center rounded-3xl bg-slate-900/40 border border-slate-800/80">
+            <span class="text-4xl">🏔️</span>
+            <p class="text-slate-400 text-sm mt-2">Aucun entraînement dans cette catégorie.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(w => {
+        const isGarmin = !!w.garmin_activity_id;
+        const kudosClass = w.has_kudos ? "bg-amber-500/20 text-amber-300 border-amber-500/40" : "bg-slate-900 text-slate-400 hover:text-white border-slate-800";
+
+        return `
+          <div class="p-5 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-slate-700/80 transition shadow-lg space-y-3">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center text-xl shadow">
+                  ${getTypeEmoji(w.type)}
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-bold text-white text-sm">${escapeHtml(w.user_name || "Grimpeur")}</span>
+                    ${isGarmin ? '<span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-mono">⌚ Garmin</span>' : ''}
+                  </div>
+                  <div class="text-[11px] text-slate-400">${formatDate(w.date)} • ${escapeHtml(w.type)}</div>
+                </div>
+              </div>
+
+              <div class="text-right">
+                <span class="px-2.5 py-1 rounded-xl bg-sky-500/10 text-sky-400 font-extrabold text-xs border border-sky-500/20">
+                  +${w.points || 0} pts
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="text-sm font-bold text-slate-100">${escapeHtml(w.title)}</h4>
+              ${w.notes ? `<p class="text-xs text-slate-400 mt-1 italic leading-relaxed">« ${escapeHtml(w.notes)} »</p>` : ''}
+            </div>
+
+            <!-- Métriques clés -->
+            <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-800/60 text-center text-xs">
+              <div class="p-2 rounded-xl bg-slate-950/60">
+                <div class="text-[10px] text-slate-500 uppercase font-semibold">Durée</div>
+                <div class="font-bold text-slate-200 mt-0.5">${w.duration_min} min</div>
+              </div>
+              <div class="p-2 rounded-xl bg-slate-950/60">
+                <div class="text-[10px] text-slate-500 uppercase font-semibold">D+ Ascendant</div>
+                <div class="font-bold text-sky-400 mt-0.5">+${w.elevation_m !== undefined ? w.elevation_m : (w.elevation_gain_m || 0)} m</div>
+              </div>
+              <div class="p-2 rounded-xl bg-slate-950/60">
+                <div class="text-[10px] text-slate-500 uppercase font-semibold">Distance</div>
+                <div class="font-bold text-slate-200 mt-0.5">${w.distance_km || 0} km</div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-[11px] text-slate-500">RPE : ${w.rpe || 5}/10</span>
+              <button onclick="handleKudos('${w.id}')" class="px-3 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition ${kudosClass}">
+                <span>👏</span> <span>${w.kudos_count || 0} Kudos</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==============================================================================
+    // RENDU DU CLASSEMENT (AVEC JAUGE INDIVIDUELLE 13 000 m)
+    // ==============================================================================
+    function renderLeaderboard() {
+      const podium = document.getElementById('podiumContainer');
+      const tableBody = document.getElementById('leaderboardTableBody');
+      if (!tableBody) return;
+
+      const sorted = [...globalLeaderboard];
+
+      // Podium Top 3
+      if (podium) {
+        const top3 = sorted.slice(0, 3);
+        const medals = ["🥇", "🥈", "🥉"];
+        podium.innerHTML = top3.map((u, i) => `
+          <div class="p-5 rounded-3xl bg-slate-900/80 border border-slate-800 shadow-xl flex items-center gap-4 relative overflow-hidden">
+            <span class="text-3xl">${medals[i]}</span>
+            <div class="flex-1">
+              <div class="text-xs text-slate-400 font-semibold uppercase">Rang #${i + 1}</div>
+              <div class="font-black text-white text-base">${escapeHtml(u.name)}</div>
+              <div class="text-xs text-sky-400 font-bold mt-0.5">${u.points.toLocaleString()} pts • +${u.elevation.toLocaleString()} m D+</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Tableau complet
+      tableBody.innerHTML = sorted.map((u, idx) => {
+        const pct13k = Math.min(100, Math.round((u.elevation / MONT_ROSE_ELEVATION) * 100));
+
+        return `
+          <tr class="hover:bg-slate-800/30 transition">
+            <td class="py-3 px-3 font-bold text-slate-400">#${idx + 1}</td>
+            <td class="py-3 px-3">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">${u.avatar_emoji || "🏔️"}</span>
+                <span class="font-bold text-white">${escapeHtml(u.name)}</span>
+              </div>
+            </td>
+            <td class="py-3 px-3 font-extrabold text-sky-400">${u.points.toLocaleString()}</td>
+            <td class="py-3 px-3 font-bold text-white">+${u.elevation.toLocaleString()} m</td>
+            <td class="py-3 px-3 min-w-[160px]">
+              <div class="flex items-center gap-2">
+                <div class="flex-1 bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
+                  <div class="bg-gradient-to-r from-sky-500 to-indigo-500 h-full rounded-full" style="width: ${pct13k}%"></div>
+                </div>
+                <span class="text-[10px] text-slate-400 font-mono">${pct13k}%</span>
+              </div>
+            </td>
+            <td class="py-3 px-3">${u.renfo_minutes || 0} min</td>
+            <td class="py-3 px-3 text-slate-400">${u.workouts_count || 0}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ==============================================================================
+    // RENDU DES EXERCICES & ROUTINES
+    // ==============================================================================
+    let currentExCategory = "all";
+
+    function filterExercises(cat) {
+      currentExCategory = cat;
+      document.querySelectorAll('.ex-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-cat') === cat) {
+          btn.className = "ex-filter-btn px-3 py-1.5 rounded-xl bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30";
+        } else {
+          btn.className = "ex-filter-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800";
+        }
+      });
+      renderExercises();
+    }
+
+    function renderExercises() {
+      const grid = document.getElementById('exercisesGrid');
+      if (!grid) return;
+
+      let list = globalExercises;
+      if (currentExCategory !== "all") {
+        list = list.filter(e => (e.category || "").includes(currentExCategory));
+      }
+
+      grid.innerHTML = list.map(ex => `
+        <div class="p-5 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition shadow-xl flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                ${escapeHtml(ex.category)}
+              </span>
+              <div class="flex items-center gap-2">
+                ${ex.video_url ? `<a href="${ex.video_url}" target="_blank" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20">▶️ Vidéo Tuto</a>` : ''}
+                <span class="text-[11px] text-slate-400 font-medium">⏱️ ${escapeHtml(ex.target_time)}</span>
+              </div>
+            </div>
+
+            <h4 class="text-base font-bold text-white">${escapeHtml(ex.title)}</h4>
+            <div class="text-[11px] text-slate-400 mt-0.5">Par <strong class="text-slate-300">${escapeHtml(ex.author_name || "La Cordée")}</strong></div>
+
+            <div class="mt-3 p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80 text-xs text-slate-300 leading-relaxed">
+              <p class="font-semibold text-slate-200 mb-1">Détail des Séries :</p>
+              ${escapeHtml(ex.sets_reps)}
+            </div>
+
+            ${ex.tips ? `
+              <p class="text-[11px] text-amber-300/80 mt-2 italic">
+                💡 ${escapeHtml(ex.tips)}
+              </p>
+            ` : ''}
+          </div>
+
+          <button onclick="prefillWorkoutFromExercise('${escapeHtml(ex.title)}', '${escapeHtml(ex.target_time)}')" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-sky-500 hover:text-slate-950 text-sky-400 font-bold text-xs transition flex items-center justify-center gap-1.5 shadow">
+            <span>⚡</span> <span>Enregistrer cette séance</span>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // ==============================================================================
+    // PLANIFICATEUR GOOGLE CALENDAR
+    // ==============================================================================
+    function addSessionToGCal(title, details, targetDayOfWeek, hour, minute, durationMin) {
+      const now = new Date();
+      const currentDay = now.getDay();
+      let daysAhead = (targetDayOfWeek + 7 - currentDay) % 7;
+      if (daysAhead === 0) daysAhead = 7; // Si c'est aujourd'hui, programmer la prochaine occurrence
+
+      const eventDate = new Date(now.getTime() + daysAhead * 24 * 60 * 60 * 1000);
+      eventDate.setHours(hour, minute, 0, 0);
+      const endDate = new Date(eventDate.getTime() + durationMin * 60 * 1000);
+
+      const toGCalFmt = (d) => {
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
+      };
+
+      const datesParam = `${toGCalFmt(eventDate)}/${toGCalFmt(endDate)}`;
+      const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&details=${encodeURIComponent(details)}&dates=${datesParam}`;
+
+      window.open(url, '_blank');
+      showToast("Ouverture de Google Calendar... 📅");
+    }
+
+    function switchTab(tabId) {
+      ['feed', 'plan', 'leaderboard', 'exercises', 'stats'].forEach(t => {
+        const el = document.getElementById(`tab-${t}`);
+        const btn = document.getElementById(`tabBtn-${t}`);
+        if (t === tabId) {
+          el?.classList.remove('hidden');
+          btn?.classList.add('bg-sky-500/20', 'text-sky-400', 'border-sky-500/30');
+          btn?.classList.remove('bg-slate-900', 'text-slate-400', 'border-slate-800');
+        } else {
+          el?.classList.add('hidden');
+          btn?.classList.remove('bg-sky-500/20', 'text-sky-400', 'border-sky-500/30');
+          btn?.classList.add('bg-slate-900', 'text-slate-400', 'border-slate-800');
+        }
+      });
+    }
+
+    function prefillWorkoutFromExercise(title, timeStr) {
+      openWorkoutModal();
+      document.getElementById('wType').value = "Renforcement";
+      document.getElementById('wTitle').value = title;
+      const mins = parseInt(timeStr) || 30;
+      document.getElementById('wDuration').value = mins;
+      document.getElementById('wElevation').value = 0;
+      document.getElementById('wDistance').value = 0;
+    }
+
+    // ==============================================================================
+    // RENDU DES STATS ET GRAPHIQUES
+    // ==============================================================================
+    function renderStats() {
+      const totalElevation = globalWorkouts.reduce((a, b) => a + (Number(b.elevation_m || b.elevation_gain_m || b.elevation) || 0), 0);
+      const totalMinutes = globalWorkouts.reduce((a, b) => a + (Number(b.duration_min) || 0), 0);
+
+      document.getElementById('statEiffelCount').innerText = (totalElevation / 300).toFixed(1);
+      document.getElementById('statEverestCount').innerText = (totalElevation / 8848).toFixed(2);
+      document.getElementById('statTotalHours').innerText = `${Math.round(totalMinutes / 60)} h`;
+
+      // Regrouper par mois
+      const months = {};
+      globalWorkouts.forEach(w => {
+        if (!w.date) return;
+        const dStr = String(w.date);
+        const m = dStr.substring(0, 7); // yyyy-mm
+        const dPlus = Number(w.elevation_m || w.elevation_gain_m || w.elevation) || 0;
+        months[m] = (months[m] || 0) + dPlus;
+      });
+
+      const sortedMonths = Object.keys(months).sort();
+      const labels = sortedMonths.map(m => m);
+      const dataVals = sortedMonths.map(m => months[m]);
+
+      const ctx = document.getElementById('monthlyElevationChart');
+      if (!ctx) return;
+
+      if (monthlyChartInstance) monthlyChartInstance.destroy();
+
+      monthlyChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels.length ? labels : ['Pas de données'],
+          datasets: [{
+            label: 'D+ Cumulé (m)',
+            data: dataVals.length ? dataVals : [0],
+            backgroundColor: '#0ea5e9',
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } },
+            x: { grid: { display: false }, ticks: { color: '#64748b' } }
+          }
+        }
+      });
+    }
+
+    // ==============================================================================
+    // GESTION DES INTERACTIONS UTILISATEUR
+    // ==============================================================================
+    async function handleRequestOtpSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('authNameInput').value.trim();
+      const email = document.getElementById('authEmailInput').value.trim();
+      const btn = document.getElementById('btnRequestOtp');
+
+      btn.innerText = "Envoi du code...";
+      btn.disabled = true;
+
+      const res = await apiPost("request_otp", { name: name, email: email });
+      btn.innerText = "Recevoir mon code par email";
+      btn.disabled = false;
+
+      if (res && res.success) {
+        pendingEmail = email;
+        document.getElementById('formRequestOtp').classList.add('hidden');
+        document.getElementById('formVerifyOtp').classList.remove('hidden');
+        showToast("Code OTP envoyé par email ! ✉️");
+      } else {
+        showToast(res.message || "Erreur lors de l'envoi du code.");
+      }
+    }
+
+    function backToStep1Otp() {
+      document.getElementById('formVerifyOtp').classList.add('hidden');
+      document.getElementById('formRequestOtp').classList.remove('hidden');
+    }
+
+    async function handleVerifyOtpSubmit(e) {
+      e.preventDefault();
+      const otp = document.getElementById('otpInput').value.trim();
+      const btn = document.getElementById('btnVerifyOtp');
+
+      btn.innerText = "Vérification...";
+      btn.disabled = true;
+
+      const res = await apiPost("verify_otp", { email: pendingEmail, otp: otp });
+      btn.innerText = "Valider et se connecter";
+      btn.disabled = false;
+
+      if (res && res.success) {
+        currentUser = {
+          email: res.user.email,
+          name: res.user.name,
+          avatar: res.user.avatar_emoji || "🏔️",
+          has_garmin: !!res.user.has_garmin,
+          is_approved: !!res.user.is_approved,
+          token: res.token
+        };
+        localStorage.setItem("tmr_user_v2", JSON.stringify(currentUser));
+        updateAuthUI();
+        closeModal('authModal');
+
+        if (res.pending_approval) {
+          showToast("Compte créé ! En attente de validation par Harry ⏳");
+        } else {
+          showToast(`Bienvenue dans la cordée, ${currentUser.name} ! 🏔️`);
+          confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        }
+        await loadData();
+      } else {
+        showToast(res.message || "Code invalide ou expiré.");
+      }
+    }
+
+    async function handleSaveWorkout(e) {
+      e.preventDefault();
+      if (!currentUser) {
+        openAuthModal();
+        return;
+      }
+
+      const workout = {
+        type: document.getElementById('wType').value,
+        title: document.getElementById('wTitle').value,
+        date: document.getElementById('wDate').value,
+        duration_min: document.getElementById('wDuration').value,
+        elevation_gain_m: document.getElementById('wElevation').value,
+        distance_km: document.getElementById('wDistance').value,
+        rpe: document.getElementById('wRpe').value,
+        notes: document.getElementById('wNotes').value
+      };
+
+      const btn = document.getElementById('btnSubmitWorkout');
+      btn.innerText = "Enregistrement...";
+      btn.disabled = true;
+
+      const res = await apiPost("add_workout", { token: currentUser.token, workout: workout });
+      btn.innerText = "Valider la séance";
+      btn.disabled = false;
+
+      if (res && res.success) {
+        showToast(`Séance enregistrée ! +${res.points} points pour l'équipe 🎉`);
+        confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 } });
+        closeModal('workoutModal');
+        document.getElementById('formAddWorkout').reset();
+        document.getElementById('wDate').valueAsDate = new Date();
+        await loadData();
+      } else {
+        showToast(res.message || "Erreur lors de l'enregistrement.");
+      }
+    }
+
+    async function handleKudos(workoutId) {
+      if (!currentUser) {
+        openAuthModal();
+        return;
+      }
+
+      // Optimistic update
+      const w = globalWorkouts.find(item => item.id === workoutId);
+      if (w && !w.has_kudos) {
+        w.has_kudos = true;
+        w.kudos_count = (w.kudos_count || 0) + 1;
+        renderFeed();
+      }
+
+      const res = await apiPost("add_kudos", { token: currentUser.token, workout_id: workoutId });
+      if (!res.success) {
+        showToast(res.message || "Erreur Kudos");
+      }
+    }
+
+    async function handleSaveGarminKey(e) {
+      e.preventDefault();
+      if (!currentUser) {
+        openAuthModal();
+        return;
+      }
+
+      const key = document.getElementById('garminApiKeyInput').value.trim();
+      const btn = document.getElementById('btnSaveGarminKey');
+      btn.innerText = "Enregistrement...";
+      btn.disabled = true;
+
+      const res = await apiPost("save_garmin_key", { token: currentUser.token, garmin_api_key: key });
+      btn.innerText = "Enregistrer la clé";
+      btn.disabled = false;
+
+      if (res && res.success) {
+        showToast("Clé Garmin enregistrée ! ⌚");
+        currentUser.has_garmin = true;
+        localStorage.setItem("tmr_user_v2", JSON.stringify(currentUser));
+      } else {
+        showToast(res.message || "Erreur d'enregistrement.");
+      }
+    }
+
+    async function triggerGarminSync() {
+      if (!currentUser) {
+        openAuthModal();
+        return;
+      }
+
+      showToast("Synchronisation Garmin en cours... ⌚");
+      const res = await apiPost("sync_garmin", { token: currentUser.token });
+
+      if (res && res.success) {
+        showToast(res.message);
+        if (res.imported > 0) {
+          confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+        }
+        await loadData();
+      } else {
+        showToast(`Erreur Garmin : ${res.message}`);
+      }
+    }
+
+    async function handleSaveExercise(e) {
+      e.preventDefault();
+      if (!currentUser) {
+        openAuthModal();
+        return;
+      }
+
+      const ex = {
+        title: document.getElementById('exTitle').value,
+        category: document.getElementById('exCategory').value,
+        target_time: document.getElementById('exDuration').value,
+        sets_reps: document.getElementById('exSetsReps').value,
+        tips: document.getElementById('exTips').value
+      };
+
+      const btn = document.getElementById('btnSubmitExercise');
+      btn.innerText = "Publication...";
+      btn.disabled = true;
+
+      const res = await apiPost("create_exercise", { token: currentUser.token, exercise: ex });
+      btn.innerText = "Publier pour la cordée";
+      btn.disabled = false;
+
+      if (res && res.success) {
+        showToast("Entraînement partagé à toute la cordée ! 💪");
+        closeModal('createExerciseModal');
+        document.getElementById('formCreateExercise').reset();
+        await loadData();
+      } else {
+        showToast(res.message || "Erreur de création.");
+      }
+    }
+
+    // ==============================================================================
+    // UTILITAIRES ET UI
+    // ==============================================================================
+    function updateAuthUI() {
+      const block = document.getElementById('authHeaderBlock');
+      if (!block) return;
+
+      if (currentUser) {
+        block.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="text-xl">${currentUser.avatar || "🏔️"}</span>
+            <div class="hidden sm:block text-left text-xs">
+              <div class="font-bold text-white">${escapeHtml(currentUser.name)}</div>
+              <button onclick="logout()" class="text-[10px] text-slate-400 hover:text-red-400">Déconnexion</button>
+            </div>
+          </div>
+        `;
+      } else {
+        block.innerHTML = `
+          <button onclick="openAuthModal()" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-bold text-sky-400 transition">
+            Connexion
+          </button>
+        `;
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem("tmr_user_v2");
+      updateAuthUI();
+      loadData();
+      showToast("Déconnecté de la cordée 👋");
+    }
+
+    function startCountdown() {
+      const targetDate = new Date("2028-09-01T08:00:00").getTime();
+      function update() {
+        const diff = targetDate - Date.now();
+        if (diff <= 0) {
+          document.getElementById('countdownDisplay').innerText = "C'est l'heure du départ ! 🏔️";
+          return;
+        }
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const months = Math.floor(days / 30.43);
+        const remDays = days % 30;
+        document.getElementById('countdownDisplay').innerText = `J-${days} jours (~${months} mois et ${remDays} j)`;
+      }
+      update();
+      setInterval(update, 60000);
+    }
+
+    function openModal(id) { document.getElementById(id)?.classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id)?.classList.add('hidden'); }
+    function openAuthModal() { openModal('authModal'); }
+    function openWorkoutModal() { openModal('workoutModal'); }
+    function openGarminModal() { openModal('garminModal'); }
+    function openCreateExerciseModal() { openModal('createExerciseModal'); }
+
+    function updateRpeDisplay(val) {
+      const desc = {
+        1: "1 - Récupération active", 2: "2 - Très facile", 3: "3 - Facile",
+        4: "4 - Modéré léger", 5: "5 - Modéré standard", 6: "6 - Soutenu",
+        7: "7 - Difficile (au seuil)", 8: "8 - Très dur", 9: "9 - Extrême",
+        10: "10 - All-out (épuisement total)"
+      };
+      document.getElementById('rpeDisplayVal').innerText = desc[val] || `${val}/10`;
+    }
+
+    function togglePasswordVisibility(id) {
+      const el = document.getElementById(id);
+      if (el) el.type = el.type === "password" ? "text" : "password";
+    }
+
+    function showToast(msg) {
+      const c = document.getElementById('toastContainer');
+      const t = document.createElement('div');
+      t.className = "pointer-events-auto px-4 py-3 rounded-2xl bg-slate-900/95 border border-slate-700 text-white text-xs font-semibold shadow-2xl flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0";
+      t.innerHTML = `<span>💬</span> <span>${escapeHtml(msg)}</span>`;
+      c.appendChild(t);
+      setTimeout(() => { t.classList.remove('translate-y-2', 'opacity-0'); }, 10);
+      setTimeout(() => {
+        t.classList.add('translate-y-2', 'opacity-0');
+        setTimeout(() => t.remove(), 300);
+      }, 4000);
+    }
+
+    function getTypeEmoji(type) {
+      const t = (type || "").toLowerCase();
+      if (t.includes("renfo")) return "💪";
+      if (t.includes("trail")) return "⛰️";
+      if (t.includes("rando")) return "🎒";
+      if (t.includes("home")) return "🚴";
+      if (t.includes("vélo")) return "🚴";
+      return "🏃";
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return "";
+      try {
+        // Extraction exacte sans décalage de fuseau horaire UTC
+        const match = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (match) {
+          const months = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+          const day = parseInt(match[3], 10);
+          const monthIdx = parseInt(match[2], 10) - 1;
+          return `${day} ${months[monthIdx] || ""}`;
+        }
+        const d = new Date(dateStr);
+        return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+      } catch (e) {
+        return dateStr;
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>
