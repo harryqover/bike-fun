@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apex API Studio - Modern REST Client</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            surface: {
+              900: '#09090b',
+              850: '#121215',
+              800: '#18181b',
+              750: '#202024',
+              700: '#27272a',
+              600: '#3f3f46',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* Custom polished scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(24, 24, 27, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3f3f46;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #52525b;
+    }
+    
+    /* JSON syntax highlighting classes */
+    .json-key { color: #93c5fd; }
+    .json-string { color: #86efac; }
+    .json-number { color: #fde047; }
+    .json-boolean { color: #f472b6; }
+    .json-null { color: #cbd5e1; font-style: italic; }
+
+    /* Transitions & subtle glows */
+    .glow-focus:focus-within {
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.35);
+    }
+    
+    pre {
+      tab-size: 2;
+    }
+  </style>
+</head>
+<body class="bg-surface-900 text-zinc-100 min-h-screen flex flex-col font-sans antialiased overflow-hidden selection:bg-brand-500 selection:text-white">
+
+  <!-- ================= TOP NAVIGATION BAR ================= -->
+  <header class="h-14 border-b border-surface-700 bg-surface-850 px-4 flex items-center justify-between shrink-0 z-20">
+    <div class="flex items-center space-x-3">
+      <!-- Mobile sidebar toggle -->
+      <button id="toggleSidebarBtn" class="md:hidden text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-surface-750 transition" title="Toggle Sidebar">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+
+      <!-- App Logo -->
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/20 font-bold text-white text-base">
+          ⚡
+        </div>
+        <div>
+          <span class="font-bold text-base tracking-tight text-white flex items-center gap-1.5">
+            Apex <span class="text-xs font-semibold px-1.5 py-0.5 rounded bg-brand-500/20 text-brand-100 border border-brand-500/30">API Studio</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center/Right controls: Environment, CORS Proxy Switch, Export/Import, Shortcut pill -->
+    <div class="flex items-center space-x-2 sm:space-x-3">
+      <!-- Environment Switcher Dropdown -->
+      <div class="relative flex items-center text-xs">
+        <span class="text-zinc-400 mr-1.5 hidden sm:inline">Env:</span>
+        <button id="envModalBtn" class="flex items-center gap-1.5 bg-surface-750 hover:bg-surface-700 border border-surface-700 text-zinc-200 px-2.5 py-1.5 rounded-md transition font-mono">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span id="activeEnvLabel">Globals</span>
+          <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </button>
+      </div>
+
+      <!-- Proxy Toggle (Crucial for GitHub Pages / browser fetch CORS) -->
+      <div class="relative flex items-center">
+        <label class="flex items-center gap-1.5 cursor-pointer text-xs bg-surface-750 hover:bg-surface-700 border border-surface-700 px-2.5 py-1.5 rounded-md transition select-none text-zinc-300" title="Enable CORS proxy if targeting third-party APIs that do not send Allow-Origin headers">
+          <input type="checkbox" id="corsProxyToggle" class="sr-only peer">
+          <div class="w-6 h-3.5 bg-zinc-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[6px] after:left-[12px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-2.5 after:w-2.5 after:transition-all peer-checked:bg-brand-500"></div>
+          <span class="ml-1 hidden md:inline">CORS Proxy</span>
+        </label>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <button id="exportBtn" class="text-xs bg-surface-750 hover:bg-surface-700 text-zinc-300 px-2.5 py-1.5 rounded-md border border-surface-700 transition flex items-center gap-1" title="Export Collections and History">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+        <span class="hidden lg:inline">Export</span>
+      </button>
+
+      <label class="text-xs bg-surface-750 hover:bg-surface-700 text-zinc-300 px-2.5 py-1.5 rounded-md border border-surface-700 transition flex items-center gap-1 cursor-pointer" title="Import JSON backup">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+        <span class="hidden lg:inline">Import</span>
+        <input type="file" id="importFileInput" accept=".json" class="hidden">
+      </label>
+
+      <!-- Keyboard Shortcut badge -->
+      <div class="hidden xl:flex items-center text-[11px] text-zinc-400 bg-surface-800 border border-surface-700 px-2 py-1 rounded">
+        <span>Send:</span>
+        <kbd class="ml-1 px-1 bg-surface-700 rounded text-zinc-300 font-mono">⌘</kbd>
+        <span class="mx-0.5">+</span>
+        <kbd class="px-1 bg-surface-700 rounded text-zinc-300 font-mono">Enter</kbd>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN WORKSPACE AREA ================= -->
+  <div class="flex-1 flex overflow-hidden relative">
+
+    <!-- ================= SIDEBAR (HISTORY & SAVED PRESETS) ================= -->
+    <aside id="sidebar" class="w-72 bg-surface-850 border-r border-surface-700 flex flex-col shrink-0 absolute md:static inset-y-0 left-0 z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
+      <!-- Sidebar Tabs: History vs Templates/Collections -->
+      <div class="flex border-b border-surface-700 bg-surface-800 text-xs font-medium">
+        <button id="sidebarTabHistory" class="flex-1 py-2.5 px-3 border-b-2 border-brand-500 text-white font-semibold flex items-center justify-center gap-1.5 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          History (<span id="historyCount">0</span>)
+        </button>
+        <button id="sidebarTabPresets" class="flex-1 py-2.5 px-3 border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center justify-center gap-1.5 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          Templates
+        </button>
+      </div>
+
+      <!-- History List View -->
+      <div id="sidebarHistoryContent" class="flex-1 overflow-y-auto flex flex-col p-2 space-y-1">
+        <div class="flex items-center justify-between px-2 py-1 text-[11px] text-zinc-500 font-semibold tracking-wider uppercase">
+          <span>Recent Activity</span>
+          <button id="clearHistoryBtn" class="text-zinc-500 hover:text-red-400 transition" title="Clear All History">Clear</button>
+        </div>
+        <div id="historyListContainer" class="space-y-1 text-xs">
+          <!-- Populated dynamically via JS -->
+          <div class="text-center py-12 text-zinc-500 text-xs">
+            No requests sent yet.<br>Fire a request to build history!
+          </div>
+        </div>
+      </div>
+
+      <!-- Templates / Collections List View -->
+      <div id="sidebarPresetsContent" class="flex-1 overflow-y-auto flex flex-col p-2 space-y-1 hidden">
+        <div class="px-2 py-1 text-[11px] text-zinc-500 font-semibold tracking-wider uppercase">
+          Sample Public APIs
+        </div>
+        <div id="templatesListContainer" class="space-y-1 text-xs">
+          <!-- Sample presets for quick testing -->
+        </div>
+      </div>
+
+      <!-- Sidebar Footer User Status / Hint -->
+      <div class="p-2.5 border-t border-surface-700 bg-surface-900/60 text-[11px] text-zinc-400 flex items-center justify-between">
+        <span class="flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          Ready to dispatch
+        </span>
+        <button id="closeSidebarMobile" class="md:hidden text-zinc-400 hover:text-white">✕ Close</button>
+      </div>
+    </aside>
+
+    <!-- Sidebar backdrop overlay for mobile screens -->
+    <div id="sidebarBackdrop" class="fixed inset-0 bg-black/60 z-20 hidden md:hidden"></div>
+
+    <!-- ================= MAIN WORK AREA (REQUEST & RESPONSE PANELS) ================= -->
+    <main class="flex-1 flex flex-col overflow-hidden bg-surface-900">
+      
+      <!-- ================= REQUEST URL BAR ================= -->
+      <div class="p-3 bg-surface-850 border-b border-surface-700 shrink-0">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          
+          <!-- Method Selector -->
+          <div class="relative shrink-0 w-full sm:w-32">
+            <select id="httpMethod" class="w-full appearance-none bg-surface-800 border border-surface-700 font-mono font-bold text-sm rounded-lg px-3 py-2.5 text-emerald-400 focus:outline-none focus:border-brand-500 cursor-pointer pr-8">
+              <option value="GET" class="text-emerald-400">GET</option>
+              <option value="POST" class="text-blue-400">POST</option>
+              <option value="PUT" class="text-amber-400">PUT</option>
+              <option value="PATCH" class="text-orange-400">PATCH</option>
+              <option value="DELETE" class="text-rose-400">DELETE</option>
+              <option value="OPTIONS" class="text-purple-400">OPTIONS</option>
+              <option value="HEAD" class="text-teal-400">HEAD</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-zinc-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+          </div>
+
+          <!-- URL Endpoint Input -->
+          <div class="flex-1 relative flex items-center glow-focus rounded-lg">
+            <input 
+              type="text" 
+              id="endpointUrl" 
+              placeholder="Enter request URL (e.g. {{baseUrl}}/posts/1 or https://httpbin.org/get)" 
+              value="https://jsonplaceholder.typicode.com/posts/1"
+              class="w-full bg-surface-800 border border-surface-700 rounded-lg px-3.5 py-2.5 text-sm font-mono text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button id="clearUrlBtn" class="absolute right-3 text-zinc-500 hover:text-zinc-300 transition" title="Clear URL">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </div>
+
+          <!-- Send & Cancel Action Group -->
+          <div class="flex items-center gap-2 shrink-0">
+            <button 
+              id="sendRequestBtn" 
+              class="flex-1 sm:flex-none bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 active:scale-95 text-white font-medium text-sm px-6 py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-brand-500/25 transition cursor-pointer"
+            >
+              <svg id="sendIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+              <svg id="loadingSpinner" class="w-4 h-4 animate-spin hidden" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+              <span id="sendBtnText">Send</span>
+            </button>
+
+            <!-- Abort request button (appears during in-flight fetch) -->
+            <button 
+              id="abortRequestBtn" 
+              class="hidden bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/40 text-xs px-3 py-2.5 rounded-lg transition"
+            >
+              Cancel
+            </button>
+
+            <!-- Save into Favorites/Presets button -->
+            <button 
+              id="saveCurrentRequestBtn" 
+              class="bg-surface-800 hover:bg-surface-750 text-zinc-300 border border-surface-700 p-2.5 rounded-lg transition" 
+              title="Save to Templates"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ================= SPLIT VIEW: REQUEST CONFIG & RESPONSE VIEWER ================= -->
+      <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+        
+        <!-- ================= LEFT: REQUEST CONFIGURATION SECTION ================= -->
+        <div class="w-full lg:w-1/2 flex flex-col border-b lg:border-b-0 lg:border-r border-surface-700 bg-surface-900 overflow-hidden">
+          
+          <!-- Request Sub-Tabs -->
+          <div class="flex items-center border-b border-surface-700 bg-surface-850 px-2 shrink-0 overflow-x-auto text-xs">
+            <button class="req-tab-btn active px-3.5 py-2.5 font-medium border-b-2 border-brand-500 text-white flex items-center gap-1.5" data-tab="params">
+              Params
+              <span id="paramsBadge" class="hidden px-1.5 py-0.2 rounded-full text-[10px] bg-brand-500/30 text-brand-200">0</span>
+            </button>
+            <button class="req-tab-btn px-3.5 py-2.5 font-medium border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5" data-tab="headers">
+              Headers
+              <span id="headersBadge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-surface-700 text-zinc-300">1</span>
+            </button>
+            <button class="req-tab-btn px-3.5 py-2.5 font-medium border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5" data-tab="auth">
+              Auth
+              <span id="authBadge" class="hidden w-2 h-2 rounded-full bg-emerald-400"></span>
+            </button>
+            <button class="req-tab-btn px-3.5 py-2.5 font-medium border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5" data-tab="body">
+              Body
+              <span id="bodyBadge" class="hidden w-2 h-2 rounded-full bg-blue-400"></span>
+            </button>
+            <button class="req-tab-btn px-3.5 py-2.5 font-medium border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5" data-tab="code">
+              Code Snippets
+            </button>
+          </div>
+
+          <!-- TAB CONTENT PANELS -->
+          <div class="flex-1 overflow-y-auto p-3">
+            
+            <!-- 1. PARAMS TAB -->
+            <div id="req-tab-params" class="req-tab-pane space-y-2">
+              <div class="flex items-center justify-between text-xs text-zinc-400 mb-1">
+                <span>Query Parameters (Live syncs with URL)</span>
+                <button id="addParamRowBtn" class="text-brand-400 hover:text-brand-300 font-medium flex items-center gap-1">
+                  + Add Parameter
+                </button>
+              </div>
+              <div id="paramsTable" class="space-y-1.5">
+                <!-- Param rows inserted dynamically -->
+              </div>
+            </div>
+
+            <!-- 2. HEADERS TAB -->
+            <div id="req-tab-headers" class="req-tab-pane hidden space-y-2">
+              <div class="flex items-center justify-between text-xs text-zinc-400 mb-1">
+                <span>HTTP Headers</span>
+                <div class="flex items-center gap-3">
+                  <button id="addPresetHeadersBtn" class="text-zinc-400 hover:text-zinc-200 text-[11px] underline">Add JSON & Accept Defaults</button>
+                  <button id="addHeaderRowBtn" class="text-brand-400 hover:text-brand-300 font-medium flex items-center gap-1">
+                    + Add Header
+                  </button>
+                </div>
+              </div>
+              <div id="headersTable" class="space-y-1.5">
+                <!-- Header rows inserted dynamically -->
+              </div>
+            </div>
+
+            <!-- 3. AUTH TAB -->
+            <div id="req-tab-auth" class="req-tab-pane hidden space-y-4">
+              <div class="max-w-md space-y-3">
+                <div>
+                  <label class="block text-xs font-medium text-zinc-400 mb-1">Authorization Type</label>
+                  <select id="authType" class="w-full bg-surface-800 border border-surface-700 rounded-lg px-3 py-2 text-xs font-medium text-zinc-200 focus:outline-none focus:border-brand-500">
+                    <option value="none">No Auth</option>
+                    <option value="bearer">Bearer Token</option>
+                    <option value="basic">Basic Auth (Username / Password)</option>
+                    <option value="apikey">API Key (Custom Header / Query)</option>
+                  </select>
+                </div>
+
+                <!-- Bearer Token input -->
+                <div id="authBearerSection" class="hidden space-y-1.5">
+                  <label class="block text-xs text-zinc-400">Token</label>
+                  <input type="text" id="bearerTokenInput" placeholder="eyJhbGciOi... or {{my_api_key}}" class="w-full bg-surface-800 border border-surface-700 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-brand-500 text-zinc-100">
+                  <p class="text-[11px] text-zinc-500">Will be injected as <code class="text-zinc-400 font-mono">Authorization: Bearer &lt;token&gt;</code></p>
+                </div>
+
+                <!-- Basic Auth input -->
+                <div id="authBasicSection" class="hidden space-y-2">
+                  <div>
+                    <label class="block text-xs text-zinc-400">Username</label>
+                    <input type="text" id="basicUsernameInput" placeholder="admin" class="w-full bg-surface-800 border border-surface-700 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-brand-500 text-zinc-100">
+                  </div>
+                  <div>
+                    <label class="block text-xs text-zinc-400">Password</label>
+                    <input type="password" id="basicPasswordInput" placeholder="••••••••" class="w-full bg-surface-800 border border-surface-700 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-brand-500 text-zinc-100">
+                  </div>
+                </div>
+
+                <!-- API Key Auth input -->
+                <div id="authApiKeySection" class="hidden space-y-2">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="block text-xs text-zinc-400">Key Name</label>
+                      <input type="text" id="apiKeyNameInput" placeholder="X-API-Key" class="w-full bg-surface-800 border border-surface-700 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-brand-500 text-zinc-100">
+                    </div>
+                    <div>
+                      <label class="block text-xs text-zinc-400">Add To</label>
+                      <select id="apiKeyLocationSelect" class="w-full bg-surface-800 border border-surface-700 rounded-lg px-3 py-2 text-xs text-zinc-200 focus:outline-none">
+                        <option value="header">Header</option>
+                        <option value="query">Query Params</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-xs text-zinc-400">Value</label>
+                    <input type="text" id="apiKeyValueInput" placeholder="key_sec_12345" class="w-full bg-surface-800 border border-surface-700 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-brand-500 text-zinc-100">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. BODY TAB -->
+            <div id="req-tab-body" class="req-tab-pane hidden flex flex-col h-full space-y-2">
+              <div class="flex items-center justify-between text-xs pb-1">
+                <div class="flex items-center gap-2">
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="radio" name="bodyType" value="none" class="text-brand-500 focus:ring-0">
+                    <span class="text-zinc-400 text-xs">none</span>
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="radio" name="bodyType" value="json" checked class="text-brand-500 focus:ring-0">
+                    <span class="text-zinc-200 text-xs font-semibold">JSON</span>
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="radio" name="bodyType" value="form" class="text-brand-500 focus:ring-0">
+                    <span class="text-zinc-400 text-xs">x-www-form-urlencoded</span>
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="radio" name="bodyType" value="raw" class="text-brand-500 focus:ring-0">
+                    <span class="text-zinc-400 text-xs">raw text</span>
+                  </label>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                  <button id="formatJsonBodyBtn" class="text-[11px] bg-surface-800 hover:bg-surface-700 text-zinc-300 border border-surface-700 px-2 py-1 rounded transition flex items-center gap-1" title="Prettify JSON Payload">
+                    <svg class="w-3 h-3 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    Prettify
+                  </button>
+                  <button id="clearBodyBtn" class="text-[11px] text-zinc-500 hover:text-zinc-300">Clear</button>
+                </div>
+              </div>
+
+              <!-- JSON / Text editor -->
+              <div class="relative flex-1 min-h-[220px]">
+                <textarea 
+                  id="requestBodyEditor" 
+                  spellcheck="false" 
+                  placeholder='{\n  "title": "foo",\n  "body": "bar",\n  "userId": 1\n}' 
+                  class="w-full h-full bg-surface-800 border border-surface-700 rounded-lg p-3 text-xs font-mono text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-brand-500 resize-none font-medium leading-relaxed"
+                ></textarea>
+                <div id="jsonValidationStatus" class="absolute bottom-2 right-3 text-[10px] text-zinc-500 font-mono pointer-events-none">
+                  JSON OK
+                </div>
+              </div>
+            </div>
+
+            <!-- 5. CODE SNIPPETS TAB -->
+            <div id="req-tab-code" class="req-tab-pane hidden flex flex-col h-full space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <div class="flex items-center gap-1 bg-surface-800 p-0.5 rounded-lg border border-surface-700">
+                  <button class="code-lang-btn active px-2.5 py-1 rounded-md text-xs font-medium text-white bg-brand-600 transition" data-lang="curl">cURL</button>
+                  <button class="code-lang-btn px-2.5 py-1 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition" data-lang="js-fetch">Fetch (JS)</button>
+                  <button class="code-lang-btn px-2.5 py-1 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition" data-lang="axios">Axios</button>
+                  <button class="code-lang-btn px-2.5 py-1 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition" data-lang="python">Python</button>
+                </div>
+                <button id="copySnippetBtn" class="text-xs bg-surface-800 hover:bg-surface-700 text-zinc-300 px-2.5 py-1 rounded-md border border-surface-700 transition flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                  <span id="copySnippetText">Copy Snippet</span>
+                </button>
+              </div>
+              <div class="flex-1 min-h-[220px] bg-surface-850 border border-surface-700 rounded-lg p-3 overflow-auto">
+                <pre id="codeSnippetDisplay" class="font-mono text-xs text-emerald-300 select-all whitespace-pre-wrap break-all"></pre>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ================= RIGHT: RESPONSE SECTION ================= -->
+        <div class="w-full lg:w-1/2 flex flex-col bg-surface-900 overflow-hidden">
+          
+          <!-- Response Summary Bar -->
+          <div class="h-10 border-b border-surface-700 bg-surface-850 px-4 flex items-center justify-between shrink-0 text-xs">
+            <!-- Left: Subtabs (Pretty, Raw, Preview, Headers) -->
+            <div class="flex items-center space-x-1">
+              <button class="res-tab-btn active px-3 py-1 font-medium rounded-md text-white bg-surface-750 transition" data-restab="pretty">Pretty</button>
+              <button class="res-tab-btn px-3 py-1 font-medium rounded-md text-zinc-400 hover:text-zinc-200 transition" data-restab="raw">Raw</button>
+              <button class="res-tab-btn px-3 py-1 font-medium rounded-md text-zinc-400 hover:text-zinc-200 transition" data-restab="preview">Preview</button>
+              <button class="res-tab-btn px-3 py-1 font-medium rounded-md text-zinc-400 hover:text-zinc-200 transition" data-restab="headers">
+                Headers
+                <span id="resHeadersCount" class="text-[10px] text-zinc-500 ml-0.5"></span>
+              </button>
+            </div>
+
+            <!-- Right: Status Metrics (Status badge, Latency, Size) -->
+            <div id="responseMetrics" class="flex items-center space-x-3 text-xs hidden">
+              <div class="flex items-center gap-1.5 font-mono font-bold">
+                <span id="resStatusBadge" class="px-2 py-0.5 rounded text-[11px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">200 OK</span>
+              </div>
+              <div class="text-zinc-400 font-mono text-[11px] flex items-center gap-1">
+                <span>⏱</span>
+                <span id="resTimeBadge">0 ms</span>
+              </div>
+              <div class="text-zinc-400 font-mono text-[11px] flex items-center gap-1">
+                <span>📦</span>
+                <span id="resSizeBadge">0 B</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Response Toolbar (Copy, Download, Search inside payload) -->
+          <div id="responseTools" class="px-3 py-1.5 border-b border-surface-700/60 bg-surface-850/60 flex items-center justify-between text-xs hidden">
+            <!-- Search in Response -->
+            <div class="relative flex items-center w-48 sm:w-64">
+              <input type="text" id="responseSearchInput" placeholder="Filter / search..." class="w-full bg-surface-800 border border-surface-700/80 rounded px-2.5 py-1 text-xs font-mono text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-brand-500">
+              <span id="responseSearchMatches" class="absolute right-2 text-[10px] text-zinc-500 font-mono"></span>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-2">
+              <button id="copyResponseBodyBtn" class="text-[11px] bg-surface-800 hover:bg-surface-750 text-zinc-300 border border-surface-700 px-2 py-1 rounded transition flex items-center gap-1" title="Copy response to clipboard">
+                <svg class="w-3 h-3 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                Copy
+              </button>
+              <button id="downloadResponseBodyBtn" class="text-[11px] bg-surface-800 hover:bg-surface-750 text-zinc-300 border border-surface-700 px-2 py-1 rounded transition flex items-center gap-1" title="Download response body as file">
+                <svg class="w-3 h-3 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Download
+              </button>
+            </div>
+          </div>
+
+          <!-- RESPONSE BODY CONTENT PANELS -->
+          <div class="flex-1 overflow-auto p-3 relative font-mono text-xs">
+            
+            <!-- Default Empty State -->
+            <div id="responseEmptyState" class="h-full flex flex-col items-center justify-center text-center text-zinc-500 py-16">
+              <div class="w-12 h-12 rounded-full bg-surface-800 border border-surface-700 flex items-center justify-center text-xl mb-3 text-zinc-400">
+                🚀
+              </div>
+              <p class="font-medium text-zinc-300 text-sm">No response yet</p>
+              <p class="text-xs text-zinc-500 mt-1 max-w-xs">Configure the URL and parameters above, then click <kbd class="px-1 py-0.5 bg-surface-800 border border-surface-700 rounded text-zinc-300">Send</kbd> to execute.</p>
+            </div>
+
+            <!-- Loading State -->
+            <div id="responseLoadingState" class="h-full flex flex-col items-center justify-center text-center py-16 hidden">
+              <div class="w-10 h-10 border-4 border-brand-500/20 border-t-brand-500 rounded-full animate-spin mb-3"></div>
+              <p class="text-zinc-300 text-sm font-medium">Sending request...</p>
+              <p id="inflightDuration" class="text-xs text-zinc-500 font-mono mt-1">Connecting...</p>
+            </div>
+
+            <!-- CORS / Network Error Alert Card -->
+            <div id="responseCorsNotice" class="hidden my-4 p-4 rounded-xl bg-amber-950/30 border border-amber-600/40 text-amber-200">
+              <div class="flex items-start gap-3">
+                <span class="text-xl">⚠️</span>
+                <div>
+                  <h4 class="font-bold text-amber-300 text-sm">Potential CORS or Network Block</h4>
+                  <p class="text-xs text-amber-200/80 mt-1 leading-relaxed">
+                    Browsers block direct cross-origin API calls when the destination server does not return 
+                    <code class="bg-amber-900/60 px-1 py-0.5 rounded text-amber-100 font-mono">Access-Control-Allow-Origin</code>.
+                  </p>
+                  <div class="mt-3 flex items-center gap-3">
+                    <button id="quickEnableCorsBtn" class="bg-amber-600 hover:bg-amber-500 text-black font-semibold text-xs px-3 py-1.5 rounded transition">
+                      Turn on Built-in CORS Proxy & Retry
+                    </button>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank" rel="noopener" class="text-xs text-amber-300 underline">Learn more</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 1. Pretty Viewer with JSON Highlighting -->
+            <div id="res-tab-pretty" class="res-tab-pane hidden">
+              <pre id="responseJsonFormatted" class="whitespace-pre-wrap break-all select-text font-mono leading-relaxed"></pre>
+            </div>
+
+            <!-- 2. Raw Viewer -->
+            <div id="res-tab-raw" class="res-tab-pane hidden">
+              <pre id="responseRawText" class="whitespace-pre-wrap break-all select-text font-mono text-zinc-300 leading-relaxed"></pre>
+            </div>
+
+            <!-- 3. Preview (HTML or Image preview) -->
+            <div id="res-tab-preview" class="res-tab-pane hidden h-full">
+              <iframe id="responseHtmlPreview" class="w-full h-full bg-white rounded-lg border border-surface-700" sandbox="allow-same-origin"></iframe>
+              <div id="responseImgPreviewContainer" class="hidden flex items-center justify-center p-4">
+                <img id="responseImgPreview" class="max-w-full max-h-[400px] object-contain rounded border border-surface-700" alt="Response preview">
+              </div>
+            </div>
+
+            <!-- 4. Headers List -->
+            <div id="res-tab-headers" class="res-tab-pane hidden space-y-1">
+              <div class="text-xs text-zinc-400 mb-2 font-sans font-semibold">Response Headers</div>
+              <div id="responseHeadersTable" class="space-y-1.5">
+                <!-- Response headers injected here -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- ================= ENVIRONMENT VARIABLES MODAL ================= -->
+  <div id="envModal" class="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-surface-850 border border-surface-700 rounded-xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+      <div class="px-5 py-4 border-b border-surface-700 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">🌐</span>
+          <h3 class="font-bold text-white text-base">Environment Variables</h3>
+        </div>
+        <button id="closeEnvModalBtn" class="text-zinc-400 hover:text-white transition">✕</button>
+      </div>
+
+      <div class="p-5 overflow-y-auto space-y-3 flex-1 text-xs">
+        <p class="text-zinc-400 leading-relaxed">
+          Use variables like <code class="text-brand-300 font-mono bg-surface-800 px-1 py-0.5 rounded">{{baseUrl}}</code> or <code class="text-brand-300 font-mono bg-surface-800 px-1 py-0.5 rounded">{{apiKey}}</code> in your URL, headers, or body. They will be resolved on dispatch.
+        </p>
+
+        <div id="envVarsContainer" class="space-y-2 mt-2">
+          <!-- Variable rows added dynamically -->
+        </div>
+
+        <button id="addEnvVarBtn" class="text-xs text-brand-400 hover:text-brand-300 font-medium flex items-center gap-1 pt-2">
+          + Add Variable
+        </button>
+      </div>
+
+      <div class="px-5 py-3 border-t border-surface-700 bg-surface-800/80 flex items-center justify-end gap-2 text-xs">
+        <button id="saveEnvModalBtn" class="bg-brand-600 hover:bg-brand-500 text-white font-medium px-4 py-2 rounded-lg transition">Save & Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SAVE TO TEMPLATES / PRESET MODAL ================= -->
+  <div id="savePresetModal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-surface-850 border border-surface-700 rounded-xl w-full max-w-sm overflow-hidden shadow-2xl p-4 space-y-3">
+      <h3 class="font-bold text-white text-sm">Save Request to Templates</h3>
+      <div>
+        <label class="block text-xs text-zinc-400 mb-1">Request Name</label>
+        <input type="text" id="presetNameInput" placeholder="e.g., Get User by ID" class="w-full bg-surface-800 border border-surface-700 rounded-lg px-3 py-2 text-xs text-zinc-100 focus:outline-none focus:border-brand-500">
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-2 text-xs">
+        <button id="cancelSavePresetBtn" class="bg-surface-750 hover:bg-surface-700 text-zinc-300 px-3 py-1.5 rounded-lg">Cancel</button>
+        <button id="confirmSavePresetBtn" class="bg-brand-600 hover:bg-brand-500 text-white font-medium px-3.5 py-1.5 rounded-lg">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+  <!-- ================= JAVASCRIPT APPLICATION CORE ================= -->
+  <script>
+    /**
+     * Apex API Studio - Core Application Logic
+     * Fully client-side, zero runtime dependencies, LocalStorage-backed.
+     */
+
+    // --- APPLICATION STATE ---
+    const AppState = {
+      activeTab: 'params',
+      activeResponseTab: 'pretty',
+      activeCodeSnippetLang: 'curl',
+      abortController: null,
+      requestStartTime: 0,
+      timerInterval: null,
+      useCorsProxy: false,
+      corsProxyPrefix: 'https://corsproxy.io/?url=', // Open, reliable CORS proxy
+      
+      // Default environments
+      environments: {
+        baseUrl: 'https://jsonplaceholder.typicode.com',
+        apiKey: 'demo_token_12345'
+      },
+
+      // History of calls
+      history: [],
+
+      // Saved presets
+      presets: [
+        {
+          id: 'tpl-1',
+          name: 'Fetch Post (JSONPlaceholder)',
+          method: 'GET',
+          url: 'https://jsonplaceholder.typicode.com/posts/1',
+          headers: [{ key: 'Accept', value: 'application/json', enabled: true }],
+          params: [],
+          bodyType: 'none',
+          body: ''
+        },
+        {
+          id: 'tpl-2',
+          name: 'Create Post (POST JSON)',
+          method: 'POST',
+          url: 'https://jsonplaceholder.typicode.com/posts',
+          headers: [{ key: 'Content-Type', value: 'application/json', enabled: true }],
+          params: [],
+          bodyType: 'json',
+          body: JSON.stringify({ title: 'Apex Studio Note', body: 'Dispatched from browser', userId: 42 }, null, 2)
+        },
+        {
+          id: 'tpl-3',
+          name: 'Inspect IP & Headers (Httpbin)',
+          method: 'GET',
+          url: 'https://httpbin.org/get',
+          headers: [{ key: 'X-Client', value: 'Apex-Studio', enabled: true }],
+          params: [{ key: 'client', value: 'web', enabled: true }],
+          bodyType: 'none',
+          body: ''
+        },
+        {
+          id: 'tpl-4',
+          name: 'Delete Resource (DELETE)',
+          method: 'DELETE',
+          url: 'https://jsonplaceholder.typicode.com/posts/1',
+          headers: [],
+          params: [],
+          bodyType: 'none',
+          body: ''
+        }
+      ],
+
+      // Current active response data
+      currentResponse: null
+    };
+
+    // --- INITIALIZATION & STORAGE HYDRATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+      loadStateFromStorage();
+      initializeEventListeners();
+      initializeDefaultTables();
+      renderHistory();
+      renderTemplates();
+      updateMethodColor();
+      updateBadges();
+      syncUrlToParams();
+      generateCodeSnippet();
+    });
+
+    // --- LOCAL STORAGE HELPERS ---
+    function saveStateToStorage() {
+      try {
+        localStorage.setItem('apex_history', JSON.stringify(AppState.history.slice(0, 50)));
+        localStorage.setItem('apex_presets', JSON.stringify(AppState.presets));
+        localStorage.setItem('apex_environments', JSON.stringify(AppState.environments));
+        localStorage.setItem('apex_cors_proxy', AppState.useCorsProxy ? 'true' : 'false');
+      } catch (err) {
+        console.warn('Storage save error:', err);
+      }
+    }
+
+    function loadStateFromStorage() {
+      try {
+        const storedHistory = localStorage.getItem('apex_history');
+        if (storedHistory) AppState.history = JSON.parse(storedHistory);
+
+        const storedPresets = localStorage.getItem('apex_presets');
+        if (storedPresets) AppState.presets = JSON.parse(storedPresets);
+
+        const storedEnvs = localStorage.getItem('apex_environments');
+        if (storedEnvs) AppState.environments = JSON.parse(storedEnvs);
+
+        const storedProxy = localStorage.getItem('apex_cors_proxy');
+        if (storedProxy === 'true') {
+          AppState.useCorsProxy = true;
+          document.getElementById('corsProxyToggle').checked = true;
+        }
+      } catch (err) {
+        console.warn('Storage load error:', err);
+      }
+    }
+
+    // --- UI EVENT LISTENERS ---
+    function initializeEventListeners() {
+      // Sidebar Toggle Mobile
+      const sidebar = document.getElementById('sidebar');
+      const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+      const toggleSidebar = () => {
+        sidebar.classList.toggle('-translate-x-full');
+        sidebarBackdrop.classList.toggle('hidden');
+      };
+      document.getElementById('toggleSidebarBtn').addEventListener('click', toggleSidebar);
+      document.getElementById('closeSidebarMobile').addEventListener('click', toggleSidebar);
+      sidebarBackdrop.addEventListener('click', toggleSidebar);
+
+      // Sidebar Tab Switching
+      const tabHistory = document.getElementById('sidebarTabHistory');
+      const tabPresets = document.getElementById('sidebarTabPresets');
+      const viewHistory = document.getElementById('sidebarHistoryContent');
+      const viewPresets = document.getElementById('sidebarPresetsContent');
+
+      tabHistory.addEventListener('click', () => {
+        tabHistory.classList.add('border-brand-500', 'text-white', 'font-semibold');
+        tabHistory.classList.remove('border-transparent', 'text-zinc-400');
+        tabPresets.classList.remove('border-brand-500', 'text-white', 'font-semibold');
+        tabPresets.classList.add('border-transparent', 'text-zinc-400');
+        viewHistory.classList.remove('hidden');
+        viewPresets.classList.add('hidden');
+      });
+
+      tabPresets.addEventListener('click', () => {
+        tabPresets.classList.add('border-brand-500', 'text-white', 'font-semibold');
+        tabPresets.classList.remove('border-transparent', 'text-zinc-400');
+        tabHistory.classList.remove('border-brand-500', 'text-white', 'font-semibold');
+        tabHistory.classList.add('border-transparent', 'text-zinc-400');
+        viewPresets.classList.remove('hidden');
+        viewHistory.classList.add('hidden');
+      });
+
+      // Clear History Button
+      document.getElementById('clearHistoryBtn').addEventListener('click', () => {
+        AppState.history = [];
+        saveStateToStorage();
+        renderHistory();
+        showToast('History cleared');
+      });
+
+      // Method selector styling update
+      const methodSelect = document.getElementById('httpMethod');
+      methodSelect.addEventListener('change', () => {
+        updateMethodColor();
+        generateCodeSnippet();
+      });
+
+      // Clear URL button
+      document.getElementById('clearUrlBtn').addEventListener('click', () => {
+        document.getElementById('endpointUrl').value = '';
+        syncUrlToParams();
+        generateCodeSnippet();
+      });
+
+      // URL input change (bidirectional sync with params table)
+      document.getElementById('endpointUrl').addEventListener('input', () => {
+        syncUrlToParams();
+        generateCodeSnippet();
+      });
+
+      // Request Configuration Tabs
+      document.querySelectorAll('.req-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.req-tab-btn').forEach(b => {
+            b.classList.remove('border-brand-500', 'text-white', 'active');
+            b.classList.add('border-transparent', 'text-zinc-400');
+          });
+          btn.classList.add('border-brand-500', 'text-white', 'active');
+          btn.classList.remove('border-transparent', 'text-zinc-400');
+
+          const targetTab = btn.getAttribute('data-tab');
+          document.querySelectorAll('.req-tab-pane').forEach(p => p.classList.add('hidden'));
+          document.getElementById(`req-tab-${targetTab}`).classList.remove('hidden');
+          AppState.activeTab = targetTab;
+
+          if (targetTab === 'code') generateCodeSnippet();
+        });
+      });
+
+      // Response Sub-tabs
+      document.querySelectorAll('.res-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.res-tab-btn').forEach(b => {
+            b.classList.remove('bg-surface-750', 'text-white', 'active');
+            b.classList.add('text-zinc-400');
+          });
+          btn.classList.add('bg-surface-750', 'text-white', 'active');
+          btn.classList.remove('text-zinc-400');
+
+          const targetResTab = btn.getAttribute('data-restab');
+          document.querySelectorAll('.res-tab-pane').forEach(p => p.classList.add('hidden'));
+          const targetEl = document.getElementById(`res-tab-${targetResTab}`);
+          if (targetEl) targetEl.classList.remove('hidden');
+          AppState.activeResponseTab = targetResTab;
+        });
+      });
+
+      // Add Param & Header buttons
+      document.getElementById('addParamRowBtn').addEventListener('click', () => addParamRow('', '', true));
+      document.getElementById('addHeaderRowBtn').addEventListener('click', () => addHeaderRow('', '', true));
+      document.getElementById('addPresetHeadersBtn').addEventListener('click', () => {
+        addHeaderRow('Content-Type', 'application/json', true);
+        addHeaderRow('Accept', 'application/json', true);
+        updateBadges();
+        generateCodeSnippet();
+      });
+
+      // Auth type selection
+      const authTypeSelect = document.getElementById('authType');
+      authTypeSelect.addEventListener('change', () => {
+        const val = authTypeSelect.value;
+        document.getElementById('authBearerSection').classList.toggle('hidden', val !== 'bearer');
+        document.getElementById('authBasicSection').classList.toggle('hidden', val !== 'basic');
+        document.getElementById('authApiKeySection').classList.toggle('hidden', val !== 'apikey');
+        updateBadges();
+        generateCodeSnippet();
+      });
+
+      ['bearerTokenInput', 'basicUsernameInput', 'basicPasswordInput', 'apiKeyNameInput', 'apiKeyValueInput', 'apiKeyLocationSelect'].forEach(id => {
+        document.getElementById(id).addEventListener('input', () => {
+          updateBadges();
+          generateCodeSnippet();
+        });
+      });
+
+      // Body format & beautify
+      document.getElementById('formatJsonBodyBtn').addEventListener('click', () => {
+        const editor = document.getElementById('requestBodyEditor');
+        try {
+          const parsed = JSON.parse(editor.value);
+          editor.value = JSON.stringify(parsed, null, 2);
+          showToast('JSON formatted');
+        } catch (e) {
+          showToast('Invalid JSON - could not format', 'error');
+        }
+      });
+
+      document.getElementById('clearBodyBtn').addEventListener('click', () => {
+        document.getElementById('requestBodyEditor').value = '';
+        validateJsonBody();
+        updateBadges();
+        generateCodeSnippet();
+      });
+
+      document.getElementById('requestBodyEditor').addEventListener('input', () => {
+        validateJsonBody();
+        updateBadges();
+        generateCodeSnippet();
+      });
+
+      // Body radio types
+      document.querySelectorAll('input[name="bodyType"]').forEach(r => {
+        r.addEventListener('change', () => {
+          updateBadges();
+          generateCodeSnippet();
+        });
+      });
+
+      // Code Snippet language buttons
+      document.querySelectorAll('.code-lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.code-lang-btn').forEach(b => {
+            b.classList.remove('bg-brand-600', 'text-white', 'active');
+            b.classList.add('text-zinc-400');
+          });
+          btn.classList.add('bg-brand-600', 'text-white', 'active');
+          btn.classList.remove('text-zinc-400');
+          AppState.activeCodeSnippetLang = btn.getAttribute('data-lang');
+          generateCodeSnippet();
+        });
+      });
+
+      // Copy Code Snippet
+      document.getElementById('copySnippetBtn').addEventListener('click', () => {
+        const text = document.getElementById('codeSnippetDisplay').innerText;
+        copyToClipboard(text);
+        const label = document.getElementById('copySnippetText');
+        label.innerText = 'Copied!';
+        setTimeout(() => { label.innerText = 'Copy Snippet'; }, 2000);
+      });
+
+      // Send Request trigger
+      document.getElementById('sendRequestBtn').addEventListener('click', executeRequest);
+      document.getElementById('abortRequestBtn').addEventListener('click', abortCurrentRequest);
+
+      // Keyboard Shortcut: Cmd/Ctrl + Enter to send
+      window.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+          e.preventDefault();
+          executeRequest();
+        }
+      });
+
+      // CORS proxy toggle
+      const proxyToggle = document.getElementById('corsProxyToggle');
+      proxyToggle.addEventListener('change', () => {
+        AppState.useCorsProxy = proxyToggle.checked;
+        saveStateToStorage();
+        showToast(AppState.useCorsProxy ? 'CORS Proxy Enabled' : 'CORS Proxy Disabled');
+      });
+
+      document.getElementById('quickEnableCorsBtn').addEventListener('click', () => {
+        AppState.useCorsProxy = true;
+        document.getElementById('corsProxyToggle').checked = true;
+        saveStateToStorage();
+        document.getElementById('responseCorsNotice').classList.add('hidden');
+        executeRequest();
+      });
+
+      // Copy / Download response
+      document.getElementById('copyResponseBodyBtn').addEventListener('click', () => {
+        if (!AppState.currentResponse) return;
+        copyToClipboard(AppState.currentResponse.rawText);
+        showToast('Response copied to clipboard');
+      });
+
+      document.getElementById('downloadResponseBodyBtn').addEventListener('click', downloadResponseFile);
+
+      // Search inside response
+      document.getElementById('responseSearchInput').addEventListener('input', handleResponseSearch);
+
+      // Environment modal
+      document.getElementById('envModalBtn').addEventListener('click', openEnvModal);
+      document.getElementById('closeEnvModalBtn').addEventListener('click', closeEnvModal);
+      document.getElementById('saveEnvModalBtn').addEventListener('click', saveEnvModal);
+      document.getElementById('addEnvVarBtn').addEventListener('click', () => addEnvVarRow('', ''));
+
+      // Save request to preset
+      document.getElementById('saveCurrentRequestBtn').addEventListener('click', () => {
+        const url = document.getElementById('endpointUrl').value;
+        const method = document.getElementById('httpMethod').value;
+        document.getElementById('presetNameInput').value = `${method} ${url.replace(/^https?:\/\//, '').split('/')[0] || 'Request'}`;
+        document.getElementById('savePresetModal').classList.remove('hidden');
+      });
+
+      document.getElementById('cancelSavePresetBtn').addEventListener('click', () => {
+        document.getElementById('savePresetModal').classList.add('hidden');
+      });
+
+      document.getElementById('confirmSavePresetBtn').addEventListener('click', saveCurrentToPresets);
+
+      // Export & Import
+      document.getElementById('exportBtn').addEventListener('click', exportConfiguration);
+      document.getElementById('importFileInput').addEventListener('change', importConfiguration);
+    }
+
+    // --- METHOD COLOR UPDATE ---
+    function updateMethodColor() {
+      const select = document.getElementById('httpMethod');
+      const val = select.value;
+      const colorMap = {
+        GET: 'text-emerald-400',
+        POST: 'text-blue-400',
+        PUT: 'text-amber-400',
+        PATCH: 'text-orange-400',
+        DELETE: 'text-rose-400',
+        OPTIONS: 'text-purple-400',
+        HEAD: 'text-teal-400'
+      };
+      
+      select.className = select.className.replace(/text-[a-z]+-400/g, '');
+      select.classList.add(colorMap[val] || 'text-white');
+    }
+
+    // --- KEY-VALUE TABLE MANAGERS (PARAMS & HEADERS) ---
+    function initializeDefaultTables() {
+      // Default headers
+      addHeaderRow('Accept', 'application/json, text/plain, */*', true);
+      validateJsonBody();
+    }
+
+    function addParamRow(key = '', value = '', enabled = true) {
+      const container = document.getElementById('paramsTable');
+      const rowId = 'param_' + Math.random().toString(36).substring(2, 9);
+      
+      const row = document.createElement('div');
+      row.id = rowId;
+      row.className = 'flex items-center gap-2 group';
+      row.innerHTML = `
+        <input type="checkbox" ${enabled ? 'checked' : ''} class="param-enable rounded bg-surface-800 border-surface-700 text-brand-500 focus:ring-0">
+        <input type="text" placeholder="Key" value="${escapeHtml(key)}" class="param-key flex-1 bg-surface-800 border border-surface-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-zinc-200 focus:outline-none focus:border-brand-500">
+        <input type="text" placeholder="Value" value="${escapeHtml(value)}" class="param-val flex-1 bg-surface-800 border border-surface-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-zinc-200 focus:outline-none focus:border-brand-500">
+        <button type="button" class="text-zinc-600 hover:text-rose-400 p-1 opacity-60 group-hover:opacity-100 transition" title="Delete">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </button>
+      `;
+
+      // Event listeners for bidirectional sync with URL
+      const keyInput = row.querySelector('.param-key');
+      const valInput = row.querySelector('.param-val');
+      const enableCheck = row.querySelector('.param-enable');
+      const deleteBtn = row.querySelector('button');
+
+      const triggerUrlUpdate = () => {
+        syncParamsToUrl();
+        updateBadges();
+        generateCodeSnippet();
+      };
+
+      keyInput.addEventListener('input', triggerUrlUpdate);
+      valInput.addEventListener('input', triggerUrlUpdate);
+      enableCheck.addEventListener('change', triggerUrlUpdate);
+      deleteBtn.addEventListener('click', () => {
+        row.remove();
+        triggerUrlUpdate();
+      });
+
+      container.appendChild(row);
+      updateBadges();
+      return row;
+    }
+
+    function addHeaderRow(key = '', value = '', enabled = true) {
+      const container = document.getElementById('headersTable');
+      const rowId = 'header_' + Math.random().toString(36).substring(2, 9);
+      
+      const row = document.createElement('div');
+      row.id = rowId;
+      row.className = 'flex items-center gap-2 group';
+      row.innerHTML = `
+        <input type="checkbox" ${enabled ? 'checked' : ''} class="header-enable rounded bg-surface-800 border-surface-700 text-brand-500 focus:ring-0">
+        <input type="text" placeholder="Header (e.g. Content-Type)" value="${escapeHtml(key)}" class="header-key flex-1 bg-surface-800 border border-surface-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-zinc-200 focus:outline-none focus:border-brand-500" list="commonHeadersList">
+        <input type="text" placeholder="Value (e.g. application/json)" value="${escapeHtml(value)}" class="header-val flex-1 bg-surface-800 border border-surface-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-zinc-200 focus:outline-none focus:border-brand-500">
+        <button type="button" class="text-zinc-600 hover:text-rose-400 p-1 opacity-60 group-hover:opacity-100 transition" title="Delete">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </button>
+      `;
+
+      const keyInput = row.querySelector('.header-key');
+      const valInput = row.querySelector('.header-val');
+      const enableCheck = row.querySelector('.header-enable');
+      const deleteBtn = row.querySelector('button');
+
+      const triggerHeaderUpdate = () => {
+        updateBadges();
+        generateCodeSnippet();
+      };
+
+      keyInput.addEventListener('input', triggerHeaderUpdate);
+      valInput.addEventListener('input', triggerHeaderUpdate);
+      enableCheck.addEventListener('change', triggerHeaderUpdate);
+      deleteBtn.addEventListener('click', () => {
+        row.remove();
+        triggerHeaderUpdate();
+      });
+
+      container.appendChild(row);
+      updateBadges();
+      return row;
+    }
+
+    // --- BIDIRECTIONAL SYNC: URL & QUERY PARAMS ---
+    function syncUrlToParams() {
+      const urlInput = document.getElementById('endpointUrl');
+      const fullUrl = urlInput.value.trim();
+
+      const qIndex = fullUrl.indexOf('?');
+      if (qIndex === -1) {
+        // No query string in URL; do not wipe if user is just typing baseUrl
+        return;
+      }
+
+      const queryString = fullUrl.substring(qIndex + 1);
+      const urlParams = new URLSearchParams(queryString);
+      
+      const container = document.getElementById('paramsTable');
+      container.innerHTML = '';
+
+      urlParams.forEach((val, key) => {
+        addParamRow(key, val, true);
+      });
+      updateBadges();
+    }
+
+    function syncParamsToUrl() {
+      const urlInput = document.getElementById('endpointUrl');
+      let base = urlInput.value.trim().split('?')[0];
+
+      const rows = document.querySelectorAll('#paramsTable > div');
+      const params = new URLSearchParams();
+
+      rows.forEach(r => {
+        const enabled = r.querySelector('.param-enable').checked;
+        const key = r.querySelector('.param-key').value.trim();
+        const val = r.querySelector('.param-val').value.trim();
+        if (enabled && key) {
+          params.append(key, val);
+        }
+      });
+
+      const qs = params.toString();
+      urlInput.value = qs ? `${base}?${qs}` : base;
+    }
+
+    // --- BADGE UPDATES & VALIDATION ---
+    function updateBadges() {
+      // Params count
+      const activeParams = Array.from(document.querySelectorAll('#paramsTable .param-enable')).filter(c => c.checked).length;
+      const paramsBadge = document.getElementById('paramsBadge');
+      paramsBadge.innerText = activeParams;
+      paramsBadge.classList.toggle('hidden', activeParams === 0);
+
+      // Headers count
+      const activeHeaders = Array.from(document.querySelectorAll('#headersTable .header-enable')).filter(c => c.checked).length;
+      const headersBadge = document.getElementById('headersBadge');
+      headersBadge.innerText = activeHeaders;
+
+      // Auth badge
+      const authType = document.getElementById('authType').value;
+      const authBadge = document.getElementById('authBadge');
+      authBadge.classList.toggle('hidden', authType === 'none');
+
+      // Body badge
+      const bodyType = document.querySelector('input[name="bodyType"]:checked').value;
+      const bodyText = document.getElementById('requestBodyEditor').value.trim();
+      const bodyBadge = document.getElementById('bodyBadge');
+      bodyBadge.classList.toggle('hidden', bodyType === 'none' || bodyText.length === 0);
+    }
+
+    function validateJsonBody() {
+      const editor = document.getElementById('requestBodyEditor');
+      const status = document.getElementById('jsonValidationStatus');
+      const text = editor.value.trim();
+
+      if (!text) {
+        status.innerText = 'Empty payload';
+        status.className = 'absolute bottom-2 right-3 text-[10px] text-zinc-500 font-mono';
+        return;
+      }
+
+      try {
+        JSON.parse(text);
+        status.innerText = 'Valid JSON';
+        status.className = 'absolute bottom-2 right-3 text-[10px] text-emerald-400 font-mono';
+      } catch (e) {
+        status.innerText = 'Invalid JSON';
+        status.className = 'absolute bottom-2 right-3 text-[10px] text-rose-400 font-mono';
+      }
+    }
+
+    // --- ENVIRONMENT VARIABLE INTERPOLATION ---
+    function interpolateVariables(str) {
+      if (!str || typeof str !== 'string') return str;
+      return str.replace(/\{\{([^{}]+)\}\}/g, (match, varName) => {
+        const cleanName = varName.trim();
+        return AppState.environments[cleanName] !== undefined ? AppState.environments[cleanName] : match;
+      });
+    }
+
+    // --- REQUEST EXECUTION PIPELINE ---
+    async function executeRequest() {
+      const rawUrl = document.getElementById('endpointUrl').value.trim();
+      if (!rawUrl) {
+        showToast('Please specify a URL endpoint', 'error');
+        return;
+      }
+
+      // Interpolate URL
+      let targetUrl = interpolateVariables(rawUrl);
+
+      // Validate Protocol
+      if (!/^https?:\/\//i.test(targetUrl)) {
+        targetUrl = 'https://' + targetUrl;
+        document.getElementById('endpointUrl').value = targetUrl;
+      }
+
+      // Prepend CORS Proxy if toggled
+      const finalFetchUrl = AppState.useCorsProxy 
+        ? `${AppState.corsProxyPrefix}${encodeURIComponent(targetUrl)}` 
+        : targetUrl;
+
+      const method = document.getElementById('httpMethod').value;
+
+      // Collect Headers
+      const headers = new Headers();
+      document.querySelectorAll('#headersTable > div').forEach(r => {
+        const enabled = r.querySelector('.header-enable').checked;
+        const key = r.querySelector('.header-key').value.trim();
+        const val = r.querySelector('.header-val').value.trim();
+        if (enabled && key) {
+          headers.append(interpolateVariables(key), interpolateVariables(val));
+        }
+      });
+
+      // Apply Auth
+      const authType = document.getElementById('authType').value;
+      if (authType === 'bearer') {
+        const token = interpolateVariables(document.getElementById('bearerTokenInput').value.trim());
+        if (token) headers.set('Authorization', `Bearer ${token}`);
+      } else if (authType === 'basic') {
+        const u = interpolateVariables(document.getElementById('basicUsernameInput').value);
+        const p = interpolateVariables(document.getElementById('basicPasswordInput').value);
+        const encoded = btoa(`${u}:${p}`);
+        headers.set('Authorization', `Basic ${encoded}`);
+      } else if (authType === 'apikey') {
+        const keyName = interpolateVariables(document.getElementById('apiKeyNameInput').value.trim());
+        const keyVal = interpolateVariables(document.getElementById('apiKeyValueInput').value.trim());
+        const loc = document.getElementById('apiKeyLocationSelect').value;
+        if (keyName) {
+          if (loc === 'header') {
+            headers.set(keyName, keyVal);
+          } else {
+            // Append as query param
+            const uObj = new URL(finalFetchUrl);
+            uObj.searchParams.append(keyName, keyVal);
+            targetUrl = uObj.toString();
+          }
+        }
+      }
+
+      // Prepare Body
+      let requestBody = null;
+      const bodyType = document.querySelector('input[name="bodyType"]:checked').value;
+      const rawBodyText = document.getElementById('requestBodyEditor').value;
+
+      if (!['GET', 'HEAD'].includes(method) && bodyType !== 'none') {
+        const interpolatedBody = interpolateVariables(rawBodyText);
+        requestBody = interpolatedBody;
+        if (bodyType === 'json' && !headers.has('Content-Type')) {
+          headers.set('Content-Type', 'application/json');
+        } else if (bodyType === 'form' && !headers.has('Content-Type')) {
+          headers.set('Content-Type', 'application/x-www-form-urlencoded');
+        }
+      }
+
+      // Setup AbortController
+      AppState.abortController = new AbortController();
+      setLoadingState(true);
+
+      // Reset response view
+      document.getElementById('responseCorsNotice').classList.add('hidden');
+      document.getElementById('responseMetrics').classList.add('hidden');
+      document.getElementById('responseTools').classList.add('hidden');
+
+      AppState.requestStartTime = performance.now();
+      startTimerTicker();
+
+      try {
+        const fetchOptions = {
+          method: method,
+          headers: headers,
+          signal: AppState.abortController.signal,
+          mode: 'cors'
+        };
+
+        if (requestBody && !['GET', 'HEAD'].includes(method)) {
+          fetchOptions.body = requestBody;
+        }
+
+        const response = await fetch(finalFetchUrl, fetchOptions);
+        const duration = Math.round(performance.now() - AppState.requestStartTime);
+        stopTimerTicker();
+
+        // Extract Response Headers
+        const resHeadersList = [];
+        response.headers.forEach((value, key) => {
+          resHeadersList.push({ key, value });
+        });
+
+        // Read Body
+        const contentType = response.headers.get('content-type') || '';
+        const blob = await response.blob();
+        const sizeInBytes = blob.size;
+        const text = await blob.text();
+
+        // Save Current Response
+        AppState.currentResponse = {
+          status: response.status,
+          statusText: response.statusText,
+          duration: duration,
+          size: sizeInBytes,
+          headers: resHeadersList,
+          contentType: contentType,
+          rawText: text,
+          isJson: contentType.includes('application/json') || isJsonString(text),
+          isImage: contentType.startsWith('image/'),
+          isHtml: contentType.includes('text/html')
+        };
+
+        // Render UI
+        renderResponse(AppState.currentResponse);
+
+        // Add to history
+        addHistoryItem({
+          id: 'hist_' + Date.now(),
+          method: method,
+          url: targetUrl,
+          status: response.status,
+          duration: duration,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          headers: Array.from(headers.entries()).map(([k, v]) => ({ key: k, value: v, enabled: true })),
+          bodyType: bodyType,
+          body: rawBodyText
+        });
+
+      } catch (error) {
+        stopTimerTicker();
+        const duration = Math.round(performance.now() - AppState.requestStartTime);
+
+        if (error.name === 'AbortError') {
+          showToast('Request canceled by user', 'info');
+        } else {
+          console.error('Fetch error:', error);
+          // Likely CORS / Network error
+          document.getElementById('responseCorsNotice').classList.remove('hidden');
+          showToast(`Request failed: ${error.message}`, 'error');
+
+          // Render Error metrics
+          document.getElementById('resStatusBadge').innerText = 'Network Error';
+          document.getElementById('resStatusBadge').className = 'px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-400 border border-rose-500/30';
+          document.getElementById('resTimeBadge').innerText = `${duration} ms`;
+          document.getElementById('resSizeBadge').innerText = '0 B';
+          document.getElementById('responseMetrics').classList.remove('hidden');
+
+          document.getElementById('responseRawText').innerText = `Error: ${error.message}\n\nNote: If calling a public API from GitHub Pages or localhost, make sure the destination allows CORS or enable the built-in CORS Proxy toggle in the top bar.`;
+          document.getElementById('res-tab-raw').classList.remove('hidden');
+          document.getElementById('res-tab-pretty').classList.add('hidden');
+        }
+      } finally {
+        setLoadingState(false);
+      }
+    }
+
+    function abortCurrentRequest() {
+      if (AppState.abortController) {
+        AppState.abortController.abort();
+      }
+    }
+
+    function startTimerTicker() {
+      const durationEl = document.getElementById('inflightDuration');
+      AppState.timerInterval = setInterval(() => {
+        const elapsed = Math.round(performance.now() - AppState.requestStartTime);
+        durationEl.innerText = `${elapsed} ms elapsed`;
+      }, 50);
+    }
+
+    function stopTimerTicker() {
+      if (AppState.timerInterval) {
+        clearInterval(AppState.timerInterval);
+        AppState.timerInterval = null;
+      }
+    }
+
+    function setLoadingState(isLoading) {
+      const sendBtn = document.getElementById('sendRequestBtn');
+      const abortBtn = document.getElementById('abortRequestBtn');
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      const sendIcon = document.getElementById('sendIcon');
+      const sendBtnText = document.getElementById('sendBtnText');
+
+      const responseEmptyState = document.getElementById('responseEmptyState');
+      const responseLoadingState = document.getElementById('responseLoadingState');
+
+      if (isLoading) {
+        sendBtn.classList.add('opacity-70', 'pointer-events-none');
+        abortBtn.classList.remove('hidden');
+        loadingSpinner.classList.remove('hidden');
+        sendIcon.classList.add('hidden');
+        sendBtnText.innerText = 'Sending...';
+
+        responseEmptyState.classList.add('hidden');
+        responseLoadingState.classList.remove('hidden');
+      } else {
+        sendBtn.classList.remove('opacity-70', 'pointer-events-none');
+        abortBtn.classList.add('hidden');
+        loadingSpinner.classList.add('hidden');
+        sendIcon.classList.remove('hidden');
+        sendBtnText.innerText = 'Send';
+
+        responseLoadingState.classList.add('hidden');
+      }
+    }
+
+    // --- RESPONSE RENDERING ---
+    function renderResponse(res) {
+      document.getElementById('responseEmptyState').classList.add('hidden');
+      document.getElementById('responseMetrics').classList.remove('hidden');
+      document.getElementById('responseTools').classList.remove('hidden');
+
+      // Status Badge
+      const statusBadge = document.getElementById('resStatusBadge');
+      statusBadge.innerText = `${res.status} ${res.statusText || getHttpReason(res.status)}`;
+      if (res.status >= 200 && res.status < 300) {
+        statusBadge.className = 'px-2 py-0.5 rounded text-[11px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+      } else if (res.status >= 300 && res.status < 400) {
+        statusBadge.className = 'px-2 py-0.5 rounded text-[11px] bg-blue-500/20 text-blue-400 border border-blue-500/30';
+      } else if (res.status >= 400 && res.status < 500) {
+        statusBadge.className = 'px-2 py-0.5 rounded text-[11px] bg-amber-500/20 text-amber-400 border border-amber-500/30';
+      } else {
+        statusBadge.className = 'px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-400 border border-rose-500/30';
+      }
+
+      // Latency & Size
+      document.getElementById('resTimeBadge').innerText = `${res.duration} ms`;
+      document.getElementById('resSizeBadge').innerText = formatBytes(res.size);
+
+      // Pretty / JSON
+      const prettyContainer = document.getElementById('responseJsonFormatted');
+      if (res.isJson) {
+        try {
+          const parsed = JSON.parse(res.rawText);
+          prettyContainer.innerHTML = syntaxHighlightJson(JSON.stringify(parsed, null, 2));
+        } catch (e) {
+          prettyContainer.innerText = res.rawText;
+        }
+      } else {
+        prettyContainer.innerText = res.rawText;
+      }
+
+      // Raw
+      document.getElementById('responseRawText').innerText = res.rawText;
+
+      // Preview (HTML or Image)
+      const previewIframe = document.getElementById('responseHtmlPreview');
+      const imgContainer = document.getElementById('responseImgPreviewContainer');
+      const imgPreview = document.getElementById('responseImgPreview');
+
+      if (res.isImage) {
+        previewIframe.classList.add('hidden');
+        imgContainer.classList.remove('hidden');
+        imgPreview.src = 'data:' + res.contentType + ';base64,' + btoa(res.rawText);
+      } else {
+        imgContainer.classList.add('hidden');
+        previewIframe.classList.remove('hidden');
+        previewIframe.srcdoc = res.rawText;
+      }
+
+      // Headers Table
+      const headersTable = document.getElementById('responseHeadersTable');
+      headersTable.innerHTML = '';
+      document.getElementById('resHeadersCount').innerText = `(${res.headers.length})`;
+
+      res.headers.forEach(h => {
+        const item = document.createElement('div');
+        item.className = 'flex items-center justify-between py-1 px-2 rounded bg-surface-800/80 border border-surface-700/60 font-mono text-[11px]';
+        item.innerHTML = `
+          <span class="text-zinc-400 font-semibold select-all">${escapeHtml(h.key)}:</span>
+          <span class="text-zinc-200 select-all ml-2 break-all">${escapeHtml(h.value)}</span>
+        `;
+        headersTable.appendChild(item);
+      });
+
+      // Switch to proper tab automatically
+      if (res.isJson) {
+        switchResponseTab('pretty');
+      } else if (res.isHtml) {
+        switchResponseTab('preview');
+      } else {
+        switchResponseTab('raw');
+      }
+    }
+
+    function switchResponseTab(tabKey) {
+      document.querySelectorAll('.res-tab-btn').forEach(b => {
+        const match = b.getAttribute('data-restab') === tabKey;
+        b.classList.toggle('bg-surface-750', match);
+        b.classList.toggle('text-white', match);
+        b.classList.toggle('text-zinc-400', !match);
+      });
+      document.querySelectorAll('.res-tab-pane').forEach(p => p.classList.add('hidden'));
+      const target = document.getElementById(`res-tab-${tabKey}`);
+      if (target) target.classList.remove('hidden');
+      AppState.activeResponseTab = tabKey;
+    }
+
+    // --- RESPONSE SEARCH / FILTER ---
+    function handleResponseSearch(e) {
+      const query = e.target.value.toLowerCase().trim();
+      const statusLabel = document.getElementById('responseSearchMatches');
+      if (!AppState.currentResponse || !query) {
+        statusLabel.innerText = '';
+        return;
+      }
+
+      const text = AppState.currentResponse.rawText.toLowerCase();
+      let count = 0;
+      let pos = text.indexOf(query);
+      while (pos !== -1) {
+        count++;
+        pos = text.indexOf(query, pos + query.length);
+      }
+
+      statusLabel.innerText = count === 0 ? '0 matches' : `${count} found`;
+    }
+
+    // --- JSON SYNTAX HIGHLIGHTER ---
+    function syntaxHighlightJson(jsonString) {
+      const escaped = jsonString.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return escaped.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        let cls = 'json-number';
+        if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+            cls = 'json-key';
+          } else {
+            cls = 'json-string';
+          }
+        } else if (/true|false/.test(match)) {
+          cls = 'json-boolean';
+        } else if (/null/.test(match)) {
+          cls = 'json-null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+      });
+    }
+
+    // --- CODE SNIPPET GENERATOR ---
+    function generateCodeSnippet() {
+      const url = document.getElementById('endpointUrl').value.trim() || 'https://api.example.com';
+      const method = document.getElementById('httpMethod').value;
+      const lang = AppState.activeCodeSnippetLang;
+      
+      // Collect Headers
+      const headers = {};
+      document.querySelectorAll('#headersTable > div').forEach(r => {
+        if (r.querySelector('.header-enable').checked) {
+          const k = r.querySelector('.header-key').value.trim();
+          const v = r.querySelector('.header-val').value.trim();
+          if (k) headers[k] = v;
+        }
+      });
+
+      // Collect Body
+      const bodyType = document.querySelector('input[name="bodyType"]:checked').value;
+      const bodyText = document.getElementById('requestBodyEditor').value;
+      const hasBody = !['GET', 'HEAD'].includes(method) && bodyType !== 'none' && bodyText.trim().length > 0;
+
+      let snippet = '';
+
+      if (lang === 'curl') {
+        let parts = [`curl -X ${method} "${url}"`];
+        Object.entries(headers).forEach(([k, v]) => {
+          parts.push(`  -H "${k}: ${v}"`);
+        });
+        if (hasBody) {
+          const escapedBody = bodyText.replace(/"/g, '\\"').replace(/\n/g, '');
+          parts.push(`  -d "${escapedBody}"`);
+        }
+        snippet = parts.join(' \\\n');
+      } else if (lang === 'js-fetch') {
+        const options = { method: method };
+        if (Object.keys(headers).length > 0) options.headers = headers;
+        if (hasBody) options.body = bodyType === 'json' ? JSON.parseSafe(bodyText) : bodyText;
+
+        snippet = `fetch("${url}", ${JSON.stringify(options, null, 2)})\n  .then(res => res.json())\n  .then(data => console.log(data))\n  .catch(err => console.error(err));`;
+      } else if (lang === 'axios') {
+        snippet = `import axios from 'axios';\n\nconst options = {\n  method: '${method}',\n  url: '${url}',\n`;
+        if (Object.keys(headers).length > 0) {
+          snippet += `  headers: ${JSON.stringify(headers, null, 4).replace(/\n/g, '\n  ')},\n`;
+        }
+        if (hasBody) {
+          snippet += `  data: ${bodyText.trim()},\n`;
+        }
+        snippet += `};\n\ntry {\n  const { data } = await axios.request(options);\n  console.log(data);\n} catch (error) {\n  console.error(error);\n}`;
+      } else if (lang === 'python') {
+        snippet = `import requests\n\nurl = "${url}"\n`;
+        if (Object.keys(headers).length > 0) {
+          snippet += `headers = ${JSON.stringify(headers, null, 2)}\n`;
+        } else {
+          snippet += `headers = {}\n`;
+        }
+        if (hasBody) {
+          snippet += `payload = ${bodyType === 'json' ? bodyText.trim() : `"${bodyText.replace(/"/g, '\\"')}"`}\n`;
+          snippet += `response = requests.${method.toLowerCase()}(url, headers=headers, ${bodyType === 'json' ? 'json=payload' : 'data=payload'})\n`;
+        } else {
+          snippet += `response = requests.${method.toLowerCase()}(url, headers=headers)\n`;
+        }
+        snippet += `print(response.status_code)\nprint(response.json())`;
+      }
+
+      document.getElementById('codeSnippetDisplay').innerText = snippet;
+    }
+
+    JSON.parseSafe = function(str) {
+      try { return JSON.parse(str); } catch (e) { return str; }
+    };
+
+    // --- SIDEBAR HISTORY & TEMPLATES RENDERERS ---
+    function addHistoryItem(item) {
+      AppState.history.unshift(item);
+      if (AppState.history.length > 50) AppState.history.pop();
+      saveStateToStorage();
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('historyListContainer');
+      document.getElementById('historyCount').innerText = AppState.history.length;
+
+      if (AppState.history.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-zinc-500 text-xs">
+            No requests sent yet.<br>Fire a request to build history!
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+      AppState.history.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'group p-2 rounded-lg bg-surface-800/80 hover:bg-surface-750 border border-surface-700/60 hover:border-surface-600 transition cursor-pointer flex flex-col gap-1';
+        
+        const methodColors = {
+          GET: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+          POST: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+          PUT: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+          PATCH: 'text-orange-400 bg-orange-500/10 border-orange-500/20',
+          DELETE: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
+        };
+
+        const badgeColor = methodColors[item.method] || 'text-zinc-300 bg-zinc-700/20 border-zinc-600/30';
+        const displayUrl = item.url.replace(/^https?:\/\//, '');
+
+        el.innerHTML = `
+          <div class="flex items-center justify-between text-[10px]">
+            <span class="font-mono font-bold px-1.5 py-0.2 rounded border ${badgeColor}">${item.method}</span>
+            <span class="text-zinc-500 font-mono">${item.timestamp}</span>
+          </div>
+          <div class="text-zinc-200 font-mono text-[11px] truncate" title="${escapeHtml(item.url)}">
+            ${escapeHtml(displayUrl)}
+          </div>
+          <div class="flex items-center justify-between text-[10px] text-zinc-500">
+            <span>${item.status} · ${item.duration}ms</span>
+          </div>
+        `;
+
+        el.addEventListener('click', () => {
+          loadRequestConfig(item);
+          showToast(`Restored ${item.method} request`);
+        });
+
+        container.appendChild(el);
+      });
+    }
+
+    function renderTemplates() {
+      const container = document.getElementById('templatesListContainer');
+      container.innerHTML = '';
+
+      AppState.presets.forEach(p => {
+        const el = document.createElement('div');
+        el.className = 'group p-2.5 rounded-lg bg-surface-800/80 hover:bg-surface-750 border border-surface-700/60 hover:border-surface-600 transition cursor-pointer flex flex-col gap-1';
+        el.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-semibold text-zinc-200 text-xs">${escapeHtml(p.name)}</span>
+            <span class="font-mono text-[10px] font-bold text-zinc-400">${p.method}</span>
+          </div>
+          <div class="text-zinc-400 font-mono text-[11px] truncate">${escapeHtml(p.url)}</div>
+        `;
+
+        el.addEventListener('click', () => {
+          loadRequestConfig(p);
+          showToast(`Loaded "${p.name}"`);
+        });
+
+        container.appendChild(el);
+      });
+    }
+
+    function loadRequestConfig(config) {
+      document.getElementById('httpMethod').value = config.method;
+      updateMethodColor();
+
+      document.getElementById('endpointUrl').value = config.url;
+
+      // Populate headers
+      const headersContainer = document.getElementById('headersTable');
+      headersContainer.innerHTML = '';
+      if (config.headers && config.headers.length > 0) {
+        config.headers.forEach(h => addHeaderRow(h.key, h.value, h.enabled !== false));
+      }
+
+      // Populate body
+      if (config.bodyType) {
+        const radio = document.querySelector(`input[name="bodyType"][value="${config.bodyType}"]`);
+        if (radio) radio.checked = true;
+      }
+      document.getElementById('requestBodyEditor').value = config.body || '';
+
+      syncUrlToParams();
+      validateJsonBody();
+      updateBadges();
+      generateCodeSnippet();
+    }
+
+    function saveCurrentToPresets() {
+      const name = document.getElementById('presetNameInput').value.trim() || 'Custom Request';
+      const url = document.getElementById('endpointUrl').value.trim();
+      const method = document.getElementById('httpMethod').value;
+
+      const headers = [];
+      document.querySelectorAll('#headersTable > div').forEach(r => {
+        headers.push({
+          key: r.querySelector('.header-key').value,
+          value: r.querySelector('.header-val').value,
+          enabled: r.querySelector('.header-enable').checked
+        });
+      });
+
+      const bodyType = document.querySelector('input[name="bodyType"]:checked').value;
+      const body = document.getElementById('requestBodyEditor').value;
+
+      AppState.presets.unshift({
+        id: 'tpl_' + Date.now(),
+        name,
+        method,
+        url,
+        headers,
+        bodyType,
+        body
+      });
+
+      saveStateToStorage();
+      renderTemplates();
+      document.getElementById('savePresetModal').classList.add('hidden');
+      showToast('Saved to Templates!');
+    }
+
+    // --- ENVIRONMENT MODAL CONTROLS ---
+    function openEnvModal() {
+      const container = document.getElementById('envVarsContainer');
+      container.innerHTML = '';
+
+      Object.entries(AppState.environments).forEach(([key, val]) => {
+        addEnvVarRow(key, val);
+      });
+
+      document.getElementById('envModal').classList.remove('hidden');
+    }
+
+    function closeEnvModal() {
+      document.getElementById('envModal').classList.add('hidden');
+    }
+
+    function addEnvVarRow(key = '', val = '') {
+      const container = document.getElementById('envVarsContainer');
+      const row = document.createElement('div');
+      row.className = 'flex items-center gap-2';
+      row.innerHTML = `
+        <div class="flex items-center bg-surface-800 border border-surface-700 rounded-lg px-2 text-zinc-500 font-mono text-xs">
+          {{
+          <input type="text" placeholder="key" value="${escapeHtml(key)}" class="env-key bg-transparent py-1.5 px-1 text-zinc-200 font-mono text-xs focus:outline-none w-28">
+          }}
+        </div>
+        <input type="text" placeholder="value" value="${escapeHtml(val)}" class="env-val flex-1 bg-surface-800 border border-surface-700 rounded-lg px-2.5 py-1.5 font-mono text-zinc-200 text-xs focus:outline-none focus:border-brand-500">
+        <button type="button" class="text-zinc-500 hover:text-rose-400 p-1 transition" title="Delete">✕</button>
+      `;
+
+      row.querySelector('button').addEventListener('click', () => row.remove());
+      container.appendChild(row);
+    }
+
+    function saveEnvModal() {
+      const rows = document.querySelectorAll('#envVarsContainer > div');
+      const newEnvs = {};
+      rows.forEach(r => {
+        const k = r.querySelector('.env-key').value.trim();
+        const v = r.querySelector('.env-val').value.trim();
+        if (k) newEnvs[k] = v;
+      });
+
+      AppState.environments = newEnvs;
+      saveStateToStorage();
+      closeEnvModal();
+      showToast('Environment variables saved');
+    }
+
+    // --- BACKUP EXPORT & IMPORT ---
+    function exportConfiguration() {
+      const data = {
+        app: 'Apex API Studio',
+        version: '1.0',
+        exportedAt: new Date().toISOString(),
+        presets: AppState.presets,
+        history: AppState.history,
+        environments: AppState.environments
+      };
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `apex-api-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Backup file downloaded');
+    }
+
+    function importConfiguration(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const parsed = JSON.parse(event.target.result);
+          if (parsed.presets) AppState.presets = parsed.presets;
+          if (parsed.environments) AppState.environments = parsed.environments;
+          if (parsed.history) AppState.history = parsed.history;
+
+          saveStateToStorage();
+          renderHistory();
+          renderTemplates();
+          showToast('Configuration successfully restored!');
+        } catch (err) {
+          showToast('Invalid JSON backup file', 'error');
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    }
+
+    function downloadResponseFile() {
+      if (!AppState.currentResponse) return;
+      const res = AppState.currentResponse;
+      const ext = res.isJson ? 'json' : (res.isHtml ? 'html' : 'txt');
+      const blob = new Blob([res.rawText], { type: res.contentType || 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `response-${Date.now()}.${ext}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // --- UTILITIES & HELPERS ---
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const colors = {
+        info: 'bg-surface-800 text-zinc-100 border-surface-700',
+        error: 'bg-rose-950/90 text-rose-200 border-rose-700/60',
+        success: 'bg-emerald-950/90 text-emerald-200 border-emerald-700/60'
+      };
+
+      toast.className = `pointer-events-auto flex items-center gap-2 px-3.5 py-2.5 rounded-lg border shadow-xl text-xs font-medium transform transition-all duration-300 translate-y-2 opacity-0 ${colors[type] || colors.info}`;
+      toast.innerHTML = `
+        <span>${type === 'error' ? '❌' : (type === 'success' ? '✅' : 'ℹ️')}</span>
+        <span>${escapeHtml(message)}</span>
+      `;
+
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('Fallback copy error:', err);
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function escapeHtml(string) {
+      if (!string) return '';
+      return String(string)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    function isJsonString(str) {
+      if (typeof str !== 'string') return false;
+      try {
+        const res = JSON.parse(str);
+        return typeof res === 'object' && res !== null;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function getHttpReason(code) {
+      const map = {
+        200: 'OK', 201: 'Created', 204: 'No Content',
+        301: 'Moved Permanently', 304: 'Not Modified',
+        400: 'Bad Request', 401: 'Unauthorized', 403: 'Forbidden', 404: 'Not Found',
+        405: 'Method Not Allowed', 429: 'Too Many Requests',
+        500: 'Internal Server Error', 502: 'Bad Gateway', 503: 'Service Unavailable'
+      };
+      return map[code] || 'HTTP Status';
+    }
+  </script>
+
+  <!-- Datalist for Header autocompletion -->
+  <datalist id="commonHeadersList">
+    <option value="Accept">
+    <option value="Authorization">
+    <option value="Content-Type">
+    <option value="User-Agent">
+    <option value="Cache-Control">
+    <option value="X-Requested-With">
+    <option value="Origin">
+    <option value="Referer">
+    <option value="X-Api-Key">
+  </datalist>
+
+</body>
+</html>
