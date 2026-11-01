@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PayQ — European EPC QR Code Generator</title>
+  <meta name="description" content="Generate EPC SEPA payment QR codes (GiroCode) for instant bank transfers. Save your IBAN locally, split bills, and export stunning cards for WhatsApp.">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            fintech: {
+              emerald: '#10b981',
+              dark: '#0b0f19',
+              card: '#111827',
+              border: '#1f2937'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- QRCode.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- html2canvas for crisp screenshot export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .font-mono-numbers {
+      font-family: 'JetBrains Mono', monospace;
+      font-feature-settings: "tnum" 1;
+    }
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(156, 163, 175, 0.3);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(156, 163, 175, 0.5);
+    }
+    /* Card Themes */
+    .theme-titanium {
+      background: linear-gradient(145deg, #131722 0%, #080a0f 100%);
+      border-color: #272f42;
+      color: #f3f4f6;
+    }
+    .theme-sepa {
+      background: linear-gradient(145deg, #09203f 0%, #031126 100%);
+      border-color: #1e3a8a;
+      color: #ffffff;
+    }
+    .theme-emerald {
+      background: linear-gradient(145deg, #05261d 0%, #02120e 100%);
+      border-color: #065f46;
+      color: #ecfdf5;
+    }
+    .theme-sunset {
+      background: linear-gradient(145deg, #2c1236 0%, #15061b 100%);
+      border-color: #701a75;
+      color: #fdf4ff;
+    }
+    .theme-paper {
+      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+      border-color: #e2e8f0;
+      color: #0f172a;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-full flex flex-col selection:bg-blue-600 selection:text-white antialiased">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 px-4 lg:px-8 py-3 transition-colors">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-3">
+      
+      <!-- Brand -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20 text-white font-black text-xl">
+          <i class="fa-solid fa-qrcode"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+              PayQ
+            </span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 hidden sm:inline-flex items-center gap-1">
+              EPC SCT v2.0
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 hidden sm:block">Instant Payment QR Code</p>
+        </div>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-2">
+        <!-- Account / Settings Pill Button -->
+        <button id="btn-header-account" class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:text-white hover:border-blue-500/50 transition text-xs sm:text-sm font-semibold shadow-sm">
+          <span id="header-flag" class="text-base leading-none">🇧🇪</span>
+          <span id="header-payee-name" class="font-medium max-w-[110px] sm:max-w-[160px] truncate">My Account</span>
+          <i class="fa-solid fa-sliders text-blue-400 text-xs ml-0.5"></i>
+        </button>
+
+        <!-- Sound Feedback Toggle -->
+        <button id="sound-toggle-btn" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 transition" title="Toggle Sound Feedback">
+          <i class="fa-solid fa-volume-high text-sm"></i>
+        </button>
+
+        <!-- GitHub Info / Help -->
+        <button id="btn-open-info" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 transition" title="Info & GitHub Hosting">
+          <i class="fa-solid fa-circle-info text-sm"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+    
+    <!-- Privacy Bar -->
+    <div class="mb-6 p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-blue-950/30 via-slate-900/60 to-slate-900/40 border border-blue-900/30 flex items-center justify-between text-xs text-slate-300">
+      <div class="flex items-center gap-2.5">
+        <i class="fa-solid fa-shield-halved text-emerald-400 text-sm"></i>
+        <span><strong>100% Private:</strong> Your IBAN is stored strictly in your browser. No server, works offline.</span>
+      </div>
+      <button id="btn-quick-settings-link" class="text-blue-400 hover:underline shrink-0 text-xs font-semibold ml-2">
+        Settings & Style
+      </button>
+    </div>
+
+    <!-- Responsive Grid: Simple Input on Left / High-Contrast Card on Right -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- ================= LEFT COLUMN: SIMPLE PAYMENT CONTROLS ================= -->
+      <section class="lg:col-span-5 xl:col-span-5 space-y-5">
+        
+        <!-- Active Beneficiary Quick Card -->
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-3 shadow-lg">
+          <div class="flex items-center gap-3 truncate">
+            <div id="banner-flag" class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-lg shrink-0">
+              🇧🇪
+            </div>
+            <div class="truncate">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs uppercase font-bold text-slate-400">Paying To:</span>
+                <span id="banner-payee-name" class="text-sm font-bold text-white truncate">Alexandre Dupont</span>
+              </div>
+              <div id="banner-iban-display" class="text-xs text-slate-400 font-mono truncate">
+                BE68 5390 0754 7034
+              </div>
+            </div>
+          </div>
+          <button id="btn-edit-account-banner" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-400 hover:text-blue-300 text-xs font-semibold shrink-0 transition flex items-center gap-1">
+            <i class="fa-solid fa-pen text-[10px]"></i> Edit
+          </button>
+        </div>
+
+        <!-- Payment Request Details Card -->
+        <div class="p-5 sm:p-6 rounded-2xl bg-slate-900/90 border border-slate-800/90 shadow-xl space-y-5">
+          
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <h2 class="font-bold text-base text-white flex items-center gap-2">
+              <i class="fa-solid fa-money-bill-transfer text-blue-400"></i>
+              Payment Request
+            </h2>
+            <!-- Split Bill Tool Button -->
+            <button id="btn-toggle-split" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/30 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-calculator"></i>
+              Split Bill
+            </button>
+          </div>
+
+          <!-- Split Bill Tool (Collapsible) -->
+          <div id="split-bill-panel" class="hidden p-4 rounded-xl bg-indigo-950/30 border border-indigo-800/40 space-y-3">
+            <div class="flex items-center justify-between text-xs text-indigo-300 font-semibold">
+              <span><i class="fa-solid fa-users text-indigo-400 mr-1"></i> Quick Bill Splitter</span>
+              <button id="btn-close-split" class="text-slate-400 hover:text-white"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <label class="text-slate-400 block mb-1">Total Bill (€)</label>
+                <input type="number" id="split-total" step="0.01" min="0" placeholder="84.00" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white font-mono-numbers text-sm">
+              </div>
+              <div>
+                <label class="text-slate-400 block mb-1">Total People</label>
+                <div class="flex items-center gap-1">
+                  <button type="button" class="btn-split-count px-2.5 py-2 rounded-lg bg-slate-800 text-white font-bold hover:bg-slate-700" data-count="2">2</button>
+                  <button type="button" class="btn-split-count px-2.5 py-2 rounded-lg bg-slate-800 text-white font-bold hover:bg-slate-700" data-count="3">3</button>
+                  <button type="button" class="btn-split-count px-2.5 py-2 rounded-lg bg-blue-600 text-white font-bold" data-count="4">4</button>
+                  <input type="number" id="split-people" min="1" max="50" value="4" class="w-12 px-2 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white text-center font-mono-numbers text-sm">
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-indigo-900/50">
+              <span class="text-xs text-slate-300">Each owes: <strong id="split-result" class="text-emerald-400 font-mono-numbers text-sm">€ 21.00</strong></span>
+              <button id="btn-apply-split" class="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition">
+                Apply to Amount
+              </button>
+            </div>
+          </div>
+
+          <!-- Amount Input -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="input-amount" class="text-xs font-semibold uppercase tracking-wider text-slate-300">
+                Amount (EUR)
+              </label>
+              <button id="btn-clear-amount" class="text-xs text-slate-400 hover:text-white transition">
+                Leave Open (Payer enters)
+              </button>
+            </div>
+            <div class="relative">
+              <div class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-lg text-blue-400 pointer-events-none">€</div>
+              <input 
+                type="number" 
+                id="input-amount" 
+                step="0.01" 
+                min="0.01" 
+                max="999999999.99"
+                placeholder="0.00" 
+                class="w-full pl-9 pr-12 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono-numbers text-2xl font-bold placeholder-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+              >
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 bg-slate-800 px-2 py-1 rounded-md">
+                EUR
+              </div>
+            </div>
+
+            <!-- Quick Amount Chips -->
+            <div class="flex flex-wrap items-center gap-1.5 mt-2.5">
+              <button type="button" class="btn-quick-amount px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition" data-val="5">+ €5</button>
+              <button type="button" class="btn-quick-amount px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition" data-val="10">+ €10</button>
+              <button type="button" class="btn-quick-amount px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition" data-val="20">+ €20</button>
+              <button type="button" class="btn-quick-amount px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition" data-val="50">+ €50</button>
+              <button type="button" class="btn-quick-amount px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition" data-val="100">€100</button>
+              <button type="button" id="btn-reset-amount" class="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-400 hover:text-white transition">Reset</button>
+            </div>
+          </div>
+
+          <!-- Remittance Type: Standard Text vs Structured RF -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider text-slate-300">
+                Payment Reference / Note
+              </span>
+              <div class="flex rounded-lg bg-slate-950 p-0.5 border border-slate-800 text-xs">
+                <button type="button" id="tab-remittance-text" class="px-2.5 py-1 rounded-md bg-blue-600 text-white font-medium transition">
+                  Description
+                </button>
+                <button type="button" id="tab-remittance-structured" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition">
+                  Structured (RF)
+                </button>
+              </div>
+            </div>
+
+            <!-- Unstructured text field (Emojis removed for strict SEPA compatibility) -->
+            <div id="wrapper-unstructured">
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="input-remittance" 
+                  maxlength="140" 
+                  placeholder="e.g. Dinner, Groceries, Rent share" 
+                  class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition text-sm"
+                >
+                <span id="remittance-counter" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[11px] text-slate-500">0/140</span>
+              </div>
+
+              <!-- Quick Plain Text Suggestions (Strictly no emojis to guarantee bank app acceptance) -->
+              <div class="flex flex-wrap items-center gap-1.5 mt-2.5">
+                <button type="button" class="btn-quick-note text-xs px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition" data-note="Dinner">Dinner</button>
+                <button type="button" class="btn-quick-note text-xs px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition" data-note="Lunch">Lunch</button>
+                <button type="button" class="btn-quick-note text-xs px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition" data-note="Drinks">Drinks</button>
+                <button type="button" class="btn-quick-note text-xs px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition" data-note="Groceries">Groceries</button>
+                <button type="button" class="btn-quick-note text-xs px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition" data-note="Rent share">Rent share</button>
+                <button type="button" class="btn-quick-note text-xs px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition" data-note="Trip expenses">Trip expenses</button>
+                <button type="button" class="btn-quick-note text-xs px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition" data-note="Gift">Gift</button>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-2 flex items-center gap-1">
+                <i class="fa-solid fa-circle-check text-emerald-400"></i> Standard SEPA characters only (emojis filtered to prevent banking app errors).
+              </p>
+            </div>
+
+            <!-- Structured RF Creditor Reference field (optional) -->
+            <div id="wrapper-structured" class="hidden space-y-2">
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="input-rf" 
+                  maxlength="35" 
+                  placeholder="e.g. RF18 5390 0754 7034" 
+                  class="w-full px-4 py-3 font-mono-numbers rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition text-sm uppercase"
+                >
+              </div>
+              <div class="flex items-center justify-between text-xs text-slate-400">
+                <span>ISO 11649 Structured Reference</span>
+                <button id="btn-generate-rf" class="text-blue-400 hover:underline">
+                  Generate RF from number
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ================= RIGHT COLUMN: INTERACTIVE PREVIEW & WHATSAPP CARD ================= -->
+      <section class="lg:col-span-7 xl:col-span-7 space-y-5 lg:sticky lg:top-24">
+        
+        <!-- Action Hub Card -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 class="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+              <i class="fa-brands fa-whatsapp text-emerald-400 text-lg"></i>
+              WhatsApp Ready Payment Card
+            </h3>
+            <p class="text-xs text-slate-400">High contrast for fast phone screen scanning.</p>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="flex items-center gap-2">
+            <button id="btn-copy-card-img" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95" title="Copy Card Image to Clipboard">
+              <i class="fa-regular fa-copy"></i>
+              <span>Copy Image</span>
+            </button>
+            <button id="btn-download-card-img" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs sm:text-sm border border-slate-700 transition transform active:scale-95" title="Download High-Res PNG">
+              <i class="fa-solid fa-download"></i>
+              <span>PNG</span>
+            </button>
+            <button id="btn-share-whatsapp" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-emerald-600/20 transition transform active:scale-95" title="Share Text & Details to WhatsApp">
+              <i class="fa-brands fa-whatsapp"></i>
+              <span>WhatsApp</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- THE PAYMENT CARD (Render target for screenshotting/export) -->
+        <div class="relative flex justify-center">
+          
+          <!-- Outer Container -->
+          <div id="export-card-container" class="w-full max-w-md">
+            
+            <div id="payment-card" class="theme-titanium rounded-3xl border p-6 sm:p-7 shadow-2xl relative overflow-hidden transition-all duration-300">
+              
+              <!-- Background glows -->
+              <div class="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-blue-500/10 blur-3xl pointer-events-none"></div>
+              <div class="absolute -left-16 -bottom-16 w-48 h-48 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"></div>
+
+              <!-- Card Header -->
+              <div class="flex items-center justify-between pb-5 border-b border-current/10 relative z-10">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-2xl bg-white/10 flex items-center justify-center text-xl shadow-inner border border-white/10">
+                    <span id="card-flag-badge">🇧🇪</span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] uppercase font-bold tracking-widest opacity-60 block">SEPA Credit Transfer</span>
+                    <h3 id="card-payee-name" class="font-extrabold text-base sm:text-lg tracking-tight leading-tight truncate max-w-[200px]">
+                      Alexandre Dupont
+                    </h3>
+                  </div>
+                </div>
+
+                <!-- EPC Standard GiroCode Chip -->
+                <div class="text-right">
+                  <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-[10px] font-bold tracking-wider uppercase">
+                    <i class="fa-solid fa-bolt text-yellow-400"></i> Instant
+                  </div>
+                  <span id="card-bank-badge" class="block text-[11px] opacity-70 mt-1 font-mono-numbers">Bank Transfer</span>
+                </div>
+              </div>
+
+              <!-- Central QR Code Canvas & Container -->
+              <div class="my-6 flex flex-col items-center justify-center relative z-10">
+                
+                <!-- White frame container with high contrast quiet-zone -->
+                <div class="p-4 bg-white rounded-2xl shadow-xl border-4 border-white flex flex-col items-center justify-center relative group">
+                  <div id="qrcode-target" class="flex items-center justify-center overflow-hidden">
+                    <!-- QRCode injected here -->
+                  </div>
+
+                  <!-- Center Logo Overlay -->
+                  <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg border-2 border-white font-black text-xs">
+                      €
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Scan Callout -->
+                <p class="text-xs font-semibold opacity-75 mt-3 flex items-center gap-1.5">
+                  <i class="fa-solid fa-camera text-[11px]"></i>
+                  Scan with your Banking App to pay
+                </p>
+              </div>
+
+              <!-- Amount Highlight Box -->
+              <div class="rounded-2xl bg-black/20 border border-current/10 p-4 text-center my-4 relative z-10">
+                <span class="text-[10px] uppercase font-bold tracking-widest opacity-60 block">Amount Requested</span>
+                <div id="card-amount-display" class="font-mono-numbers text-3xl sm:text-4xl font-extrabold tracking-tight mt-0.5">
+                  € 0.00
+                </div>
+                <div id="card-remittance-display" class="mt-2 text-xs font-medium px-3 py-1 rounded-full bg-white/10 inline-block truncate max-w-full">
+                  SEPA Payment
+                </div>
+              </div>
+
+              <!-- Bank Account Details / Copy Box -->
+              <div class="space-y-2 pt-2 relative z-10">
+                <div class="flex items-center justify-between text-xs opacity-70">
+                  <span>IBAN</span>
+                  <span id="card-bic-label" class="font-mono-numbers"></span>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 rounded-xl bg-black/30 border border-current/15 font-mono-numbers text-xs sm:text-sm font-semibold tracking-wider">
+                  <span id="card-iban-display" class="truncate">
+                    BE68 5390 0754 7034
+                  </span>
+                  <button id="btn-copy-iban-direct" class="p-1.5 text-blue-400 hover:text-white transition ml-2" title="Copy IBAN">
+                    <i class="fa-regular fa-copy"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Footer with verify tag -->
+              <div class="mt-5 pt-3 border-t border-current/10 flex items-center justify-between text-[10px] opacity-60 relative z-10">
+                <span>Standard EPC069-12 / GiroCode</span>
+                <span class="flex items-center gap-1">
+                  <i class="fa-solid fa-lock text-[9px]"></i> Verified SEPA QR
+                </span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- WhatsApp Companion Text -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+              <i class="fa-regular fa-message text-blue-400"></i>
+              Companion Text for WhatsApp
+            </span>
+            <button id="btn-copy-wa-text" class="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 transition">
+              <i class="fa-regular fa-copy text-xs"></i> Copy Text
+            </button>
+          </div>
+          
+          <div id="companion-text-preview" class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 font-mono whitespace-pre-wrap leading-relaxed">
+            <!-- Text pre-filled automatically -->
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- ================= MODAL: SETTINGS, BENEFICIARY & CARD STYLE ================= -->
+  <div id="modal-settings" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="w-full max-w-lg rounded-3xl bg-slate-900 border border-slate-800 p-6 shadow-2xl space-y-5 animate-scale-in max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+            <i class="fa-solid fa-sliders"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-white text-base">Account & Card Settings</h3>
+            <p class="text-xs text-slate-400">Configured once, saved securely in your browser</p>
+          </div>
+        </div>
+        <button id="btn-close-settings" class="text-slate-400 hover:text-white p-2">
+          <i class="fa-solid fa-times text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Welcome banner (shown on first launch) -->
+      <div id="first-launch-banner" class="hidden p-3 rounded-xl bg-blue-950/40 border border-blue-500/40 text-xs text-blue-200">
+        👋 <strong>Welcome to PayQ!</strong> Enter your Name and IBAN below. They will be saved to your device so you never need to type them again.
+      </div>
+
+      <!-- Beneficiary Details Inputs -->
+      <div class="space-y-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block">
+          Beneficiary Details
+        </span>
+
+        <!-- Beneficiary Name -->
+        <div>
+          <label for="settings-name" class="text-xs font-semibold text-slate-300 block mb-1">
+            Recipient / Payee Name <span class="text-rose-400">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="settings-name" 
+            maxlength="70" 
+            placeholder="e.g. John Doe" 
+            class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-sm"
+          >
+        </div>
+
+        <!-- IBAN Input with validation -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label for="settings-iban" class="text-xs font-semibold text-slate-300 flex items-center gap-2">
+              Beneficiary IBAN <span class="text-rose-400">*</span>
+              <span id="settings-iban-flag" class="text-base leading-none">🇧🇪</span>
+            </label>
+            <span id="settings-bank-name" class="text-xs font-medium text-blue-400 truncate max-w-[180px]"></span>
+          </div>
+          <input 
+            type="text" 
+            id="settings-iban" 
+            maxlength="42" 
+            placeholder="e.g. BE68 5390 0754 7034" 
+            class="w-full px-4 py-2.5 font-mono-numbers tracking-wider rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-sm uppercase"
+          >
+          <p id="settings-iban-msg" class="text-xs text-slate-400 mt-1">
+            Real-time Modulo-97 checksum validation
+          </p>
+        </div>
+
+        <!-- Optional BIC -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label for="settings-bic" class="text-xs font-semibold text-slate-400">
+              Bank BIC / SWIFT <span class="text-[10px] text-slate-500 font-normal">(optional)</span>
+            </label>
+            <button id="btn-settings-autofill-bic" type="button" class="text-xs text-blue-400 hover:underline">
+              Auto-fill BIC
+            </button>
+          </div>
+          <input 
+            type="text" 
+            id="settings-bic" 
+            maxlength="11" 
+            placeholder="e.g. GEBABEBB" 
+            class="w-full px-4 py-2 font-mono-numbers rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 text-sm uppercase"
+          >
+        </div>
+      </div>
+
+      <!-- Card Appearance Section -->
+      <div class="pt-3 border-t border-slate-800 space-y-2.5">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block">
+          Card Style For Screenshot
+        </span>
+        <div class="grid grid-cols-5 gap-2">
+          <button type="button" class="btn-theme-select p-2 rounded-xl border-2 border-blue-500 bg-slate-900 text-center transition hover:scale-105" data-theme="titanium">
+            <div class="w-full h-4 rounded-md bg-gradient-to-r from-slate-900 to-slate-800 border border-slate-700 mb-1"></div>
+            <span class="text-[10px] font-medium text-slate-300">Titanium</span>
+          </button>
+          <button type="button" class="btn-theme-select p-2 rounded-xl border border-slate-800 bg-slate-900 text-center transition hover:scale-105" data-theme="sepa">
+            <div class="w-full h-4 rounded-md bg-gradient-to-r from-blue-900 to-indigo-900 mb-1"></div>
+            <span class="text-[10px] font-medium text-slate-400">SEPA Blue</span>
+          </button>
+          <button type="button" class="btn-theme-select p-2 rounded-xl border border-slate-800 bg-slate-900 text-center transition hover:scale-105" data-theme="emerald">
+            <div class="w-full h-4 rounded-md bg-gradient-to-r from-emerald-950 to-teal-900 mb-1"></div>
+            <span class="text-[10px] font-medium text-slate-400">Emerald</span>
+          </button>
+          <button type="button" class="btn-theme-select p-2 rounded-xl border border-slate-800 bg-slate-900 text-center transition hover:scale-105" data-theme="sunset">
+            <div class="w-full h-4 rounded-md bg-gradient-to-r from-purple-900 to-pink-900 mb-1"></div>
+            <span class="text-[10px] font-medium text-slate-400">Sunset</span>
+          </button>
+          <button type="button" class="btn-theme-select p-2 rounded-xl border border-slate-800 bg-slate-900 text-center transition hover:scale-105" data-theme="paper">
+            <div class="w-full h-4 rounded-md bg-gradient-to-r from-white to-slate-200 border mb-1"></div>
+            <span class="text-[10px] font-medium text-slate-400">Paper</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Multiple Profiles / Accounts Switcher -->
+      <div class="pt-3 border-t border-slate-800 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Switch Saved Accounts
+          </span>
+          <button id="btn-add-new-profile-slot" class="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-plus text-[10px]"></i> Add Another
+          </button>
+        </div>
+        <div id="settings-profiles-list" class="space-y-2 max-h-36 overflow-y-auto pr-1">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Save Button -->
+      <div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-3">
+        <button id="btn-save-settings-close" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-blue-600/30">
+          <i class="fa-solid fa-check"></i> Save & Use Account
+        </button>
+      </div>
+
+      <!-- Backup / Restore Footnote -->
+      <div class="flex items-center justify-between text-xs text-slate-400 pt-1">
+        <button id="btn-export-backup" class="hover:text-blue-400 transition flex items-center gap-1">
+          <i class="fa-solid fa-file-export"></i> Backup Profiles
+        </button>
+        <button id="btn-import-backup" class="hover:text-blue-400 transition flex items-center gap-1">
+          <i class="fa-solid fa-file-import"></i> Restore Backup
+        </button>
+        <input type="file" id="file-backup-import" class="hidden" accept=".json">
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ABOUT & GITHUB PAGES GUIDE ================= -->
+  <div id="modal-info" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="w-full max-w-lg rounded-3xl bg-slate-900 border border-slate-800 p-6 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="font-bold text-white text-base flex items-center gap-2">
+          <i class="fa-solid fa-circle-question text-blue-400"></i>
+          About & GitHub Pages Hosting
+        </h3>
+        <button id="btn-close-info" class="text-slate-400 hover:text-white p-2">
+          <i class="fa-solid fa-times text-lg"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed max-h-96 overflow-y-auto pr-1">
+        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+          <h4 class="font-bold text-white mb-1 flex items-center gap-2">
+            <i class="fa-brands fa-github text-white"></i> Host on GitHub Pages in 30 Seconds
+          </h4>
+          <ol class="list-decimal list-inside space-y-1.5 text-slate-400 mt-2">
+            <li>Create a new repository on GitHub (e.g. <code class="text-blue-400 font-mono">sepa-qr</code>).</li>
+            <li>Upload this single <code class="text-blue-400 font-mono">index.html</code> file to the root of your repo.</li>
+            <li>Go to <strong>Settings → Pages</strong>, set branch to <strong>main</strong>, and click <strong>Save</strong>.</li>
+            <li>Your free private SEPA payment link is live forever!</li>
+          </ol>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-white mb-1">What is an EPC QR Code (GiroCode)?</h4>
+          <p class="text-slate-400">
+            Standardized by the <strong>European Payments Council (EPC069-12)</strong>, it allows any European mobile banking app (ING, KBC, Belfius, BNP Paribas, Sparkasse, N26, Revolut, Bunq, Erste, etc.) to immediately pre-fill payment transfers without typing errors.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-white mb-1">Why Emojis Are Excluded</h4>
+          <p class="text-slate-400">
+            The SEPA EPC standard strictly enforces standard Latin characters. Including emojis in payment references causes banking applications to reject the QR code or fail during automated interbank clearing.
+          </p>
+        </div>
+      </div>
+
+      <button id="btn-dismiss-info" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition">
+        Got it!
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    // --- State & Constants ---
+    const STORAGE_KEY_PROFILES = 'sepa_profiles_v1';
+    const STORAGE_KEY_ACTIVE = 'sepa_active_profile_id_v1';
+    const STORAGE_KEY_THEME = 'sepa_card_theme_v1';
+    const STORAGE_KEY_SOUND = 'sepa_sound_enabled';
+    const STORAGE_KEY_FIRST_VISIT = 'sepa_visited_before';
+
+    let soundEnabled = localStorage.getItem(STORAGE_KEY_SOUND) !== 'false';
+    let qrCodeInstance = null;
+    let currentTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'titanium';
+    let isStructuredMode = false;
+
+    const DEFAULT_PROFILES = [
+      {
+        id: 'prof_default',
+        label: 'Primary Account',
+        name: 'Alexandre Dupont',
+        iban: 'BE68539007547034',
+        bic: 'GEBABEBB'
+      }
+    ];
+
+    let profiles = [];
+    let activeProfileId = null;
+
+    // --- Country & Bank Detection Maps ---
+    const COUNTRY_DATA = {
+      BE: { name: 'Belgium', flag: '🇧🇪', len: 16 },
+      DE: { name: 'Germany', flag: '🇩🇪', len: 22 },
+      FR: { name: 'France', flag: '🇫🇷', len: 27 },
+      NL: { name: 'Netherlands', flag: '🇳🇱', len: 18 },
+      ES: { name: 'Spain', flag: '🇪🇸', len: 24 },
+      IT: { name: 'Italy', flag: '🇮🇹', len: 27 },
+      AT: { name: 'Austria', flag: '🇦🇹', len: 20 },
+      LU: { name: 'Luxembourg', flag: '🇱🇺', len: 20 },
+      PT: { name: 'Portugal', flag: '🇵🇹', len: 25 },
+      IE: { name: 'Ireland', flag: '🇮🇪', len: 22 },
+      FI: { name: 'Finland', flag: '🇫🇮', len: 18 },
+      CH: { name: 'Switzerland', flag: '🇨🇭', len: 21 },
+      LT: { name: 'Lithuania', flag: '🇱🇹', len: 20 },
+      PL: { name: 'Poland', flag: '🇵🇱', len: 28 },
+      EE: { name: 'Estonia', flag: '🇪🇪', len: 20 },
+      LV: { name: 'Latvia', flag: '🇱🇻', len: 21 }
+    };
+
+    const BANK_PREFIXES = {
+      'BE': {
+        '001': { name: 'BNP Paribas Fortis', bic: 'GEBABEBB' },
+        '068': { name: 'BNP Paribas Fortis', bic: 'GEBABEBB' },
+        '088': { name: 'BNP Paribas Fortis', bic: 'GEBABEBB' },
+        '732': { name: 'KBC Bank', bic: 'KREDBEBB' },
+        '091': { name: 'Belfius Bank', bic: 'GKCCBEBB' },
+        '310': { name: 'ING Belgium', bic: 'BBRUBEBB' },
+        '103': { name: 'Argenta', bic: 'ARSPBE22' },
+        '523': { name: 'Beobank', bic: 'BEOBBEB1' },
+        '124': { name: 'Crelan', bic: 'CRELBEBB' }
+      },
+      'LT': {
+        '350': { name: 'Revolut Bank UAB', bic: 'REVOLT21' },
+        '325': { name: 'Paysera LT', bic: 'EVPELT21' }
+      },
+      'NL': {
+        'INGB': { name: 'ING Bank', bic: 'INGBNL2A' },
+        'RABO': { name: 'Rabobank', bic: 'RABONL2U' },
+        'ABNA': { name: 'ABN AMRO', bic: 'ABNANL2A' },
+        'BUNQ': { name: 'bunq B.V.', bic: 'BUNQNL2A' }
+      },
+      'DE': {
+        '1001': { name: 'Berliner Sparkasse', bic: 'BELADEBE' },
+        '1007': { name: 'Deutsche Bank', bic: 'DEUTDEDD' },
+        '1005': { name: 'N26 Bank AG', bic: 'NTSBDEB1' }
+      }
+    };
+
+    // --- Audio Feedback ---
+    const AudioEngine = {
+      ctx: null,
+      init() {
+        if (!this.ctx && typeof window.AudioContext !== 'undefined') {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      },
+      playTone(freq, type, duration, gainVal = 0.05) {
+        if (!soundEnabled) return;
+        try {
+          this.init();
+          if (this.ctx.state === 'suspended') this.ctx.resume();
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {}
+      },
+      click() { this.playTone(800, 'sine', 0.05, 0.03); },
+      success() {
+        this.playTone(587.33, 'triangle', 0.1, 0.05);
+        setTimeout(() => this.playTone(880, 'sine', 0.18, 0.05), 80);
+      },
+      chime() { this.playTone(987.77, 'sine', 0.12, 0.03); }
+    };
+
+    // --- Helpers & Sanitizer ---
+    function formatIbanWithSpaces(iban) {
+      if (!iban) return '';
+      const clean = iban.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+      return clean.match(/.{1,4}/g)?.join(' ') || clean;
+    }
+
+    function cleanString(str) {
+      return (str || '').replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    }
+
+    // Strict SEPA EPC Character Set Sanitizer (NO EMOJIS)
+    function sanitizeSepaString(text) {
+      if (!text) return '';
+      // EPC charset: letters, numbers, spaces, and: / - ? : ( ) . , ' +
+      return text.replace(/[^A-Za-z0-9\s\/\-\?\:\(\)\.\,\'\+]/g, '');
+    }
+
+    function isValidIBAN(iban) {
+      const clean = cleanString(iban);
+      if (clean.length < 5 || clean.length > 34) return false;
+      const country = clean.substring(0, 2);
+      if (COUNTRY_DATA[country] && clean.length !== COUNTRY_DATA[country].len) {
+        return false;
+      }
+      const rearranged = clean.slice(4) + clean.slice(0, 4);
+      let numeric = '';
+      for (let i = 0; i < rearranged.length; i++) {
+        const code = rearranged.charCodeAt(i);
+        if (code >= 65 && code <= 90) {
+          numeric += (code - 55).toString();
+        } else if (code >= 48 && code <= 57) {
+          numeric += rearranged[i];
+        } else {
+          return false;
+        }
+      }
+      let remainder = 0;
+      for (let i = 0; i < numeric.length; i += 7) {
+        const block = remainder.toString() + numeric.substring(i, i + 7);
+        remainder = parseInt(block, 10) % 97;
+      }
+      return remainder === 1;
+    }
+
+    function detectBankInfo(iban) {
+      const clean = cleanString(iban);
+      const country = clean.substring(0, 2);
+      const res = { bankName: '', suggestedBic: '', country: COUNTRY_DATA[country] || null };
+
+      if (country === 'BE' && clean.length >= 7) {
+        const code = clean.substring(4, 7);
+        if (BANK_PREFIXES.BE[code]) {
+          res.bankName = BANK_PREFIXES.BE[code].name;
+          res.suggestedBic = BANK_PREFIXES.BE[code].bic;
+        }
+      } else if (country === 'LT' && clean.length >= 7) {
+        const code = clean.substring(4, 7);
+        if (BANK_PREFIXES.LT[code]) {
+          res.bankName = BANK_PREFIXES.LT[code].name;
+          res.suggestedBic = BANK_PREFIXES.LT[code].bic;
+        }
+      } else if (country === 'NL' && clean.length >= 8) {
+        const code = clean.substring(4, 8);
+        if (BANK_PREFIXES.NL[code]) {
+          res.bankName = BANK_PREFIXES.NL[code].name;
+          res.suggestedBic = BANK_PREFIXES.NL[code].bic;
+        }
+      }
+      return res;
+    }
+
+    function calculateRfCreditorReference(baseNumber) {
+      const clean = (baseNumber || '').replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+      if (!clean) return '';
+      const inputForCheck = clean + '271500';
+      let numeric = '';
+      for (let i = 0; i < inputForCheck.length; i++) {
+        const code = inputForCheck.charCodeAt(i);
+        if (code >= 65 && code <= 90) {
+          numeric += (code - 55).toString();
+        } else {
+          numeric += inputForCheck[i];
+        }
+      }
+      let rem = 0;
+      for (let i = 0; i < numeric.length; i += 7) {
+        const block = rem.toString() + numeric.substring(i, i + 7);
+        rem = parseInt(block, 10) % 97;
+      }
+      const checkDigits = (98 - rem).toString().padStart(2, '0');
+      return `RF${checkDigits}${clean}`;
+    }
+
+    // --- Toast Notifications ---
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const icons = {
+        success: 'fa-circle-check text-emerald-400',
+        error: 'fa-circle-exclamation text-rose-400',
+        info: 'fa-circle-info text-blue-400'
+      };
+
+      toast.className = 'flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-slate-900 border border-slate-700/80 shadow-2xl text-slate-100 text-xs sm:text-sm font-medium transition-all transform translate-y-3 opacity-0';
+      toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info} text-base"></i><span>${message}</span>`;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => toast.classList.remove('translate-y-3', 'opacity-0'));
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // --- Profile & LocalStorage State ---
+    function loadProfiles() {
+      const isFirstLaunch = !localStorage.getItem(STORAGE_KEY_FIRST_VISIT);
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_PROFILES);
+        profiles = raw ? JSON.parse(raw) : DEFAULT_PROFILES;
+        activeProfileId = localStorage.getItem(STORAGE_KEY_ACTIVE) || profiles[0].id;
+      } catch (e) {
+        profiles = DEFAULT_PROFILES;
+        activeProfileId = profiles[0].id;
+      }
+
+      if (isFirstLaunch) {
+        localStorage.setItem(STORAGE_KEY_FIRST_VISIT, 'true');
+        // Prompt user directly on first launch
+        openSettingsModal(true);
+      }
+
+      renderSettingsProfilesList();
+      updateActiveProfileUI();
+    }
+
+    function getActiveProfile() {
+      return profiles.find(p => p.id === activeProfileId) || profiles[0];
+    }
+
+    function saveProfilesToStorage() {
+      localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles));
+      if (activeProfileId) {
+        localStorage.setItem(STORAGE_KEY_ACTIVE, activeProfileId);
+      }
+      renderSettingsProfilesList();
+      updateActiveProfileUI();
+      updateQR();
+    }
+
+    function updateActiveProfileUI() {
+      const current = getActiveProfile();
+      if (!current) return;
+
+      const flag = COUNTRY_DATA[cleanString(current.iban).substring(0, 2)]?.flag || '🇪🇺';
+      
+      // Header
+      document.getElementById('header-flag').textContent = flag;
+      document.getElementById('header-payee-name').textContent = current.name || 'Set Account';
+
+      // Banner
+      document.getElementById('banner-flag').textContent = flag;
+      document.getElementById('banner-payee-name').textContent = current.name || 'Set Beneficiary';
+      document.getElementById('banner-iban-display').textContent = formatIbanWithSpaces(current.iban) || 'Click Edit to enter IBAN';
+    }
+
+    function openSettingsModal(isFirstLaunch = false) {
+      AudioEngine.click();
+      const current = getActiveProfile();
+      document.getElementById('settings-name').value = current ? current.name : '';
+      document.getElementById('settings-iban').value = current ? formatIbanWithSpaces(current.iban) : '';
+      document.getElementById('settings-bic').value = current ? current.bic : '';
+      
+      validateSettingsIban();
+
+      const banner = document.getElementById('first-launch-banner');
+      if (isFirstLaunch) {
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      const modal = document.getElementById('modal-settings');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeSettingsModal() {
+      const modal = document.getElementById('modal-settings');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function renderSettingsProfilesList() {
+      const container = document.getElementById('settings-profiles-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      profiles.forEach(p => {
+        const isActive = p.id === activeProfileId;
+        const item = document.createElement('div');
+        item.className = `p-2.5 rounded-xl border flex items-center justify-between text-xs transition ${
+          isActive ? 'bg-blue-950/40 border-blue-500/50' : 'bg-slate-950 border-slate-800'
+        }`;
+        item.innerHTML = `
+          <div class="flex items-center gap-2 truncate">
+            <span class="text-sm">${COUNTRY_DATA[cleanString(p.iban).substring(0, 2)]?.flag || '💳'}</span>
+            <div class="truncate">
+              <span class="font-bold text-white">${p.label || p.name}</span>
+              <span class="text-slate-400 font-mono text-[11px] block truncate">${formatIbanWithSpaces(p.iban)}</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            ${!isActive ? `<button class="btn-use-prof px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-medium" data-id="${p.id}">Use</button>` : '<span class="text-[10px] text-blue-400 font-semibold px-2 py-0.5 rounded bg-blue-500/10">Active</span>'}
+            ${profiles.length > 1 ? `<button class="btn-del-prof p-1 text-slate-500 hover:text-rose-400" data-id="${p.id}"><i class="fa-regular fa-trash-can"></i></button>` : ''}
+          </div>
+        `;
+        container.appendChild(item);
+      });
+
+      container.querySelectorAll('.btn-use-prof').forEach(b => {
+        b.addEventListener('click', () => {
+          activeProfileId = b.getAttribute('data-id');
+          saveProfilesToStorage();
+          openSettingsModal();
+          showToast('Active account changed', 'info');
+        });
+      });
+
+      container.querySelectorAll('.btn-del-prof').forEach(b => {
+        b.addEventListener('click', () => {
+          const id = b.getAttribute('data-id');
+          profiles = profiles.filter(p => p.id !== id);
+          if (activeProfileId === id) activeProfileId = profiles[0]?.id;
+          saveProfilesToStorage();
+          openSettingsModal();
+        });
+      });
+    }
+
+    function validateSettingsIban() {
+      const input = document.getElementById('settings-iban');
+      const clean = cleanString(input.value);
+      const flagEl = document.getElementById('settings-iban-flag');
+      const bankNameEl = document.getElementById('settings-bank-name');
+      const msgEl = document.getElementById('settings-iban-msg');
+
+      if (!clean) {
+        flagEl.textContent = '🇪🇺';
+        bankNameEl.textContent = '';
+        msgEl.textContent = 'Real-time Modulo-97 checksum validation';
+        msgEl.className = 'text-xs text-slate-400 mt-1';
+        input.classList.remove('border-emerald-500', 'border-rose-500');
+        input.classList.add('border-slate-700');
+        return;
+      }
+
+      const country = clean.substring(0, 2);
+      const countryInfo = COUNTRY_DATA[country];
+      flagEl.textContent = countryInfo ? countryInfo.flag : '🇪🇺';
+
+      const bankInfo = detectBankInfo(clean);
+      bankNameEl.textContent = bankInfo.bankName;
+
+      const valid = isValidIBAN(clean);
+      if (valid) {
+        input.classList.remove('border-slate-700', 'border-rose-500');
+        input.classList.add('border-emerald-500');
+        msgEl.textContent = `Valid ${countryInfo ? countryInfo.name : ''} IBAN`;
+        msgEl.className = 'text-xs text-emerald-400 mt-1';
+      } else {
+        if (countryInfo && clean.length >= countryInfo.len) {
+          input.classList.remove('border-slate-700', 'border-emerald-500');
+          input.classList.add('border-rose-500');
+          msgEl.textContent = 'Checksum mismatch. Please verify account number.';
+          msgEl.className = 'text-xs text-rose-400 mt-1';
+        } else {
+          input.classList.remove('border-emerald-500', 'border-rose-500');
+          input.classList.add('border-slate-700');
+          msgEl.textContent = countryInfo ? `Length: ${clean.length}/${countryInfo.len}` : 'Typing IBAN...';
+          msgEl.className = 'text-xs text-slate-400 mt-1';
+        }
+      }
+    }
+
+    // --- EPC Payload Generator ---
+    function buildEpcPayload() {
+      const profile = getActiveProfile();
+      const name = profile ? profile.name : 'Payee';
+      const iban = profile ? cleanString(profile.iban) : '';
+      const bic = profile ? cleanString(profile.bic) : '';
+      const amountVal = parseFloat(document.getElementById('input-amount').value);
+      
+      const structuredRef = isStructuredMode ? cleanString(document.getElementById('input-rf').value) : '';
+      const remittanceText = !isStructuredMode ? sanitizeSepaString(document.getElementById('input-remittance').value.trim()) : '';
+
+      const formattedAmount = (amountVal && amountVal > 0) ? `EUR${amountVal.toFixed(2)}` : '';
+
+      const lines = [
+        'BCD',
+        '002',
+        '1',
+        'SCT',
+        bic,
+        name.substring(0, 70),
+        iban,
+        formattedAmount,
+        '',
+        structuredRef ? structuredRef.substring(0, 35) : '',
+        (!structuredRef && remittanceText) ? remittanceText.substring(0, 140) : '',
+        ''
+      ];
+
+      while (lines.length > 7 && lines[lines.length - 1] === '') {
+        lines.pop();
+      }
+
+      return lines.join('\n');
+    }
+
+    function updateQR() {
+      const payload = buildEpcPayload();
+      const target = document.getElementById('qrcode-target');
+      if (!target) return;
+      target.innerHTML = '';
+
+      try {
+        qrCodeInstance = new QRCode(target, {
+          text: payload,
+          width: 210,
+          height: 210,
+          colorDark: '#0b0f19',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      } catch (err) {
+        console.error('QR Error:', err);
+      }
+
+      updateCardUI();
+      updateCompanionText();
+    }
+
+    function updateCardUI() {
+      const profile = getActiveProfile();
+      const name = profile ? profile.name : 'Your Name';
+      const iban = profile ? cleanString(profile.iban) : '';
+      const bic = profile ? cleanString(profile.bic) : '';
+      const amountVal = parseFloat(document.getElementById('input-amount').value);
+      const remittance = isStructuredMode 
+        ? document.getElementById('input-rf').value.trim() 
+        : sanitizeSepaString(document.getElementById('input-remittance').value.trim());
+
+      document.getElementById('card-payee-name').textContent = name;
+      document.getElementById('card-iban-display').textContent = formatIbanWithSpaces(iban) || 'No IBAN set';
+      
+      const countryCode = iban.substring(0, 2);
+      const countryInfo = COUNTRY_DATA[countryCode];
+      document.getElementById('card-flag-badge').textContent = countryInfo ? countryInfo.flag : '🇪🇺';
+
+      const bankData = detectBankInfo(iban);
+      document.getElementById('card-bank-badge').textContent = bankData.bankName || (countryInfo ? `${countryInfo.name} SCT` : 'SEPA SCT');
+
+      const bicLabel = document.getElementById('card-bic-label');
+      bicLabel.textContent = bic ? `BIC: ${bic}` : '';
+
+      const amountDisplay = document.getElementById('card-amount-display');
+      amountDisplay.textContent = (amountVal && amountVal > 0) ? `€ ${amountVal.toFixed(2)}` : '€ Open Amount';
+
+      const remDisplay = document.getElementById('card-remittance-display');
+      remDisplay.textContent = remittance ? remittance : 'SEPA Payment';
+    }
+
+    function updateCompanionText() {
+      const profile = getActiveProfile();
+      const name = profile ? profile.name : 'Payee';
+      const iban = profile ? formatIbanWithSpaces(profile.iban) : '';
+      const bic = profile ? cleanString(profile.bic) : '';
+      const amountVal = parseFloat(document.getElementById('input-amount').value);
+      const note = isStructuredMode 
+        ? document.getElementById('input-rf').value.trim() 
+        : sanitizeSepaString(document.getElementById('input-remittance').value.trim());
+
+      const lines = [
+        `Payment Request via SEPA Bank Transfer`,
+        `Payee: ${name}`,
+        `IBAN: ${iban}`
+      ];
+      if (bic) lines.push(`BIC: ${bic}`);
+      if (amountVal && amountVal > 0) lines.push(`Amount: €${amountVal.toFixed(2)}`);
+      if (note) lines.push(`Note: ${note}`);
+      lines.push(`\nScan the QR code in your banking app or copy the IBAN above.`);
+
+      const text = lines.join('\n');
+      document.getElementById('companion-text-preview').textContent = text;
+      return text;
+    }
+
+    // --- Card Theme Handler ---
+    function setTheme(theme) {
+      currentTheme = theme;
+      localStorage.setItem(STORAGE_KEY_THEME, theme);
+      const card = document.getElementById('payment-card');
+      card.classList.remove('theme-titanium', 'theme-sepa', 'theme-emerald', 'theme-sunset', 'theme-paper');
+      card.classList.add(`theme-${theme}`);
+
+      document.querySelectorAll('.btn-theme-select').forEach(btn => {
+        if (btn.getAttribute('data-theme') === theme) {
+          btn.classList.add('border-blue-500');
+          btn.classList.remove('border-slate-800');
+        } else {
+          btn.classList.remove('border-blue-500');
+          btn.classList.add('border-slate-800');
+        }
+      });
+      AudioEngine.click();
+    }
+
+    // --- Split Bill Logic ---
+    function recalculateSplit() {
+      const total = parseFloat(document.getElementById('split-total').value) || 0;
+      const people = parseInt(document.getElementById('split-people').value) || 1;
+      const share = people > 0 ? (total / people).toFixed(2) : '0.00';
+      document.getElementById('split-result').textContent = `€ ${share}`;
+    }
+
+    // --- Export Actions ---
+    async function copyCardAsImage() {
+      AudioEngine.chime();
+      const card = document.getElementById('payment-card');
+      showToast('Preparing card image...', 'info');
+
+      try {
+        const canvas = await html2canvas(card, {
+          scale: 3,
+          useCORS: true,
+          backgroundColor: null,
+          logging: false
+        });
+
+        canvas.toBlob(async (blob) => {
+          if (!blob) throw new Error('Blob generation failed');
+          try {
+            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+            AudioEngine.success();
+            showToast('Card copied! Paste directly in WhatsApp (Ctrl+V / Long press)', 'success');
+          } catch (clipErr) {
+            downloadCanvas(canvas, 'sepa-payment-card.png');
+            showToast('Card downloaded! (Clipboard access limited on this browser)', 'info');
+          }
+        }, 'image/png');
+      } catch (err) {
+        showToast('Could not render image. Try downloading PNG.', 'error');
+      }
+    }
+
+    async function downloadCardAsPng() {
+      AudioEngine.click();
+      const card = document.getElementById('payment-card');
+      showToast('Rendering high-res PNG...', 'info');
+
+      try {
+        const canvas = await html2canvas(card, {
+          scale: 3,
+          useCORS: true,
+          backgroundColor: null,
+          logging: false
+        });
+        const amount = document.getElementById('input-amount').value;
+        const filename = `PayQ-${amount ? amount + 'EUR' : 'Card'}.png`;
+        downloadCanvas(canvas, filename);
+        AudioEngine.success();
+        showToast('Card saved to Downloads!', 'success');
+      } catch (err) {
+        showToast('Failed to save image', 'error');
+      }
+    }
+
+    function downloadCanvas(canvas, filename) {
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function shareToWhatsApp() {
+      AudioEngine.click();
+      const text = updateCompanionText();
+      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+      showToast('Opened WhatsApp! Tip: Also copy the card image to post.', 'info');
+    }
+
+    function copyWhatsAppText() {
+      AudioEngine.click();
+      const text = updateCompanionText();
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      AudioEngine.success();
+      showToast('Payment text copied!', 'success');
+    }
+
+    function copyIbanDirect() {
+      AudioEngine.click();
+      const profile = getActiveProfile();
+      const iban = profile ? cleanString(profile.iban) : '';
+      if (!iban) return;
+      const ta = document.createElement('textarea');
+      ta.value = iban;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      AudioEngine.success();
+      showToast(`Copied IBAN (${formatIbanWithSpaces(iban)})`, 'success');
+    }
+
+    // --- Init Event Listeners ---
+    function initEventListeners() {
+      const amountInput = document.getElementById('input-amount');
+      const remInput = document.getElementById('input-remittance');
+      const rfInput = document.getElementById('input-rf');
+
+      amountInput.addEventListener('input', updateQR);
+
+      // Strict SEPA sanitizer listener: remove emojis and unauthorized symbols on the fly
+      remInput.addEventListener('input', () => {
+        const original = remInput.value;
+        const clean = sanitizeSepaString(original);
+        if (clean !== original) {
+          remInput.value = clean;
+          showToast('Emojis and unsupported symbols removed for SEPA bank compatibility', 'info');
+        }
+        document.getElementById('remittance-counter').textContent = `${clean.length}/140`;
+        updateQR();
+      });
+
+      rfInput.addEventListener('input', updateQR);
+
+      // Quick Amounts
+      document.querySelectorAll('.btn-quick-amount').forEach(btn => {
+        btn.addEventListener('click', () => {
+          AudioEngine.click();
+          const val = parseFloat(btn.getAttribute('data-val'));
+          const current = parseFloat(amountInput.value) || 0;
+          amountInput.value = (current + val).toFixed(2);
+          updateQR();
+        });
+      });
+
+      document.getElementById('btn-reset-amount').addEventListener('click', () => {
+        AudioEngine.click();
+        amountInput.value = '';
+        updateQR();
+      });
+
+      document.getElementById('btn-clear-amount').addEventListener('click', () => {
+        AudioEngine.click();
+        amountInput.value = '';
+        updateQR();
+        showToast('Amount left open for payer', 'info');
+      });
+
+      // Quick Plain Text Notes (No Emojis)
+      document.querySelectorAll('.btn-quick-note').forEach(btn => {
+        btn.addEventListener('click', () => {
+          AudioEngine.click();
+          remInput.value = btn.getAttribute('data-note');
+          document.getElementById('remittance-counter').textContent = `${remInput.value.length}/140`;
+          updateQR();
+        });
+      });
+
+      // Remittance Type Tabs
+      const tabText = document.getElementById('tab-remittance-text');
+      const tabStructured = document.getElementById('tab-remittance-structured');
+      const wrapText = document.getElementById('wrapper-unstructured');
+      const wrapStructured = document.getElementById('wrapper-structured');
+
+      tabText.addEventListener('click', () => {
+        AudioEngine.click();
+        isStructuredMode = false;
+        tabText.className = 'px-2.5 py-1 rounded-md bg-blue-600 text-white font-medium transition';
+        tabStructured.className = 'px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition';
+        wrapText.classList.remove('hidden');
+        wrapStructured.classList.add('hidden');
+        updateQR();
+      });
+
+      tabStructured.addEventListener('click', () => {
+        AudioEngine.click();
+        isStructuredMode = true;
+        tabStructured.className = 'px-2.5 py-1 rounded-md bg-blue-600 text-white font-medium transition';
+        tabText.className = 'px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition';
+        wrapStructured.classList.remove('hidden');
+        wrapText.classList.add('hidden');
+        updateQR();
+      });
+
+      document.getElementById('btn-generate-rf').addEventListener('click', () => {
+        AudioEngine.click();
+        const base = prompt('Enter invoice / reference number (e.g. 2026001):');
+        if (base) {
+          const rf = calculateRfCreditorReference(base);
+          rfInput.value = rf;
+          updateQR();
+          showToast(`Generated reference: ${rf}`, 'success');
+        }
+      });
+
+      // Split Bill
+      const splitPanel = document.getElementById('split-bill-panel');
+      document.getElementById('btn-toggle-split').addEventListener('click', () => {
+        AudioEngine.click();
+        splitPanel.classList.toggle('hidden');
+        const cur = parseFloat(amountInput.value);
+        if (cur && !document.getElementById('split-total').value) {
+          document.getElementById('split-total').value = cur.toFixed(2);
+          recalculateSplit();
+        }
+      });
+      document.getElementById('btn-close-split').addEventListener('click', () => splitPanel.classList.add('hidden'));
+      document.getElementById('split-total').addEventListener('input', recalculateSplit);
+      document.getElementById('split-people').addEventListener('input', recalculateSplit);
+      document.querySelectorAll('.btn-split-count').forEach(btn => {
+        btn.addEventListener('click', () => {
+          AudioEngine.click();
+          document.getElementById('split-people').value = btn.getAttribute('data-count');
+          recalculateSplit();
+        });
+      });
+      document.getElementById('btn-apply-split').addEventListener('click', () => {
+        AudioEngine.success();
+        const total = parseFloat(document.getElementById('split-total').value) || 0;
+        const people = parseInt(document.getElementById('split-people').value) || 1;
+        const share = (total / people).toFixed(2);
+        amountInput.value = share;
+        splitPanel.classList.add('hidden');
+        updateQR();
+        showToast(`Applied €${share} to transfer`, 'success');
+      });
+
+      // Settings Modal Triggers
+      document.getElementById('btn-header-account').addEventListener('click', () => openSettingsModal());
+      document.getElementById('btn-quick-settings-link').addEventListener('click', () => openSettingsModal());
+      document.getElementById('btn-edit-account-banner').addEventListener('click', () => openSettingsModal());
+      document.getElementById('btn-close-settings').addEventListener('click', closeSettingsModal);
+
+      // Settings Inputs
+      const settingsIban = document.getElementById('settings-iban');
+      settingsIban.addEventListener('input', (e) => {
+        e.target.value = formatIbanWithSpaces(e.target.value);
+        validateSettingsIban();
+      });
+
+      document.getElementById('btn-settings-autofill-bic').addEventListener('click', () => {
+        AudioEngine.click();
+        const bank = detectBankInfo(settingsIban.value);
+        if (bank.suggestedBic) {
+          document.getElementById('settings-bic').value = bank.suggestedBic;
+          showToast(`BIC auto-filled for ${bank.bankName}`, 'success');
+        } else {
+          showToast('No BIC in lookup table. Please type manually.', 'info');
+        }
+      });
+
+      // Save Settings
+      document.getElementById('btn-save-settings-close').addEventListener('click', () => {
+        const current = getActiveProfile();
+        const name = document.getElementById('settings-name').value.trim();
+        const iban = cleanString(document.getElementById('settings-iban').value);
+        const bic = cleanString(document.getElementById('settings-bic').value);
+
+        if (!name) {
+          showToast('Please enter your recipient name', 'error');
+          return;
+        }
+        if (!iban) {
+          showToast('Please enter a valid IBAN', 'error');
+          return;
+        }
+
+        current.name = name;
+        current.iban = iban;
+        current.bic = bic;
+
+        saveProfilesToStorage();
+        closeSettingsModal();
+        AudioEngine.success();
+        showToast('Account details saved!', 'success');
+      });
+
+      // Add new profile slot
+      document.getElementById('btn-add-new-profile-slot').addEventListener('click', () => {
+        const label = prompt('Account Label (e.g. Revolut, Joint, Business):');
+        if (label) {
+          const newId = 'prof_' + Date.now();
+          profiles.push({
+            id: newId,
+            label: label,
+            name: '',
+            iban: '',
+            bic: ''
+          });
+          activeProfileId = newId;
+          saveProfilesToStorage();
+          openSettingsModal();
+        }
+      });
+
+      // Card Theme Buttons
+      document.querySelectorAll('.btn-theme-select').forEach(btn => {
+        btn.addEventListener('click', () => setTheme(btn.getAttribute('data-theme')));
+      });
+
+      // Export & Sharing
+      document.getElementById('btn-copy-card-img').addEventListener('click', copyCardAsImage);
+      document.getElementById('btn-download-card-img').addEventListener('click', downloadCardAsPng);
+      document.getElementById('btn-share-whatsapp').addEventListener('click', shareToWhatsApp);
+      document.getElementById('btn-copy-wa-text').addEventListener('click', copyWhatsAppText);
+      document.getElementById('btn-copy-iban-direct').addEventListener('click', copyIbanDirect);
+
+      // Sound Toggle
+      const soundBtn = document.getElementById('sound-toggle-btn');
+      soundBtn.addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        localStorage.setItem(STORAGE_KEY_SOUND, soundEnabled);
+        soundBtn.innerHTML = soundEnabled 
+          ? '<i class="fa-solid fa-volume-high text-sm text-blue-400"></i>' 
+          : '<i class="fa-solid fa-volume-xmark text-sm text-slate-500"></i>';
+        if (soundEnabled) AudioEngine.chime();
+      });
+      if (!soundEnabled) {
+        soundBtn.innerHTML = '<i class="fa-solid fa-volume-xmark text-sm text-slate-500"></i>';
+      }
+
+      // Backup & Restore
+      document.getElementById('btn-export-backup').addEventListener('click', () => {
+        const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(profiles, null, 2));
+        const dl = document.createElement('a');
+        dl.setAttribute('href', dataStr);
+        dl.setAttribute('download', 'sepa-profiles-backup.json');
+        dl.click();
+        showToast('Backup downloaded', 'success');
+      });
+
+      const fileInput = document.getElementById('file-backup-import');
+      document.getElementById('btn-import-backup').addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const imported = JSON.parse(event.target.result);
+            if (Array.isArray(imported)) {
+              profiles = imported;
+              activeProfileId = profiles[0]?.id;
+              saveProfilesToStorage();
+              openSettingsModal();
+              showToast('Profiles restored!', 'success');
+            }
+          } catch (err) {
+            showToast('Invalid backup file', 'error');
+          }
+        };
+        reader.readAsText(file);
+      });
+
+      // About Modal
+      const modalInfo = document.getElementById('modal-info');
+      document.getElementById('btn-open-info').addEventListener('click', () => {
+        AudioEngine.click();
+        modalInfo.classList.remove('hidden');
+        modalInfo.classList.add('flex');
+      });
+      document.getElementById('btn-close-info').addEventListener('click', () => {
+        modalInfo.classList.add('hidden');
+        modalInfo.classList.remove('flex');
+      });
+      document.getElementById('btn-dismiss-info').addEventListener('click', () => {
+        modalInfo.classList.add('hidden');
+        modalInfo.classList.remove('flex');
+      });
+    }
+
+    // --- On Window Load ---
+    window.onload = function () {
+      loadProfiles();
+      setTheme(currentTheme);
+      initEventListeners();
+      updateQR();
+    };
+  </script>
+</body>
+</html>
