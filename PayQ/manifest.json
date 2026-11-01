@@ -1,0 +1,18 @@
+{
+  "name": "PayQ — SEPA QR Code",
+  "short_name": "PayQ",
+  "description": "Instant EPC SEPA payment QR codes. 100% offline & local.",
+  "start_url": "./app.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='128' fill='%232563eb'/%3E%3Cpath fill='%23ffffff' d='M112 112h112v112H112zm32 32v48h48v-48zm144-32h112v112H288zm32 32v48h48v-48zM112 288h112v112H112zm32 32v48h48v-48zm144 0h48v48h-48zm48 48h48v48h-48zm-48 48h48v16h-48zm96-96h48v96h-48z'/%3E%3Ccircle cx='370' cy='370' r='36' fill='%2310b981'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
