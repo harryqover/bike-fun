@@ -1637,9 +1637,7 @@
       if (data && data.success) {
         globalWorkouts = data.workouts || [];
         globalLeaderboard = data.leaderboard || [];
-        globalExercises = (data.exercises && data.exercises.length > 0) 
-          ? [...data.exercises, ...DEFAULT_EXERCISES] 
-          : DEFAULT_EXERCISES;
+        globalExercises = [...(data.exercises || []), ...DEFAULT_EXERCISES];
       }
 
       updateElevationHero();
