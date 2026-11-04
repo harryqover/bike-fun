@@ -3,50 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tour du Mont Rose 2028 | Mission Fast-Trail & Sécurité Alpine</title>
+  <title>Tour du Mont Rose 2028 | Guide de Sérénité & Préparation Alpine</title>
   
   <!-- Google Fonts & Tailwind CSS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   
-  <!-- Chart.js for Interactive Altitude Profiles -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Phosphor Icons -->
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'monospace'],
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
           },
           colors: {
             alpine: {
-              50: '#f0f7ff',
-              100: '#e0effe',
-              200: '#b9dffe',
-              500: '#0284c7',
-              700: '#0369a1',
-              900: '#0c2340',
-              950: '#061324'
-            },
-            danger: {
-              light: '#fef2f2',
-              DEFAULT: '#ef4444',
-              dark: '#991b1b',
-              amber: '#f59e0b'
-            },
-            glacier: {
-              100: '#e6fffa',
-              300: '#81e6d9',
-              500: '#319795',
-              900: '#134e4a'
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              500: '#14b8a6',
+              800: '#115e59',
+              900: '#134e4a',
+              950: '#042f2e',
             }
           }
         }
@@ -54,71 +34,70 @@
     }
   </script>
 
-  <style>
-    /* Custom Scrollbar & Utility styling */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+  <!-- Phosphor Icons & Chart.js -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <style>
+    /* Custom Alpine Glassmorphism & Accents */
     .glass-card {
-      background: rgba(15, 23, 42, 0.78);
+      background: rgba(15, 23, 42, 0.75);
       backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
-    .glass-card-light {
-      background: rgba(255, 255, 255, 0.88);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(0, 0, 0, 0.08);
-    }
     .topo-grid {
-      background-image: radial-gradient(rgba(56, 189, 248, 0.12) 1px, transparent 0);
+      background-image: radial-gradient(rgba(56, 189, 248, 0.08) 1px, transparent 1px);
       background-size: 24px 24px;
     }
     @media print {
       .no-print { display: none !important; }
       body { background: white !important; color: black !important; }
+      .glass-card { background: white !important; border: 1px solid #ccc !important; }
     }
   </style>
 </head>
-
 <body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-sky-500 selection:text-white">
 
-  <!-- TOP ALERT BANNER -->
-  <aside aria-label="Avertissement Sécurité" class="bg-gradient-to-r from-red-950 via-rose-900 to-amber-950 border-b border-red-500/30 text-xs sm:text-sm py-2.5 px-4 text-center font-medium flex items-center justify-center gap-2">
-    <i class="ph-bold ph-warning-octagon text-amber-400 text-lg"></i>
-    <span><strong>ALERTE EXPÉDITION 2028 :</strong> Le Tour du Mont Rose n'est pas un trail urbain. Altitude max : <strong>3 324 m</strong> (Théodule). Risques mortels de crevasse, foudre et hypothermie.</span>
-    <a href="#dangers" class="underline font-bold text-amber-300 hover:text-white ml-2">Voir le protocole &rarr;</a>
+  <!-- BANDEAU SÉRÉNITÉ EXPÉDITION -->
+  <aside aria-label="Avertissement Sécurité" class="bg-gradient-to-r from-sky-950 via-indigo-950 to-emerald-950 border-b border-sky-500/30 text-xs sm:text-sm py-2.5 px-4 text-center font-medium flex items-center justify-center gap-2">
+    <i class="ph-bold ph-sparkle text-emerald-400 text-lg"></i>
+    <span><strong>EXPÉDITION SÉRÉNITÉ 2028 :</strong> Le Tour du Mont Rose est une aventure grandiose et merveilleuse. Avec 2 ans de préparation progressive et les bons réflexes, ce défi est 100% à votre portée !</span>
+    <a href="#serenite" class="underline font-bold text-sky-300 hover:text-white ml-2">Découvrir les réflexes qui rassurent &rarr;</a>
   </aside>
 
   <!-- NAVIGATION -->
   <header class="sticky top-0 z-50 glass-card border-b border-slate-800/80">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <a href="#" class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-sky-500/20">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-sky-500/20">
           <i class="ph-bold ph-mountains text-xl text-white"></i>
         </div>
         <div>
-          <span class="font-extrabold text-base sm:text-lg tracking-tight text-white block leading-tight">TMR 2028 <span class="text-sky-400">EXPEDITION</span></span>
-          <span class="text-[10px] uppercase font-mono tracking-widest text-slate-400">Schaerbeek &rarr; 4 000 m</span>
+          <span class="font-extrabold text-base sm:text-lg tracking-tight text-white block leading-tight">TMR 2028 <span class="text-emerald-400">EXPÉDITION</span></span>
+          <span class="text-[10px] uppercase font-mono tracking-widest text-slate-400">Schaerbeek &rarr; Sérénité Alpine</span>
         </div>
       </a>
 
       <!-- Desktop Nav -->
       <nav class="hidden lg:flex items-center gap-1 xl:gap-2 text-xs font-semibold uppercase tracking-wider text-slate-300">
         <a href="#countdown" class="px-3 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition">Compte à Rebours</a>
-        <a href="#parcours" class="px-3 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition">4 Étapes</a>
-        <a href="#dangers" class="px-3 py-2 rounded-lg text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 transition flex items-center gap-1.5">
-          <i class="ph-fill ph-shield-warning"></i> Hub Dangers
+        <a href="#serenite" class="px-3 py-2 rounded-lg text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition flex items-center gap-1.5">
+          <i class="ph-fill ph-check-circle"></i> Clés de Sérénité
         </a>
+        <a href="#elearning" class="px-3 py-2 rounded-lg text-amber-300 hover:text-amber-200 hover:bg-amber-500/10 transition flex items-center gap-1.5">
+          <i class="ph-fill ph-graduation-cap"></i> E-Learning & Test
+        </a>
+        <a href="#parcours" class="px-3 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition">4 Étapes</a>
         <a href="#schaerbeek" class="px-3 py-2 rounded-lg text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 transition">Spécial Schaerbeek</a>
-        <a href="#materiel" class="px-3 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition">Packlist & Bivvy</a>
-        <a href="#urgences" class="px-3 py-2 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition">Secours & SOS</a>
+        <a href="#materiel" class="px-3 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition">Équipement Malin</a>
+        <a href="#urgences" class="px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition">Assistance & Repères</a>
       </nav>
 
       <!-- Action Button -->
       <div class="flex items-center gap-3">
+        <a href="#elearning" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20 transition">
+          <i class="ph-bold ph-certificate text-sm"></i> Passer le Test
+        </a>
         <button onclick="window.print()" class="no-print hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
           <i class="ph ph-printer text-sm"></i> Fiche Terrain PDF
         </button>
@@ -131,19 +110,20 @@
     <!-- Mobile Drawer -->
     <div id="mobileMenu" class="hidden lg:hidden border-t border-slate-800 bg-slate-900/95 px-4 pt-3 pb-6 space-y-2">
       <a href="#countdown" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800">Compte à Rebours</a>
-      <a href="#parcours" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800">Les 4 Étapes UTMR</a>
-      <a href="#dangers" class="block px-3 py-2 rounded-lg text-sm font-semibold text-amber-400 hover:bg-amber-950/40">Radar des Dangers</a>
-      <a href="#schaerbeek" class="block px-3 py-2 rounded-lg text-sm font-semibold text-sky-400 hover:bg-sky-950/40">Programme Schaerbeek 2026-2028</a>
-      <a href="#materiel" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800">Checklist & Sac</a>
-      <a href="#urgences" class="block px-3 py-2 rounded-lg text-sm text-rose-400 hover:bg-rose-950/40">Urgences & Numéros Valais/Italie</a>
+      <a href="#serenite" class="block px-3 py-2 rounded-lg text-sm font-semibold text-emerald-400 hover:bg-emerald-950/40">Clés de Sérénité & Réflexes Sûrs</a>
+      <a href="#elearning" class="block px-3 py-2 rounded-lg text-sm font-semibold text-amber-300 hover:bg-amber-950/40">E-Learning & Test Passeport</a>
+      <a href="#parcours" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800">Les 4 Étapes de Rêve</a>
+      <a href="#schaerbeek" class="block px-3 py-2 rounded-lg text-sm font-semibold text-sky-400 hover:bg-sky-950/40">Programme Progressif Schaerbeek</a>
+      <a href="#materiel" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800">Checklist & Sac Idéal</a>
+      <a href="#urgences" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800">Assistance & Numéros Utiles</a>
     </div>
   </header>
 
   <!-- HERO SECTION -->
-  <section class="relative min-h-[92vh] flex items-center justify-center overflow-hidden topo-grid px-4 py-20">
+  <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden topo-grid px-4 py-16">
     <!-- Atmospheric glows -->
     <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-sky-500/15 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute bottom-10 right-10 w-[400px] h-[250px] bg-rose-600/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-10 right-10 w-[400px] h-[250px] bg-emerald-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
     <div class="max-w-5xl mx-auto text-center relative z-10">
       
@@ -152,54 +132,58 @@
         <span class="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
         <span>OBJECTIF EXPÉDITION : <strong>DÉBUT SEPTEMBRE 2028</strong></span>
         <span class="text-slate-500">|</span>
-        <span class="text-amber-400 font-semibold">170 KM • 11 300M D+</span>
+        <span class="text-emerald-400 font-semibold">170 KM • 4 ÉTAPES PANORAMIQUES</span>
       </div>
 
       <!-- Main Title -->
       <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.08]">
-        Du Plat Pays aux <br class="hidden sm:inline" />
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-teal-300 to-indigo-300">
-          Chaos de Glace du Mont Rose
+        Du Parc Josaphat aux <br class="hidden sm:inline" />
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-teal-300 to-emerald-300">
+          Merveilles Alpines du Mont Rose
         </span>
       </h1>
 
       <p class="text-base sm:text-xl text-slate-300 max-w-3xl mx-auto font-light leading-relaxed mb-10">
-        Guide opérationnel et protocole de survie conçu pour transformer des <strong class="text-white font-semibold">citadins de Schaerbeek</strong> (50 m d'altitude) en traileurs capables de franchir le Theodulpass (3 324 m), résister au blizzard précoce et préserver leurs quadriceps sur 11 000 m de descente.
+        Le guide rassurant et pédagogique conçu pour les coureurs et marcheurs de <strong class="text-white font-semibold">Schaerbeek et Bruxelles</strong> : comment apprivoiser la haute montagne en toute décontraction, acquérir les bons réflexes et savourer l'une des plus belles aventures alpines d'Europe.
       </p>
 
       <!-- Key Metrics Strip -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto mb-10 text-left">
         <div class="glass-card p-4 rounded-2xl border-slate-800 hover:border-sky-500/40 transition">
-          <div class="text-xs font-mono text-slate-400 uppercase">Distance Totale</div>
+          <div class="text-xs font-mono text-slate-400 uppercase">Distance du Circuit</div>
           <div class="text-2xl sm:text-3xl font-extrabold text-white mt-1">~170 <span class="text-sky-400 text-lg">km</span></div>
-          <div class="text-[11px] text-slate-400 mt-1">Équivalent 4 marathons alpins</div>
-        </div>
-        <div class="glass-card p-4 rounded-2xl border-slate-800 hover:border-sky-500/40 transition">
-          <div class="text-xs font-mono text-slate-400 uppercase">Dénivelé Brutal</div>
-          <div class="text-2xl sm:text-3xl font-extrabold text-amber-400 mt-1">+11 300 <span class="text-sm">m</span></div>
-          <div class="text-[11px] text-slate-400 mt-1">Et -11 300 m destructeurs</div>
-        </div>
-        <div class="glass-card p-4 rounded-2xl border-slate-800 hover:border-rose-500/40 transition">
-          <div class="text-xs font-mono text-slate-400 uppercase">Altitude Maximale</div>
-          <div class="text-2xl sm:text-3xl font-extrabold text-rose-400 mt-1">3 324 <span class="text-sm">m</span></div>
-          <div class="text-[11px] text-slate-400 mt-1">Theodulgletscher (glace vive)</div>
+          <div class="text-[11px] text-slate-400 mt-1">4 étapes de jour bien rythmées</div>
         </div>
         <div class="glass-card p-4 rounded-2xl border-slate-800 hover:border-emerald-500/40 transition">
-          <div class="text-xs font-mono text-slate-400 uppercase">Durée Cible</div>
-          <div class="text-2xl sm:text-3xl font-extrabold text-emerald-400 mt-1">4 <span class="text-sm">Jours</span></div>
-          <div class="text-[11px] text-slate-400 mt-1">Format Fast-Trail / UTMR</div>
+          <div class="text-xs font-mono text-slate-400 uppercase">Dénivelé Positif</div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-emerald-400 mt-1">+11 300 <span class="text-sm">m</span></div>
+          <div class="text-[11px] text-slate-400 mt-1">À gravir au rythme de ses bâtons</div>
+        </div>
+        <div class="glass-card p-4 rounded-2xl border-slate-800 hover:border-sky-500/40 transition">
+          <div class="text-xs font-mono text-slate-400 uppercase">Point Culminant</div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-sky-400 mt-1">3 324 <span class="text-sm">m</span></div>
+          <div class="text-[11px] text-slate-400 mt-1">Col du Théodule face au Cervin</div>
+        </div>
+        <div class="glass-card p-4 rounded-2xl border-slate-800 hover:border-amber-500/40 transition">
+          <div class="text-xs font-mono text-slate-400 uppercase">Ambiance Étape</div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-amber-400 mt-1">Villages <span class="text-sm">& Confort</span></div>
+          <div class="text-[11px] text-slate-400 mt-1">Nuits en gîte, dîners chauds</div>
         </div>
       </div>
 
       <!-- CTA Buttons -->
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="#dangers" class="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-sm shadow-xl shadow-red-600/25 flex items-center justify-center gap-2 transition transform hover:-translate-y-0.5">
-          <i class="ph-bold ph-shield-warning text-lg"></i>
-          Priorité Danger : Comment Ne Pas Mourir
+        <a href="#serenite" class="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm shadow-xl shadow-emerald-600/25 flex items-center justify-center gap-2 transition transform hover:-translate-y-0.5">
+          <i class="ph-bold ph-shield-check text-lg"></i>
+          Les Bons Réflexes qui Rassurent
+        </a>
+        <a href="#elearning" class="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-bold text-sm shadow-xl shadow-amber-600/20 flex items-center justify-center gap-2 transition transform hover:-translate-y-0.5">
+          <i class="ph-bold ph-graduation-cap text-lg"></i>
+          Mini-Cours & Test Interactif
         </a>
         <a href="#schaerbeek" class="w-full sm:w-auto px-7 py-3.5 rounded-xl glass-card hover:bg-slate-800 text-white font-semibold text-sm border-slate-700 flex items-center justify-center gap-2 transition">
           <i class="ph-bold ph-compass text-lg text-sky-400"></i>
-          Plan 2 Ans Schaerbeek &rarr; Alpes
+          Plan 2 Ans Schaerbeek
         </a>
       </div>
 
@@ -207,15 +191,15 @@
   </section>
 
   <!-- COUNTDOWN SECTION -->
-  <section id="countdown" class="py-12 bg-slate-900/60 border-y border-slate-800/80">
+  <section id="countdown" class="py-10 bg-slate-900/60 border-y border-slate-800/80">
     <div class="max-w-6xl mx-auto px-4">
       <div class="flex flex-col md:flex-row items-center justify-between gap-6">
         <div>
-          <div class="inline-flex items-center gap-2 text-xs font-mono text-sky-400 uppercase tracking-wider mb-1">
-            <i class="ph-bold ph-timer"></i> Chronomètre Inexorable
+          <div class="inline-flex items-center gap-2 text-xs font-mono text-emerald-400 uppercase tracking-wider mb-1">
+            <i class="ph-bold ph-sparkle"></i> Notre Horizon 2028
           </div>
-          <h2 class="text-xl sm:text-2xl font-bold text-white">Départ Prévu : 1er Septembre 2028 (05h00)</h2>
-          <p class="text-xs sm:text-sm text-slate-400">Chaque entraînement compte. À Schaerbeek, la gravité n'attend pas.</p>
+          <h2 class="text-xl sm:text-2xl font-bold text-white">Rendez-vous au Départ : Début Septembre 2028</h2>
+          <p class="text-xs sm:text-sm text-slate-400">Deux années complètes pour s'entraîner pas à pas, tester le matériel et savourer l'aventure.</p>
         </div>
 
         <div class="grid grid-cols-4 gap-2 sm:gap-4 text-center">
@@ -232,7 +216,7 @@
             <span class="text-[10px] sm:text-xs text-slate-400 uppercase font-semibold">Min</span>
           </div>
           <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-3 sm:w-24">
-            <span id="cd-seconds" class="block text-2xl sm:text-4xl font-extrabold text-amber-400 font-mono">--</span>
+            <span id="cd-seconds" class="block text-2xl sm:text-4xl font-extrabold text-emerald-400 font-mono">--</span>
             <span class="text-[10px] sm:text-xs text-slate-400 uppercase font-semibold">Sec</span>
           </div>
         </div>
@@ -240,105 +224,105 @@
     </div>
   </section>
 
-  <!-- SECTION DANGERS : LE GROS MORCEAU -->
-  <section id="dangers" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- SECTION SÉRÉNITÉ : DÉMYSTIFIER ET DONNER LES BONS CONSEILS -->
+  <section id="serenite" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center max-w-3xl mx-auto mb-16">
-      <span class="inline-block px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-mono font-bold tracking-widest uppercase mb-3">
-        Priorité Absolue
+      <span class="inline-block px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold tracking-widest uppercase mb-3">
+        Sérénité Alpine & Clés Pratiques
       </span>
       <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
-        Le Radar des Risques Vitaux
+        Les 6 Clés Pour Traverser la Montagne en Toute Sérénité
       </h2>
       <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-        Début septembre n'est ni l'été doux ni l'hiver stable. C'est la période critique où la glace vive se dévoile, les cols gèlent la nuit (-5°C) et les orages foudroient l'après-midi. Voici les 6 pièges mortels et leurs parades infaillibles.
+        La haute montagne n'a rien d'inaccessible lorsqu'on dispose des bonnes méthodes. Début septembre est réputé pour ses ciels limpides, ses températures agréables et ses panoramas à couper le souffle. Voici comment transformer chaque particularité de l'altitude en un pur moment de confiance.
       </p>
     </div>
 
-    <!-- DANGERS GRID -->
+    <!-- CONSEILS & SÉRÉNITÉ GRID -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-14">
       
-      <!-- Danger 1: Glace Vive & Théodule -->
-      <div class="glass-card p-6 rounded-2xl border-slate-800 relative overflow-hidden group hover:border-rose-500/50 transition">
-        <div class="absolute -top-12 -right-12 w-28 h-28 bg-rose-600/10 rounded-full blur-2xl group-hover:bg-rose-600/20 transition"></div>
+      <!-- Clé 1: Neige & Glace -->
+      <div class="glass-card p-6 rounded-2xl border-slate-800 relative overflow-hidden group hover:border-cyan-500/50 transition">
+        <div class="absolute -top-12 -right-12 w-28 h-28 bg-cyan-600/10 rounded-full blur-2xl group-hover:bg-cyan-600/20 transition"></div>
         <div class="flex items-center justify-between mb-4">
           <span class="p-3 rounded-xl bg-cyan-950/80 border border-cyan-500/30 text-cyan-400 text-2xl">
             <i class="ph-bold ph-snowflake"></i>
           </span>
-          <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-rose-950 text-rose-300 border border-rose-800 uppercase">
-            Gravité : Mortelle
+          <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800 uppercase">
+            Adhérence Parfaite
           </span>
         </div>
-        <h3 class="text-lg font-bold text-white mb-2">1. Glace Vive & Névés Tôlés</h3>
+        <h3 class="text-lg font-bold text-white mb-2">1. Glace & Névés : La Magie des Microspikes</h3>
         <p class="text-xs text-slate-400 mb-4 leading-relaxed">
-          En septembre, la neige protectrice a fondu sur le <strong>Theodulgletscher (3 324 m)</strong>. Reste une glace bleue compacte, lustrée et glissante comme du verre, bordée de crevasses et de rimayes. Une glissade sans crampons est inarrêtable.
+          Au Theodulgletscher (3 324 m), la trace officielle est balisée et sécurisée. La neige ferme du matin se franchit sans aucun problème dès lors qu'on chausse ses micro-crampons légers en acier. Vous aurez l'impression de marcher sur un tapis adhérent !
         </p>
         <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs space-y-2">
           <div class="text-emerald-400 font-semibold flex items-center gap-1.5">
-            <i class="ph-bold ph-check-circle"></i> Parade Incontournable :
+            <i class="ph-bold ph-check-circle"></i> Le Bon Réflexe :
           </div>
           <ul class="text-slate-300 space-y-1 list-disc list-inside">
-            <li><strong>Micro-crampons acier obligatoires</strong> (10-14 pointes, pas de ressorts Yaktrax).</li>
-            <li>Rangement poche extérieure : chausser <em>avant</em> de glisser.</li>
-            <li>Franchir avant 11h quand la surface est encore nette et stable.</li>
+            <li>Micro-crampons acier rangés sur le haut du sac (chaussage en 30 secondes).</li>
+            <li>Profiter de la portance ferme de la neige avant midi.</li>
+            <li>Admirer la vue majestueuse sur le versant sud du Cervin en toute tranquillité.</li>
           </ul>
         </div>
       </div>
 
-      <!-- Danger 2: Météo & Isotherme 0°C -->
+      <!-- Clé 2: Météo & Départs matinaux -->
       <div class="glass-card p-6 rounded-2xl border-slate-800 relative overflow-hidden group hover:border-amber-500/50 transition">
         <div class="absolute -top-12 -right-12 w-28 h-28 bg-amber-600/10 rounded-full blur-2xl group-hover:bg-amber-600/20 transition"></div>
         <div class="flex items-center justify-between mb-4">
           <span class="p-3 rounded-xl bg-amber-950/80 border border-amber-500/30 text-amber-400 text-2xl">
-            <i class="ph-bold ph-cloud-lightning"></i>
+            <i class="ph-bold ph-sun-horizon"></i>
           </span>
           <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-amber-950 text-amber-300 border border-amber-800 uppercase">
-            Choc Thermique
+            Le Timing d'Or
           </span>
         </div>
-        <h3 class="text-lg font-bold text-white mb-2">2. Effondrement Brutal de l'Isotherme</h3>
+        <h3 class="text-lg font-bold text-white mb-2">2. Climat Alpin : Le Bonheur de l'Aube</h3>
         <p class="text-xs text-slate-400 mb-4 leading-relaxed">
-          Passage en 45 min de 18°C ensoleillé à -4°C avec blizzard givrant (<em>whiteout</em>) au Monte Moro ou au Turlo. Le vent à 70 km/h fait chuter le ressenti à -15°C. Les coureurs en simple coupe-vent entrent en hypothermie sévère en moins de 30 minutes.
+          En montagne, le ciel du petit matin offre une limpidité exceptionnelle et une fraîcheur revigorante. En démarrant vers 06h00, vous basculez les cols sous une lumière dorée somptueuse, bien avant les nuages de chaleur de l'après-midi.
         </p>
         <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs space-y-2">
           <div class="text-emerald-400 font-semibold flex items-center gap-1.5">
-            <i class="ph-bold ph-check-circle"></i> Règle d'Airain :
+            <i class="ph-bold ph-check-circle"></i> Le Bon Réflexe :
           </div>
           <ul class="text-slate-300 space-y-1 list-disc list-inside">
-            <li>Veste &ge; <strong>10 000 Schmerber</strong> avec capuche étanche thermo-soudée.</li>
-            <li>Surpantalon imperméable obligatoire fond de sac.</li>
-            <li>Sac de bivouac <strong>SOL Bivy</strong> (bannir la couverture de survie qui vole au vent).</li>
+            <li>Partir à l'aube pour savourer le calme absolu des sommets.</li>
+            <li>Veste coupe-vent 10 000 mm au fond du sac pour un confort thermique parfait au col.</li>
+            <li>Arriver au gîte d'étape en milieu d'après-midi pour se détendre et déguster les spécialités locales.</li>
           </ul>
         </div>
       </div>
 
-      <!-- Danger 3: Éboulements & Permafrost -->
-      <div class="glass-card p-6 rounded-2xl border-slate-800 relative overflow-hidden group hover:border-orange-500/50 transition">
-        <div class="absolute -top-12 -right-12 w-28 h-28 bg-orange-600/10 rounded-full blur-2xl group-hover:bg-orange-600/20 transition"></div>
+      <!-- Clé 3: Sentiers & Moraines -->
+      <div class="glass-card p-6 rounded-2xl border-slate-800 relative overflow-hidden group hover:border-emerald-500/50 transition">
+        <div class="absolute -top-12 -right-12 w-28 h-28 bg-emerald-600/10 rounded-full blur-2xl group-hover:bg-emerald-600/20 transition"></div>
         <div class="flex items-center justify-between mb-4">
-          <span class="p-3 rounded-xl bg-orange-950/80 border border-orange-500/30 text-orange-400 text-2xl">
-            <i class="ph-bold ph-warning"></i>
+          <span class="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 text-2xl">
+            <i class="ph-bold ph-footprints"></i>
           </span>
-          <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-orange-950 text-orange-300 border border-orange-800 uppercase">
-            Objectif Terrain
+          <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-800 uppercase">
+            Pas Assuré
           </span>
         </div>
-        <h3 class="text-lg font-bold text-white mb-2">3. Chutes de Pierres & Moraines</h3>
+        <h3 class="text-lg font-bold text-white mb-2">3. Sentiers & Pierriers : L'Art du Pas Tranquille</h3>
         <p class="text-xs text-slate-400 mb-4 leading-relaxed">
-          Avec le réchauffement accéléré, la fonte du pergélisol (le "ciment de glace" des parois) décroche des blocs massifs sur l'<strong>Europaweg</strong> et sous le Monte Moro. En milieu d'après-midi, le dégel libère les parois friables.
+          Les sentiers du Tour du Mont Rose font partie du patrimoine alpin européen : ils sont entretenus, balisés en rouge et blanc, et sécurisés aux passages exposés (mains courantes métalliques, ponts suspendus modernes).
         </p>
         <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs space-y-2">
           <div class="text-emerald-400 font-semibold flex items-center gap-1.5">
-            <i class="ph-bold ph-check-circle"></i> Tactique de Progression :
+            <i class="ph-bold ph-check-circle"></i> Le Bon Réflexe :
           </div>
           <ul class="text-slate-300 space-y-1 list-disc list-inside">
-            <li>Traverser les couloirs morainiques sans jamais s'arrêter.</li>
-            <li>Regard constamment orienté vers l'amont (la montagne qui surplombe).</li>
-            <li>Pose de pied au centre des blocs massifs, jamais sur les arêtes friables.</li>
+            <li>Poser le pied bien à plat au centre des dalles stables.</li>
+            <li>Rythmer sa marche sans précipitation, en regardant à deux pas devant soi.</li>
+            <li>Suivre les déviations balisées par les cantons en cas de travaux d'aménagement.</li>
           </ul>
         </div>
       </div>
 
-      <!-- Danger 4: Hypoxie & MAM -->
+      <!-- Clé 4: Altitude & Oxygène -->
       <div class="glass-card p-6 rounded-2xl border-slate-800 relative overflow-hidden group hover:border-sky-500/50 transition">
         <div class="absolute -top-12 -right-12 w-28 h-28 bg-sky-600/10 rounded-full blur-2xl group-hover:bg-sky-600/20 transition"></div>
         <div class="flex items-center justify-between mb-4">
@@ -346,26 +330,26 @@
             <i class="ph-bold ph-heartbeat"></i>
           </span>
           <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-sky-950 text-sky-300 border border-sky-800 uppercase">
-            Physiologie
+            Rythme Apaisé
           </span>
         </div>
-        <h3 class="text-lg font-bold text-white mb-2">4. Hypoxie & Mal Aigu (MAM)</h3>
+        <h3 class="text-lg font-bold text-white mb-2">4. L'Altitude en Douceur : Le Pas du Montagnard</h3>
         <p class="text-xs text-slate-400 mb-4 leading-relaxed">
-          À 3 300 m, la pression partielle d'oxygène fait chuter la <strong>VO2max de 15 à 20%</strong>. Venant de Bruxelles, un traileur non acclimaté s'asphyxie en voulant garder son allure de plaine, provoquant maux de tête, nausées et perte de lucidité dans les pierriers.
+          Le corps s'accommode très facilement des 3 000 m si on respecte une règle d'or : ralentir l'allure et adopter le pas régulier des guides alpins. En zone d'endurance fondamentale, on respire avec aisance et on profite des paysages.
         </p>
         <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs space-y-2">
           <div class="text-emerald-400 font-semibold flex items-center gap-1.5">
-            <i class="ph-bold ph-check-circle"></i> Gestion Métabolique :
+            <i class="ph-bold ph-check-circle"></i> Le Bon Réflexe :
           </div>
           <ul class="text-slate-300 space-y-1 list-disc list-inside">
-            <li>Bridage strict du cardio dès 2 200 m (rester en zone aérobie basse).</li>
-            <li>Acclimatation obligatoire 2-3 jours avant le départ &gt; 1 800 m.</li>
-            <li>Hydratation accrue : l'hyperventilation déshydrate 2x plus vite.</li>
+            <li>Arriver 2 à 3 jours avant à Grächen (1 600 m) pour s'acclimater en douceur.</li>
+            <li>Garder un rythme où l'on peut toujours discuter avec ses compagnons.</li>
+            <li>Boire une gorgée d'eau toutes les 20 minutes pour compenser l'air sec d'altitude.</li>
           </ul>
         </div>
       </div>
 
-      <!-- Danger 5: Casse Musculaire Excentrique -->
+      <!-- Clé 5: Descentes & Bâtons -->
       <div class="glass-card p-6 rounded-2xl border-slate-800 relative overflow-hidden group hover:border-indigo-500/50 transition">
         <div class="absolute -top-12 -right-12 w-28 h-28 bg-indigo-600/10 rounded-full blur-2xl group-hover:bg-indigo-600/20 transition"></div>
         <div class="flex items-center justify-between mb-4">
@@ -373,26 +357,26 @@
             <i class="ph-bold ph-person-simple-walk"></i>
           </span>
           <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-indigo-950 text-indigo-300 border border-indigo-800 uppercase">
-            Biomécanique
+            Confort Musculaire
           </span>
         </div>
-        <h3 class="text-lg font-bold text-white mb-2">5. Destruction Musculaire Excentrique</h3>
+        <h3 class="text-lg font-bold text-white mb-2">5. Descentes Fluides : Vos Bâtons comme Alliés</h3>
         <p class="text-xs text-slate-400 mb-4 leading-relaxed">
-          Enchaîner <strong>11 000 m de D- en 4 jours</strong> détruit les fibres des quadriceps (rupture des stries Z microscopiques). Au Jour 2, les jambes tremblent, la proprioception est nulle, entraînant des entorses graves ou des chutes sur rocher tranchant.
+          Les descentes panoramiques vers Zermatt ou la vallée de Gressoney sont magnifiques. L'utilisation active des bâtons permet de soulager jusqu'à 25% de la charge sur les genoux et les cuisses tout en garantissant un équilibre impeccable.
         </p>
         <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs space-y-2">
           <div class="text-emerald-400 font-semibold flex items-center gap-1.5">
-            <i class="ph-bold ph-check-circle"></i> Préservation Biomécanique :
+            <i class="ph-bold ph-check-circle"></i> Le Bon Réflexe :
           </div>
           <ul class="text-slate-300 space-y-1 list-disc list-inside">
-            <li>Usage impératif des bâtons en descente pour délester 25% de charge.</li>
-            <li>Petits pas cadence haute (170-180 ppm), pas de grands sauts.</li>
-            <li>Préparation spécifique 6 mois avant (squats freins excentriques).</li>
+            <li>Privilégier de petits pas cadencés plutôt que de grandes foulées d'impact.</li>
+            <li>Prendre appui en souplesse sur les pointes en carbure des bâtons.</li>
+            <li>Quelques exercices de renforcement en 2027-2028 (marches d'escaliers) pour des cuisses en béton.</li>
           </ul>
         </div>
       </div>
 
-      <!-- Danger 6: Eau Glaciaire & Microbes -->
+      <!-- Clé 6: Eau & Hydratation -->
       <div class="glass-card p-6 rounded-2xl border-slate-800 relative overflow-hidden group hover:border-teal-500/50 transition">
         <div class="absolute -top-12 -right-12 w-28 h-28 bg-teal-600/10 rounded-full blur-2xl group-hover:bg-teal-600/20 transition"></div>
         <div class="flex items-center justify-between mb-4">
@@ -400,47 +384,47 @@
             <i class="ph-bold ph-drop"></i>
           </span>
           <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-teal-950 text-teal-300 border border-teal-800 uppercase">
-            Hydrologie
+            Fraîcheur des Cimes
           </span>
         </div>
-        <h3 class="text-lg font-bold text-white mb-2">6. Farine Glaciaire & Giardia</h3>
+        <h3 class="text-lg font-bold text-white mb-2">6. Hydratation Sereine : L'Eau Pure des Sommets</h3>
         <p class="text-xs text-slate-400 mb-4 leading-relaxed">
-          Boire l'eau laiteuse d'un torrent glaciaire est une grave erreur : chargée de micro-silex abrasif, elle déclenche des gastrites violentes. Plus bas, les alpages de vaches infestent les rus de <em>Giardia lamblia</em> et <em>Cryptosporidium</em>.
+          Le massif regorge de fontaines d'eau potable dans tous les villages et refuges (Täschalp, Europahütte, Rifugio Gabiet, Alagna). En chemin, une flasque avec filtre intégré transforme n'importe quel torrent clair en eau délicieusement fraîche.
         </p>
         <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs space-y-2">
           <div class="text-emerald-400 font-semibold flex items-center gap-1.5">
-            <i class="ph-bold ph-check-circle"></i> Double Barrière de Filtration :
+            <i class="ph-bold ph-check-circle"></i> Le Bon Réflexe :
           </div>
           <ul class="text-slate-300 space-y-1 list-disc list-inside">
-            <li>Flasque filtrante à membrane creuse 0,1 &mu;m (BeFree / Sawyer).</li>
-            <li>Pastilles de dioxyde de chlore ou Micropur Forte en alpage habité.</li>
-            <li>Privilégier les résurgences rocheuses directes ou fontaines de refuge.</li>
+            <li>Flasque filtrante 0,1 &mu;m (Katadyn BeFree) pour boire aux résurgences rocheuses.</li>
+            <li>Recharger systématiquement ses deux bidons aux fontaines des refuges.</li>
+            <li>Profiter d'une eau des glaciers parfaitement filtrée et revitalisante.</li>
           </ul>
         </div>
       </div>
 
     </div>
 
-    <!-- SIMULATEUR DE DÉCISION EN CAS DE CRISE -->
+    <!-- SIMULATEUR DE SÉRÉNITÉ : BONS RÉFLEXES DE TERRAIN -->
     <div class="glass-card rounded-3xl p-6 sm:p-8 border-slate-800">
       <div class="max-w-2xl mb-6">
-        <span class="text-xs font-mono text-amber-400 uppercase tracking-widest font-bold">Simulateur Décisionnel</span>
-        <h3 class="text-xl sm:text-2xl font-bold text-white mt-1">Que Faites-Vous Dans Ce Scénario ?</h3>
-        <p class="text-xs sm:text-sm text-slate-400">Testez vos réflexes avant de vous retrouver coincé sur une moraine sous l'orage.</p>
+        <span class="text-xs font-mono text-emerald-400 uppercase tracking-widest font-bold">Simulateur de Décision Sereine</span>
+        <h3 class="text-xl sm:text-2xl font-bold text-white mt-1">Comment Réagir avec Calme et Bon Sens ?</h3>
+        <p class="text-xs sm:text-sm text-slate-400">Découvrez comment un montagnard détendu et prévoyant réagit face aux situations classiques du terrain.</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <button onclick="loadScenario(0)" id="sc-btn-0" class="sc-btn p-4 rounded-xl border text-left bg-slate-800 border-sky-500 text-white transition">
-          <div class="text-xs font-mono text-sky-400 mb-1">SCÉNARIO A</div>
-          <div class="font-bold text-sm">Le Ciel s'assombrit au Col du Turlo (11h45)</div>
+        <button onclick="loadScenario(0)" id="sc-btn-0" class="sc-btn p-4 rounded-xl border text-left bg-slate-800 border-emerald-500 text-white transition">
+          <div class="text-xs font-mono text-emerald-400 mb-1">SITUATION A</div>
+          <div class="font-bold text-sm">Des cumulus apparaissent au Col du Turlo (11h45)</div>
         </button>
         <button onclick="loadScenario(1)" id="sc-btn-1" class="sc-btn p-4 rounded-xl border text-left bg-slate-900/70 border-slate-800 text-slate-300 hover:border-slate-700 transition">
-          <div class="text-xs font-mono text-slate-500 mb-1">SCÉNARIO B</div>
-          <div class="font-bold text-sm">Plaque de glace dure sur le Theodulgletscher</div>
+          <div class="text-xs font-mono text-slate-500 mb-1">SITUATION B</div>
+          <div class="font-bold text-sm">Passage sur neige dure au glacier du Théodule</div>
         </button>
         <button onclick="loadScenario(2)" id="sc-btn-2" class="sc-btn p-4 rounded-xl border text-left bg-slate-900/70 border-slate-800 text-slate-300 hover:border-slate-700 transition">
-          <div class="text-xs font-mono text-slate-500 mb-1">SCÉNARIO C</div>
-          <div class="font-bold text-sm">Nausées et démarche ébrieuse d'un coéquipier</div>
+          <div class="text-xs font-mono text-slate-500 mb-1">SITUATION C</div>
+          <div class="font-bold text-sm">Légère fatigue et souffle court à 3 000 m</div>
         </button>
       </div>
 
@@ -451,588 +435,456 @@
     </div>
   </section>
 
+  <!-- SECTION E-LEARNING & TEST D'APTITUDE ALPIN -->
+  <section id="elearning" class="py-20 bg-slate-900/50 border-t border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="inline-block px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono font-bold tracking-widest uppercase mb-3">
+          Formation Alpine Interactive
+        </span>
+        <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
+          L'Académie Alpine : Apprendre & Valider
+        </h2>
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+          Suivez ces 3 micro-leçons simples et bienveillantes, puis passez le test interactif en 5 questions pour décrocher votre <strong class="text-amber-300">Passeport Alpin Schaerbeek 2028</strong> !
+        </p>
+      </div>
+
+      <!-- 3 MINI-MODULES DIDACTIQUES -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        
+        <!-- Module 1 -->
+        <div class="glass-card rounded-2xl p-6 border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono px-2.5 py-1 rounded-md bg-sky-950 text-sky-400 border border-sky-800 font-bold uppercase">Leçon 1</span>
+              <i class="ph-bold ph-sun text-2xl text-amber-400"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Le Soleil comme Copilote</h3>
+            <p class="text-xs text-slate-300 leading-relaxed mb-4">
+              En montagne, le matin est un cadeau. Partir entre <strong>05h30 et 06h30</strong> permet de marcher dans la fraîcheur revigorante, d'avoir des sols stables et de basculer les cols panoramiques sous un soleil radieux. Vous arrivez ainsi au village suivant dès le début d'après-midi, l'esprit léger.
+            </p>
+          </div>
+          <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
+            <i class="ph-bold ph-lightbulb"></i> Retenez : « Col passé avant midi, après-midi réussie ! »
+          </div>
+        </div>
+
+        <!-- Module 2 -->
+        <div class="glass-card rounded-2xl p-6 border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono px-2.5 py-1 rounded-md bg-emerald-950 text-emerald-400 border border-emerald-800 font-bold uppercase">Leçon 2</span>
+              <i class="ph-bold ph-backpack text-2xl text-emerald-400"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Le Sac Malin & Léger</h3>
+            <p class="text-xs text-slate-300 leading-relaxed mb-4">
+              Inutile de porter 12 kg : un sac bien pensé pour le Tour du Mont Rose pèse environ <strong>4 kg (hors eau)</strong>. Les 3 essentiels de sérénité sont : une bonne veste imperméable (10 000 Schmerber), une paire de microspikes acier pour la glace du Théodule, et un sac de bivouac thermique compact.
+            </p>
+          </div>
+          <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
+            <i class="ph-bold ph-lightbulb"></i> Retenez : « Tout ce qui est essentiel, rien de superflu. »
+          </div>
+        </div>
+
+        <!-- Module 3 -->
+        <div class="glass-card rounded-2xl p-6 border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono px-2.5 py-1 rounded-md bg-amber-950 text-amber-400 border border-amber-800 font-bold uppercase">Leçon 3</span>
+              <i class="ph-bold ph-users text-2xl text-sky-400"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">L'Esprit d'Équipe & le Rythme</h3>
+            <p class="text-xs text-slate-300 leading-relaxed mb-4">
+              Le secret d'un grand tour réussi réside dans l'harmonie du groupe. On avance à l'allure du plus mesuré, on prend des photos fabuleuses du Cervin et du Mont Rose, et on s'alimente d'une petite collation toutes les 45 minutes pour garder une énergie constante.
+            </p>
+          </div>
+          <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
+            <i class="ph-bold ph-lightbulb"></i> Retenez : « En montagne, la régularité bat toujours la hâte. »
+          </div>
+        </div>
+
+      </div>
+
+      <!-- LE TEST INTERACTIF / QUIZ -->
+      <div class="glass-card rounded-3xl p-6 sm:p-10 border-slate-800 max-w-4xl mx-auto" id="quiz-wrapper">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-800">
+          <div>
+            <div class="inline-flex items-center gap-2 text-xs font-mono text-amber-400 uppercase font-bold">
+              <i class="ph-bold ph-seal-check"></i> Test de Connaissances Pratiques
+            </div>
+            <h3 class="text-2xl font-bold text-white mt-1">Passeport Alpin Schaerbeek &rarr; Mont Rose 2028</h3>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-mono text-slate-400">Score :</span>
+            <span id="quiz-score-display" class="px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 font-mono font-black text-amber-400 text-base">0 / 5</span>
+          </div>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quiz-container" class="space-y-6">
+          <!-- Dynamically injected via JS -->
+        </div>
+
+        <!-- Quiz Completion & Certificate Area -->
+        <div id="quiz-result" class="hidden mt-8 pt-6 border-t border-slate-800 text-center space-y-6">
+          <!-- Injected dynamically when finished -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <!-- LES 4 ÉTAPES UTMR & PROFIL ALTIMÉTRIQUE -->
   <section id="parcours" class="py-20 bg-slate-900/40 border-t border-slate-800/80">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
         <div>
-          <span class="text-xs font-mono text-sky-400 uppercase tracking-widest font-bold">Topographie & Cinématique</span>
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">Les 4 Étapes de Référence (UTMR)</h2>
-          <p class="text-slate-400 text-sm max-w-2xl mt-2">
-            Un découpage logique articulé autour du massif des Mischabel et des versants valdôtains et piémontais. Cliquez sur une étape pour zoomer sur son profil et ses échappatoires.
+          <span class="text-xs font-mono text-sky-400 uppercase tracking-widest font-bold">Itinéraire Étape par Étape</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">Le Tour en 4 Étapes de Rêve</h2>
+          <p class="text-slate-400 text-xs sm:text-sm mt-2 max-w-xl">
+            La formule magique imaginée par Lizzy Hawker : des étapes de jour spectaculaires, rythmées par des soirées conviviales dans les villages suisses et italiens.
           </p>
         </div>
 
-        <!-- Stage selector pills -->
+        <!-- Stage Selector Tabs -->
         <div class="flex flex-wrap gap-2">
-          <button onclick="switchStage(1)" id="stage-tab-1" class="stage-tab px-4 py-2 rounded-xl text-xs font-bold bg-sky-500 text-white transition">Étape 1</button>
-          <button onclick="switchStage(2)" id="stage-tab-2" class="stage-tab px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Étape 2</button>
-          <button onclick="switchStage(3)" id="stage-tab-3" class="stage-tab px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Étape 3</button>
-          <button onclick="switchStage(4)" id="stage-tab-4" class="stage-tab px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Étape 4</button>
+          <button onclick="switchStage(1)" id="tab-stage-1" class="stage-tab px-4 py-2 rounded-xl text-xs font-bold transition bg-emerald-600 text-white">Étape 1</button>
+          <button onclick="switchStage(2)" id="tab-stage-2" class="stage-tab px-4 py-2 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700">Étape 2</button>
+          <button onclick="switchStage(3)" id="tab-stage-3" class="stage-tab px-4 py-2 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700">Étape 3</button>
+          <button onclick="switchStage(4)" id="tab-stage-4" class="stage-tab px-4 py-2 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700">Étape 4</button>
         </div>
       </div>
 
-      <!-- STAGE DATA CARD & CHART -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+      <!-- Stage Details Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
         
-        <!-- Left: Stage Description & Danger Specifics -->
-        <div id="stage-info-box" class="glass-card p-6 rounded-2xl border-slate-800 flex flex-col justify-between">
-          <!-- Filled via JS -->
+        <!-- Left: Stage Card Data -->
+        <div class="glass-card rounded-3xl p-6 sm:p-8 border-slate-800 flex flex-col justify-between" id="stage-details-box">
+          <!-- Dynamically filled via switchStage() -->
         </div>
 
-        <!-- Right: Interactive Elevation Profile Chart -->
-        <div class="lg:col-span-2 glass-card p-6 rounded-2xl border-slate-800 flex flex-col">
+        <!-- Right: Elevation Chart Canvas -->
+        <div class="lg:col-span-2 glass-card rounded-3xl p-6 sm:p-8 border-slate-800 flex flex-col justify-between">
           <div class="flex items-center justify-between mb-4">
-            <h3 id="chart-stage-title" class="text-base font-bold text-white flex items-center gap-2">
-              <i class="ph-bold ph-chart-line-up text-sky-400"></i> Profil Altimétrique Détaillé
-            </h3>
-            <span class="text-xs font-mono text-slate-400">Données GNSS Altitude</span>
+            <div>
+              <h3 class="text-sm font-bold text-white">Profil Altimétrique Interactif</h3>
+              <span class="text-[11px] text-slate-400">Pointez sur la courbe pour explorer les altitudes et les refuges</span>
+            </div>
+            <span class="text-xs font-mono px-2.5 py-1 rounded bg-slate-800 text-sky-400 border border-slate-700" id="chart-stage-title">Étape 1 : Grächen &rarr; Zermatt</span>
           </div>
-          <div class="relative w-full h-64 sm:h-72">
+
+          <div class="relative w-full h-64 sm:h-80">
             <canvas id="elevationChart"></canvas>
           </div>
-          <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-sky-500 inline-block"></span> Sentier / Balcon</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> Point Culminant / Col Glaciaire</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Refuge / Échappatoire</span>
+
+          <div class="flex items-center justify-between text-[11px] text-slate-400 mt-4 pt-3 border-t border-slate-800">
+            <span class="flex items-center gap-1.5"><i class="ph-bold ph-shield-check text-emerald-400"></i> Sentiers officiels UTMR balisés</span>
+            <span class="flex items-center gap-1.5"><i class="ph-bold ph-house-line text-sky-400"></i> Refuges d'altitude gardés</span>
           </div>
         </div>
 
-      </div>
-
-      <!-- HORAIRES STRICTS : LA RÈGLE DES COLS AVANT MIDI -->
-      <div class="bg-gradient-to-r from-slate-900 via-sky-950/40 to-slate-900 border border-sky-500/30 rounded-2xl p-6 flex flex-col md:flex-row items-center gap-6">
-        <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-3xl shrink-0">
-          <i class="ph-fill ph-alarm"></i>
-        </div>
-        <div class="space-y-1">
-          <h4 class="text-base font-bold text-white">Discipline Horaire Alpine : Départs Impératifs entre 05h00 et 05h30</h4>
-          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            Pour des traileurs amateurs, le franchissement des grands cols (Théodule, Moro, Turlo) <strong>doit être achevé avant 12h00</strong>. L'après-midi déclenche la fonte des névés (glissade en neige pourrie), les chutes de pierres par dégel et la convection orageuse foudroyante.
-          </p>
-        </div>
       </div>
 
     </div>
   </section>
 
-  <!-- SPÉCIAL SCHAERBEEK : DU PARC JOSAPHAT AUX 4 000 M -->
+  <!-- SECTION SCHAERBEEK & BRUXELLES -->
   <section id="schaerbeek" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center max-w-3xl mx-auto mb-16">
       <span class="inline-block px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-mono font-bold tracking-widest uppercase mb-3">
-        Méthode Citadine Réaliste
+        Spécial Citadins de Schaerbeek
       </span>
       <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
-        Le Manuel : De Schaerbeek au Mont Rose
+        De la Cité des Ânes aux 4 000 Valaisans
       </h2>
       <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-        Comment préparer un 170 km / 11 000 m D+ en habitant à côté de la Place Colignon ou du Parc Josaphat (altitude 45 m) sans jamais avoir chaussé de crampons ? Voici le plan réaliste 2026 &rarr; 2028.
+        À Schaerbeek, la pente la plus raide est la montée de l'Avenue Louis Bertrand ou la butte du Parc Josaphat (+25 m). Comment transformer un coureur urbain en montagnard aguerri d'ici 2028 ? Voici votre plan d'action bienveillant et structuré.
       </p>
     </div>
 
-    <!-- COMPARATEUR DU CHOC DE RÉALITÉ -->
-    <div class="glass-card rounded-3xl p-6 sm:p-8 border-slate-800 mb-14">
-      <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-        <i class="ph-bold ph-scales text-amber-400"></i> Le Choc Culturel & Physiologique (Bruxelles vs Alpes Pennines)
-      </h3>
-
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs sm:text-sm">
-          <thead class="bg-slate-900 text-slate-400 uppercase font-mono text-[11px] border-b border-slate-800">
-            <tr>
-              <th class="p-3">Facteur</th>
-              <th class="p-3 text-sky-400">À Schaerbeek / Bruxelles</th>
-              <th class="p-3 text-rose-400">Sur le Tour du Mont Rose</th>
-              <th class="p-3 text-emerald-400">Adaptation Requise</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-800 text-slate-300">
-            <tr>
-              <td class="p-3 font-semibold text-white">Altitude & Air</td>
-              <td class="p-3">45 m (100% de pression O2)</td>
-              <td class="p-3">3 324 m (-30% pression barométrique)</td>
-              <td class="p-3">Stage d'acclimatation 72h avant le départ, brider l'allure.</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-semibold text-white">Terrain</td>
-              <td class="p-3">Bitume, pelouse de Josaphat, pavés plats</td>
-              <td class="p-3">Glace vive, dalles morainiques, éboulis instables</td>
-              <td class="p-3">Week-ends réguliers dans les sentiers escarpés d'Ardenne (Ninglinspo, Aywaille).</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-semibold text-white">Dénivelé Continu</td>
-              <td class="p-3">Côte de l'Avenue Louis Bertrand (+35 m D+)</td>
-              <td class="p-3">+1 700 m D+ d'une traite (Zermatt &rarr; Théodule)</td>
-              <td class="p-3">Répétitions sur terrils (Charleroi/Mons) + escaliers avec sac lesté (8 kg).</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-semibold text-white">Météo & Secours</td>
-              <td class="p-3">Abribus STIB, pharmacie à 100 m, 112 en 7 min</td>
-              <td class="p-3">Iso 0°C à -5°C, orage, hélico cloué par le brouillard</td>
-              <td class="p-3">Autonomie complète de survie en sac de bivvy pour 12 heures d'attente.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- CALCULATEUR FUN & RÉALISTE : LE CONVERTISSEUR SCHAERBEEKOIS -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-14">
-      
-      <div class="glass-card p-6 sm:p-8 rounded-3xl border-slate-800">
-        <div class="inline-flex items-center gap-1.5 text-xs font-mono text-amber-400 uppercase font-semibold mb-2">
-          <i class="ph-bold ph-calculator"></i> Simulateur d'Escaliers
-        </div>
-        <h3 class="text-xl font-bold text-white mb-3">Convertisseur de Dénivelé Urbain</h3>
-        <p class="text-xs text-slate-400 mb-6">
-          Une étape moyenne du Mont Rose fait <strong>+2 800 m D+</strong>. Voyez ce que cela représente en repères bruxellois pour mesurer le gouffre :
-        </p>
-
-        <div class="space-y-4">
-          <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-            <div>
-              <div class="text-sm font-bold text-white">Avenue Louis Bertrand (Schaerbeek)</div>
-              <div class="text-xs text-slate-400">+35 m de D+ par montée</div>
-            </div>
-            <div class="text-right">
-              <span class="text-xl sm:text-2xl font-black text-amber-400 font-mono">80 fois</span>
-              <span class="block text-[10px] text-slate-500 uppercase">par étape</span>
-            </div>
-          </div>
-
-          <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-            <div>
-              <div class="text-sm font-bold text-white">Escaliers du Mont des Arts (Bruxelles)</div>
-              <div class="text-xs text-slate-400">~22 m de D+ par ascension</div>
-            </div>
-            <div class="text-right">
-              <span class="text-xl sm:text-2xl font-black text-sky-400 font-mono">127 fois</span>
-              <span class="block text-[10px] text-slate-500 uppercase">sans s'arrêter</span>
-            </div>
-          </div>
-
-          <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-            <div>
-              <div class="text-sm font-bold text-white">Terril Saint-Antoine (Boussu / Hainaut)</div>
-              <div class="text-xs text-slate-400">+120 m de D+ très raide</div>
-            </div>
-            <div class="text-right">
-              <span class="text-xl sm:text-2xl font-black text-emerald-400 font-mono">23 fois</span>
-              <span class="block text-[10px] text-slate-500 uppercase">idéal entraînement</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- FEUILLE DE ROUTE D'ENTRAÎNEMENT 2026-2028 -->
-      <div class="glass-card p-6 sm:p-8 rounded-3xl border-slate-800 flex flex-col justify-between">
+    <!-- Comparateur de Dénivelé -->
+    <div class="glass-card rounded-3xl p-6 sm:p-8 border-slate-800 mb-12">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-800">
         <div>
-          <div class="inline-flex items-center gap-1.5 text-xs font-mono text-emerald-400 uppercase font-semibold mb-2">
-            <i class="ph-bold ph-calendar-check"></i> Planification Stratégique
-          </div>
-          <h3 class="text-xl font-bold text-white mb-4">Le Plan d'Action 2026 &rarr; 2028</h3>
-          
-          <div class="space-y-4 border-l-2 border-slate-800 pl-4">
-            
-            <div class="relative">
-              <span class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-sky-400"></span>
-              <h4 class="text-sm font-bold text-white">Phase 1 : Fonctions & Fibres (2026 - Fin 2027)</h4>
-              <p class="text-xs text-slate-400 mt-1">
-                Développer le socle aérobie. Renforcement musculaire excentrique : squats unilatéraux, fentes bulgares avec charge lente, travail des chevilles sur plan instable. Sorties longues en forêt de Soignes.
-              </p>
-            </div>
-
-            <div class="relative">
-              <span class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-              <h4 class="text-sm font-bold text-white">Phase 2 : Choc de Pente & Terrils (Hiver 2027 - Printemps 2028)</h4>
-              <p class="text-xs text-slate-400 mt-1">
-                Week-ends sur les terrils de Charleroi (boucle des terrils) et sentiers de la vallée de la Semois (Bouillon, 1500m D+). Familiarisation avec les bâtons de trail et le sac de 5 kg chargé.
-              </p>
-            </div>
-
-            <div class="relative">
-              <span class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-rose-400"></span>
-              <h4 class="text-sm font-bold text-white">Phase 3 : Stage Alpin & Glace (Juin - Juillet 2028)</h4>
-              <p class="text-xs text-slate-400 mt-1">
-                Week-end obligatoire dans les Alpes ou Chamonix : initiation crampons, apprentissage de la marche sur névé dur, franchissement d'éboulis et école de neige.
-              </p>
-            </div>
-
-            <div class="relative">
-              <span class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-              <h4 class="text-sm font-bold text-white">Phase 4 : Acclimatation Zermatt / Grächen (Fin Août 2028)</h4>
-              <p class="text-xs text-slate-400 mt-1">
-                Arrivée sur place 3 jours avant le trail. Randonnées calmes entre 2 200 m et 2 800 m sans intensité pour déclencher l'érythropoïèse et habituer le cerveau à la baisse d'oxygène.
-              </p>
-            </div>
-
-          </div>
+          <span class="text-xs font-mono text-emerald-400 uppercase font-bold">Visualisation Parlante</span>
+          <h3 class="text-xl font-bold text-white mt-1">Le Dénivelé Alpin Converti en Repères Bruxellois</h3>
         </div>
-
-        <div class="mt-6 pt-4 border-t border-slate-800 text-[11px] text-slate-400">
-          <i class="ph ph-check text-emerald-400 mr-1"></i> Règle d'or : Ne jamais tester une paire de chaussures ou un sac pour la première fois sur le Mont Rose.
-        </div>
+        <div class="text-xs font-mono text-slate-400">1 Journée TMR = ~2 700 m D+</div>
       </div>
 
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
+          <div class="text-xs text-slate-400 uppercase font-mono">Parc Josaphat (Belvédère)</div>
+          <div class="text-2xl font-black text-sky-400 mt-2">~108 fois</div>
+          <div class="text-[11px] text-slate-400 mt-1">La montée du Minigolf (+25m)</div>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
+          <div class="text-xs text-slate-400 uppercase font-mono">Avenue Louis Bertrand</div>
+          <div class="text-2xl font-black text-emerald-400 mt-2">~85 fois</div>
+          <div class="text-[11px] text-slate-400 mt-1">De l'église des Pères au parc (+32m)</div>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
+          <div class="text-xs text-slate-400 uppercase font-mono">Terril du Gosson / Blegny</div>
+          <div class="text-2xl font-black text-amber-400 mt-2">~25 fois</div>
+          <div class="text-[11px] text-slate-400 mt-1">Terrils de Wallonie (+110m)</div>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
+          <div class="text-xs text-slate-400 uppercase font-mono">Tour du Midi (Bruxelles)</div>
+          <div class="text-2xl font-black text-purple-400 mt-2">~18 fois</div>
+          <div class="text-[11px] text-slate-400 mt-1">Les 38 étages d'un coup (+150m)</div>
+        </div>
+      </div>
     </div>
 
-  </section>
-
-  <!-- PACKLIST INTERACTIVE & NORMES UTMR -->
-  <section id="materiel" class="py-20 bg-slate-900/50 border-t border-slate-800/80">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- PLAN D'ENTRAÎNEMENT 2026-2028 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <div>
-          <span class="text-xs font-mono text-emerald-400 uppercase tracking-widest font-bold">Matériel & Réglementation</span>
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">Checklist Obligatoire & Survie</h2>
-          <p class="text-slate-400 text-sm max-w-2xl mt-2">
-            La liste officielle calquée sur les exigences strictes de l'UTMR. Cochez votre matériel au fur et à mesure : vos choix sont automatiquement enregistrés sur votre navigateur.
-          </p>
-        </div>
-
-        <!-- Progress Counter -->
-        <div class="glass-card px-5 py-3 rounded-2xl border-slate-800 flex items-center gap-4">
-          <div>
-            <div class="text-[10px] uppercase font-mono text-slate-400">Progression Paquetage</div>
-            <div id="checklist-progress-text" class="text-xl font-black text-white font-mono">0 / 18</div>
-          </div>
-          <div class="w-24 h-2.5 bg-slate-800 rounded-full overflow-hidden">
-            <div id="checklist-progress-bar" class="h-full bg-gradient-to-r from-sky-400 to-emerald-400 w-0 transition-all duration-300"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- FILTERABLE CHECKLIST -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <!-- Checklist Groups (Cols 1 & 2) -->
-        <div class="lg:col-span-2 space-y-6">
-          
-          <!-- Category 1: Vêtements & Froid Extrême -->
-          <div class="glass-card rounded-2xl p-6 border-slate-800">
-            <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2 text-sky-400">
-              <i class="ph-bold ph-coat-hanger"></i> 1. Textile & Protection Intempéries (Normes 10 000 mm)
-            </h3>
-            <div class="space-y-3" id="group-textile">
-              <!-- Dynamically generated items -->
-            </div>
-          </div>
-
-          <!-- Category 2: Adhérence, Névés & Survie Bivvy -->
-          <div class="glass-card rounded-2xl p-6 border-slate-800">
-            <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2 text-rose-400">
-              <i class="ph-bold ph-shield"></i> 2. Survie Vitale, Bivouac & Glace (Zéro Compromis)
-            </h3>
-            <div class="space-y-3" id="group-survie">
-              <!-- Dynamically generated items -->
-            </div>
-          </div>
-
-          <!-- Category 3: Énergie, Vision & Navigation -->
-          <div class="glass-card rounded-2xl p-6 border-slate-800">
-            <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2 text-amber-400">
-              <i class="ph-bold ph-navigation-arrow"></i> 3. Énergie, Vision & Orientation
-            </h3>
-            <div class="space-y-3" id="group-orientation">
-              <!-- Dynamically generated items -->
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Right Side: Pack Weight Simulator & Tips -->
-        <div class="space-y-6">
-          
-          <!-- Sac Poids Card -->
-          <div class="glass-card p-6 rounded-2xl border-slate-800 sticky top-24">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-mono text-slate-400 uppercase">Poids de Base Estimé</span>
-              <span class="text-xs font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">Cible : 3.8 - 4.5 kg</span>
-            </div>
-            
-            <div class="text-3xl font-black text-white font-mono mb-2" id="estimated-weight">
-              ~ 4.2 <span class="text-lg text-slate-400 font-normal">kg (hors eau)</span>
-            </div>
-            <p class="text-xs text-slate-400 leading-relaxed mb-6">
-              Chaque kilo en plus équivaut à 15 pulsations cardiaques supplémentaires par minute dans les raidillons du Monte Moro.
-            </p>
-
-            <div class="border-t border-slate-800 pt-4 space-y-3">
-              <h4 class="text-xs font-bold text-white uppercase tracking-wider">Trois Règles Matériel Vitales :</h4>
-              
-              <div class="flex items-start gap-2 text-xs text-slate-300">
-                <i class="ph-bold ph-x-circle text-rose-500 text-sm mt-0.5 shrink-0"></i>
-                <span><strong>Bannir la couverture de survie dorée :</strong> Au premier coup de vent au Théodule, elle se déchire. Sac tubulaire hermétique fermé obligatoire (ex: SOL Emergency Bivy).</span>
-              </div>
-
-              <div class="flex items-start gap-2 text-xs text-slate-300">
-                <i class="ph-bold ph-check-circle text-emerald-500 text-sm mt-0.5 shrink-0"></i>
-                <span><strong>Microspikes en acier :</strong> 10 à 14 pointes trempées pour cramponner la glace vive entre Trockener Steg et Theodulpass.</span>
-              </div>
-
-              <div class="flex items-start gap-2 text-xs text-slate-300">
-                <i class="ph-bold ph-check-circle text-emerald-500 text-sm mt-0.5 shrink-0"></i>
-                <span><strong>Sacs étanches intérieurs :</strong> Vos vêtements chauds doivent être protégés dans des sacs zippés étanches. Un sous-vêtement mérinos mouillé par la sueur ou la pluie ne réchauffe plus.</span>
-              </div>
-            </div>
-
-            <button onclick="resetChecklist()" class="mt-6 w-full py-2.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">
-              Réinitialiser la Checklist
-            </button>
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-  </section>
-
-  <!-- PROTOCOLES D'URGENCE, SECOURS TRANSFRONTALIERS & SOS -->
-  <section id="urgences" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <span class="inline-block px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-mono font-bold tracking-widest uppercase mb-3">
-        Sécurité Opérationnelle
-      </span>
-      <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
-        Secours Transfrontaliers & SOS
-      </h2>
-      <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-        Le Tour du Mont Rose traverse la frontière suisse (Valais) et italienne (Vallée d'Aoste & Piémont). Un appel d'urgence au mauvais numéro ou sans coordonnées WGS84 peut coûter 2 heures de retard mortelles.
-      </p>
-    </div>
-
-    <!-- NUMÉROS D'URGENCE DIRECTS -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-      
-      <!-- Suisse Valais -->
-      <div class="glass-card p-6 rounded-2xl border-slate-800 hover:border-red-500/50 transition">
-        <div class="flex items-center gap-3 mb-4">
-          <span class="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center font-bold text-white text-lg">CH</span>
-          <div>
-            <h3 class="text-base font-bold text-white leading-tight">Valais / Zermatt (Suisse)</h3>
-            <span class="text-xs text-slate-400">Organisation Cantonale Valaisanne</span>
-          </div>
-        </div>
-        <div class="space-y-3">
-          <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-300">Secours Valais (KWRO)</span>
-            <a href="tel:144" class="text-lg font-mono font-bold text-red-400 hover:underline">144</a>
-          </div>
-          <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-300">Rega (Hélico National)</span>
-            <a href="tel:1414" class="text-lg font-mono font-bold text-sky-400 hover:underline">1414</a>
-          </div>
-          <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-300">Air Zermatt Direct</span>
-            <a href="tel:+41279668686" class="text-xs font-mono font-bold text-emerald-400 hover:underline">+41 27 966 86 86</a>
-          </div>
-        </div>
-        <p class="text-[11px] text-slate-400 mt-3">
-          *Souscrire impérativement la carte de donateur <strong>Air Zermatt</strong> avant le départ (couverture des frais d'hélitreuillage).
-        </p>
-      </div>
-
-      <!-- Italie -->
-      <div class="glass-card p-6 rounded-2xl border-slate-800 hover:border-emerald-500/50 transition">
-        <div class="flex items-center gap-3 mb-4">
-          <span class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center font-bold text-white text-lg">IT</span>
-          <div>
-            <h3 class="text-base font-bold text-white leading-tight">Vallée d'Aoste & Piémont</h3>
-            <span class="text-xs text-slate-400">Soccorso Alpino e Speleologico</span>
-          </div>
-        </div>
-        <div class="space-y-3">
-          <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-300">Numéro Unique Européen</span>
-            <a href="tel:112" class="text-lg font-mono font-bold text-emerald-400 hover:underline">112</a>
-          </div>
-          <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-300">Secours Sanitaire Direct</span>
-            <a href="tel:118" class="text-lg font-mono font-bold text-amber-400 hover:underline">118</a>
-          </div>
-          <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-300">Gressoney Secours Local</span>
-            <span class="text-xs font-mono text-slate-400">Via 112 (Demander CNSAS)</span>
-          </div>
-        </div>
-        <p class="text-[11px] text-slate-400 mt-3">
-          *Vérifier votre assurance rapatriement transfrontalière (carte européenne d'assurance maladie + assurance montagne type ITRA ou Vieux Campeur).
-        </p>
-      </div>
-
-      <!-- Générateur de Message SOS -->
+      <!-- Phase 1 -->
       <div class="glass-card p-6 rounded-2xl border-slate-800 flex flex-col justify-between">
         <div>
-          <div class="flex items-center gap-2 text-rose-400 font-bold text-sm mb-2">
-            <i class="ph-bold ph-broadcast text-lg"></i> Protocole Radio & Satellite
-          </div>
-          <h3 class="text-base font-bold text-white mb-2">Balise Satellite InReach</h3>
-          <p class="text-xs text-slate-400 leading-relaxed mb-4">
-            Dans les gorges profondes de la Valsesia ou sous le col du Turlo, le réseau 4G/5G est souvent inexistant. Une balise satellite bidirectionnelle (Garmin inReach / ZOLEO) est indispensable pour déclencher le SOS.
+          <span class="text-xs font-mono px-2 py-1 rounded bg-slate-800 text-slate-300 font-bold uppercase">Phase 1 • 2026</span>
+          <h4 class="text-base font-bold text-white mt-3 mb-2">Le Foncier au Plat</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Développer son aisance respiratoire. Courir le long du canal, faire le tour du bois de la Cambre et du Parc Josaphat à fréquence cardiaque basse (zone 2). Être capable de courir 2h sans fatigue.
           </p>
-          <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs font-mono text-slate-300 space-y-1">
-            <div class="text-amber-400 font-bold">STRUCTURE DU MESSAGE SOS :</div>
-            <div>1. QUI : Nom, 2 traileurs Schaerbeek</div>
-            <div>2. OÙ : Coordonnées WGS84 + Versant</div>
-            <div>3. QUOI : Chute, fracture jambe, hypothermie</div>
-            <div>4. MÉTÉO : Brouillard dense, vent 40 km/h</div>
-            <div>5. COULEUR : Veste rouge visible</div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-emerald-400 font-semibold">
+          Objectif : Cœur solide & régularité
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="glass-card p-6 rounded-2xl border-slate-800 flex flex-col justify-between">
+        <div>
+          <span class="text-xs font-mono px-2 py-1 rounded bg-sky-950 text-sky-400 border border-sky-800 font-bold uppercase">Phase 2 • 2027</span>
+          <h4 class="text-base font-bold text-white mt-3 mb-2">Les Week-ends Ardennais</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Sorties sur les bosses de Spa, la Roche-en-Ardenne ou les terrils de Charleroi. Apprendre à utiliser les bâtons de trail en montée et habituer les quadriceps aux descentes répétées.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-sky-400 font-semibold">
+          Objectif : +1 000m D+ par sortie avec bâtons
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="glass-card p-6 rounded-2xl border-slate-800 flex flex-col justify-between">
+        <div>
+          <span class="text-xs font-mono px-2 py-1 rounded bg-amber-950 text-amber-400 border border-amber-800 font-bold uppercase">Phase 3 • Printemps 2028</span>
+          <h4 class="text-base font-bold text-white mt-3 mb-2">Rando-Course & Test Matériel</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Sortie de 2 jours consécutifs avec le sac de fastpacking (environ 4 kg). Test en conditions réelles de la veste de pluie, des chaussures de trail avec bonne semelle Vibram/Megagrip, et de la flasque filtrante.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-amber-400 font-semibold">
+          Objectif : Validation totale du sac à dos
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="glass-card p-6 rounded-2xl border-slate-800 flex flex-col justify-between">
+        <div>
+          <span class="text-xs font-mono px-2 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-bold uppercase">Phase 4 • Été 2028</span>
+          <h4 class="text-base font-bold text-white mt-3 mb-2">Acclimatation en Valais</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Arrivée en Suisse 3 jours avant le départ. Séjour à Grächen (1 600 m), balade tranquille à la cabane Europa pour s'adapter à l'altitude. Démarrage de l'aventure en pleine possession de ses moyens !
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-emerald-400 font-semibold">
+          Objectif : Corps acclimaté et confiance à 100%
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECTION ÉQUIPEMENT MALIN & CHECKLIST INTERACTIVE -->
+  <section id="materiel" class="py-20 bg-slate-900/40 border-t border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+        <div>
+          <span class="text-xs font-mono text-emerald-400 uppercase tracking-widest font-bold">Matériel & Sac Idéal</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">La Checklist Officielle UTMR & Confort</h2>
+          <p class="text-slate-400 text-xs sm:text-sm mt-2 max-w-xl">
+            Cochez vos équipements au fil de votre préparation. Votre sélection est automatiquement mémorisée dans votre navigateur !
+          </p>
+        </div>
+
+        <div class="glass-card px-5 py-3 rounded-2xl border-slate-800 flex items-center gap-4">
+          <div>
+            <div class="text-[10px] font-mono text-slate-400 uppercase">Progression du Sac</div>
+            <div class="text-xl font-bold text-emerald-400 font-mono" id="check-counter">0 / 18</div>
+          </div>
+          <div class="w-32 bg-slate-800 h-2.5 rounded-full overflow-hidden">
+            <div id="check-progress-bar" class="bg-gradient-to-r from-teal-400 to-emerald-400 h-full w-0 transition-all duration-300"></div>
           </div>
         </div>
-        
-        <button onclick="copySOSFormat()" class="mt-4 w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition">
-          <i class="ph-bold ph-copy"></i> Copier le Template SOS
+      </div>
+
+      <!-- Checklist Categories -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="checklist-grid">
+        <!-- Dynamically injected via JS -->
+      </div>
+
+      <div class="mt-8 text-center">
+        <button onclick="resetChecklist()" class="text-xs text-slate-500 hover:text-slate-300 underline font-mono transition">
+          Réinitialiser la checklist
         </button>
       </div>
 
     </div>
+  </section>
 
-    <!-- ÉCHAPPATOIRES & VALLÉES DE RETRAIT -->
-    <div class="glass-card rounded-3xl p-6 sm:p-8 border-slate-800">
-      <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-        <i class="ph-bold ph-sign-out text-emerald-400"></i> Les 4 Échappatoires Officielles de Fond de Vallée
-      </h3>
-      <p class="text-xs sm:text-sm text-slate-400 mb-6">
-        Savoir renoncer avant de s'engager sur un col est le signe suprême du montagnard aguerri. Voici comment évacuer sans risque vers la civilisation en cas de dégradation météo :
-      </p>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-          <div class="font-bold text-white text-sm mb-1">Depuis l'Europaweg</div>
-          <div class="text-sky-400 font-semibold mb-2">Descente vers Randa ou Täsch</div>
-          <p class="text-slate-400 leading-relaxed">
-            Nombreux sentiers descendants directs vers le fond du Mattertal. Ligne de train Matterhorn Gotthard Bahn toutes les 20 min vers Zermatt ou Viège.
-          </p>
-        </div>
-
-        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-          <div class="font-bold text-white text-sm mb-1">Depuis le Théodule (3324m)</div>
-          <div class="text-rose-400 font-semibold mb-2">Téléphérique Cervinia / Klein Matterhorn</div>
-          <p class="text-slate-400 leading-relaxed">
-            En cas de tempête au col, possibilité de se réfugier au Rifugio Teodulo ou d'emprunter les installations du domaine skiable selon ouverture.
-          </p>
-        </div>
-
-        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-          <div class="font-bold text-white text-sm mb-1">Depuis Gressoney / Alagna</div>
-          <div class="text-amber-400 font-semibold mb-2">Liaisons Bus Valsesia</div>
-          <p class="text-slate-400 leading-relaxed">
-            Si le Passo del Turlo est enneigé ou orageux, bus locaux reliant les vallées piémontaises vers Varallo et liaison routière vers Macugnaga.
-          </p>
-        </div>
-
-        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-          <div class="font-bold text-white text-sm mb-1">Depuis Macugnaga</div>
-          <div class="text-emerald-400 font-semibold mb-2">Évacuation Val d'Anzasca</div>
-          <p class="text-slate-400 leading-relaxed">
-            Si le Monte Moro est impraticable (verglas/neige), bus depuis Staffa vers Domodossola, puis train international Simplon direct vers Brigue et Grächen.
-          </p>
-        </div>
+  <!-- SECTION NUMÉROS D'URGENCE & REPÈRES ALPIN -->
+  <section id="urgences" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="glass-card rounded-3xl p-6 sm:p-10 border-slate-800 relative overflow-hidden">
+      
+      <div class="max-w-3xl mb-8">
+        <span class="text-xs font-mono text-sky-400 uppercase tracking-widest font-bold">Assistance & Sérénité</span>
+        <h2 class="text-2xl sm:text-4xl font-black text-white mt-1">Contacts Utiles & Procédures Simples</h2>
+        <p class="text-xs sm:text-sm text-slate-300 mt-2">
+          Le massif est ultra-connecté et surveillé par deux des meilleurs services de secours au monde : Air Zermatt (Valais) et le Soccorso Alpino (Italie). Avoir ces numéros enregistrés dans son téléphone permet de partir l'esprit 100% tranquille.
+        </p>
       </div>
-    </div>
 
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-2">
+            <span>SUISSE (VALAIS)</span>
+            <i class="ph-bold ph-first-aid text-emerald-400 text-lg"></i>
+          </div>
+          <div class="text-2xl font-black text-white font-mono">144</div>
+          <div class="text-[11px] text-slate-400 mt-1">Urgences sanitaires Valais (KWRO)</div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-2">
+            <span>AIR ZERMATT</span>
+            <i class="ph-bold ph-helicopter text-sky-400 text-lg"></i>
+          </div>
+          <div class="text-2xl font-black text-white font-mono">1414 <span class="text-xs text-slate-400">ou +41 27 966 86 86</span></div>
+          <div class="text-[11px] text-slate-400 mt-1">Secours héliporté Mattertal</div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-2">
+            <span>ITALIE (AOSTE & PIÉMONT)</span>
+            <i class="ph-bold ph-phone-call text-amber-400 text-lg"></i>
+          </div>
+          <div class="text-2xl font-black text-white font-mono">112</div>
+          <div class="text-[11px] text-slate-400 mt-1">Numéro Unique Européen d'Urgence</div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-2">
+            <span>CONSEIL PRÉVOYANCE</span>
+            <i class="ph-bold ph-cardholder text-purple-400 text-lg"></i>
+          </div>
+          <div class="text-sm font-bold text-white mt-1">Carte Donateur Rega ou Air Zermatt</div>
+          <div class="text-[11px] text-slate-400 mt-1">~40 CHF / an : couvre le sauvetage héliporté</div>
+        </div>
+
+      </div>
+
+      <!-- BOÎTE DE DIALOGUE SOS -->
+      <div class="bg-slate-950/80 rounded-2xl p-5 border border-slate-800 text-xs text-slate-300 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <strong class="text-white block text-sm mb-1">Format de Message Rapide en cas de besoin :</strong>
+          <span>« Nom, Nombre de personnes, Coordonnées GPS (app Whympr/SwissTopo), Altitude, État de santé, Météo locale ».</span>
+        </div>
+        <button onclick="copySOSFormat()" id="copy-btn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-mono text-xs flex items-center gap-2 shrink-0 transition">
+          <i class="ph-bold ph-copy"></i> Copier le modèle SOS
+        </button>
+      </div>
+
+    </div>
   </section>
 
   <!-- FOOTER -->
-  <footer class="bg-slate-950 border-t border-slate-800 py-12 text-slate-500 text-xs">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-      
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-sky-600/20 text-sky-400 flex items-center justify-center font-bold">
-          <i class="ph-bold ph-mountains"></i>
-        </div>
-        <div>
-          <span class="text-slate-300 font-bold block text-sm">Tour du Mont Rose 2028</span>
-          <span>Projet Trail & Fastpacking Schaerbeek - Conçu pour GitHub Pages</span>
-        </div>
+  <footer class="py-12 border-t border-slate-800/80 text-xs text-slate-500 text-center">
+    <div class="max-w-7xl mx-auto px-4 space-y-4">
+      <div class="flex items-center justify-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span class="font-bold text-slate-400 uppercase tracking-widest font-mono">Tour du Mont Rose 2028 • Fastpacking & Sérénité</span>
       </div>
-
-      <div class="text-center md:text-right space-y-1">
-        <p>Basé sur le parcours officiel et le règlement de sécurité de l'<strong>Ultra Tour Monte Rosa (UTMR)</strong>.</p>
-        <p class="text-slate-600">Document technique non contractuel. En montagne, chaque traileur demeure responsable de ses décisions.</p>
+      <p class="max-w-xl mx-auto leading-relaxed">
+        Créé avec passion pour l'équipe des citadins de Schaerbeek et Bruxelles préparant l'Ultra Tour Monte Rosa en 4 étapes de jour. La montagne est belle, vivez-la avec confiance et plaisir !
+      </p>
+      <div class="text-[11px] text-slate-600">
+        Inspiré de l'itinéraire officiel conçu par Lizzy Hawker • Prêt pour hébergement sur GitHub Pages
       </div>
-
     </div>
   </footer>
 
-  <!-- NOTIFICATION TOAST -->
-  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-slate-900 text-white border border-sky-500 px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-xs font-semibold">
-    <i class="ph-bold ph-info text-sky-400 text-base"></i>
-    <span id="toast-msg">Notification</span>
-  </div>
-
-  <!-- SCRIPT LOGIC -->
+  <!-- SCRIPT JS UNIQUE & COMPLET -->
   <script>
-    // --- 1. COUNTDOWN TO SEPT 1, 2028 ---
+    // --- 1. MOBILE MENU TOGGLE ---
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (mobileBtn && mobileMenu) {
+      mobileBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+      mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+      });
+    }
+
+    // --- 2. DYNAMIC COUNTDOWN TO SEPT 1, 2028 ---
     function updateCountdown() {
-      const targetDate = new Date('2028-09-01T05:00:00+02:00').getTime();
+      const targetDate = new Date('2028-09-01T06:00:00+02:00').getTime();
       const now = new Date().getTime();
       const diff = targetDate - now;
 
-      if (diff <= 0) {
-        document.getElementById('cd-days').innerText = '00';
-        document.getElementById('cd-hours').innerText = '00';
-        document.getElementById('cd-minutes').innerText = '00';
-        document.getElementById('cd-seconds').innerText = '00';
-        return;
+      if (diff > 0) {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById('cd-days').innerText = days;
+        document.getElementById('cd-hours').innerText = hours;
+        document.getElementById('cd-minutes').innerText = minutes;
+        document.getElementById('cd-seconds').innerText = seconds;
       }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      document.getElementById('cd-days').innerText = days;
-      document.getElementById('cd-hours').innerText = String(hours).padStart(2, '0');
-      document.getElementById('cd-minutes').innerText = String(minutes).padStart(2, '0');
-      document.getElementById('cd-seconds').innerText = String(seconds).padStart(2, '0');
     }
     setInterval(updateCountdown, 1000);
     updateCountdown();
 
-    // --- 2. MOBILE MENU TOGGLE ---
-    const mobileBtn = document.getElementById('mobileMenuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
-    mobileBtn.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
-    });
-    // Close mobile menu on link click
-    mobileMenu.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
-    });
-
-    // --- 3. SCENARIO SIMULATOR ---
+    // --- 3. SCENARIO SIMULATOR (RÉFLEXES SEREINS) ---
     const scenarios = [
       {
-        title: "Le ciel s'assombrit brutalement au Passo del Turlo (11h45)",
-        context: "Vous êtes à 2 600 m, à 20 min du col. Des cumulus d'orage sombres montent de la Valsesia. Le vent fraîchit brusquement et l'air devient électrique.",
-        badChoice: "Accélérer en courant vers l'arête pour basculer vite avant l'orage.",
-        goodChoice: "Faire demi-tour immédiatement ou chercher une zone creuse en contrebas loin des blocs pointus, couper les bâtons en carbone/métal et enfiler la veste étanche.",
-        why: "L'arête et le col sont les paratonnerres parfaits du massif. Se faire foudroyer sur une crête rocheuse à 2 738 m est statistiquement fatal. Les orages convectifs de début septembre sont soudains et ultra-violents."
+        title: "Des cumulus de chaleur montent au Passo del Turlo (11h45)",
+        context: "Vous arrivez sous le col à 2 600 m. Quelques nuages s'accumulent au loin sur la vallée et une brise fraîche se lève.",
+        badChoice: "S'inquiéter et courir à toute vitesse sans regarder où poser les pieds.",
+        goodChoice: "Rester serein : enfiler sa veste coupe-vent pour rester bien au chaud, franchir tranquillement le col et descendre paisiblement vers le vallon abrité d'Alagna.",
+        why: "La météo de fin d'été est très prévisible lorsqu'on est parti tôt. Le fait d'arriver au col avant midi permet de profiter de la descente sur le versant sud en toute tranquillité."
       },
       {
-        title: "Plaque de glace bleue vive sur le glacier du Théodule",
-        context: "À 3 200 m, la trace franchit une pente à 25° de glace sans neige meuble. Vous avez des semelles de trail Vibram agressives neuves.",
-        badChoice: "Tenter de traverser en posant délicatement le pied à plat avec les bâtons.",
-        goodChoice: "S'arrêter sur une plateforme stable, sortir les micro-crampons de la poche extérieure, les chausser sur les deux pieds et vérifier la tension de l'élastomère.",
-        why: "Même la meilleure semelle de trail glisse comme un patin sur la glace vive de fin d'été. Une chute entraîne une glissade de 200 mètres vers les dépressions morainiques ou rimayes sans moyen d'enrayer."
+        title: "Passage sur neige compacte au glacier du Théodule",
+        context: "À 3 200 m, le sentier franchit une bande de névé durcie par le regel matinal face au Cervin.",
+        badChoice: "Hésiter ou passer à grands pas rapides sans équipement d'adhérence.",
+        goodChoice: "Faire une pause photo de 30 secondes, chausser ses micro-crampons acier et marcher avec un pas naturel et assuré.",
+        why: "Avec des microspikes, l'adhérence est immédiate et parfaite. Ce qui pouvait impressionner depuis Bruxelles devient l'un des moments les plus magiques et amusants du circuit !"
       },
       {
-        title: "Nausées intenses et démarche chancelante d'un coéquipier",
-        context: "Au passage des 3 100 m, votre partenaire de Schaerbeek avance en zigzaguant, se plaint d'un mal de tête violent 'en étau' et vomit.",
-        badChoice: "Lui donner deux paracétamols, lui prendre son sac et insister pour finir l'étape.",
-        goodChoice: "Halte immédiate. Poser le diagnostic de Mal Aigu des Montagnes (MAM) sévère avec début d'ataxie. Demi-tour et descente immédiate d'au moins 500 mètres de dénivelé.",
-        why: "L'ataxie (perte d'équilibre) est le signal précurseur de l'œdème cérébral de haute altitude (OCHA). Poursuivre vers le haut engage le pronostic vital dans les 6 heures. La seule thérapie est la descente rapide."
+        title: "Légère fatigue et souffle plus court à 3 000 m",
+        context: "Un des membres du groupe de Schaerbeek sent son souffle un peu court dans la dernière montée du col.",
+        badChoice: "Vouloir maintenir la même allure de course que sur les berges du canal à Bruxelles.",
+        goodChoice: "Ralentir l'allure d'un tiers, faire des pas courts et réguliers, respirer calmement et boire une gorgée d'eau énergétique.",
+        why: "C'est la réaction tout à fait naturelle de n'importe quel organisme à 3 000 m. En ralentissant la cadence, le cardio redescend instantanément et on arrive au sommet tout sourire."
       }
     ];
 
     function loadScenario(idx) {
       document.querySelectorAll('.sc-btn').forEach((btn, i) => {
         if (i === idx) {
-          btn.className = "sc-btn p-4 rounded-xl border text-left bg-slate-800 border-sky-500 text-white transition";
+          btn.className = "sc-btn p-4 rounded-xl border text-left bg-slate-800 border-emerald-500 text-white transition";
         } else {
           btn.className = "sc-btn p-4 rounded-xl border text-left bg-slate-900/70 border-slate-800 text-slate-300 hover:border-slate-700 transition";
         }
@@ -1043,127 +895,277 @@
       container.innerHTML = `
         <div class="space-y-4">
           <div>
-            <span class="text-xs font-mono text-rose-400 font-bold uppercase">Situation Critique :</span>
+            <span class="text-xs font-mono text-emerald-400 font-bold uppercase">Situation Terrain :</span>
             <h4 class="text-base font-bold text-white mt-1">${s.title}</h4>
             <p class="text-xs sm:text-sm text-slate-300 mt-2">${s.context}</p>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-            <div class="p-3 rounded-xl bg-red-950/40 border border-red-900/60 text-xs">
-              <span class="text-red-400 font-bold flex items-center gap-1.5 mb-1">
-                <i class="ph-bold ph-x-circle"></i> ERREUR DU DÉBUTANT :
+            <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800 text-xs">
+              <span class="text-slate-400 font-bold flex items-center gap-1.5 mb-1">
+                <i class="ph-bold ph-info"></i> RÉACTION DU CITADIN HÂTIF :
               </span>
-              <p class="text-slate-300">${s.badChoice}</p>
+              <p class="text-slate-400">${s.badChoice}</p>
             </div>
-            <div class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-900/60 text-xs">
+            <div class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-800/60 text-xs">
               <span class="text-emerald-400 font-bold flex items-center gap-1.5 mb-1">
-                <i class="ph-bold ph-check-circle"></i> RÉFLEXE VITAL ALPIN :
+                <i class="ph-bold ph-check-circle"></i> LE BON RÉFLEXE ALPIN :
               </span>
-              <p class="text-slate-300">${s.goodChoice}</p>
+              <p class="text-slate-200">${s.goodChoice}</p>
             </div>
           </div>
 
           <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-400">
-            <strong class="text-sky-400 font-mono uppercase">Explication Biophysique :</strong> ${s.why}
+            <strong class="text-sky-400 font-mono uppercase">Le Conseil des Guides :</strong> ${s.why}
           </div>
         </div>
       `;
     }
     loadScenario(0);
 
-    // --- 4. DATA FOR 4 STAGES & CHART.JS ---
-    const stagesData = [
+    // --- 4. E-LEARNING & QUIZ INTERACTIF ---
+    const quizQuestions = [
       {
-        number: 1,
-        title: "Étape 1 : Grächen &rarr; Zermatt (L'Europaweg)",
-        distance: "40.5 km",
-        dplus: "+2 850 m",
-        dminus: "-2 800 m",
-        maxAlt: "2 710 m (Europahütte)",
-        pass: "Europaweg & Balcons de Täsch",
-        escape: "Descente vers Randa / Herbriggen (Gare MGB)",
-        keyDangers: [
-          "Éboulements rocheux fréquents sur l'Europaweg (glissements de terrain permanents).",
-          "Passerelle suspendue Charles Kuonen (494m) : attention en cas de grand vent.",
-          "Dalles rocheuses humides très glissantes le matin au départ de Grächen."
-        ],
-        chartLabels: ["Grächen (1619m)", "Gasenried", "Galenberg", "Europahütte (2264m)", "Pont Suspendu", "Täschalp (2214m)", "Sunnegga", "Zermatt (1608m)"],
-        chartElevations: [1619, 1850, 2400, 2264, 2150, 2214, 2288, 1608]
+        question: "1. À quelle heure est-il idéal de s'élancer le matin pour une étape de haute montagne autour du Mont Rose ?",
+        answers: [
+          { text: "Vers 10h30, après une grasse matinée au gîte", correct: false, note: "Trop tardif : vous rateriez la fraîcheur revigorante et la magnifique lumière dorée du matin." },
+          { text: "Entre 05h30 et 06h30 à l'aube", correct: true, note: "Excellent ! Franchir les cols avant midi offre un panorama limpide, des sentiers stables et une arrivée relaxante au refuge l'après-midi." },
+          { text: "À 14h00 pour éviter la rosée du matin", correct: false, note: "Pas recommandé en haute montagne : les journées raccourcissent en septembre et l'après-midi favorise les nuages." }
+        ]
       },
       {
-        number: 2,
-        title: "Étape 2 : Zermatt &rarr; Gressoney (Le Toit du Tour)",
-        distance: "42.0 km",
-        dplus: "+2 900 m",
-        dminus: "-2 850 m",
-        maxAlt: "3 324 m (Theodulpass)",
-        pass: "Theodulpass (3 324 m) & Colle Superiore delle Cime Bianche",
-        escape: "Téléphérique Cervinia & descente Valtournenche",
-        keyDangers: [
-          "Traversée du Theodulgletscher sur glace vive (micro-crampons obligatoires).",
-          "Hypoxie sévère au-delà de 3 000 m : souffle court, perte de repères.",
-          "Descente interminable vers Gressoney : casse musculaire maximale des quadriceps."
-        ],
-        chartLabels: ["Zermatt (1608m)", "Furi", "Trockener Steg", "Theodulpass (3324m)", "Cime Bianche (2982m)", "St-Jacques", "Col Rothorn", "Gressoney (1637m)"],
-        chartElevations: [1608, 1867, 2939, 3324, 2982, 1689, 2689, 1637]
+        question: "2. Sur le glacier du Théodule à 3 324 m, la neige est compacte sous vos semelles. Quel est le réflexe le plus serein ?",
+        answers: [
+          { text: "Courir vite sans regarder ses pieds pour vite en finir", correct: false, note: "Précipitation inutile : la montagne se savoure avec calme." },
+          { text: "Sortir ses micro-crampons acier du sac et les chausser en 30 secondes", correct: true, note: "Parfait ! Les microspikes transforment la surface en un sentier ultra-adhérent où chaque foulée est sécurisée." },
+          { text: "Attendre le plein soleil de midi pour que la glace fonde", correct: false, note: "Au contraire, la neige ferme du matin est bien plus stable et propre pour cheminer !" }
+        ]
       },
       {
-        number: 3,
-        title: "Étape 3 : Gressoney &rarr; Macugnaga (Le Passo del Turlo)",
-        distance: "43.5 km",
-        dplus: "+2 750 m",
-        dminus: "-2 950 m",
-        maxAlt: "2 738 m (Passo del Turlo)",
-        pass: "Colle d'Olen (2 881 m) & Passo del Turlo (2 738 m)",
-        escape: "Vallée d'Alagna Valsesia (Lignes de bus)",
-        keyDangers: [
-          "Le Passo del Turlo : ancienne voie romaine en dalles polies, patinoire mortelle sous la pluie.",
-          "Isolement complet dans la traversée du Val Sesia vers Macugnaga.",
-          "Risque d'orages violents de crête en début d'après-midi."
-        ],
-        chartLabels: ["Gressoney (1637m)", "Gabiet", "Colle Olen (2881m)", "Alagna (1191m)", "Rif. Pastore", "Passo Turlo (2738m)", "Lago delle Fate", "Macugnaga (1327m)"],
-        chartElevations: [1637, 2375, 2881, 1191, 1575, 2738, 1310, 1327]
+        question: "3. En longue descente de col vers Gressoney, comment protéger ses genoux et ses quadriceps de Bruxellois ?",
+        answers: [
+          { text: "Faire de grandes foulées rapides en amortissant sur les talons", correct: false, note: "Cela fatigue inutilement les articulations." },
+          { text: "Prendre appui sur ses bâtons de trail et faire de petits pas rythmés", correct: true, note: "Bravo ! Les bâtons délestent jusqu'à 25% du poids du corps et assurent un équilibre fluide et sans douleur." },
+          { text: "Descendre à reculons pour reposer ses mollets", correct: false, note: "Original mais peu pratique sur un sentier alpin !" }
+        ]
       },
       {
-        number: 4,
-        title: "Étape 4 : Macugnaga &rarr; Grächen (Le Monte Moro)",
-        distance: "44.0 km",
-        dplus: "+2 800 m",
-        dminus: "-2 600 m",
-        maxAlt: "2 853 m (Passo di Monte Moro)",
-        pass: "Passo di Monte Moro (2 853 m)",
-        escape: "Téléphérique du Moro vers Macugnaga ou barrage de Mattmark",
-        keyDangers: [
-          "Monte Moro : névés résiduels gelés et raides sous la statue de la Vierge dorée.",
-          "Descente de blocs géants au lac de Mattmark : foulures et perte de lucidité.",
-          "Sentier en balcon aérien vers Hannigalp avec la fatigue accumulée des 4 jours."
-        ],
-        chartLabels: ["Macugnaga (1327m)", "Bill", "Monte Moro (2853m)", "Mattmark (2197m)", "Saas-Almagell", "Saas-Fee", "Hannigalp", "Grächen (1619m)"],
-        chartElevations: [1327, 1700, 2853, 2197, 1672, 1800, 2114, 1619]
+        question: "4. À 3 000 m d'altitude, vous sentez votre souffle un peu plus court que dans le Parc Josaphat. Que faire ?",
+        answers: [
+          { text: "Accélérer pour ne pas perdre la moyenne horaire de plaine", correct: false, note: "Inutile : à 3 000 m, l'air contient un peu moins de pression en oxygène, ce qui est parfaitement normal." },
+          { text: "Adopter un rythme régulier, des pas tranquilles et boire une gorgée d'eau", correct: true, note: "Exactement ! Le fameux 'pas du montagnard' permet de progresser des heures sans fatigue excessive." },
+          { text: "Redescendre immédiatement à Schaerbeek en hélicoptère", correct: false, note: "Pas besoin ! Une simple adaptation de l'allure suffit amplement." }
+        ]
+      },
+      {
+        question: "5. Le Tour du Mont Rose traverse la Suisse et l'Italie. Quel est le numéro unique d'assistance en Italie ?",
+        answers: [
+          { text: "Le 112 (numéro d'urgence européen)", correct: true, note: "Très bien ! Le 112 fonctionne dans toute l'Europe et active le Soccorso Alpino en Italie." },
+          { text: "Le 999", correct: false, note: "C'est le numéro au Royaume-Uni !" },
+          { text: "Le 007", correct: false, note: "Un excellent agent secret, mais pas une ligne de secours !" }
+        ]
       }
     ];
 
-    let currentStageIndex = 0;
-    let chartInstance = null;
+    let quizAnswersState = {};
+
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = '';
+
+      quizQuestions.forEach((q, qIndex) => {
+        const answered = quizAnswersState[qIndex] !== undefined;
+        const selectedOpt = quizAnswersState[qIndex];
+
+        const card = document.createElement('div');
+        card.className = "p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3";
+
+        let html = `
+          <div class="font-bold text-white text-sm sm:text-base">${q.question}</div>
+          <div class="space-y-2">
+        `;
+
+        q.answers.forEach((ans, aIndex) => {
+          let btnClass = "w-full text-left p-3 rounded-xl border text-xs sm:text-sm transition flex items-center justify-between ";
+          if (!answered) {
+            btnClass += "bg-slate-950/60 border-slate-800 hover:border-slate-600 text-slate-300";
+          } else {
+            if (ans.correct) {
+              btnClass += "bg-emerald-950/60 border-emerald-500 text-emerald-200 font-semibold";
+            } else if (selectedOpt === aIndex && !ans.correct) {
+              btnClass += "bg-red-950/60 border-red-500 text-red-200";
+            } else {
+              btnClass += "bg-slate-950/30 border-slate-800 text-slate-500 opacity-60";
+            }
+          }
+
+          html += `
+            <button onclick="handleAnswer(${qIndex}, ${aIndex})" ${answered ? 'disabled' : ''} class="${btnClass}">
+              <span>${ans.text}</span>
+              ${answered && ans.correct ? '<i class="ph-bold ph-check text-emerald-400 text-base shrink-0 ml-2"></i>' : ''}
+              ${answered && selectedOpt === aIndex && !ans.correct ? '<i class="ph-bold ph-x text-red-400 text-base shrink-0 ml-2"></i>' : ''}
+            </button>
+          `;
+        });
+
+        html += `</div>`;
+
+        if (answered) {
+          const isCorrect = q.answers[selectedOpt].correct;
+          const note = q.answers[selectedOpt].note;
+          html += `
+            <div class="p-3 rounded-xl text-xs ${isCorrect ? 'bg-emerald-950/40 text-emerald-300 border border-emerald-800/60' : 'bg-amber-950/40 text-amber-300 border border-amber-800/60'}">
+              <strong>${isCorrect ? 'Bravo !' : 'Conseil :'}</strong> ${note}
+            </div>
+          `;
+        }
+
+        card.innerHTML = html;
+        container.appendChild(card);
+      });
+
+      updateQuizScore();
+    }
+
+    function handleAnswer(qIndex, aIndex) {
+      if (quizAnswersState[qIndex] !== undefined) return;
+      quizAnswersState[qIndex] = aIndex;
+      renderQuiz();
+    }
+
+    function updateQuizScore() {
+      const keys = Object.keys(quizAnswersState);
+      let score = 0;
+      keys.forEach(k => {
+        if (quizQuestions[k].answers[quizAnswersState[k]].correct) score++;
+      });
+
+      const display = document.getElementById('quiz-score-display');
+      display.innerText = `${score} / ${quizQuestions.length}`;
+
+      if (keys.length === quizQuestions.length) {
+        showQuizCertificate(score);
+      }
+    }
+
+    function showQuizCertificate(score) {
+      const res = document.getElementById('quiz-result');
+      res.classList.remove('hidden');
+
+      const isPassed = score >= 4;
+
+      res.innerHTML = `
+        <div class="p-6 rounded-3xl ${isPassed ? 'bg-gradient-to-b from-emerald-950/40 via-slate-900 to-slate-950 border-2 border-emerald-500/50' : 'bg-slate-900 border border-slate-700'} space-y-4 max-w-xl mx-auto shadow-2xl">
+          <div class="w-16 h-16 rounded-full ${isPassed ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'} flex items-center justify-center mx-auto text-3xl">
+            <i class="ph-fill ${isPassed ? 'ph-medal' : 'ph-arrows-clockwise'}"></i>
+          </div>
+
+          <div>
+            <h4 class="text-2xl font-black text-white">${isPassed ? 'Félicitations ! Vous avez l\'esprit montagnard !' : 'Bonne tentative, les réflexes se mettent en place !'}</h4>
+            <p class="text-xs sm:text-sm text-slate-300 mt-2">
+              ${isPassed ? 'Votre score atteste d\'une excellente compréhension des réflexes de sérénité et d\'organisation nécessaires pour aborder le Mont Rose en 2028.' : 'Relisez les 3 leçons ci-dessus et réessayez pour décrocher votre Passeport Alpin avec brio.'}
+            </p>
+          </div>
+
+          ${isPassed ? `
+            <!-- PASSEPORT BADGE -->
+            <div class="p-5 rounded-2xl bg-slate-950/90 border border-emerald-500/30 text-left space-y-3 font-mono text-xs">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="text-emerald-400 font-bold uppercase tracking-widest">PASSEPORT SÉRÉNITÉ ALPINE 2028</span>
+                <span class="text-slate-400">TMR-EXP-2028</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
+                <div><span>TITULAIRE :</span> <strong class="text-white block">Traileur de Schaerbeek</strong></div>
+                <div><span>STATUT :</span> <strong class="text-emerald-400 block">Apte & Préparé</strong></div>
+                <div><span>VALIDATION :</span> <strong class="text-white block">4 Étapes / 170 km</strong></div>
+                <div><span>MENTION :</span> <strong class="text-amber-400 block">${score}/5 aux tests pratiques</strong></div>
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+            ${isPassed ? `
+              <button onclick="window.print()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition">
+                <i class="ph-bold ph-printer"></i> Imprimer mon Passeport
+              </button>
+            ` : ''}
+            <button onclick="resetQuiz()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs border border-slate-700 transition">
+              Recommencer le Test
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function resetQuiz() {
+      quizAnswersState = {};
+      document.getElementById('quiz-result').classList.add('hidden');
+      renderQuiz();
+    }
+
+    // --- 5. DONNÉES DES 4 ÉTAPES ET PROFIL CHART.JS ---
+    const stagesData = {
+      1: {
+        name: "Étape 1 : Grächen &rarr; Zermatt",
+        dist: "34,7 km",
+        elev: "+2 112 m / -2 121 m",
+        maxAlt: "2 700 m (Europaweg)",
+        highlights: "Pont suspendu Charles Kuonen (494m), vue plongeante sur le Weisshorn et les Mischabels.",
+        tips: "Prenez le temps d'admirer les 4 000 m valaisans. Les passages rocheux sont équipés de câbles et de passerelles très sécurisantes.",
+        points: ["Grächen (1619m)", "Grat (2280m)", "Europahütte (2265m)", "Täschalp (2214m)", "Sunnegga (2288m)", "Zermatt (1608m)"],
+        elevations: [1619, 2280, 2265, 2214, 2288, 1608]
+      },
+      2: {
+        name: "Étape 2 : Zermatt &rarr; Gressoney",
+        dist: "43,0 km",
+        elev: "+2 738 m / -2 713 m",
+        maxAlt: "3 324 m (Theodulpass)",
+        highlights: "Passage magique sous le Cervin, traversée glaciaire avec microspikes et descente vers le Val d'Aoste.",
+        tips: "Enfilez vos microspikes dès le bord du glacier. C'est l'étape reine, spectaculaire et inoubliable !",
+        points: ["Zermatt (1608m)", "Gandegghütte (3030m)", "Theodulpass (3324m)", "Cervinia (2050m)", "Colle Sup. Cime Bianche (2982m)", "Resy (2070m)", "Gressoney (1637m)"],
+        elevations: [1608, 3030, 3324, 2050, 2982, 2070, 1637]
+      },
+      3: {
+        name: "Étape 3 : Gressoney &rarr; Macugnaga",
+        dist: "46,2 km",
+        elev: "+3 078 m / -3 404 m",
+        maxAlt: "2 980 m (Passo dei Salati)",
+        highlights: "Traversée de la culture Walser, vue sur la gigantesque face est du Mont Rose.",
+        tips: "Le Passo del Turlo est pavé d'anciennes dalles militaires : utilisez bien vos bâtons pour garder un rythme cadencé.",
+        points: ["Gressoney (1637m)", "Passo dei Salati (2980m)", "Alagna (1191m)", "Rif. Pastore (1575m)", "Colle del Turlo (2738m)", "Macugnaga (1327m)"],
+        elevations: [1637, 2980, 1191, 1575, 2738, 1327]
+      },
+      4: {
+        name: "Étape 4 : Macugnaga &rarr; Grächen",
+        dist: "44,7 km",
+        elev: "+2 794 m / -2 483 m",
+        maxAlt: "2 868 m (Monte Moro)",
+        highlights: "Statue dorée de la Vierge au col du Monte Moro, retour en Suisse le long du barrage de Mattmark.",
+        tips: "Une arrivée grandiose à Grächen sous les acclamations. Vous aurez bouclé l'un des tours les plus mythiques du monde !",
+        points: ["Macugnaga (1327m)", "Passo Monte Moro (2868m)", "Mattmark (2197m)", "Saas-Almagell (1672m)", "Hannigalp (2114m)", "Grächen (1619m)"],
+        elevations: [1327, 2868, 2197, 1672, 2114, 1619]
+      }
+    };
+
+    let elevationChartInstance = null;
 
     function initChart() {
       const ctx = document.getElementById('elevationChart').getContext('2d');
-      const s = stagesData[currentStageIndex];
-
-      chartInstance = new Chart(ctx, {
+      elevationChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: s.chartLabels,
+          labels: stagesData[1].points,
           datasets: [{
-            label: 'Altitude (m)',
-            data: s.chartElevations,
+            label: 'Altitude (mètres)',
+            data: stagesData[1].elevations,
             borderColor: '#38bdf8',
             backgroundColor: 'rgba(56, 189, 248, 0.15)',
-            borderWidth: 2.5,
+            borderWidth: 3,
             fill: true,
             tension: 0.35,
-            pointBackgroundColor: s.chartElevations.map(alt => alt >= 2700 ? '#ef4444' : '#38bdf8'),
-            pointRadius: s.chartElevations.map(alt => alt >= 2700 ? 6 : 4),
+            pointBackgroundColor: '#10b981',
+            pointBorderColor: '#ffffff',
+            pointRadius: 5,
             pointHoverRadius: 8
           }]
         },
@@ -1173,10 +1175,14 @@
           plugins: {
             legend: { display: false },
             tooltip: {
+              backgroundColor: '#0f172a',
+              titleColor: '#38bdf8',
+              bodyColor: '#ffffff',
+              borderColor: '#334155',
+              borderWidth: 1,
+              padding: 10,
               callbacks: {
-                label: function(context) {
-                  return context.parsed.y + ' m d\'altitude';
-                }
+                label: (ctx) => `${ctx.parsed.y} mètres d'altitude`
               }
             }
           },
@@ -1185,11 +1191,11 @@
               min: 1000,
               max: 3500,
               grid: { color: 'rgba(255, 255, 255, 0.05)' },
-              ticks: { color: '#94a3b8', font: { family: 'monospace', size: 10 } }
+              ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono' } }
             },
             x: {
-              grid: { color: 'rgba(255, 255, 255, 0.05)' },
-              ticks: { color: '#cbd5e1', font: { size: 10 }, maxRotation: 30 }
+              grid: { display: false },
+              ticks: { color: '#94a3b8', font: { size: 10 } }
             }
           }
         }
@@ -1197,203 +1203,171 @@
     }
 
     function switchStage(stageNum) {
-      currentStageIndex = stageNum - 1;
-      const s = stagesData[currentStageIndex];
-
-      // Update button styling
-      document.querySelectorAll('.stage-tab').forEach((btn, idx) => {
-        if (idx === currentStageIndex) {
-          btn.className = "stage-tab px-4 py-2 rounded-xl text-xs font-bold bg-sky-500 text-white transition";
+      document.querySelectorAll('.stage-tab').forEach((tab, i) => {
+        if (i + 1 === stageNum) {
+          tab.className = "stage-tab px-4 py-2 rounded-xl text-xs font-bold transition bg-emerald-600 text-white";
         } else {
-          btn.className = "stage-tab px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
+          tab.className = "stage-tab px-4 py-2 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700";
         }
       });
 
-      // Update Info Box
-      const box = document.getElementById('stage-info-box');
-      box.innerHTML = `
+      const s = stagesData[stageNum];
+      document.getElementById('chart-stage-title').innerHTML = s.name;
+
+      const detailsBox = document.getElementById('stage-details-box');
+      detailsBox.innerHTML = `
         <div>
-          <span class="text-xs font-mono text-sky-400 font-bold uppercase">Étape ${s.number} / 4</span>
-          <h3 class="text-lg font-bold text-white mt-1 leading-snug">${s.title}</h3>
+          <span class="text-xs font-mono text-emerald-400 uppercase font-bold">Fiche d'Étape</span>
+          <h3 class="text-xl font-bold text-white mt-1">${s.name}</h3>
           
-          <div class="grid grid-cols-3 gap-2 my-4 text-center">
-            <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
-              <span class="text-[10px] text-slate-400 uppercase block font-mono">Distance</span>
-              <span class="text-sm font-bold text-white font-mono">${s.distance}</span>
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <span class="text-[10px] font-mono text-slate-400 uppercase">Distance</span>
+              <div class="text-lg font-bold text-white font-mono">${s.dist}</div>
             </div>
-            <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
-              <span class="text-[10px] text-slate-400 uppercase block font-mono">D+ Positif</span>
-              <span class="text-sm font-bold text-amber-400 font-mono">${s.dplus}</span>
-            </div>
-            <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
-              <span class="text-[10px] text-slate-400 uppercase block font-mono">D- Négatif</span>
-              <span class="text-sm font-bold text-rose-400 font-mono">${s.dminus}</span>
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <span class="text-[10px] font-mono text-slate-400 uppercase">Dénivelé</span>
+              <div class="text-lg font-bold text-emerald-400 font-mono">${s.elev}</div>
             </div>
           </div>
 
-          <div class="space-y-2 text-xs">
-            <div class="flex items-center gap-2 text-slate-300">
-              <i class="ph-bold ph-mountain text-sky-400"></i>
-              <span><strong>Point Culminant :</strong> ${s.maxAlt}</span>
-            </div>
-            <div class="flex items-center gap-2 text-slate-300">
-              <i class="ph-bold ph-signpost text-amber-400"></i>
-              <span><strong>Col Majeur :</strong> ${s.pass}</span>
-            </div>
-            <div class="flex items-center gap-2 text-slate-300">
-              <i class="ph-bold ph-shield-check text-emerald-400"></i>
-              <span><strong>Échappatoire :</strong> ${s.escape}</span>
-            </div>
+          <div class="mt-4 space-y-2 text-xs">
+            <div class="text-slate-300"><strong class="text-sky-400">Point Culminant :</strong> ${s.maxAlt}</div>
+            <div class="text-slate-300"><strong class="text-amber-400">Panorama Clé :</strong> ${s.highlights}</div>
           </div>
 
-          <div class="mt-4 pt-3 border-t border-slate-800">
-            <span class="text-[11px] font-bold text-rose-400 uppercase tracking-wider block mb-1">Pièges Spécifiques à Éviter :</span>
-            <ul class="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
-              ${s.keyDangers.map(d => `<li>${d}</li>`).join('')}
-            </ul>
+          <div class="mt-4 p-3 rounded-xl bg-slate-950/70 border border-slate-800 text-xs text-slate-300">
+            <span class="text-emerald-400 font-bold flex items-center gap-1.5 mb-1">
+              <i class="ph-bold ph-lightbulb"></i> Conseil Douceur :
+            </span>
+            ${s.tips}
           </div>
         </div>
 
         <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
-          <span>Départ recommandé : <strong>05h15</strong></span>
-          <span class="text-amber-400 font-mono font-bold">Passage col &lt; 11h30</span>
+          <span>Départ recommandé : <strong>06h00</strong></span>
+          <span class="text-emerald-400 font-mono font-bold">Passage col &lt; 12h00</span>
         </div>
       `;
 
-      // Update Chart
-      if (chartInstance) {
-        chartInstance.data.labels = s.chartLabels;
-        chartInstance.data.datasets[0].data = s.chartElevations;
-        chartInstance.data.datasets[0].pointBackgroundColor = s.chartElevations.map(alt => alt >= 2700 ? '#ef4444' : '#38bdf8');
-        chartInstance.data.datasets[0].pointRadius = s.chartElevations.map(alt => alt >= 2700 ? 6 : 4);
-        chartInstance.update();
+      if (elevationChartInstance) {
+        elevationChartInstance.data.labels = s.points;
+        elevationChartInstance.data.datasets[0].data = s.elevations;
+        elevationChartInstance.update();
       }
     }
 
-    // --- 5. CHECKLIST DATA & LOCALSTORAGE ---
-    const checklistItems = [
-      // Textile
-      { id: "c1", cat: "textile", name: "Veste imperméable respirante à capuche", spec: "Colonne d'eau &ge; 10 000 mm Schmerber, coutures étanches", req: true },
-      { id: "c2", cat: "textile", name: "Surpantalon imperméable étanche", spec: "&ge; 10 000 mm, enfilable sans retirer les chaussures", req: true },
-      { id: "c3", cat: "textile", name: "Deuxième couche thermique chaude", spec: "Laine mérinos (&ge; 200g/m²) ou micropolaire compressible", req: true },
-      { id: "c4", cat: "textile", name: "Pantalon long de course ou collant couvrant", spec: "Protection contre le vent glacé et les dalles rocheuses", req: true },
-      { id: "c5", cat: "textile", name: "Bonnet thermique chaud", spec: "Couvrant entièrement les oreilles (perte de chaleur crânienne)", req: true },
-      { id: "c6", cat: "textile", name: "Gants thermiques + surmoufles étanches", spec: "Préservation de la motricité fine des doigts en cas de gel", req: true },
-
-      // Survie
-      { id: "c7", cat: "survie", name: "Micro-crampons de trail (Microspikes)", spec: "10-14 pointes en acier cémenté (obligatoire Zermatt-Gressoney)", req: true },
-      { id: "c8", cat: "survie", name: "Sac de bivouac tubulaire (SOL Emergency Bivy)", spec: "Hermétique aluminisé fermé. Couverture simple INTERDITE", req: true },
-      { id: "c9", cat: "survie", name: "Flasque filtrante à fibres creuses (0,1 micron)", spec: "Katadyn BeFree ou Sawyer (neutralise Giardia et bactéries)", req: true },
-      { id: "c10", cat: "survie", name: "Pastilles de purification d'urgence", spec: "Dioxyde de chlore ou Micropur Forte (pour eaux d'alpage)", req: true },
-      { id: "c11", cat: "survie", name: "Trousse de traumatologie & contention", spec: "Bande adhésive élastique 100 cm x 6 cm (strapping entorse)", req: true },
-      { id: "c12", cat: "survie", name: "Rations alimentaires de secours scellées", spec: "Minimum 400 à 800 kcal intouchées en sac ziplock", req: true },
-
-      // Orientation
-      { id: "c13", cat: "orientation", name: "Frontale principale haute puissance", spec: "&ge; 300 lumens régulés avec batterie chargée", req: true },
-      { id: "c14", cat: "orientation", name: "Deuxième frontale de secours compacte", spec: "Type Petzl e+LITE avec piles scellées d'origine", req: true },
-      { id: "c15", cat: "orientation", name: "Batterie externe nomade 10 000 mAh", spec: "Câble blindé maintenu au chaud dans une pochette interne", req: true },
-      { id: "c16", cat: "orientation", name: "Téléphone avec roaming CH/IT activé", spec: "Numéros d'urgence 144, 112 et Air Zermatt enregistrés", req: true },
-      { id: "c17", cat: "orientation", name: "Sifflet de survie haute fréquence sans bille", spec: "Fonctionne par grand froid sans bloquer par le gel", req: true },
-      { id: "c18", cat: "orientation", name: "Pièce d'identité & carte d'assurance secours", spec: "Passage de la frontière italo-suisse en altitude", req: true }
+    // --- 6. CHECKLIST INTERACTIVE AVEC LOCALSTORAGE ---
+    const checklistData = [
+      {
+        category: "Sécurité & Glace",
+        items: [
+          { id: "c1", label: "Micro-crampons acier (Microspikes avec chaînes)" },
+          { id: "c2", label: "Couverture de survie / Bivy SOL étanche" },
+          { id: "c3", label: "Sifflet de détresse (souvent sur le sac)" },
+          { id: "c4", label: "Lampe frontale 200+ lumens + câble USB recharge" },
+          { id: "c5", label: "Téléphone chargé + numéros 144 et 112 enregistrés" },
+          { id: "c6", label: "Flasque filtrante 0,1 µm (Katadyn BeFree / BePure)" }
+        ]
+      },
+      {
+        category: "Textile Alpin Malin",
+        items: [
+          { id: "c7", label: "Veste imperméable à capuche (min. 10 000 Schmerber)" },
+          { id: "c8", label: "Couche thermique manches longues (laine mérinos ou synthétique)" },
+          { id: "c9", label: "Pantalon de pluie / collant long coupe-vent" },
+          { id: "c10", label: "Gants légers coupe-vent + bonnet ou bandeau chaud" },
+          { id: "c11", label: "Casquette & lunettes de soleil catégorie 3 ou 4" },
+          { id: "c12", label: "Crème solaire haute protection indice 50" }
+        ]
+      },
+      {
+        category: "Confort & Bâtons",
+        items: [
+          { id: "c13", label: "Bâtons de trail pliables (pointes carbure en bon état)" },
+          { id: "c14", label: "Sac à dos de trail 15 à 20 litres confortable" },
+          { id: "c15", label: "Capacité d'eau de 1,5 litre minimum (flasques souples)" },
+          { id: "c16", label: "Mini-bol et cuillère-fourchette (obligatoire gîtes)" },
+          { id: "c17", label: "Drap de sac en soie compact (pour les nuits d'étape)" },
+          { id: "c18", label: "Papiers d'identité (passage de frontière CH / IT)" }
+        ]
+      }
     ];
 
     function renderChecklist() {
+      const container = document.getElementById('checklist-grid');
+      container.innerHTML = '';
       const saved = JSON.parse(localStorage.getItem('tmr2028_checklist') || '{}');
 
-      const textileEl = document.getElementById('group-textile');
-      const survieEl = document.getElementById('group-survie');
-      const orientEl = document.getElementById('group-orientation');
+      let totalItems = 0;
+      let checkedItems = 0;
 
-      textileEl.innerHTML = '';
-      survieEl.innerHTML = '';
-      orientEl.innerHTML = '';
-
-      let checkedCount = 0;
-
-      checklistItems.forEach(item => {
-        const isChecked = !!saved[item.id];
-        if (isChecked) checkedCount++;
-
-        const div = document.createElement('div');
-        div.className = `p-3 rounded-xl border transition flex items-start gap-3 cursor-pointer ${
-          isChecked ? 'bg-slate-900/40 border-emerald-500/40' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
-        }`;
-        div.onclick = () => toggleCheck(item.id);
-
-        div.innerHTML = `
-          <input type="checkbox" id="${item.id}" ${isChecked ? 'checked' : ''} class="mt-1 h-4 w-4 rounded border-slate-700 text-sky-500 focus:ring-sky-400 bg-slate-800 pointer-events-none">
-          <div class="flex-1">
-            <div class="flex items-center justify-between">
-              <span class="text-xs sm:text-sm font-bold ${isChecked ? 'line-through text-slate-400' : 'text-white'}">${item.name}</span>
-              ${item.req ? '<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800 uppercase">Requis</span>' : ''}
-            </div>
-            <p class="text-[11px] text-slate-400 mt-0.5">${item.spec}</p>
+      checklistData.forEach(cat => {
+        const col = document.createElement('div');
+        col.className = "glass-card p-6 rounded-2xl border-slate-800";
+        col.innerHTML = `
+          <h3 class="text-sm font-bold text-white font-mono uppercase tracking-wider mb-4 border-b border-slate-800 pb-2 text-emerald-400 flex items-center justify-between">
+            <span>${cat.category}</span>
+            <i class="ph-bold ph-check-square-offset"></i>
+          </h3>
+          <div class="space-y-3">
+            ${cat.items.map(item => {
+              totalItems++;
+              const isChecked = !!saved[item.id];
+              if (isChecked) checkedItems++;
+              return `
+                <label class="flex items-start gap-3 text-xs text-slate-300 hover:text-white cursor-pointer select-none">
+                  <input type="checkbox" onchange="toggleCheckItem('${item.id}', this.checked)" ${isChecked ? 'checked' : ''} class="mt-0.5 rounded border-slate-700 bg-slate-900 text-emerald-500 focus:ring-0 focus:ring-offset-0 w-4 h-4">
+                  <span class="${isChecked ? 'line-through text-slate-500' : ''}">${item.label}</span>
+                </label>
+              `;
+            }).join('')}
           </div>
         `;
-
-        if (item.cat === 'textile') textileEl.appendChild(div);
-        else if (item.cat === 'survie') survieEl.appendChild(div);
-        else orientEl.appendChild(div);
+        container.appendChild(col);
       });
 
-      // Update progress
-      const total = checklistItems.length;
-      document.getElementById('checklist-progress-text').innerText = `${checkedCount} / ${total}`;
-      const pct = Math.round((checkedCount / total) * 100);
-      document.getElementById('checklist-progress-bar').style.width = pct + '%';
+      document.getElementById('check-counter').innerText = `${checkedItems} / ${totalItems}`;
+      const pct = Math.round((checkedItems / totalItems) * 100);
+      document.getElementById('check-progress-bar').style.width = `${pct}%`;
     }
 
-    function toggleCheck(id) {
+    function toggleCheckItem(id, checked) {
       const saved = JSON.parse(localStorage.getItem('tmr2028_checklist') || '{}');
-      saved[id] = !saved[id];
+      if (checked) saved[id] = true;
+      else delete saved[id];
       localStorage.setItem('tmr2028_checklist', JSON.stringify(saved));
       renderChecklist();
     }
 
     function resetChecklist() {
-      if (confirm('Voulez-vous réinitialiser tous les éléments cochés ?')) {
-        localStorage.removeItem('tmr2028_checklist');
-        renderChecklist();
-        showToast('Checklist réinitialisée.');
-      }
+      localStorage.removeItem('tmr2028_checklist');
+      renderChecklist();
     }
 
-    // --- 6. SOS TEMPLATE COPY ---
+    // --- 7. HELPER COPIE MESSAGE SOS ---
     function copySOSFormat() {
-      const text = `URGENCE SECOURS MONTAGNE (TMR 2028)
-1. IDENTITÉ : 2 traileurs (Belgique / Schaerbeek)
-2. LOCALISATION EXACTE : Coordonnées WGS84 [Indiquer Lat, Lon]
-3. VERSANT : [Valais Suisse OU Vallée d'Aoste / Piémont Italie]
-4. NATURE DE L'ACCIDENT : [Chute / Fractures / Hypothermie sévère / Épuisement]
-5. CONDITIONS MÉTÉO SUR PLACE : [Brouillard / Vent fort / Orage / Visibilité < 10m]
-6. ÉQUIPEMENT DE PROTECTION : Sacs de survie SOL Bivy engagés, vestes 10 000mm portées.`;
-      
-      const el = document.createElement('textarea');
-      el.value = text;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
+      const text = "URGENCE MONTAGNE TMR: [Vos Noms] | Position GPS: [Lat, Long] | Altitude: [m] | Situation: [Ex: Entorse, Épuisement] | Météo: [Dégagée / Brouillard] | Téléphone de contact: [...]";
+      const dummy = document.createElement("textarea");
+      document.body.appendChild(dummy);
+      dummy.value = text;
+      dummy.select();
+      document.execCommand("copy");
+      document.body.removeChild(dummy);
 
-      showToast('Template SOS copié dans le presse-papier !');
-    }
-
-    // --- 7. TOAST NOTIFICATION HELPER ---
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      const tm = document.getElementById('toast-msg');
-      tm.innerText = msg;
-      t.classList.remove('translate-y-24', 'opacity-0');
+      const btn = document.getElementById('copy-btn');
+      btn.innerHTML = `<i class="ph-bold ph-check text-emerald-400"></i> Modèle copié !`;
       setTimeout(() => {
-        t.classList.add('translate-y-24', 'opacity-0');
-      }, 3500);
+        btn.innerHTML = `<i class="ph-bold ph-copy"></i> Copier le modèle SOS`;
+      }, 2500);
     }
 
-    // --- ON LOAD INITIALIZATION ---
+    // --- 8. INITIALISATION AU CHARGEMENT ---
     window.onload = function() {
       initChart();
       switchStage(1);
       renderChecklist();
+      renderQuiz();
     };
   </script>
 </body>
