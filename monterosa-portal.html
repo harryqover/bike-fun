@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="fr" class="dark">
 <head>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Mont Rose">
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f3d4.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Tour du Mont Rose 2028 - Carnet de Cordée</title>
@@ -25,6 +29,8 @@
         }
       }
     }
+    let feedPageSize = 15;
+    let feedVisibleCount = 15;
   </script>
 
   <!-- Canvas Confetti & Chart.js -->
@@ -150,6 +156,56 @@
       </div>
     </section>
 
+    <!-- ============================================================================== -->
+    <!-- BAROMÈTRE HEBDOMADAIRE : LE CONTRAT DE CORDÉE                                 -->
+    <!-- ============================================================================== -->
+    <section class="mb-8 p-6 rounded-3xl bg-slate-900/70 border border-slate-800 shadow-xl relative overflow-hidden">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-sky-400 bg-sky-500/10 px-2.5 py-0.5 rounded-full border border-sky-500/20">
+              Contrat Hebdomadaire
+            </span>
+            <span id="contractStatusBadge" class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              ⏳ En ascension
+            </span>
+          </div>
+          <h3 id="contractWeekTitle" class="text-lg font-black text-white mt-1.5 flex items-center gap-2">
+            <span>🎯</span> <span>Objectif Semaine : 3 séances / membre</span>
+          </h3>
+          <p id="contractSubtitle" class="text-xs text-slate-400 mt-0.5">
+            Calcul des séances de la cordée depuis lundi...
+          </p>
+        </div>
+
+        <!-- Chiffres clés de la semaine -->
+        <div class="flex items-center gap-4 text-left md:text-right">
+          <div>
+            <div id="contractDoneCount" class="text-2xl font-black text-sky-400">0 / 21</div>
+            <div class="text-[11px] text-slate-400">séances validées</div>
+          </div>
+          <div class="h-8 w-px bg-slate-800"></div>
+          <div>
+            <div id="contractActiveClimbers" class="text-2xl font-black text-emerald-400">0 / 7</div>
+            <div class="text-[11px] text-slate-400">grimpeurs actifs</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barre de progression hebdomadaire -->
+      <div class="w-full bg-slate-950 rounded-full h-3 p-0.5 border border-slate-800 relative overflow-hidden mb-4">
+        <div id="contractProgressBar" class="h-full rounded-full bg-gradient-to-r from-sky-500 via-indigo-500 to-emerald-400 transition-all duration-700" style="width: 0%"></div>
+      </div>
+
+      <!-- Pastilles d'état individuel de la cordée -->
+      <div>
+        <div class="text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-2">État des troupes cette semaine :</div>
+        <div id="contractClimbersChips" class="flex flex-wrap items-center gap-2">
+          <!-- Injecté dynamiquement par JS -->
+        </div>
+      </div>
+    </section>
+
     <!-- ONGLETS DE NAVIGATION -->
     <nav class="flex items-center gap-2 border-b border-slate-800 pb-3 mb-6 overflow-x-auto text-sm font-semibold custom-scrollbar">
       <button onclick="switchTab('feed')" id="tabBtn-feed" class="px-4 py-2 rounded-xl bg-sky-500/20 text-sky-400 border border-sky-500/30 transition flex items-center gap-2 whitespace-nowrap">
@@ -211,6 +267,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/40 p-3 rounded-2xl border border-slate-800/80">
           <div class="flex items-center gap-2 overflow-x-auto text-xs custom-scrollbar">
             <button onclick="filterFeed('all')" class="feed-filter-btn px-3 py-1.5 rounded-xl bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30" data-filter="all">Tous</button>
+            <button onclick="filterFeed('week')" class="feed-filter-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 hover:text-white border border-slate-800" data-filter="week">📅 Cette semaine</button>
             <button onclick="filterFeed('renfo')" class="feed-filter-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 hover:text-white border border-slate-800" data-filter="renfo">💪 Renfo</button>
             <button onclick="filterFeed('trail')" class="feed-filter-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 hover:text-white border border-slate-800" data-filter="trail">⛰️ Trail / Rando</button>
             <button onclick="filterFeed('bike')" class="feed-filter-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 hover:text-white border border-slate-800" data-filter="bike">🚴 Vélo & HT</button>
@@ -1049,6 +1106,20 @@
 
       <!-- 2. ONGLET CLASSEMENT & DÉFIS -->
       <section id="tab-leaderboard" class="hidden space-y-6">
+        <!-- BASCULE PÉRIODE DU CLASSEMENT -->
+        <div class="flex items-center justify-between gap-4 bg-slate-900/60 p-2.5 rounded-2xl border border-slate-800">
+          <div class="text-xs font-bold text-slate-300 flex items-center gap-2">
+            <span>🏆</span> <span>Période du classement :</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button id="lbPeriod-all" onclick="setLeaderboardPeriod('all')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 transition">
+              Général (All-time)
+            </button>
+            <button id="lbPeriod-week" onclick="setLeaderboardPeriod('week')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-950 text-slate-400 hover:text-white border border-slate-800 transition">
+              ⚡ Cette semaine
+            </button>
+          </div>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="podiumContainer">
           <!-- Injecté dynamiquement -->
         </div>
@@ -1075,6 +1146,21 @@
                 <!-- Injecté dynamiquement -->
               </tbody>
             </table>
+          </div>
+        </div>
+        <!-- ARMOIRE À TROPHÉES DE LA CORDÉE -->
+        <div class="mt-8 bg-slate-900/60 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <span>🏅</span> <span>Armoire à Trophées de la Cordée</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">Les hauts faits débloqués sur la route du Mont Rose 2028</p>
+            </div>
+          </div>
+
+          <div id="trophyShowcaseGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <!-- Injecté dynamiquement par JS -->
           </div>
         </div>
       </section>
@@ -1671,6 +1757,9 @@
       renderLeaderboard();
       renderExercises();
       renderStats();
+      updateWeeklyContract();
+      renderTrophyShowcase();
+
     }
 
     // ==============================================================================
@@ -1739,19 +1828,26 @@
         filtered = filtered.filter(w => (w.type || "").toLowerCase().includes("trail") || (w.type || "").toLowerCase().includes("rando"));
       } else if (currentFeedFilter === "bike") {
         filtered = filtered.filter(w => (w.type || "").toLowerCase().includes("vélo") || (w.type || "").toLowerCase().includes("home"));
+      } else if (currentFeedFilter === "week") {
+        const monday = getMondayOfCurrentWeek();
+        filtered = filtered.filter(w => w.date && new Date(w.date + "T00:00:00") >= monday);
       }
 
       if (filtered.length === 0) {
         container.innerHTML = `
           <div class="p-12 text-center rounded-3xl bg-slate-900/40 border border-slate-800/80">
             <span class="text-4xl">🏔️</span>
-            <p class="text-slate-400 text-sm mt-2">Aucun entraînement dans cette catégorie.</p>
+            <p class="text-slate-400 text-sm mt-2">Aucun entraînement trouvé.</p>
           </div>
         `;
         return;
       }
 
-      container.innerHTML = filtered.map(w => {
+      // Découpage paginé
+      const visibleItems = filtered.slice(0, feedVisibleCount);
+      const remainingCount = filtered.length - visibleItems.length;
+
+      const cardsHtml = visibleItems.map(w => {
         const isGarmin = !!w.garmin_activity_id;
         const kudosClass = w.has_kudos ? "bg-amber-500/20 text-amber-300 border-amber-500/40" : "bg-slate-900 text-slate-400 hover:text-white border-slate-800";
 
@@ -1770,7 +1866,6 @@
                   <div class="text-[11px] text-slate-400">${formatDate(w.date)} • ${escapeHtml(w.type)}</div>
                 </div>
               </div>
-
               <div class="text-right">
                 <span class="px-2.5 py-1 rounded-xl bg-sky-500/10 text-sky-400 font-extrabold text-xs border border-sky-500/20">
                   +${w.points || 0} pts
@@ -1783,7 +1878,6 @@
               ${w.notes ? `<p class="text-xs text-slate-400 mt-1 italic leading-relaxed">« ${escapeHtml(w.notes)} »</p>` : ''}
             </div>
 
-            <!-- Métriques clés -->
             <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-800/60 text-center text-xs">
               <div class="p-2 rounded-xl bg-slate-950/60">
                 <div class="text-[10px] text-slate-500 uppercase font-semibold">Durée</div>
@@ -1808,63 +1902,38 @@
           </div>
         `;
       }).join('');
+
+      // Bouton "Charger plus" conditionnel
+      const loadMoreBtn = remainingCount > 0 ? `
+        <div class="text-center pt-3">
+          <button onclick="loadMoreWorkouts()" class="px-6 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-sky-400 hover:text-white transition shadow-lg">
+            ⚡ Charger plus de séances (${remainingCount} restante${remainingCount > 1 ? 's' : ''})
+          </button>
+        </div>
+      ` : '';
+
+      container.innerHTML = cardsHtml + loadMoreBtn;
     }
 
-    // ==============================================================================
-    // RENDU DU CLASSEMENT (AVEC JAUGE INDIVIDUELLE 13 000 m)
-    // ==============================================================================
-    function renderLeaderboard() {
-      const podium = document.getElementById('podiumContainer');
-      const tableBody = document.getElementById('leaderboardTableBody');
-      if (!tableBody) return;
-
-      const sorted = [...globalLeaderboard];
-
-      // Podium Top 3
-      if (podium) {
-        const top3 = sorted.slice(0, 3);
-        const medals = ["🥇", "🥈", "🥉"];
-        podium.innerHTML = top3.map((u, i) => `
-          <div class="p-5 rounded-3xl bg-slate-900/80 border border-slate-800 shadow-xl flex items-center gap-4 relative overflow-hidden">
-            <span class="text-3xl">${medals[i]}</span>
-            <div class="flex-1">
-              <div class="text-xs text-slate-400 font-semibold uppercase">Rang #${i + 1}</div>
-              <div class="font-black text-white text-base">${escapeHtml(u.name)}</div>
-              <div class="text-xs text-sky-400 font-bold mt-0.5">${u.points.toLocaleString()} pts • +${u.elevation.toLocaleString()} m D+</div>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      // Tableau complet
-      tableBody.innerHTML = sorted.map((u, idx) => {
-        const pct13k = Math.min(100, Math.round((u.elevation / MONT_ROSE_ELEVATION) * 100));
-
-        return `
-          <tr class="hover:bg-slate-800/30 transition">
-            <td class="py-3 px-3 font-bold text-slate-400">#${idx + 1}</td>
-            <td class="py-3 px-3">
-              <div class="flex items-center gap-2">
-                <span class="text-lg">${u.avatar_emoji || "🏔️"}</span>
-                <span class="font-bold text-white">${escapeHtml(u.name)}</span>
-              </div>
-            </td>
-            <td class="py-3 px-3 font-extrabold text-sky-400">${u.points.toLocaleString()}</td>
-            <td class="py-3 px-3 font-bold text-white">+${u.elevation.toLocaleString()} m</td>
-            <td class="py-3 px-3 min-w-[160px]">
-              <div class="flex items-center gap-2">
-                <div class="flex-1 bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
-                  <div class="bg-gradient-to-r from-sky-500 to-indigo-500 h-full rounded-full" style="width: ${pct13k}%"></div>
-                </div>
-                <span class="text-[10px] text-slate-400 font-mono">${pct13k}%</span>
-              </div>
-            </td>
-            <td class="py-3 px-3">${u.renfo_minutes || 0} min</td>
-            <td class="py-3 px-3 text-slate-400">${u.workouts_count || 0}</td>
-          </tr>
-        `;
-      }).join('');
+    function loadMoreWorkouts() {
+      feedVisibleCount += feedPageSize;
+      renderFeed();
     }
+
+    function filterFeed(type) {
+      currentFeedFilter = type;
+      feedVisibleCount = feedPageSize; // Réinitialise l'affichage à la 1re page
+      document.querySelectorAll('.feed-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-filter') === type) {
+          btn.className = "feed-filter-btn px-3 py-1.5 rounded-xl bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30";
+        } else {
+          btn.className = "feed-filter-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 hover:text-white border border-slate-800";
+        }
+      });
+      renderFeed();
+    }
+
+    
 
     // ==============================================================================
     // RENDU DES EXERCICES & ROUTINES
@@ -2358,6 +2427,327 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+    }
+    // ==============================================================================
+    // GESTION DU CLASSEMENT (GÉNÉRAL & HEBDOMADAIRE) & BADGES
+    // ==============================================================================
+    let currentLeaderboardPeriod = "all"; // "all" ou "week"
+
+    function getMondayOfCurrentWeek() {
+      const now = new Date();
+      const day = now.getDay();
+      const diff = now.getDate() - day + (day === 0 ? -6 : 1); // 1 = Lundi
+      const monday = new Date(now.setDate(diff));
+      monday.setHours(0, 0, 0, 0);
+      return monday;
+    }
+
+    function setLeaderboardPeriod(period) {
+      currentLeaderboardPeriod = period;
+      const btnAll = document.getElementById('lbPeriod-all');
+      const btnWeek = document.getElementById('lbPeriod-week');
+
+      if (period === 'all') {
+        btnAll.className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 transition";
+        btnWeek.className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-950 text-slate-400 hover:text-white border border-slate-800 transition";
+      } else {
+        btnWeek.className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 transition";
+        btnAll.className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-950 text-slate-400 hover:text-white border border-slate-800 transition";
+      }
+      renderLeaderboard();
+    }
+
+    function renderLeaderboard() {
+      const podium = document.getElementById('podiumContainer');
+      const tableBody = document.getElementById('leaderboardTableBody');
+      if (!tableBody) return;
+
+      let sourceWorkouts = globalWorkouts;
+
+      // Filtrage hebdomadaire si sélectionné
+      if (currentLeaderboardPeriod === "week") {
+        const monday = getMondayOfCurrentWeek();
+        sourceWorkouts = globalWorkouts.filter(w => w.date && new Date(w.date + "T00:00:00") >= monday);
+      }
+
+      // Recalcul dynamique des totaux
+      const totals = {};
+      
+      // Initialiser pour conserver les noms et avatars de tous les membres
+      globalLeaderboard.forEach(u => {
+        totals[u.email] = {
+          email: u.email,
+          name: u.name,
+          avatar_emoji: u.avatar_emoji || "🏔️",
+          points: 0,
+          elevation: 0,
+          renfo_minutes: 0,
+          workouts_count: 0
+        };
+      });
+
+      sourceWorkouts.forEach(w => {
+        const email = (w.user_email || "").toLowerCase();
+        if (!totals[email]) {
+          totals[email] = {
+            email: email,
+            name: w.user_name || email,
+            avatar_emoji: "🏔️",
+            points: 0,
+            elevation: 0,
+            renfo_minutes: 0,
+            workouts_count: 0
+          };
+        }
+        const dPlus = Number(w.elevation_m !== undefined ? w.elevation_m : (w.elevation_gain_m || 0)) || 0;
+        const dur = Number(w.duration_min) || 0;
+        const pts = Number(w.points) || 0;
+
+        totals[email].points += pts;
+        totals[email].elevation += dPlus;
+        totals[email].workouts_count += 1;
+        if ((w.type || "").toLowerCase().includes("renfo")) {
+          totals[email].renfo_minutes += dur;
+        }
+      });
+
+      const sorted = Object.values(totals).sort((a, b) => b.points - a.points);
+
+      // Podium Top 3
+      if (podium) {
+        const top3 = sorted.slice(0, 3);
+        const medals = ["🥇", "🥈", "🥉"];
+        podium.innerHTML = top3.map((u, i) => `
+          <div class="p-5 rounded-3xl bg-slate-900/80 border border-slate-800 shadow-xl flex items-center gap-4 relative overflow-hidden">
+            <span class="text-3xl">${medals[i]}</span>
+            <div class="flex-1">
+              <div class="text-xs text-slate-400 font-semibold uppercase">
+                ${currentLeaderboardPeriod === 'week' ? 'Bouquetin de la semaine #' + (i + 1) : 'Rang #' + (i + 1)}
+              </div>
+              <div class="font-black text-white text-base">${escapeHtml(u.name)}</div>
+              <div class="text-xs text-sky-400 font-bold mt-0.5">${u.points.toLocaleString()} pts • +${u.elevation.toLocaleString()} m D+</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Tableau complet
+      tableBody.innerHTML = sorted.map((u, idx) => {
+        const pct13k = Math.min(100, Math.round((u.elevation / MONT_ROSE_ELEVATION) * 100));
+        
+        // 1. Récupération sécurisée des badges de ce grimpeur
+        const badges = getUserBadges(u.email);
+
+        return `
+          <tr class="hover:bg-slate-800/30 transition">
+            <td class="py-3 px-3 font-bold text-slate-400">#${idx + 1}</td>
+            <td class="py-3 px-3">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">${u.avatar_emoji || "🏔️"}</span>
+                <div>
+                  <div class="font-bold text-white">${escapeHtml(u.name)}</div>
+                  ${badges.length > 0 ? `
+                    <div class="flex flex-wrap items-center gap-1 mt-0.5">
+                      ${badges.map(b => `
+                        <span title="${b.name} : ${b.desc}" class="cursor-help px-1.5 py-0.5 rounded-md bg-slate-800 text-[10px] border border-slate-700 hover:border-sky-400 transition">
+                          ${b.emoji}
+                        </span>
+                      `).join('')}
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            </td>
+            <td class="py-3 px-3 font-extrabold text-sky-400">${u.points.toLocaleString()}</td>
+            <td class="py-3 px-3 font-bold text-white">+${u.elevation.toLocaleString()} m</td>
+            <td class="py-3 px-3 min-w-[160px]">
+              <div class="flex items-center gap-2">
+                <div class="flex-1 bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
+                  <div class="bg-gradient-to-r from-sky-500 to-indigo-500 h-full rounded-full" style="width: ${pct13k}%"></div>
+                </div>
+                <span class="text-[10px] text-slate-400 font-mono">${pct13k}%</span>
+              </div>
+            </td>
+            <td class="py-3 px-3">${u.renfo_minutes || 0} min</td>
+            <td class="py-3 px-3 text-slate-400">${u.workouts_count || 0}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateWeeklyContract() {
+      const monday = getMondayOfCurrentWeek();
+      const weekWorkouts = globalWorkouts.filter(w => w.date && new Date(w.date + "T00:00:00") >= monday);
+      
+      const memberCounts = {};
+      globalLeaderboard.forEach(u => {
+        memberCounts[u.email.toLowerCase()] = {
+          name: u.name,
+          avatar: u.avatar_emoji || "🏔️",
+          count: 0
+        };
+      });
+
+      weekWorkouts.forEach(w => {
+        const email = (w.user_email || "").toLowerCase();
+        if (memberCounts[email]) {
+          memberCounts[email].count += 1;
+        }
+      });
+
+      const membersList = Object.values(memberCounts);
+      const totalApproved = membersList.length || 7;
+      const targetSessions = totalApproved * 3;
+      const totalDone = weekWorkouts.length;
+      const activeClimbersCount = membersList.filter(m => m.count > 0).length;
+
+      const pct = Math.min(100, Math.round((totalDone / targetSessions) * 100));
+
+      const progressBar = document.getElementById('contractProgressBar');
+      if (progressBar) progressBar.style.width = `${pct}%`;
+
+      const doneEl = document.getElementById('contractDoneCount');
+      if (doneEl) doneEl.innerText = `${totalDone} / ${targetSessions}`;
+
+      const activeEl = document.getElementById('contractActiveClimbers');
+      if (activeEl) activeEl.innerText = `${activeClimbersCount} / ${totalApproved}`;
+
+      const statusBadge = document.getElementById('contractStatusBadge');
+      if (statusBadge) {
+        if (totalDone >= targetSessions) {
+          statusBadge.className = "text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+          statusBadge.innerText = "🏆 Contrat Rempli !";
+        } else if (pct >= 50) {
+          statusBadge.className = "text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30";
+          statusBadge.innerText = "🧗 Sur l'arête";
+        } else {
+          statusBadge.className = "text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30";
+          statusBadge.innerText = "⏳ En ascension";
+        }
+      }
+
+      const chipsContainer = document.getElementById('contractClimbersChips');
+      if (chipsContainer) {
+        chipsContainer.innerHTML = membersList.map(m => {
+          const isComplete = m.count >= 3;
+          const chipClass = isComplete
+            ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-200"
+            : (m.count > 0 ? "bg-sky-500/10 border-sky-500/30 text-sky-200" : "bg-slate-950 border-slate-800 text-slate-400");
+          
+          const badgeIcon = isComplete ? "✅" : (m.count > 0 ? `⚡ ${m.count}/3` : "⏳ 0/3");
+
+          return `
+            <div class="px-2.5 py-1.5 rounded-xl border text-xs flex items-center gap-1.5 font-medium ${chipClass}">
+              <span>${m.avatar}</span>
+              <span class="font-bold text-white">${escapeHtml(m.name)}</span>
+              <span class="text-[10px] font-mono opacity-90">${badgeIcon}</span>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    const ALPINE_BADGES = [
+      {
+        id: "dplus_1k",
+        name: "Bouquetin d'Or",
+        emoji: "🐐",
+        desc: "+1 000 m D+ en une seule sortie",
+        check: (uw) => uw.some(w => (Number(w.elevation_m || w.elevation_gain_m || 0)) >= 1000)
+      },
+      {
+        id: "elev_5k",
+        name: "Passe-Montagne",
+        emoji: "🏔️",
+        desc: "+5 000 m D+ cumulés au total",
+        check: (uw) => uw.reduce((acc, w) => acc + (Number(w.elevation_m || w.elevation_gain_m || 0)), 0) >= 5000
+      },
+      {
+        id: "renfo_pro",
+        name: "Genoux de Fer",
+        emoji: "🛡️",
+        desc: "Au moins 3 séances de renforcement alpin",
+        check: (uw) => uw.filter(w => (w.type || "").toLowerCase().includes("renfo")).length >= 3
+      },
+      {
+        id: "ultra_dist",
+        name: "Mille Bornes",
+        emoji: "⚡",
+        desc: "Sortie longue de plus de 30 km",
+        check: (uw) => uw.some(w => parseFloat(String(w.distance_km || 0).replace(',', '.')) >= 30)
+      },
+      {
+        id: "volume_20h",
+        name: "Gros Volume",
+        emoji: "⏱️",
+        desc: "Plus de 20 heures d'effort cumulées",
+        check: (uw) => uw.reduce((acc, w) => acc + (Number(w.duration_min) || 0), 0) >= 1200
+      },
+      {
+        id: "metronome_20",
+        name: "Métronome Alpin",
+        emoji: "🏃",
+        desc: "Au moins 20 séances enregistrées",
+        check: (uw) => uw.length >= 20
+      },
+      {
+        id: "trail_lover",
+        name: "Esprit Alpin",
+        emoji: "⛰️",
+        desc: "Au moins 3 sorties Trail ou Randonnée",
+        check: (uw) => uw.filter(w => {
+          const t = (w.type || "").toLowerCase();
+          return t.includes("trail") || t.includes("rando");
+        }).length >= 3
+      },
+      {
+        id: "sherpa_40",
+        name: "Le Sherpa",
+        emoji: "👑",
+        desc: "Plus de 40 séances enregistrées",
+        check: (uw) => uw.length >= 40
+      }
+    ];
+
+    function getUserBadges(userEmail) {
+      if (!userEmail) return [];
+      const cleanEmail = String(userEmail).trim().toLowerCase();
+      const userWorkouts = globalWorkouts.filter(w => String(w.user_email || "").trim().toLowerCase() === cleanEmail);
+      return ALPINE_BADGES.filter(b => b.check(userWorkouts));
+    }
+
+    function renderTrophyShowcase() {
+      const grid = document.getElementById('trophyShowcaseGrid');
+      if (!grid) return;
+
+      grid.innerHTML = ALPINE_BADGES.map(badge => {
+        const holders = globalLeaderboard.filter(u => {
+          const uw = globalWorkouts.filter(w => (w.user_email || "").toLowerCase() === u.email.toLowerCase());
+          return badge.check(uw);
+        });
+
+        const isUnlockedByTeam = holders.length > 0;
+
+        return `
+          <div class="p-4 rounded-2xl border transition ${isUnlockedByTeam ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-950/30 border-slate-900 opacity-50'}">
+            <div class="flex items-start justify-between">
+              <span class="text-2xl">${badge.emoji}</span>
+              ${isUnlockedByTeam 
+                ? `<span class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">${holders.length} détenteur${holders.length > 1 ? 's' : ''}</span>`
+                : '<span class="text-[10px] font-bold text-slate-500">Verrouillé</span>'
+              }
+            </div>
+            <div class="font-bold text-white text-xs mt-2">${badge.name}</div>
+            <p class="text-[11px] text-slate-400 mt-0.5">${badge.desc}</p>
+            
+            ${isUnlockedByTeam ? `
+              <div class="mt-2 pt-2 border-t border-slate-800/60 text-[10px] text-slate-400">
+                Obtenu par : <span class="text-sky-300 font-semibold">${holders.map(h => h.name).join(', ')}</span>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
     }
   </script>
 </body>
