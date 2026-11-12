@@ -8,7 +8,6 @@
     @import url('https://fonts.googleapis.com/css2?family=Albert+Sans&display=swap');
     body {
       background-color: #fff;
-      /*background-image: radial-gradient(circle farthest-side at 0 0, #5c85f1, #234ec2);*/
       background-image: linear-gradient(to bottom,#ffffff80,#ffffff80),radial-gradient(circle farthest-side at 0% 100%,var(--coral),#d6f6f900 50%),radial-gradient(circle farthest-corner at 0% 0%,#2f44dd4d,#fff0 58%),radial-gradient(circle farthest-corner at 100% 0%,#2fd4df66,#fff0 36%);
       font-family: 'Albert Sans', sans-serif;
       display: flex;
@@ -77,7 +76,6 @@
   </style>
 </head>
 <body>
-  <!--<img class="logo" src="https://cdn.prod.website-files.com/632acec7cddd053ca87bbc7a/633d6e378e2320dede9f58ac_logo-qover_white.svg" alt="Qover Logo">-->
   <img class="logo" src="https://cdn.prod.website-files.com/632acec7cddd053ca87bbc7a/633d6e3455a345655f175d83_logo-qover_dark.svg" alt="Qover Logo">
   <h1 id="title"></h1>
   <h2 id="subtitle"></h2>
@@ -112,16 +110,21 @@
     const product = getParameterByName("product");
     const partner = getParameterByName("partner");
     const country = getParameterByName("country");
+    const hasGmail = (getParameterByName("g") || "").toLowerCase() === "true";
     const minPublicRating = 3;
 
-    //if(["emailClaimNPS"].includes(source) && rating > 0) rating = rating / 2;
     if ((source === "emailClaimNPS" || /_NPS$/i.test(source)) && rating > 0) {
       rating = rating / 2;
     }
+    /*
+      rating is used to define where we redirect and is on a scale of 5
+      originalRating is sent to gsheet
+    */
 
     if(source === "emailClaimNPS5Stars"){
       originalRating = originalRating * 2;
     }
+
     const translationH1 = {
       fr: "Merci pour vos commentaires !",
       en: "Thank you for your feedback!",
@@ -134,21 +137,18 @@
       no: "Takk for tilbakemeldingen!",
       sv: "Tack för din feedback!"
     };
-
-
     /*const translationH2Positive = {
-      fr: "🌟 Laissez un avis public avant le 30 juin et nous ferons un don de 5€ à une association caritative. Ajoutez simplement votre référence Qover dans votre avis.",
-      en: "🎁 Leave a public review by 30 June and we’ll donate €5 to charity. Just add your Qover reference in your review!",
-      es: "🎁 Deja una reseña pública antes del 30 de junio y donaremos 5€ a una causa solidaria. Solo tienes que añadir tu referencia Qover en la reseña.",
-      nl: "🎁 Laat een publieke review achter voor 30 juni en wij doneren €5 aan een goed doel. Vergeet niet je Qover-referentie toe te voegen!",
-      de: "🎁 Hinterlassen Sie bis zum 30. Juni eine öffentliche Bewertung und wir spenden 5€ für einen guten Zweck. Bitte geben Sie Ihre Qover-Referenz an!",
-      it: "🎁 Lascia una recensione pubblica entro il 30 giugno e doneremo 5€ in beneficenza. Aggiungi il tuo riferimento Qover alla recensione!",
-      pt: "🎁 Deixe uma avaliação pública até 30 de junho e doaremos 5€ para caridade. Basta incluir a sua referência Qover na avaliação!",
-      da: "🎁 Skriv en offentlig anmeldelse inden den 30. juni, og vi donerer 5€ til velgørenhed. Husk at tilføje din Qover-reference i anmeldelsen!",
-      no: "🎁 Legg igjen en offentlig vurdering innen 30. juni, så donerer vi 5€ til veldedighet. Husk å legge til din Qover-referanse i vurderingen!",
-      sv: "🎁 Lämna en offentlig recension före den 30 juni så skänker vi 5€ till välgörenhet. Kom ihåg att inkludera din Qover-referens i recensionen!"
+      fr: "💚 Laissez un avis public avant le 30 juin et nous ferons un don de 5€ à une association caritative. Ajoutez simplement votre référence Qover dans votre avis.",
+      en: "💚 Leave a public review by 30 June and we’ll donate €5 to charity. Just add your Qover reference in your review!",
+      es: "💚 Deja una reseña pública antes del 30 de junio y donaremos 5€ a una causa solidaria. Solo tienes que añadir tu referencia Qover en la reseña.",
+      nl: "💚 Laat een publieke review achter voor 30 juni en wij doneren €5 aan een goed doel. Vergeet niet je Qover-referentie toe te voegen!",
+      de: "💚 Hinterlassen Sie bis zum 30. Juni eine öffentliche Bewertung und wir spenden 5€ für einen guten Zweck. Bitte geben Sie Ihre Qover-Referenz an!",
+      it: "💚 Lascia una recensione pubblica entro il 30 giugno e doneremo 5€ in beneficenza. Aggiungi il tuo riferimento Qover alla recensione!",
+      pt: "💚 Deixe uma avaliação pública até 30 de junho e doaremos 5€ para caridade. Basta incluir a sua referência Qover na avaliação!",
+      da: "💚 Skriv en offentlig anmeldelse inden den 30. juni, og vi donerer 5€ til velgørenhed. Husk at tilføje din Qover-reference i anmeldelsen!",
+      no: "💚 Legg igjen en offentlig vurdering innen 30. juni, så donerer vi 5€ til veldedighet. Husk å legge til din Qover-referanse i vurderingen!",
+      sv: "💚 Lämna en offentlig recension före den 30 juni så skänker vi 5€ till välgörenhet. Kom ihåg att inkludera din Qover-referens i recensionen!"
     };*/
-
     const translationH2Positive = {
       fr: "🌟 Laissez un avis public et aidez-nous à nous améliorer ! N'oubliez pas d'ajouter votre référence Qover dans votre avis.",
       en: "🌟 Leave a public review and help us improve! Just add your Qover reference in your review.",
@@ -175,7 +175,6 @@
       sv: "Vi vill gärna få mer information."
     };
 
-
     h1.textContent = translationH1[lang] || translationH1.en;
     h2.textContent = rating > minPublicRating ? translationH2Positive[lang] || translationH2Positive.en : translationH2Negative[lang] || translationH2Negative.en;
 
@@ -184,24 +183,27 @@
     setTimeout(() => { countdownText.style.opacity = 1; }, 1000);
 
     let ref = cigarId || zendeskId;
-
     const googleSheetUrl = "https://script.google.com/macros/s/AKfycbyzxKUaL5DCzI3ND_9j4WgLW0-8eXH3wDG276jZD7wbwhTY8ut2FRIMTrkeHUQQOceD/exec";
-
     let urlToRedirect = "";
+
     if (rating > minPublicRating) {
-      const redirectOptions = [
-        { url: "https://g.page/r/CeJV3VPdzwkCEAI/review", weight: 5 },
-        { url: "https://www.trustpilot.com/evaluate/qover.com", weight: 5 }
-      ];
-      const weightedRedirectUrls = redirectOptions.flatMap(opt => Array(opt.weight).fill(opt.url));
-      urlToRedirect = weightedRedirectUrls[Math.floor(Math.random() * weightedRedirectUrls.length)];
-      //urlToRedirect = redirectUrls[Math.floor(Math.random() * redirectUrls.length)];
+      if (hasGmail) {
+        const redirectOptions = [
+          { url: "https://g.page/r/CeJV3VPdzwkCEAI/review", weight: 9 },
+          { url: "https://www.trustpilot.com/evaluate/qover.com", weight: 1 }
+        ];
+        const weightedRedirectUrls = redirectOptions.flatMap(opt => Array(opt.weight).fill(opt.url));
+        urlToRedirect = weightedRedirectUrls[Math.floor(Math.random() * weightedRedirectUrls.length)];
+      } else {
+        urlToRedirect = "https://www.trustpilot.com/evaluate/qover.com";
+      }
+
       if (cigarId === "Home Protect Tenant") {
         urlToRedirect = "https://www.trustpilot.com/review/protect.immoweb.be";
       }
     } else {
       urlToRedirect = `https://forms.qover.com/221674111787054?contractReference=${ref}&language=${lang}&source=${source}`;
-      if (source === "emailClaimNPS") {
+      if (source === "emailClaimNPS" || source === "emailClaim_NPS" || source === "emailClaimNPS5Stars") {
         urlToRedirect = `https://forms.qover.com/232471409583055?contractReference=${ref}&language=${lang}&source=${source}`;
       }
     }
@@ -213,14 +215,12 @@
       if (seconds <= 0) clearInterval(countdownInterval);
     }, 1000);
 
-
     const xhr = new XMLHttpRequest();
     xhr.open("POST", googleSheetUrl, true);
     xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
     xhr.onreadystatechange = function() {
       if (this.readyState === XMLHttpRequest.DONE) {
         if (this.status === 200) {
-          
           setTimeout(() => { window.location.replace(urlToRedirect); }, 1);
         } else {
           fallbackMessage.classList.add('show');
