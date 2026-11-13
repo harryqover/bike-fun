@@ -1,4 +1,11 @@
 console.log("hello world 20261113 - v2 deeplink router");
+/*
+CODE FOR THE EMAIL TEMPLATE
+btoa("key=pk_98DABF9A747BE244BC22&lng=fr&cty=BE&vrt=THEFT_ASSISTANCE&ogvle=259000&zip=1030&city=Schaerbeek&strt=16 rue théo coopman&dmgdeduc=ENGLISH_10PC&thftdeduc=STANDARD_10PC&brd=Veloci&mod=xxx&meta=BE108765576575&type=REGULAR_EBIKE&fn=Harry&ln=Evrard&e=harry@qover.com&t=0032486910819&pdte=2022-03-20&sn=65489754&birth=1988-03-31")
+
+URL =>
+https://bike-a5adfd.webflow.io/create-draft?coded=a2V5PXBrXzk4REFCRjlBNzQ3QkUyNDRCQzIyJmxuZz1mciZjdHk9QkUmdnJ0PVRIRUZUX0FTU0lTVEFOQ0Umb2d2bGU9MjU5MDAwJnppcD0xMDMwJmNpdHk9U2NoYWVyYmVlayZzdHJ0PTE2IHJ1ZSB0aOlvIGNvb3BtYW4mZG1nZGVkdWM9RU5HTElTSF8xMFBDJnRoZnRkZWR1Yz1TVEFOREFSRF8xMFBDJmJyZD1WZWxvY2kmbW9kPXh4eCZtZXRhPUJFMTA4NzY1NTc2NTc1JnR5cGU9UkVHVUxBUl9FQklLRSZmbj1IYXJyeSZsbj1FdnJhcmQmZT1oYXJyeUBxb3Zlci5jb20mdD0wMDMyNDg2OTEwODE5JnBkdGU9MjAyMi0wMy0yMCZzbj02NTQ4OTc1NCZiaXJ0aD0xOTg4LTAzLTMx
+*/
 
 var V2_COUNTRIES = ["BE", "FR", "NL", "DE"];
 var V2_BASE_URL = "https://bike.app.qover.com/bike-v2/subject";
@@ -44,26 +51,14 @@ function redirectToV2Flow(data, variant, lang, country, locale, apiKey) {
   startDateObj.setDate(startDateObj.getDate() + 1);
   var startDate = startDateObj.toISOString().split("T")[0];
 
-  // Build metadata as a flat string-to-string map
+  // Keep metadata minimal (avoiding bloated tracking cookies like referrer_url)
   var metadata = {
     version_bike_quote_JS: "redirect v2 deeplink 20261113"
   };
   if (data.meta) metadata.standalone_assistance_ref = String(data.meta);
 
-  var allChannelCloser = getCookie("all_channel_closer");
-  if (allChannelCloser) metadata.all_channel_closer = String(allChannelCloser);
-
   var referralId = getParameterByName("referralid");
   if (referralId) metadata.referralId = String(referralId);
-
-  var referrerUrl = getCookie("referrer_url");
-  if (referrerUrl) metadata.referrer_url = String(referrerUrl);
-
-  var utmSource = getCookie("utm_source");
-  if (utmSource) metadata.utm_source = String(utmSource);
-
-  var utmMedium = getCookie("utm_medium");
-  if (utmMedium) metadata.utm_medium = String(utmMedium);
 
   // Build subject strictly matching subjectSchema
   var bikeType = data.type
@@ -73,12 +68,12 @@ function redirectToV2Flow(data, variant, lang, country, locale, apiKey) {
   var subject = {
     make: data.brd,
     model: data.mod,
-    bikeValue: data.ogvle ? Number(data.ogvle) / 100 : undefined, // cents -> EUR (250..10000)
+    bikeValue: data.ogvle ? Number(data.ogvle) / 100 : undefined,
     bikePurchaseDate: data.pdte,
     bikeCondition: data.cond || "BIKE_CONDITION_NEW",
     bikeType: bikeType,
     antiTheftMeasure: data.antitheft || "ANTI_THEFT_MEASURE_NONE",
-    applyDepreciation: false // Set to true if standard depreciation should apply
+    applyDepreciation: false
   };
 
   if (data.thftdeduc) {
@@ -95,7 +90,7 @@ function redirectToV2Flow(data, variant, lang, country, locale, apiKey) {
     subject.serialNumber = String(data.sn);
   }
 
-  // Build policyholder object (omit empty fields)
+  // Build policyholder object
   var address = {};
   if (data.zip) address.zip = data.zip;
   if (data.number) address.number = data.number;
@@ -113,11 +108,8 @@ function redirectToV2Flow(data, variant, lang, country, locale, apiKey) {
 
   // Assemble pq initialization payload
   var pq = {
-    settings: {
-      locale: locale
-    },
     package: {
-      code: variant
+      name: variant
     },
     contractPeriod: {
       startDate: startDate
@@ -127,8 +119,8 @@ function redirectToV2Flow(data, variant, lang, country, locale, apiKey) {
     metadata: metadata
   };
 
-  // Flatten pq into dot-notated URL query params (e.g. pq.subject.make=RubRider)
   var params = new URLSearchParams();
+  if (locale) params.append("locale", locale);
   appendFlattenedParams(params, "pq", pq);
 
   var targetUrl = V2_BASE_URL + "?" + params.toString();
