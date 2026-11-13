@@ -165,12 +165,12 @@
     </section>
 
     <!-- ============================================================================== -->
-    <!-- BAROMÈTRE HEBDOMADAIRE COMPACT                                                 -->
+    <!-- BAROMÈTRE HEBDOMADAIRE ALIGNÉ SUR LE PLAN DE LA SEMAINE                        -->
     <!-- ============================================================================== -->
     <section class="mb-4 p-4 sm:p-5 rounded-3xl card-alpine">
-      <div class="flex items-center justify-between gap-3 mb-2.5">
+      <div class="flex items-start justify-between gap-3 mb-2">
         <div>
-          <div class="flex items-center gap-2">
+          <div class="flex flex-wrap items-center gap-2">
             <h3 id="contractWeekTitle" class="text-sm sm:text-base font-extrabold text-[#152925]">
               🎯 Contrat de la semaine
             </h3>
@@ -179,14 +179,25 @@
             </span>
           </div>
           <p id="contractSubtitle" class="text-[11px] text-[#5A6E6A] mt-0.5">
-            Objectif : 3 séances chacun depuis lundi
+            Calcul des séances qualifiées depuis lundi...
           </p>
         </div>
 
         <div class="text-right shrink-0">
-          <div id="contractDoneCount" class="text-lg sm:text-xl font-extrabold text-[#0F6856] leading-none">0 / 21</div>
-          <div id="contractActiveClimbers" class="text-[10px] text-[#5A6E6A] font-semibold mt-0.5">0/7 actifs</div>
+          <div id="contractDoneCount" class="text-lg sm:text-xl font-extrabold text-[#0F6856] leading-none">0 / 18</div>
+          <div id="contractActiveClimbers" class="text-[10px] text-[#5A6E6A] font-semibold mt-0.5">0/6 au complet</div>
         </div>
+      </div>
+
+      <!-- Rappel du plan de la semaine & règles de validation -->
+      <div onclick="switchTab('prep')" class="cursor-pointer mb-3 px-3 py-2 rounded-xl bg-[#F5F8F7] hover:bg-[#EBF4F2] border border-[#E2ECEA] flex flex-wrap items-center justify-between gap-2 text-[11px] transition">
+        <div class="flex items-center gap-1.5 font-bold text-[#152925]">
+          <span>📋</span>
+          <span id="contractPlanReminder">Plan de la semaine : chargement...</span>
+        </div>
+        <span id="contractRuleHint" class="text-[10px] font-semibold text-[#0F6856]">
+          Cardio ≥ 25 min • Renfo ≥ 15 min ↗
+        </span>
       </div>
 
       <!-- Barre de progression -->
@@ -194,10 +205,13 @@
         <div id="contractProgressBar" class="h-full rounded-full btn-alpine-gradient transition-all duration-700" style="width: 0%"></div>
       </div>
 
-      <!-- Pastilles membres -->
+      <!-- Pastilles membres (cliquables pour le détail individuel) -->
       <div id="contractClimbersChips" class="flex flex-wrap items-center gap-1.5">
         <!-- Injecté par JS -->
       </div>
+
+      <!-- Info séances courtes ignorées (masqué si 0) -->
+      <div id="contractFilteredNote" class="hidden mt-2.5 pt-2 border-t border-[#E2ECEA] text-[10px] text-[#5A6E6A] font-medium"></div>
     </section>
 
     <!-- ============================================================================== -->
@@ -267,7 +281,6 @@
 
       <!-- 2. ONGLET : LA CORDÉE (CLASSEMENT + TROPHÉES + CHIFFRES & CARTE) -->
       <section id="tab-cordee" class="hidden space-y-6">
-        <!-- Bascule période -->
         <div class="flex items-center justify-between gap-3 card-alpine p-3 rounded-2xl">
           <span class="text-xs font-extrabold text-[#152925] pl-1">Classement :</span>
           <div class="flex items-center gap-1.5">
@@ -280,10 +293,8 @@
           </div>
         </div>
 
-        <!-- Podium Top 3 -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="podiumContainer"></div>
 
-        <!-- Tableau / Cartes Mobiles -->
         <div class="card-alpine rounded-3xl p-4 sm:p-5">
           <h3 class="text-base font-extrabold text-[#152925] mb-4 flex items-center gap-2">
             <span>📊</span> <span>Détail par grimpeur</span>
@@ -309,7 +320,6 @@
           </div>
         </div>
 
-        <!-- Armoire à Trophées -->
         <div class="card-alpine rounded-3xl p-5 sm:p-6 space-y-4">
           <div>
             <h3 class="text-base font-extrabold text-[#152925] flex items-center gap-2">
@@ -320,7 +330,6 @@
           <div id="trophyShowcaseGrid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
         </div>
 
-        <!-- Compteurs Fun & Graphique Mensuel -->
         <div class="grid grid-cols-3 gap-3">
           <div class="p-4 rounded-2xl card-alpine text-center">
             <div id="statEiffelCount" class="text-xl sm:text-2xl font-extrabold text-[#152925]">0</div>
@@ -343,7 +352,6 @@
           </div>
         </div>
 
-        <!-- Carte Schématique du Circuit & Chiffres Clés du Tour -->
         <div class="p-6 rounded-3xl bg-[#F6F3EB] border border-[#E6E0D2] text-center space-y-3">
           <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#E6E0D2] text-[10px] font-extrabold tracking-widest text-[#152925] uppercase">
             <span class="w-2 h-2 rounded-full bg-[#E8533F]"></span> 170 km • 13 000 m D+ • 9 Cols • Suisse & Italie
@@ -820,7 +828,7 @@
 
       <div class="mb-5">
         <h3 class="text-lg font-extrabold text-[#152925]">⚡ Enregistrer un entraînement</h3>
-        <p class="text-xs text-[#5A6E6A]">Chaque mètre de dénivelé et minute de gainage compte pour 2028 !</p>
+        <p class="text-xs text-[#5A6E6A]">Pour valider le contrat hebdo : cardio ≥ 25 min ou renfo ≥ 15 min.</p>
       </div>
 
       <form id="formAddWorkout" onsubmit="handleSaveWorkout(event)" class="space-y-4 text-xs">
@@ -1173,7 +1181,6 @@
         const weekData = parsePlanRowData(row);
         const cells = row.querySelectorAll('td');
 
-        // 1. Bouton compact sous le numéro de semaine sur mobile
         if (cells[0]) {
           const mobBtn = document.createElement('button');
           mobBtn.type = "button";
@@ -1186,7 +1193,6 @@
           cells[0].appendChild(mobBtn);
         }
 
-        // 2. Colonne dédiée à droite sur ordinateur
         const actionTd = document.createElement('td');
         actionTd.className = "py-2.5 px-3 text-right hidden sm:table-cell align-middle whitespace-nowrap";
 
@@ -1995,7 +2001,7 @@
       setTimeout(() => {
         t.classList.add('translate-y-2', 'opacity-0');
         setTimeout(() => t.remove(), 300);
-      }, 4000);
+      }, 4500);
     }
 
     function getTypeEmoji(type) {
@@ -2035,7 +2041,7 @@
     }
 
     // ==============================================================================
-    // CLASSEMENT (MOBILE + DESKTOP) & BADGES
+    // CLASSEMENT (MOBILE + DESKTOP) & CONTRAT HEBDOMADAIRE QUALIFIÉ
     // ==============================================================================
     let currentLeaderboardPeriod = "all";
 
@@ -2244,57 +2250,145 @@
       }).join('');
     }
 
+    function getWeeklyPlanRules(weekSummary) {
+      const typeStr = (weekSummary?.type || "").toLowerCase();
+      const isTaperLight = typeStr.includes("2 run très légers") || typeStr.includes("activation douce");
+      const isTwoSessions = isTaperLight ||
+        typeStr === "1 run + 1 ht" ||
+        typeStr === "course + 1 ht" ||
+        typeStr === "test + 1 ht" ||
+        typeStr === "2 ht doux" ||
+        typeStr.includes("stage") ||
+        typeStr.includes("expédition");
+
+      const requiresLongRun = typeStr.includes("sl") ||
+        typeStr.includes("1 vélo") ||
+        typeStr.includes("stage") ||
+        typeStr.includes("expédition");
+
+      return {
+        targetPerMember: isTwoSessions ? 2 : 3,
+        minCardioMin: isTaperLight ? 20 : 25,
+        minRenfoMin: 15,
+        requiresLongRun: requiresLongRun
+      };
+    }
+
     function updateWeeklyContract() {
+      if (!activeWeekSummary || !activeWeekSummary.dates) {
+        highlightCurrentWeek();
+      }
+
+      const rules = getWeeklyPlanRules(activeWeekSummary);
       const monday = getMondayOfCurrentWeek();
       const weekWorkouts = globalWorkouts.filter(w => {
         const d = parseWorkoutDate(w.date);
         return d && d >= monday;
       });
 
-      const memberCounts = {};
+      const memberStats = {};
       globalLeaderboard.forEach(u => {
-        memberCounts[u.email.toLowerCase()] = {
+        memberStats[u.email.toLowerCase()] = {
           name: u.name,
           avatar: u.avatar_emoji || "🏔️",
-          count: 0
+          qualifiedList: [],
+          shortCount: 0,
+          hasLongRun: false
         };
       });
 
+      let totalShortIgnored = 0;
+
       weekWorkouts.forEach(w => {
         const email = (w.user_email || "").toLowerCase();
-        if (memberCounts[email]) {
-          memberCounts[email].count += 1;
+        if (!memberStats[email]) return;
+
+        const dur = Number(w.duration_min) || 0;
+        const dPlus = Number(w.elevation_m !== undefined ? w.elevation_m : (w.elevation_gain_m || 0)) || 0;
+        const dist = parseFloat(String(w.distance_km || 0).replace(',', '.')) || 0;
+        const typeLower = (w.type || "").toLowerCase();
+        const isRenfo = typeLower.includes("renfo");
+
+        // Vérification du seuil minimal de durée / dénivelé
+        const isQualified = isRenfo
+          ? (dur >= rules.minRenfoMin)
+          : (dur >= rules.minCardioMin || dPlus >= 250);
+
+        if (!isQualified) {
+          memberStats[email].shortCount += 1;
+          totalShortIgnored += 1;
+          return;
         }
+
+        // Vérification si la séance compte comme une Sortie Longue (≥ 60 min ou ≥ 500 m D+ ou ≥ 12 km)
+        if (!isRenfo && (dur >= 60 || dPlus >= 500 || dist >= 12)) {
+          memberStats[email].hasLongRun = true;
+        }
+
+        memberStats[email].qualifiedList.push(w);
       });
 
-      const membersList = Object.values(memberCounts);
-      const totalApproved = membersList.length || 7;
-      const targetSessions = totalApproved * 3;
-      const totalDone = weekWorkouts.length;
-      const activeClimbersCount = membersList.filter(m => m.count > 0).length;
+      const membersList = Object.values(memberStats).map(m => {
+        const rawQualified = m.qualifiedList.length;
+        // Si le plan exige une Sortie Longue (SL) et qu'aucune séance ≥ 60 min n'a été faite, on plafonne à target - 1
+        const missingLongRun = rules.requiresLongRun && rawQualified >= rules.targetPerMember && !m.hasLongRun;
+        const effectiveCount = missingLongRun ? (rules.targetPerMember - 1) : rawQualified;
+        const cappedContribution = Math.min(rules.targetPerMember, effectiveCount);
+        const bonusCount = Math.max(0, effectiveCount - rules.targetPerMember);
 
-      const pct = Math.min(100, Math.round((totalDone / targetSessions) * 100));
+        return {
+          ...m,
+          effectiveCount,
+          cappedContribution,
+          bonusCount,
+          missingLongRun
+        };
+      });
+
+      const totalApproved = membersList.length || 6;
+      const targetSessions = totalApproved * rules.targetPerMember;
+      const totalCappedDone = membersList.reduce((acc, m) => acc + m.cappedContribution, 0);
+      const completedClimbersCount = membersList.filter(m => m.effectiveCount >= rules.targetPerMember).length;
+
+      const pct = Math.min(100, Math.round((totalCappedDone / targetSessions) * 100));
+
+      const titleEl = document.getElementById('contractWeekTitle');
+      if (titleEl && activeWeekSummary.code) {
+        titleEl.innerText = `🎯 Contrat Semaine ${activeWeekSummary.code}`;
+      }
+
+      const planRemEl = document.getElementById('contractPlanReminder');
+      if (planRemEl) {
+        planRemEl.innerText = `Plan ${activeWeekSummary.code} : ${activeWeekSummary.type || "3 séances"}`;
+      }
+
+      const ruleHintEl = document.getElementById('contractRuleHint');
+      if (ruleHintEl) {
+        ruleHintEl.innerText = rules.requiresLongRun
+          ? `Min. ${rules.minCardioMin} min • 1 SL ≥ 60 min ↗`
+          : `Cardio ≥ ${rules.minCardioMin} min • Renfo ≥ ${rules.minRenfoMin} min ↗`;
+      }
 
       const progressBar = document.getElementById('contractProgressBar');
       if (progressBar) progressBar.style.width = `${pct}%`;
 
       const doneEl = document.getElementById('contractDoneCount');
-      if (doneEl) doneEl.innerText = `${totalDone} / ${targetSessions}`;
+      if (doneEl) doneEl.innerText = `${totalCappedDone} / ${targetSessions}`;
 
       const activeEl = document.getElementById('contractActiveClimbers');
-      if (activeEl) activeEl.innerText = `${activeClimbersCount}/${totalApproved} actifs`;
+      if (activeEl) activeEl.innerText = `${completedClimbersCount}/${totalApproved} au complet`;
 
       const subEl = document.getElementById('contractSubtitle');
       if (subEl) {
-        const remaining = Math.max(0, targetSessions - totalDone);
+        const remaining = Math.max(0, targetSessions - totalCappedDone);
         subEl.innerText = remaining > 0
-          ? `Encore ${remaining} séance${remaining > 1 ? 's' : ''} collective${remaining > 1 ? 's' : ''} (objectif 3/pers.)`
-          : `Contrat hebdomadaire validé à 100% ! 🎉`;
+          ? `Encore ${remaining} séance${remaining > 1 ? 's' : ''} qualifiée${remaining > 1 ? 's' : ''} (${rules.targetPerMember}/pers. max comptées)`
+          : `Toute la cordée a rempli son contrat ${activeWeekSummary.code} ! 🎉`;
       }
 
       const statusBadge = document.getElementById('contractStatusBadge');
       if (statusBadge) {
-        if (totalDone >= targetSessions) {
+        if (totalCappedDone >= targetSessions) {
           statusBadge.className = "text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200";
           statusBadge.innerText = "🏆 Validé !";
         } else if (pct >= 50) {
@@ -2309,20 +2403,40 @@
       const chipsContainer = document.getElementById('contractClimbersChips');
       if (chipsContainer) {
         chipsContainer.innerHTML = membersList.map(m => {
-          const isComplete = m.count >= 3;
+          const isComplete = m.effectiveCount >= rules.targetPerMember;
           const chipClass = isComplete
             ? "bg-emerald-50 border-emerald-200 text-emerald-900"
-            : (m.count > 0 ? "bg-[#EBF4F2] border-[#0F6856]/25 text-[#152925]" : "bg-[#F5F8F7] border-[#DCE6E4] text-[#5A6E6A]");
+            : (m.effectiveCount > 0 ? "bg-[#EBF4F2] border-[#0F6856]/25 text-[#152925]" : "bg-[#F5F8F7] border-[#DCE6E4] text-[#5A6E6A]");
 
-          const badgeIcon = isComplete ? "✅" : `${m.count}/3`;
+          const badgeIcon = isComplete
+            ? (m.bonusCount > 0 ? `✅ +${m.bonusCount}` : "✅")
+            : `${m.effectiveCount}/${rules.targetPerMember}`;
+
+          let detailMsg = `${m.name} : ${m.effectiveCount}/${rules.targetPerMember} séance(s) qualifiée(s) cette semaine`;
+          if (m.bonusCount > 0) detailMsg += ` (+${m.bonusCount} bonus)`;
+          if (m.missingLongRun) detailMsg += ` — manque 1 Sortie Longue (≥ 60 min) du plan ${activeWeekSummary.code}`;
+          if (m.shortCount > 0) detailMsg += ` • ${m.shortCount} sortie(s) courte(s) (< ${rules.minCardioMin} min) ignorée(s)`;
 
           return `
-            <div class="px-2.5 py-1 rounded-xl border text-[11px] flex items-center gap-1 font-semibold ${chipClass}">
+            <button type="button"
+              data-toast="${escapeHtml(detailMsg)}"
+              onclick="showToast(this.dataset.toast)"
+              class="px-2.5 py-1 rounded-xl border text-[11px] flex items-center gap-1 font-semibold transition active:scale-95 ${chipClass}">
               <span class="font-extrabold text-[#152925]">${escapeHtml(m.name)}</span>
               <span class="text-[10px] font-mono font-bold opacity-90">${badgeIcon}</span>
-            </div>
+            </button>
           `;
         }).join('');
+      }
+
+      const filteredNoteEl = document.getElementById('contractFilteredNote');
+      if (filteredNoteEl) {
+        if (totalShortIgnored > 0) {
+          filteredNoteEl.classList.remove('hidden');
+          filteredNoteEl.innerText = `ℹ️ ${totalShortIgnored} sortie${totalShortIgnored > 1 ? 's' : ''} courte${totalShortIgnored > 1 ? 's' : ''} (< ${rules.minCardioMin} min cardio / < ${rules.minRenfoMin} min renfo) non comptabilisée${totalShortIgnored > 1 ? 's' : ''} dans le contrat.`;
+        } else {
+          filteredNoteEl.classList.add('hidden');
+        }
       }
     }
 
