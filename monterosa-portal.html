@@ -1413,7 +1413,11 @@
       }
 
       if (data && data.success) {
-        globalWorkouts = data.workouts || [];
+        globalWorkouts = (data.workouts || []).map(w => ({
+          ...w,
+          comments: Array.isArray(w.comments) ? w.comments : [],
+          comments_count: Array.isArray(w.comments) ? w.comments.length : (Number(w.comments_count) || 0)
+        }));
         globalLeaderboard = data.leaderboard || [];
         globalExercises = [...(data.exercises || []), ...DEFAULT_EXERCISES];
       }
@@ -1468,9 +1472,10 @@
     }
 
     // ==============================================================================
-    // RENDU DU FEED (LE MUR)
+    // RENDU DU FEED (LE MUR) AVEC KUDOS & COMMENTAIRES
     // ==============================================================================
     let currentFeedFilter = "all";
+    const expandedCommentsWorkouts = new Set();
 
     function filterFeed(type) {
       currentFeedFilter = type;
@@ -1483,6 +1488,39 @@
         }
       });
       renderFeed();
+    }
+
+    function focusCommentInput(workoutId) {
+      if (!currentUser) {
+        openAuthModal();
+        return;
+      }
+      const input = document.getElementById(`commentInput-${workoutId}`);
+      if (input) {
+        input.focus();
+      }
+    }
+
+    function toggleExpandComments(workoutId) {
+      if (expandedCommentsWorkouts.has(workoutId)) {
+        expandedCommentsWorkouts.delete(workoutId);
+      } else {
+        expandedCommentsWorkouts.add(workoutId);
+      }
+      renderFeed();
+    }
+
+    function formatCommentTimestamp(isoStr) {
+      if (!isoStr) return "";
+      try {
+        const d = new Date(isoStr);
+        if (isNaN(d.getTime())) return "";
+        const datePart = d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+        const timePart = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+        return `${datePart} • ${timePart}`;
+      } catch (e) {
+        return "";
+      }
     }
 
     function renderFeed() {
@@ -1522,6 +1560,24 @@
         const kudosClass = w.has_kudos
           ? "bg-amber-50 text-amber-800 border-amber-300"
           : "bg-[#F5F8F7] text-[#5A6E6A] hover:text-[#152925] border-[#DCE6E4]";
+
+        const allComments = Array.isArray(w.comments) ? w.comments : [];
+        const isExpanded = expandedCommentsWorkouts.has(w.id);
+        const hiddenCommentsCount = !isExpanded && allComments.length > 2 ? (allComments.length - 2) : 0;
+        const displayedComments = hiddenCommentsCount > 0 ? allComments.slice(-2) : allComments;
+
+        const commentsListHtml = displayedComments.map(c => `
+          <div class="flex items-start gap-2 text-xs bg-[#F5F8F7] border border-[#E2ECEA] rounded-2xl px-3 py-2">
+            <span class="text-sm shrink-0 mt-0.5">${escapeHtml(c.avatar_emoji || "🏔️")}</span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-extrabold text-[#152925] truncate">${escapeHtml(c.user_name || "Grimpeur")}</span>
+                <span class="text-[10px] text-[#5A6E6A] shrink-0">${formatCommentTimestamp(c.created_at)}</span>
+              </div>
+              <p class="text-[#334844] mt-0.5 leading-snug break-words">${escapeHtml(c.text)}</p>
+            </div>
+          </div>
+        `).join('');
 
         return `
           <div class="p-4 sm:p-5 rounded-3xl card-alpine hover:border-[#0F6856]/30 transition space-y-3">
@@ -1565,9 +1621,42 @@
 
             <div class="flex items-center justify-between pt-0.5">
               <span class="text-[11px] text-[#5A6E6A] font-medium">Effort : ${w.rpe || 5}/10</span>
-              <button onclick="handleKudos('${w.id}')" class="px-3.5 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition active:scale-95 ${kudosClass}">
-                <span>👏</span> <span>${w.kudos_count || 0}</span>
-              </button>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="focusCommentInput('${w.id}')" class="px-3 py-1.5 rounded-xl border border-[#DCE6E4] bg-[#F5F8F7] hover:bg-[#EBF4F2] text-[#5A6E6A] hover:text-[#152925] text-xs font-bold flex items-center gap-1.5 transition active:scale-95">
+                  <span>💬</span> <span>${allComments.length}</span>
+                </button>
+                <button type="button" onclick="handleKudos('${w.id}')" class="px-3.5 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition active:scale-95 ${kudosClass}">
+                  <span>👏</span> <span>${w.kudos_count || 0}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- ZONE COMMENTAIRES -->
+            <div class="pt-2.5 border-t border-[#E2ECEA] space-y-2">
+              ${hiddenCommentsCount > 0 ? `
+                <button type="button" onclick="toggleExpandComments('${w.id}')" class="text-[11px] font-bold text-[#0F6856] hover:underline">
+                  Voir les ${hiddenCommentsCount} commentaire${hiddenCommentsCount > 1 ? 's' : ''} précédent${hiddenCommentsCount > 1 ? 's' : ''}...
+                </button>
+              ` : (isExpanded && allComments.length > 2 ? `
+                <button type="button" onclick="toggleExpandComments('${w.id}')" class="text-[11px] font-bold text-[#5A6E6A] hover:underline">
+                  Réduire les commentaires
+                </button>
+              ` : '')}
+
+              ${allComments.length > 0 ? `<div class="space-y-1.5">${commentsListHtml}</div>` : ''}
+
+              <form onsubmit="handleCommentSubmit(event, '${w.id}')" class="flex items-center gap-2">
+                <input
+                  type="text"
+                  id="commentInput-${w.id}"
+                  maxlength="500"
+                  placeholder="Laisser un mot d'encouragement..."
+                  class="flex-1 px-3 py-2 rounded-xl bg-[#F5F8F7] border border-[#DCE6E4] text-xs text-[#152925] placeholder-[#5A6E6A]/70 focus:outline-none focus:border-[#0F6856] focus:bg-white transition"
+                >
+                <button type="submit" id="commentBtn-${w.id}" class="px-3 py-2 rounded-xl bg-[#EBF4F2] hover:bg-[#0F6856] text-[#0F6856] hover:text-white font-extrabold text-xs transition shrink-0 active:scale-95">
+                  Envoyer
+                </button>
+              </form>
             </div>
           </div>
         `;
@@ -1587,6 +1676,60 @@
     function loadMoreWorkouts() {
       feedVisibleCount += feedPageSize;
       renderFeed();
+    }
+
+    async function handleCommentSubmit(e, workoutId) {
+      e.preventDefault();
+      if (!currentUser) {
+        openAuthModal();
+        return;
+      }
+
+      const input = document.getElementById(`commentInput-${workoutId}`);
+      const btn = document.getElementById(`commentBtn-${workoutId}`);
+      if (!input) return;
+
+      const text = input.value.trim();
+      if (!text) return;
+
+      const w = globalWorkouts.find(item => item.id === workoutId);
+      if (!w) return;
+
+      // Mise à jour optimiste immédiate
+      const tempComment = {
+        id: "temp-" + Date.now(),
+        workout_id: workoutId,
+        user_email: currentUser.email,
+        user_name: currentUser.name,
+        avatar_emoji: currentUser.avatar || "🏔️",
+        text: text,
+        created_at: new Date().toISOString()
+      };
+
+      if (!Array.isArray(w.comments)) w.comments = [];
+      w.comments.push(tempComment);
+      w.comments_count = w.comments.length;
+      expandedCommentsWorkouts.add(workoutId);
+      input.value = "";
+      renderFeed();
+
+      if (btn) btn.disabled = true;
+      const res = await apiPost("add_comment", {
+        token: currentUser.token,
+        workout_id: workoutId,
+        text: text
+      });
+
+      if (res && res.success && res.comment) {
+        const idx = w.comments.findIndex(c => c.id === tempComment.id);
+        if (idx !== -1) w.comments[idx] = res.comment;
+        showToast("Commentaire publié 💬");
+      } else {
+        w.comments = w.comments.filter(c => c.id !== tempComment.id);
+        w.comments_count = w.comments.length;
+        renderFeed();
+        showToast(res?.message || "Erreur lors de l'envoi du commentaire ⚠️");
+      }
     }
 
     // ==============================================================================
@@ -2309,7 +2452,6 @@
         const typeLower = (w.type || "").toLowerCase();
         const isRenfo = typeLower.includes("renfo");
 
-        // Vérification du seuil minimal de durée / dénivelé
         const isQualified = isRenfo
           ? (dur >= rules.minRenfoMin)
           : (dur >= rules.minCardioMin || dPlus >= 250);
@@ -2320,7 +2462,6 @@
           return;
         }
 
-        // Vérification si la séance compte comme une Sortie Longue (≥ 60 min ou ≥ 500 m D+ ou ≥ 12 km)
         if (!isRenfo && (dur >= 60 || dPlus >= 500 || dist >= 12)) {
           memberStats[email].hasLongRun = true;
         }
@@ -2330,7 +2471,6 @@
 
       const membersList = Object.values(memberStats).map(m => {
         const rawQualified = m.qualifiedList.length;
-        // Si le plan exige une Sortie Longue (SL) et qu'aucune séance ≥ 60 min n'a été faite, on plafonne à target - 1
         const missingLongRun = rules.requiresLongRun && rawQualified >= rules.targetPerMember && !m.hasLongRun;
         const effectiveCount = missingLongRun ? (rules.targetPerMember - 1) : rawQualified;
         const cappedContribution = Math.min(rules.targetPerMember, effectiveCount);
