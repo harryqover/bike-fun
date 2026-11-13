@@ -47,11 +47,7 @@ if (V2_COUNTRIES.indexOf(country) !== -1) {
 // V2 DEEPLINK REDIRECT (BE, FR, NL, DE)
 // ==========================================
 function redirectToV2Flow(data, variant, lang, country, locale, apiKey) {
-  var startDateObj = new Date();
-  startDateObj.setDate(startDateObj.getDate() + 1);
-  var startDate = startDateObj.toISOString().split("T")[0];
-
-  // Keep metadata minimal (avoiding bloated tracking cookies like referrer_url)
+  // Build metadata as a flat string-to-string map
   var metadata = {
     version_bike_quote_JS: "redirect v2 deeplink 20261113"
   };
@@ -60,7 +56,7 @@ function redirectToV2Flow(data, variant, lang, country, locale, apiKey) {
   var referralId = getParameterByName("referralid");
   if (referralId) metadata.referralId = String(referralId);
 
-  // Build subject strictly matching subjectSchema
+  // Build subject object
   var bikeType = data.type
     ? (data.type.indexOf("TYPE_") === 0 ? data.type : "TYPE_" + data.type)
     : undefined;
@@ -72,8 +68,7 @@ function redirectToV2Flow(data, variant, lang, country, locale, apiKey) {
     bikePurchaseDate: data.pdte,
     bikeCondition: data.cond || "BIKE_CONDITION_NEW",
     bikeType: bikeType,
-    antiTheftMeasure: data.antitheft || "ANTI_THEFT_MEASURE_NONE",
-    applyDepreciation: false
+    antiTheftMeasure: data.antitheft || "ANTI_THEFT_MEASURE_NONE"
   };
 
   if (data.thftdeduc) {
@@ -90,31 +85,8 @@ function redirectToV2Flow(data, variant, lang, country, locale, apiKey) {
     subject.serialNumber = String(data.sn);
   }
 
-  // Build policyholder object
-  var address = {};
-  if (data.zip) address.zip = data.zip;
-  if (data.number) address.number = data.number;
-  if (data.strt) address.street = data.strt;
-  if (data.city) address.city = data.city;
-  if (country) address.country = country;
-
-  var policyholder = {};
-  if (data.fn) policyholder.firstName = data.fn;
-  if (data.ln) policyholder.lastName = data.ln;
-  if (data.e) policyholder.email = data.e;
-  if (data.t) policyholder.phone = data.t;
-  if (data.birth) policyholder.birthdate = data.birth;
-  if (Object.keys(address).length > 0) policyholder.address = address;
-
-  // Assemble pq initialization payload
+  // Assemble minimal pq payload (subject + metadata only)
   var pq = {
-    package: {
-      name: variant
-    },
-    contractPeriod: {
-      startDate: startDate
-    },
-    policyholder: policyholder,
     subject: subject,
     metadata: metadata
   };
