@@ -205,12 +205,10 @@
         <div id="contractProgressBar" class="h-full rounded-full btn-alpine-gradient transition-all duration-700" style="width: 0%"></div>
       </div>
 
-      <!-- Pastilles membres (cliquables pour le détail individuel) -->
-      <div id="contractClimbersChips" class="flex flex-wrap items-center gap-1.5">
-        <!-- Injecté par JS -->
-      </div>
+      <!-- Pastilles membres -->
+      <div id="contractClimbersChips" class="flex flex-wrap items-center gap-1.5"></div>
 
-      <!-- Info séances courtes ignorées (masqué si 0) -->
+      <!-- Info séances courtes ignorées -->
       <div id="contractFilteredNote" class="hidden mt-2.5 pt-2 border-t border-[#E2ECEA] text-[10px] text-[#5A6E6A] font-medium"></div>
     </section>
 
@@ -279,7 +277,7 @@
         </div>
       </section>
 
-      <!-- 2. ONGLET : LA CORDÉE (CLASSEMENT + TROPHÉES + CHIFFRES & CARTE) -->
+      <!-- 2. ONGLET : LA CORDÉE -->
       <section id="tab-cordee" class="hidden space-y-6">
         <div class="flex items-center justify-between gap-3 card-alpine p-3 rounded-2xl">
           <span class="text-xs font-extrabold text-[#152925] pl-1">Classement :</span>
@@ -381,7 +379,7 @@
         </div>
       </section>
 
-      <!-- 3. ONGLET : PRÉPARATION (FOCUS SEMAINE + RENFO + PLANNING DÉPLIABLE + GUIDES) -->
+      <!-- 3. ONGLET : PRÉPARATION -->
       <section id="tab-prep" class="hidden space-y-6">
 
         <!-- CARTE FOCUS : LA SEMAINE EN COURS -->
@@ -855,14 +853,29 @@
             <input type="date" id="wDate" required class="w-full px-3 py-2 rounded-xl bg-[#F5F8F7] border border-[#DCE6E4] text-[#152925] text-sm focus:outline-none focus:border-[#0F6856] focus:bg-white">
           </div>
           <div>
-            <label class="block font-bold text-[#152925] uppercase mb-1">Durée (minutes)</label>
-            <input type="number" id="wDuration" min="1" required placeholder="45" class="w-full px-3 py-2 rounded-xl bg-[#F5F8F7] border border-[#DCE6E4] text-[#152925] text-sm focus:outline-none focus:border-[#0F6856] focus:bg-white">
+            <label class="block font-bold text-[#152925] uppercase mb-1">Heure de départ</label>
+            <input type="time" id="wStartTime" class="w-full px-3 py-2 rounded-xl bg-[#F5F8F7] border border-[#DCE6E4] text-[#152925] text-sm focus:outline-none focus:border-[#0F6856] focus:bg-white">
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <!-- Option météo locale exacte pour les saisies manuelles -->
+        <div class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-[#F5F8F7] border border-[#DCE6E4]">
+          <div class="flex items-center gap-2 min-w-0">
+            <input type="checkbox" id="wIncludeLocalWeather" class="rounded accent-[#0F6856] w-4 h-4 cursor-pointer">
+            <label for="wIncludeLocalWeather" class="text-[11px] font-bold text-[#152925] cursor-pointer truncate">
+              Associer la météo exacte (Open-Meteo)
+            </label>
+          </div>
+          <span id="wGeoStatus" class="text-[10px] font-semibold text-[#5A6E6A] shrink-0">📍 GPS / BXL</span>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2.5">
           <div>
-            <label class="block font-bold text-[#152925] uppercase mb-1">Dénivelé Positif D+ (m)</label>
+            <label class="block font-bold text-[#152925] uppercase mb-1">Durée (min)</label>
+            <input type="number" id="wDuration" min="1" required placeholder="45" class="w-full px-3 py-2 rounded-xl bg-[#F5F8F7] border border-[#DCE6E4] text-[#152925] text-sm focus:outline-none focus:border-[#0F6856] focus:bg-white">
+          </div>
+          <div>
+            <label class="block font-bold text-[#152925] uppercase mb-1">D+ (m)</label>
             <input type="number" id="wElevation" min="0" placeholder="0" class="w-full px-3 py-2 rounded-xl bg-[#F5F8F7] border border-[#DCE6E4] text-[#152925] text-sm focus:outline-none focus:border-[#0F6856] focus:bg-white">
           </div>
           <div>
@@ -1074,7 +1087,7 @@
 
       startCountdown();
       updateAuthUI();
-      document.getElementById('wDate').valueAsDate = new Date();
+      setDefaultWorkoutDateTime();
 
       document.addEventListener('click', (e) => {
         const menu = document.getElementById('profileDropdown');
@@ -1096,8 +1109,20 @@
       loadData();
     });
 
+    function setDefaultWorkoutDateTime() {
+      const now = new Date();
+      const dateInput = document.getElementById('wDate');
+      const timeInput = document.getElementById('wStartTime');
+      if (dateInput) dateInput.valueAsDate = now;
+      if (timeInput) {
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        timeInput.value = `${hh}:${mm}`;
+      }
+    }
+
     // ==============================================================================
-    // HELPER DATE ROBUSTE
+    // HELPER DATE & MÉTÉO OPEN-METEO (WMO CODES + JOUR/NUIT)
     // ==============================================================================
     function parseWorkoutDate(dateStr) {
       if (!dateStr) return null;
@@ -1107,6 +1132,150 @@
       }
       const d = new Date(dateStr);
       return isNaN(d.getTime()) ? null : d;
+    }
+
+    /**
+     * Traduit un code météo WMO Open-Meteo en emoji + libellé français
+     */
+    function getWeatherMeta(code) {
+      const c = Number(code);
+      if (isNaN(c)) return null;
+      if (c === 0) return { emoji: "☀️", label: "Ciel dégagé", category: "clear" };
+      if (c === 1) return { emoji: "🌤️", label: "Principalement dégagé", category: "clear" };
+      if (c === 2) return { emoji: "⛅", label: "Partiellement nuageux", category: "cloudy" };
+      if (c === 3) return { emoji: "☁️", label: "Couvert", category: "cloudy" };
+      if (c === 45 || c === 48) return { emoji: "🌫️", label: "Brouillard", category: "fog" };
+      if ([51, 53, 55, 56, 57].includes(c)) return { emoji: "🌦️", label: "Bruine", category: "rain" };
+      if ([61, 63, 65, 66, 67, 80, 81, 82].includes(c)) return { emoji: "🌧️", label: "Pluie", category: "rain" };
+      if ([71, 73, 75, 77, 85, 86].includes(c)) return { emoji: "❄️", label: "Neige", category: "snow" };
+      if ([95, 96, 99].includes(c)) return { emoji: "⛈️", label: "Orage", category: "storm" };
+      return { emoji: "🌤️", label: "Météo variable", category: "cloudy" };
+    }
+
+    /**
+     * Détermine si l'activité a démarré avant le lever du soleil ou après le coucher du soleil
+     * Utilise prioritairement `weather_is_day === 0` (calcul astronomique exact Open-Meteo),
+     * avec un fallback horaire si `weather_is_day` n'est pas renseigné.
+     */
+    function getNocturnalContext(w) {
+      if (!w || !w.start_time) return null;
+      const match = String(w.start_time).match(/^(\d{1,2}):(\d{2})/);
+      if (!match) return null;
+      const hour = parseInt(match[1], 10);
+
+      const isNightByAstro = (w.weather_is_day !== null && w.weather_is_day !== undefined && w.weather_is_day !== "")
+        ? Number(w.weather_is_day) === 0
+        : (hour < 7 || hour >= 20);
+
+      if (!isNightByAstro) return null;
+
+      if (hour < 12) {
+        return {
+          emoji: "🔦",
+          badgeText: "Frontale",
+          tooltip: `Départ avant le lever du soleil (${w.start_time})`,
+          period: "dawn"
+        };
+      } else {
+        return {
+          emoji: "🌙",
+          badgeText: "Nocturne",
+          tooltip: `Départ après le coucher du soleil (${w.start_time})`,
+          period: "night"
+        };
+      }
+    }
+
+    /**
+     * Génère un placeholder de commentaire contextuel et personnalisé pour stimuler l'interaction
+     */
+    function getContextualCommentPlaceholder(w) {
+      const fullName = String(w.user_name || "ce grimpeur").trim();
+      const firstName = fullName.split(/\s+/)[0];
+      const wDate = parseWorkoutDate(w.date);
+
+      // 1. Calcul du rang de la sortie dans la semaine de l'athlète
+      let weekSessionNumber = 0;
+      if (wDate) {
+        const day = wDate.getDay();
+        const diff = wDate.getDate() - day + (day === 0 ? -6 : 1);
+        const weekMonday = new Date(wDate.getFullYear(), wDate.getMonth(), diff);
+        weekMonday.setHours(0, 0, 0, 0);
+        const weekSunday = new Date(weekMonday.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+        const sameWeekUserWorkouts = globalWorkouts
+          .filter(item => {
+            if ((item.user_email || "").toLowerCase() !== (w.user_email || "").toLowerCase()) return false;
+            const d = parseWorkoutDate(item.date);
+            return d && d >= weekMonday && d < weekSunday;
+          })
+          .sort((a, b) => {
+            const ka = `${a.date || ""} ${a.start_time || "00:00"} ${a.id || ""}`;
+            const kb = `${b.date || ""} ${b.start_time || "00:00"} ${b.id || ""}`;
+            return ka.localeCompare(kb);
+          });
+
+        const idx = sameWeekUserWorkouts.findIndex(item => item.id === w.id);
+        if (idx !== -1) weekSessionNumber = idx + 1;
+      }
+
+      if (weekSessionNumber >= 4) {
+        return `Félicite ${firstName} pour sa ${weekSessionNumber}e sortie cette semaine ! 🔥`;
+      }
+
+      // 2. Départ avant l'aube ou nocturne
+      const nightCtx = getNocturnalContext(w);
+      if (nightCtx) {
+        if (nightCtx.period === "dawn") {
+          return `Demande à ${firstName} comment était la sortie à la frontale à ${w.start_time} ! 🔦`;
+        }
+        return `Respect pour la sortie nocturne de ${firstName} à ${w.start_time} ! 🌙`;
+      }
+
+      // 3. Conditions météo marquantes (pluie, neige, froid, canicule, grand soleil)
+      const isOutdoor = !["Home Trainer", "Renforcement"].includes(w.type);
+      const weatherMeta = isOutdoor && w.weather_code !== null ? getWeatherMeta(w.weather_code) : null;
+      const temp = (w.weather_temp !== null && w.weather_temp !== undefined) ? Math.round(Number(w.weather_temp)) : null;
+
+      if (weatherMeta && temp !== null) {
+        if (weatherMeta.category === "snow") {
+          return `Sous la neige à ${temp}°C ! Un mot pour réchauffer ${firstName} ? ❄️`;
+        }
+        if (weatherMeta.category === "storm") {
+          return `Sous l'orage (${temp}°C), mental d'acier ! Salue ${firstName} ⛈️`;
+        }
+        if (weatherMeta.category === "rain") {
+          return `Brave la pluie à ${temp}°C ! Un mot pour saluer le mental de ${firstName} ? 🌧️`;
+        }
+        if (temp <= 2) {
+          return `Sortie glaciale par ${temp}°C ! Un encouragement pour ${firstName} ? 🥶`;
+        }
+        if (temp >= 28) {
+          return `Grosse chaleur (${temp}°C) ! Demande à ${firstName} comment s'est passée l'hydratation 🥵`;
+        }
+      }
+
+      // 4. Gros dénivelé ou grosse distance
+      const dPlus = Number(w.elevation_m !== undefined ? w.elevation_m : (w.elevation_gain_m || 0)) || 0;
+      const dist = Number(w.distance_km) || 0;
+      const dur = Number(w.duration_min) || 0;
+
+      if (dPlus >= 500) {
+        return `Encore +${dPlus} m D+ dans les cuisses ! Félicite ${firstName} 🏔️`;
+      }
+      if (dist >= 15 || dur >= 90) {
+        return `Sacrée sortie (${dur} min) ! Demande à ${firstName} comment vont les jambes 💪`;
+      }
+
+      // 5. Fallback dynamique selon le type / météo clémente
+      if (weatherMeta && weatherMeta.category === "clear" && temp !== null) {
+        return `Grand soleil (${temp}°C) pour sortir ! Un petit mot pour ${firstName} ? ☀️`;
+      }
+      if ((w.type || "").toLowerCase().includes("renfo")) {
+        return `Les cuisses chauffent ! Un mot pour encourager ${firstName} ? 💪`;
+      }
+
+      return `Laisser un mot d'encouragement à ${firstName}...`;
     }
 
     // ==============================================================================
@@ -1472,7 +1641,7 @@
     }
 
     // ==============================================================================
-    // RENDU DU FEED (LE MUR) AVEC KUDOS & COMMENTAIRES
+    // RENDU DU FEED (LE MUR) AVEC MÉTÉO, HEURE DE DÉPART & COMMENTAIRES CONTEXTUELS
     // ==============================================================================
     let currentFeedFilter = "all";
     const expandedCommentsWorkouts = new Set();
@@ -1561,10 +1730,33 @@
           ? "bg-amber-50 text-amber-800 border-amber-300"
           : "bg-[#F5F8F7] text-[#5A6E6A] hover:text-[#152925] border-[#DCE6E4]";
 
+        // Contexte horaire, lever/coucher du soleil & météo exacte
+        const isOutdoor = !["Home Trainer", "Renforcement"].includes(w.type);
+        const weatherMeta = (isOutdoor && w.weather_code !== null && w.weather_code !== undefined)
+          ? getWeatherMeta(w.weather_code)
+          : null;
+        const hasTemp = (w.weather_temp !== null && w.weather_temp !== undefined && !isNaN(Number(w.weather_temp)));
+        const tempRounded = hasTemp ? Math.round(Number(w.weather_temp)) : null;
+        const nightCtx = getNocturnalContext(w);
+
+        const dateSegment = formatDate(w.date);
+        const timeSegment = w.start_time ? ` • ${escapeHtml(w.start_time)}` : "";
+        const typeSegment = ` • ${escapeHtml(w.type)}`;
+        const inlineWeatherSegment = (weatherMeta && tempRounded !== null)
+          ? ` • <span title="${escapeHtml(`${weatherMeta.label} (${w.weather_temp}°C)`)}" class="inline-flex items-center gap-1 font-bold text-[#152925]">${weatherMeta.emoji} ${tempRounded}°C</span>`
+          : "";
+
+        const nightPillHtml = nightCtx
+          ? `<span title="${escapeHtml(nightCtx.tooltip)}" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#1E2448] ${nightCtx.period === 'dawn' ? 'text-amber-200' : 'text-indigo-200'} shadow-xs">
+               <span>${nightCtx.emoji}</span><span>${nightCtx.badgeText}</span>
+             </span>`
+          : "";
+
         const allComments = Array.isArray(w.comments) ? w.comments : [];
         const isExpanded = expandedCommentsWorkouts.has(w.id);
         const hiddenCommentsCount = !isExpanded && allComments.length > 2 ? (allComments.length - 2) : 0;
         const displayedComments = hiddenCommentsCount > 0 ? allComments.slice(-2) : allComments;
+        const dynamicPlaceholder = getContextualCommentPlaceholder(w);
 
         const commentsListHtml = displayedComments.map(c => `
           <div class="flex items-start gap-2 text-xs bg-[#F5F8F7] border border-[#E2ECEA] rounded-2xl px-3 py-2">
@@ -1582,16 +1774,19 @@
         return `
           <div class="p-4 sm:p-5 rounded-3xl card-alpine hover:border-[#0F6856]/30 transition space-y-3">
             <div class="flex items-start justify-between gap-3">
-              <div class="flex items-center gap-3">
+              <div class="flex items-center gap-3 min-w-0">
                 <div class="w-10 h-10 rounded-2xl bg-[#EBF4F2] text-[#0F6856] flex items-center justify-center text-lg shrink-0">
                   ${getTypeEmoji(w.type)}
                 </div>
-                <div>
-                  <div class="flex items-center gap-1.5">
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-1.5">
                     <span class="font-extrabold text-[#152925] text-sm">${escapeHtml(w.user_name || "Grimpeur")}</span>
-                    ${isGarmin ? '<span class="text-[10px] px-1.5 py-0.5 rounded-md bg-[#F5F8F7] text-[#5A6E6A] border border-[#DCE6E4] font-mono">⌚</span>' : ''}
+                    ${isGarmin ? '<span title="Synchronisé via Garmin Connect" class="text-[10px] px-1.5 py-0.5 rounded-md bg-[#F5F8F7] text-[#5A6E6A] border border-[#DCE6E4] font-mono">⌚</span>' : ''}
+                    ${nightPillHtml}
                   </div>
-                  <div class="text-[11px] text-[#5A6E6A] font-medium">${formatDate(w.date)} • ${escapeHtml(w.type)}</div>
+                  <div class="text-[11px] text-[#5A6E6A] font-medium mt-0.5 flex flex-wrap items-center gap-x-1">
+                    <span>${dateSegment}${timeSegment}${typeSegment}</span>${inlineWeatherSegment}
+                  </div>
                 </div>
               </div>
               <span class="px-2.5 py-1 rounded-xl bg-[#EBF4F2] text-[#0F6856] font-extrabold text-xs shrink-0">
@@ -1650,8 +1845,8 @@
                   type="text"
                   id="commentInput-${w.id}"
                   maxlength="500"
-                  placeholder="Laisser un mot d'encouragement..."
-                  class="flex-1 px-3 py-2 rounded-xl bg-[#F5F8F7] border border-[#DCE6E4] text-xs text-[#152925] placeholder-[#5A6E6A]/70 focus:outline-none focus:border-[#0F6856] focus:bg-white transition"
+                  placeholder="${escapeHtml(dynamicPlaceholder)}"
+                  class="flex-1 px-3 py-2 rounded-xl bg-[#F5F8F7] border border-[#DCE6E4] text-xs text-[#152925] placeholder-[#5A6E6A]/80 focus:outline-none focus:border-[#0F6856] focus:bg-white transition"
                 >
                 <button type="submit" id="commentBtn-${w.id}" class="px-3 py-2 rounded-xl bg-[#EBF4F2] hover:bg-[#0F6856] text-[#0F6856] hover:text-white font-extrabold text-xs transition shrink-0 active:scale-95">
                   Envoyer
@@ -1695,7 +1890,6 @@
       const w = globalWorkouts.find(item => item.id === workoutId);
       if (!w) return;
 
-      // Mise à jour optimiste immédiate
       const tempComment = {
         id: "temp-" + Date.now(),
         workout_id: workoutId,
@@ -1932,6 +2126,20 @@
       }
     }
 
+    function resolveCurrentCoordsForManualWorkout() {
+      return new Promise((resolve) => {
+        if (!navigator.geolocation) {
+          resolve({ lat: 50.8675, lng: 4.3736 }); // Schaerbeek / Bruxelles par défaut
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+          () => resolve({ lat: 50.8675, lng: 4.3736 }),
+          { timeout: 3500, maximumAge: 300000 }
+        );
+      });
+    }
+
     async function handleSaveWorkout(e) {
       e.preventDefault();
       if (!currentUser) {
@@ -1943,6 +2151,7 @@
         type: document.getElementById('wType').value,
         title: document.getElementById('wTitle').value,
         date: document.getElementById('wDate').value,
+        start_time: document.getElementById('wStartTime').value,
         duration_min: document.getElementById('wDuration').value,
         elevation_gain_m: document.getElementById('wElevation').value,
         distance_km: document.getElementById('wDistance').value,
@@ -1954,6 +2163,13 @@
       btn.innerText = "Enregistrement...";
       btn.disabled = true;
 
+      const includeWeather = document.getElementById('wIncludeLocalWeather')?.checked;
+      if (includeWeather && !["Home Trainer", "Renforcement"].includes(workout.type)) {
+        const coords = await resolveCurrentCoordsForManualWorkout();
+        workout.start_lat = coords.lat;
+        workout.start_lng = coords.lng;
+      }
+
       const res = await apiPost("add_workout", { token: currentUser.token, workout: workout });
       btn.innerText = "Valider la séance";
       btn.disabled = false;
@@ -1963,7 +2179,7 @@
         confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 } });
         closeModal('workoutModal');
         document.getElementById('formAddWorkout').reset();
-        document.getElementById('wDate').valueAsDate = new Date();
+        setDefaultWorkoutDateTime();
         await loadData();
       } else {
         showToast(res.message || "Erreur lors de l'enregistrement.");
@@ -2115,7 +2331,10 @@
     function openModal(id) { document.getElementById(id)?.classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id)?.classList.add('hidden'); }
     function openAuthModal() { openModal('authModal'); }
-    function openWorkoutModal() { openModal('workoutModal'); }
+    function openWorkoutModal() {
+      setDefaultWorkoutDateTime();
+      openModal('workoutModal');
+    }
     function openGarminModal() { openModal('garminModal'); }
     function openCreateExerciseModal() { openModal('createExerciseModal'); }
 
